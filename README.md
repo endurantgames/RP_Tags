@@ -186,8 +186,8 @@ and then 5 their title itself -- but again, only 5 characters.
 | `:large`, `:long`           | `:l`             | 20 characters  |
 | `:extralarge`, `:verylong`  | `:xl`, `:vl`     | 50 characters  |
 | `:extraextralarge`          | `:xxl`           | 100 characters |
-|                             | `:2x`            | 150 characters |
-|                             : `:3x`            | 250 characters |
+|                             | `:2x`, `:2xl`    | 150 characters |
+|                             | `:3x, `:3xl`     | 250 characters |
 | --                          | --               | no limit       |
 
 ## /Slash Commands
@@ -244,5 +244,6 @@ translations into other languages, you can.
   - `:xs`, `:s`, etc
   - Update for new gender settings in trp3
   - Something I forgot
-  - See if it can be generalized for any oUF addon
+  - Make sure all the libraries are current
+  - See if RPT can be generalized for any oUF addon
   - Miscellaneous bug fixes
