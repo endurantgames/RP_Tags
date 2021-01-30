@@ -1,6 +1,9 @@
 # RP\_TAGS
-
 ## Or, rp:Tags, or [rp:tags], or ...
+
+> **Important:** This version of the AddOn isn't functional yet! If you use it right now,
+> it will probably break. When the new version is ready, it will be posted to
+> CurseForge.
 
 RP\_Tags lets you create customized unit frames based on fields from roleplaying 
 profiles, such as those used by [totalRP3](https://www.curseforge.com/wow/addons/total-rp-3) or
@@ -230,3 +233,16 @@ you're already using.
 The addon is currently only available in English, but if you want help with
 translations into other languages, you can.
 
+## To Do
+
+(Primarily for my own use)
+
+  - Get configuration/help working
+  - Get RP:UF working
+  - XRP support
+  - Config profiles with Ace3
+  - `:xs`, `:s`, etc
+  - Update for new gender settings in trp3
+  - Something I forgot
+  - See if it can be generalized for any oUF addon
+  - Miscellaneous bug fixes
