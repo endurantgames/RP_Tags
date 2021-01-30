@@ -1,0 +1,15 @@
+## Interface: 90002
+## Version: 2.000 alpha 1
+## Title: |cffdd33aarp|r|cffffffffTags|r UF Module: |cffdd33aarp|r|cffdd9933UnitFrames|r
+## Author: Oraibi-MoonGuard
+## Notes: Custom roleplaying unit frames for rpTags
+## RequiredDeps: RP_Tags
+## URL: http://tinyurl.com/rptags-curse
+## X-oUF: oUF_RP_UnitFrames
+## X-RPQVersion: 1
+## X-RPQModuleId: rpuf
+## X-RPQModuleType: unitFrames
+## X-RPQModuleTarget: RP_Tags
+## X-Child-Of: RP_Tags
+
+load.xml

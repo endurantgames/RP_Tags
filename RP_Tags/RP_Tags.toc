@@ -1,0 +1,15 @@
+## Interface: 90002
+## Version: 2.000 alpha 1
+## Title: |cffdd33aarp|r|cffffffffTags|r (dev)
+## Author: Oraibi-MoonGuard
+## Notes: Custom unit frames with fields from roleplaying profiles
+## OptionalDeps: totalRP3, MyRolePlay, ElvUI
+## URL: http://tinyurl.com/rptags-curse
+## SavedVariables: RP_TagsDB
+## X-oUF: oUF_RP_Tags
+## X-RPQVersion: 1.004
+## X-RPQModuleID: rptags
+## X-RPQModuleType: core
+## X-RPQModuleTarget: RP_Tags
+
+load.xml

@@ -1,0 +1,13 @@
+## Interface: 90002
+## Version: 2.000 alpha 1
+## Title: |cffdd33aarp|r|cffffffffTags|r RP Module: XRP
+## Author: Oraibi-MoonGuard
+## Notes: |cffdd33aarp|r|cffffffffTags|r integration module for xrp
+## RequiredDeps: RP_Tags, XRP
+## URL: http://tinyurl.com/rptags-curse
+## X-RPQVersion: 1
+## X-RPQModuleId: xrp
+## X-RPQModuleType: rpClient
+## X-RPQModuleTarget: XRP
+
+module.xml

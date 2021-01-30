@@ -1,0 +1,106 @@
+Default toolbar:
+
+Save, Undo, Redo, H1, H2, H3, Color Picker, OL, LI, Select All, ", Image, Icon
+
++------------------------------------------------------------------+
+| "File" Name[*]                                           [>] [X] |
+|  [ toolbar --------------------------------------------------- ] |
+| +--------------------------------------------------------------+ |
+| | # This is a heading                                          | |
+| |                                                              | |
+| |                                                              | |
+| |                                                              | |
+| |                                                              | |
+| +--------------------------------------------------------------+ |
+| +--------------------------------------------------------------+ |
+| | This is a heading                                            | |
+| |                                                              | |
+| |                                                              | |
+| |                                                              | |
+| |                                                              | |
+| +--------------------------------------------------------------+ |
++------------------------------------------------------------------+
+
+(File)          Edit           Markdown           (app expansions)               Help
+New             Undo           Header 1                                          Editor help
+Open...         Select All     Header 2                                          (app help)    
+Save            Clear          Header 3                                          About editor
+                (app)          Paragraph
+Import From...
+Export To...    Live Preview   Color
+(app)                          Image
+Settings                       Numbered List
+Exit                           Bullet List
+                               Blockquote
+                               Horizontal Line
+                               Code
+                               (app)
+                               Clear Formatting
+
+
+
+local editor = LibEditor:New(fileName, editorOptions)
+
+editor:SetScript(
+    "OnLoad",
+    "OnChange",
+    "OnUndo",
+    "OnCancel",
+    "OnSave",
+    "OnExit",
+    "OnApply", callback)
+
+
+Protected UI:
+
+[ X ]
+(File)
+(File) > Save
+(File) > Settings
+(File) > Exit
+Edit
+Edit > Select All
+Edit > Clear
+Help
+Help > Editor Help
+Help > About Editor
+
+The various other UI components can be turned off and on.
+Including: 
+Live Preview
+Markdown
+Pop Out
+Filename
+
+Other things the programmer can configure:
+- Understood as Markdown or not markdown
+- Live preview or no live preview
+- Whether the toolbar can be changed
+- What can be imported or exported
+- Whether the user can save things separately
+- Extra toolbar buttons
+- Disabled toolbar buttons
+- If "Undo" is allowed
+- The general stuff you find in edit boxes
+- What live preview shows
+- Whether there's an "apply" button
+
+Other things the user can configure:
+- Toolbar (if allowed)
+- Font type and size
+- Undo history
+- Colors of the UI
+- UI scaling
+
+"Output"/export/save as... options are:
+
+Markdown
+Plain Text
+trp3 Text     --> Can save directly?
+HTML
+Lua Table (Ace?)
+Run Lua
+Base64
+Macro
+Chat Text
+

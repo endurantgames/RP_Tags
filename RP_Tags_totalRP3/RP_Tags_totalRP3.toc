@@ -1,0 +1,14 @@
+## Interface: 90002
+## Version: 2.000 alpha 1
+## Title: |cffdd33aarp|r|cffffffffTags|r RP Module: Total RP 3
+## Author: Oraibi-MoonGuard
+## Notes: |cffdd33aarp|r|cffffffffTags|r rpTags integration module for Total RP 3
+## RequiredDeps: RP_Tags, totalRP3
+## URL: http://tinyurl.com/rptags-curse
+## X-RPQVersion: 1
+## X-RPQModuleId: trp3
+## X-RPQModuleType: rpClient
+## X-RPQModuleTarget: totalRP3
+## X-Child-Of: RP_Tags
+
+module.xml

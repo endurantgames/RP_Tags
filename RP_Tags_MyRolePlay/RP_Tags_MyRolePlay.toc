@@ -1,0 +1,14 @@
+## Interface: 90002
+## Version: 2.000 alpha 1
+## Title: |cffdd33aarp|r|cffffffffTags|r RP Module: MyRolePlay
+## Author: Oraibi-MoonGuard
+## Notes: |cffdd33aarp|r|cffffffffTags|r integration module for MyRolePlay
+## RequiredDeps: RP_Tags, MyRolePlay
+## URL: http://tinyurl.com/rptags-curse
+## X-RPQModuleId: mrp
+## X-RPQModuleType: rpClient
+## X-RPQVersion: 1
+## X-RPQModuleTarget: MyRolePlay
+## X-Child-Of: RP_Tags
+
+load.xml

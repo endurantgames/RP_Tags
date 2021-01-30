@@ -1,0 +1,16 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+    <!-- preliminaries              -->
+    <Script  file="RPQ.lua"          />
+    <Include file="Lib\load.xml"     /> <!-- libraries load/execute immediately      -->
+    <Script  file="RP_Tags.lua"      /> <!-- this executes immediately after loading -->
+
+    <!-- subdirectories             -->
+    <Include file="Core\load.xml"    /> <!-- these are all deferred execution so can -->
+    <Include file="Data\load.xml"    /> <!-- be loaded in any order; so they're in   -->
+    <Include file="Locale\load.xml"  /> <!-- alphabetical order                      -->
+    <Include file="Utils\load.xml"   />
+
+</Ui>
