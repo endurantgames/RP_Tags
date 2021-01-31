@@ -237,13 +237,14 @@ translations into other languages, you can.
 
 (Primarily for my own use)
 
-  - Get configuration/help working
+  - Get configuration/~~help working~~
   - Get RP:UF working
   - XRP support
   - Config profiles with Ace3
   - `:xs`, `:s`, etc
   - Update for new gender settings in trp3
   - Something I forgot
-  - Make sure all the libraries are current
+  - ~~Make sure all the libraries are current~~
   - See if RPT can be generalized for any oUF addon
   - Miscellaneous bug fixes
+
