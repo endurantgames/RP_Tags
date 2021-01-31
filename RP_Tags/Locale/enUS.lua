@@ -44,6 +44,7 @@ L["APP_ID"]             = CONST.APP_ID;
 L["APP_NAME"]           = APP_NAME;
 L["APP_VERSION"]        = CONST.VERSION;
 L["APP_VERSION_MODE"]   = CONST.VERSION_MODE;
+L["TAGS"]               = "Tags";
 -- --- slash commands
 L["APP_SLASH"]          = "rpt|rptag|rptags";
 L["SLASH_HELP"]         = "h|help";
@@ -61,6 +62,18 @@ L["SLASH_ABOUT"]        = "a|about";
 L["CHANGES"]            = "Changes";
 L["VERSION"]            = "Version";
 L["CHANGES_MOVED"]      = "Changes have been moved to the help system. Type [[/rptags changes]] to view the latest changes.";
+-- --- rpq
+L["RPQ_TYPE_UNITFRAMES"]         = "|cffdd9933"         .. "Unit Frames Module" .. "|r";
+L["RPQ_TYPE_RPCLIENT"]           = "|cff00dd00"         .. "Roleplaying Module" .. "|r";
+L["RPQ_TYPE_CORE"]               = CONST.APP_COLOR      .. "Core AddOn"         .. "|r";
+L["RPQ_TYPE_HEADER"]             = "|cffdddd00"         .. "Type"               .. "|r";
+L["RPQ_TYPE_TARGETOFUNITFRAMES"] = "|cffdd9933"         .. "Unit Frames Addon"  .. "|r";
+L["RPQ_TYPE_TARGETOFRPCLIENT"]   = "|cff00dd00"         .. "Roleplaying Addon"  .. "|r";
+
+L["RPQ_HEADER_NAME"]             = "|cffdddd00"         .. "AddOn Name"         .. "|r";
+L["RPQ_HEADER_VERSION"]          = "|cffdddd00"         .. "Version"            .. "|r";
+L["RPQ_FOLLOWUP"] = "AddOns listed in " .. "|cff808080" .. "grey" .. "|r" .. " are installed but not enabled.";
+
 -- --- names of addons
 L["ADDON_ELVUI"]        = "ElvUI";
 L["ADDON_MRP"]          = "MyRolePlay";
@@ -90,6 +103,7 @@ L["URL_DOWNLOAD_TUKUI"] = "https://www.tukui.org/addons.php?id                  
 L["URL_DOWNLOAD_TUKUI_TT"] = APP_NAME .. " on Tukui.org";
 
 L["URL_ELVUI"]          = "https://www.tukui.org/welcome.php";   -- these are localized because it's possible there might be non-English alternate sites
+
 L["URL_ELVUI_TT"]       = "ElvUI";
 
 L["URL_MRP"]            = "https://www.curseforge.com/wow/addons/my-role-play";
@@ -141,9 +155,12 @@ L["OPT_TITLE_FORMATS"]     = APP_NAME .." Formats";
 L["OPT_TITLE_GENERAL"]     = APP_NAME .." General Settings";
 L["OPT_TITLE_REFERENCE"]   = APP_NAME .." Reference";
 L["OPT_RPTAGS_HELP"]       = APP_NAME .. " Help";
+
 L["OPT_OPTIONS"]           = "Options";
 L["OPT_RECIPES"]           = "Recipes";
 L["OPT_LABELS"]            = "Labels";
+L["OPT_SIZE_MODIFIERS"]    = "Size";
+L["OPT_TAG_MODIFIERS"]     = "Tag Modifiers";
 L["OPT_DEBUGGING_CMDS"]    = "Debugging Commands";
 L["OPT_ABOUT"]             = "About " .. APP_NAME;
 L["OPT_VERSION"]           = "Version";
@@ -155,6 +172,50 @@ L["RP_REFERENCE"]          = RP.."Reference";
 L["SETTINGS"]              = "settings";
 L["SET_LAYOUT"]            = "Set ";
 
+-- --- recipes
+-- [==========================================================================[
+-- # Recipes
+
+-- These "recipes" display how to do common uses of RPTAGS.
+L["RECIPE_NAME_TITLES_TITLE"] = "Titles and Name";
+L["RECIPE_NAME_TITLES"]          = "[rp:color][rp:title] [rp:name], [rp:title-long][nocolor]";
+L["RECIPE_NAME_TITLES_TT"]       = "Show the unit's short title, name, and long title.";
+
+L["RECIPE_EYES_TITLE"]           = "Eyes";
+L["RECIPE_EYES"]                 = "[rp:eyecolor][rp:eyes-label][nocolor]";
+L["RECIPE_EYES_TT"]              = "Show the color of the unit's eyes, with a label. (Doesn't display the label if they haven't set the description of their eye color.)";
+
+L["RECIPE_AGE_TITLE"]            = "Age";
+L["RECIPE_AGE"]                  = "[rp:agecolor][rp:age][nocolor]";
+L["RECIPE_AGE_TT"]               = "Show the unit's age, with a color based on your own age. (You need to have your age set to a number for this to work.)";
+
+L["RECIPE_CURRENTLY_TITLE"]      = "Currently";
+L["RECIPE_CURRENTLY"]            = "[rp:statuscolor][rp:ooc][rp:npc][nocolor] [rp:curr] ([rp:oocinfo])";
+L["RECIPE_CURRENTLY_TT"]         = "Show the unit's status, what they're currently doing, and what their OOC info is.";
+
+L["RECIPE_GENDER_RACE_CLASS_TITLE"] = "Gender, Race, and Class";
+L["RECIPE_GENDER_RACE_CLASS"]    = "[rp:gendercolor][rp:gender] [rp:hilite][rp:race] [rp:color][rp:class][nocolor]";
+L["RECIPE_GENDER_RACE_CLASS_TT"] = "Show the unit's gender, colored by gender; race, hilighted; and class, colored by their custom color.";
+
+L["RECIPE_PROFILESIZE_TITLE"]    = "Profile Size";
+L["RECIPE_PROFILESIZE"]          = "[rp:profilesizecolor][rp:profilesize-label][nocolor]";
+L["RECIPE_PROFILESIZE_TT"]       = "Show the size of the unit's RP profile, with a color determined by that size. (Green for smaller, red for larger.)";
+
+L["RECIPE_RP_STYLE_TITLE"]             = "RP Style";
+L["RECIPE_RP_STYLE"]             = "[rp:style-yes-label][br][rp:style-ask-label][br][rp:style-no-label]";
+L["RECIPE_RP_STYLE_TT"]          = "List the unit's roleplaying style preferences.";
+
+L["RECIPE_FRIEND_NAME_TITLE"]          = "Friends' Names Stand Out";
+L["RECIPE_FRIEND_NAME"]          = "[rp:color][rp:friendcolor][rp:guildcolor][rp:name][nocolor]";
+L["RECIPE_FRIEND_NAME_TT"]       = "Show the unit's name. If they're in your guild, they'll be in green. If they're a friend, they'll be blue or green.  Otherwise, they'll be their own custom color.";
+
+L["RECIPE_SERVER_TITLE"]        = "Server";
+L["RECIPE_SERVER"]               = "[rp:server-star][rp:name][rp:server-dash][rp:server-notmine]";
+L["RECIPE_SERVER_TT"]            = "Show the unit's name, and if they're not on your server, preface that with an asterisk and follow it with their server name.";
+
+L["RECIPE_TARGET_TITLE"]         = "Unit's Target";
+L["RECIPE_TARGET"]               = "[rp:target-icon] [rp:target-color][rp:target] [rp:target-statuscolor][rp:target-status]";
+L["RECIPE_TARGET_TT"]            = "Show whom the unit is targeting.";
   -- --------------------- - notifications ----------------------------------------------------------------------------------------------------------------------------
 -- error messages
 local ERROR_INLINE                  = "|cffdd0000Error!|r";
@@ -1126,57 +1187,9 @@ RPTAGS offers a number of keybinds to allow you to control the addon with a sing
 Key bindings are accessible through the standard [WoW Key Bindings Menu](rpconfig:keybind), on the AddOns sub-menu.
 ]==========================================================================];
 
-L["RECIPES_MD"] = 
-[==========================================================================[
-# Recipes
-
-These "recipes" display how to do common uses of RPTAGS.
-
-### &nbsp; [rp:color][rp:title] [rp:name], [rp:title-long][nocolor]
-
- Show someone's short title, name, and long title.
-
-### &nbsp; [rp:eyecolor][rp:eyes-label][nocolor]
-
- Show the color of someone's eyes, with a label. (Doesn't display the label if they haven't set the description of their eye color.)
-
-### &nbsp; [rp:agecolor][rp:age][nocolor]
-
- Show someone's age, with a color based on your own age. (You need to have your age set to a number for this to work.)
-
-### &nbsp; [rp:statuscolor][rp:ooc][rp:npc][nocolor] [rp:curr] ([rp:oocinfo])
-
- Show someone's status, what they're currently doing, and what their OOC info is.
-
-### &nbsp; [rp:gendercolor][rp:gender] [rp:hilite][rp:race] [rp:color][rp:class][nocolor]
-
- Show someone's gender, colored by gender; race, hilighted; and class, colored by their custom color.
-
-### &nbsp; [rp:profilesizecolor][rp:profilesize-label][nocolor]
-
- Show the size of someone's RP profile, with a color determined by that size. (Green for smaller, red for larger.)
-
-### &nbsp; [rp:style-yes-label][br][rp:style-ask-label][br][rp:style-no-label]
-
- List someone's roleplaying style preferences.
-
-### &nbsp; [rp:color][rp:friendcolor][rp:guildcolor][rp:name][nocolor]
-
- Show someone's name. If they're in your guild, they'll be in green. If they're a friend, they'll be blue or green.
-Otherwise, they'll be their own custom color.
-
-### &nbsp; [rp:server-star][rp:name][rp:server-dash][rp:server-notmine]
-
-Show someone's name, and if they're not on your server, preface that with an asterisk and follow it with their server name.
-
-### &nbsp; [rp:target-icon] [rp:target-color][rp:target] [rp:target-statuscolor][rp:target-status]
-
-Show whom someone is targeting.
-]==========================================================================];
-
 L["LABELS_MD"] = 
 [==========================================================================[
-# Tag Labels
+## Tag Labels
 
 Most tags can autogenerate their own labels. If a tag's contents are empty, the label won't appear.
 
@@ -1185,6 +1198,18 @@ To use a label, simply add -label to the tag.
 For example, to add a label to rp:eyes, write:
 
 ### &nbsp; &nbsp; [rp:eyes-label]
+]==========================================================================];
+
+L["SIZE_MODIFIERS_MD"] =
+[==========================================================================[
+## Tag Sizes
+
+]==========================================================================];
+
+L["TAG_MODIFIERS_MD"] = 
+[==========================================================================[
+# Tag Modifiers
+
 ]==========================================================================];
 
 L["DEBUGGING_COMMANDS_MD"] = 

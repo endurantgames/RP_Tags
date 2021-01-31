@@ -10,3 +10,5 @@
 
 local RPTAGS = RPTAGS;
 RPTAGS.queue:NewModule("XRP", "rpClient");
+
+-- this doesn't do anything! Except it load and such if you have XRP.

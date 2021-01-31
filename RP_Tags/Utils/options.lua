@@ -153,6 +153,9 @@ function(self, event, ...)
        return widget;
   end;
   
+  local function build_spacer()     return { name = "", order = source_order(), width = 0.05,   type = "description", fontSize = "medium", }; end;
+  local function build_blank_line() return { name = "", order = source_order(), width = "full", type = "description", fontSize = "medium", }; end;
+
   local function build_checkbox(str, hidden, disabled)
         local w    = build_common("toggle", "CONFIG_", str, hidden, disabled, true, true);
         return w;
@@ -235,7 +238,7 @@ function(self, event, ...)
           },
         },
       };
-      return w;
+      return title and w or w.args.panel;
   end;
 
   
@@ -258,92 +261,157 @@ function(self, event, ...)
   
   local function build_instruct(str, hidden, disabled)
         local w = build_common("description", "opt ", str .. "_i", hidden, disabled, nil, nil, true);
+        w.fontSize = "medium";
         return w;
   end; -- beep
   
   local function build_panel_version(hidden, disabled)
         
-        local function build_addOn(addOn)
-          local w = 
-          { type = "group",
-            order = source_order(),
-            disabled = not addOn.enabled,
-            childGroups = "inline",
-            name = addOn.title or addOn.name,
-            args =
-            { addOnName = 
-              { type = "header",
-                order = source_order(),
-                width = "full",
-                name = addOn.title or addOn.name,
-              },
-              addOnVersion =
-              { type = "description",
-                order = source_order(),
-                width = 100,
-                name = addOn.version or "",
-              },
-              addOnType = 
-              { type = "description",
-                order = source_order(),
-                width = 100,
-                name = addOn.rpqType or "",
-              },
-              addOnDescription =
-              { type = "description",
-                order = source_order(),
-                width = "full",
-                name = addOn.notes or "",
-              },
-            },
-          };
-          return w;
-        end;
+       local args = {}
 
-      local args = {}
+       local function build_addOn(addOn)
+         local name = addOn.title or addOn.name;
+         local version = addOn.version 
+                         and addOn.version:gsub(" alpha ", "a"):gsub(" beta ", "b")
+                         or "";
+         local rpqType = addOn.rpqType;
+
+         if not rpqType then rpqType = ""
+         elseif rpqType == "core" or rpqType == "header" or rpqType:match("^targetOf")
+         then   rpqType = loc("RPQ_TYPE_" .. rpqType:upper()); 
+         else   rpqType = loc("RPQ_TYPE_" .. rpqType:upper());
+                name = RPTAGS.CONST.NBSP .. name;
+         end;
+
+         if not addOn.enabled 
+         then    name = "|cff808080" ..    name:gsub("|cff%x%x%x%x%x%x",""):gsub("|r","") .. "|r";
+              version = "|cff808080" .. version:gsub("|cff%x%x%x%x%x%x",""):gsub("|r","") .. "|r";
+              rpqType = "|cff808080" .. rpqType:gsub("|cff%x%x%x%x%x%x",""):gsub("|r","") .. "|r";
+         end;
+        
+         args[addOn.name .. "Name"] =
+         { type           = "description",
+           fontSize       = "medium",
+           order          = source_order(),
+           width          = 1.15,
+           name           = name,
+         };
+
+         args[addOn.name .. "Version"]     =
+         { type           = "description",
+           order          = source_order(),
+           width          = 0.35,
+           fontSize       = "medium",
+           name           = version,
+         };
+
+         args[addOn.name .. "Type"]        =
+         { type           = "description",
+           order          = source_order(),
+           width          = 0.65,
+           fontSize       = "medium",
+           name           = rpqType,
+         };
+
+       end;
+
+       args.tableHeader = build_addOn(
+        { name = "TableHeader", 
+          title = loc("RPQ_HEADER_NAME"),
+          version = loc("RPQ_HEADER_VERSION"),
+          rpqType = "header",
+          enabled = true,
+        }
+      );   
+
+      args.blankAfterHeader = build_blank_line();
 
       args[RPTAGS.addOnName] = build_addOn(RPTAGS.cache.addOns.core[RPTAGS.addOnName]);
      
       local function build_category(cat)
+
         for addOnName, addOnData in pairs(RPTAGS.cache.addOns[cat])
-        do args[addOnName] = build_addOn(addOnData);
-           local target = RPTAGS.cache.addOns.other[addOnData.target];
-           if target
-           then args[addOnData.target] = build_addOn(target);
-           end;
+        do  args[addOnName] = build_addOn(addOnData);
+            local target = RPTAGS.cache.addOns.other[addOnData.target];
+
+            if    target
+            then  args[addOnData.target] = build_addOn(target);
+            end;
         end;
 
         for addOnName, addOnData in pairs(RPTAGS.cache.addOns[cat])
-        do args[addOnName] = build_addOn(addOnData);
+        do  args[addOnName] = build_addOn(addOnData);
         end;
+
       end;
 
       for _, category in ipairs({ "rpClient", "rpClient_0", "unitFrames", "unitFrames_0"})
-      do  if RPTAGS.cache.addOns[category]
+      do  if   RPTAGS.cache.addOns[category]
           then build_category(category);
           end;
       end;
+
+
+      if   RPTAGS.cache.addOns.targets ~= {}
+      then args.blankBeforeTargets = build_blank_line();
+           build_category("targets");
+      end;
+
+      args.blankBeforeFollowUp = build_blank_line();
+
+      args.followUpText = build_markdown(nil, loc("RPQ_FOLLOWUP"));
 
       local w =
       { type = "group",
         name = loc("OPT_VERSION"),
         order = source_order(),
-        childGroups = "inline",
         args = args,
       };
 
       return w;
   end;
 
+  local function build_recipe(str)
+      local str = "RECIPE_" .. str:gsub("%s+","_"):upper();
+      local w = 
+      { type = "group",
+        name = loc(str .. "_TITLE"),
+        order = source_order(),
+        inline = true,
+        args =
+        { recipeBox = 
+          { type = "input",
+            order = source_order(),
+            name = "",
+            get = function() return loc(str) end,
+            width = "full",
+            desc = loc(str .. "_TT"),
+          },
+          recipeDesc =
+          { type = "description",
+            
+            order = source_order(),
+            name = loc(str .. "_TT"),
+            width = "full",
+            dialogControl = AceMarkdownControl.description,
+          },
+        },
+      };
+      print(str,"=",string.sub(loc(str .. "_TT"), 1, 20));
+      return w;
+    
+  end;
+
   local function build_panel_taghelp()
     
     local function build_tag_help(tag)
       local w =
-      { name = tag.name,
-        desc = tag.desc,
+      { name = tag.desc,
         order = source_order(),
         type = "input",
+        width = 0.66,
         disabled = RPTAGS.CONST.UNSUP[tagName],
+        get = function() return "[" .. tag.name .. "]" end,
       };
       return w
     end;
@@ -353,22 +421,31 @@ function(self, event, ...)
       { name = tag.title,
         type = "header",
         order = source_order(),
+        width = "full",
       };
       return w;
     end;
   
     local function build_tag_group_help(group)
       local   args = {};
-      for _,  tag in pairs(group.tags)
+      args.groupHelp = 
+      { type = "description",
+        name = "## " .. group.title .. " " .. loc("TAGS") .. "\n\n" .. group.help,
+        order = source_order(),
+        dialogControl = AceMarkdownControl.description,
+      };
+      for i,  tag in pairs(group.tags)
       do  if     tag.title 
           then   args[tag.title] = build_subtitle_help(tag, group)
           elseif tag.name and tag.desc
           then   args[tag.name] = build_tag_help(tag, group)
+                 args["spacer_" .. i] = build_spacer();
           end;
       end;
+
       local w =
       { type = "group",
-        name = group.title,
+        name = group.title .. " " .. loc("TAGS") ,
         order = source_order(),
         args = args,
       };
@@ -383,7 +460,8 @@ function(self, event, ...)
   
     local w =
     { type = "group",
-      name = "Tag Reference",
+      name = loc("OPT_TAG_REFERENCE"),
+      childGroups = "select",
       order = source_order(),
       args = args,
     };
@@ -407,9 +485,11 @@ function(self, event, ...)
   RPTAGS.utils.options.build_header            = build_header
   RPTAGS.utils.options.build_instruct          = build_instruct
   RPTAGS.utils.options.build_markdown          = build_markdown
+  RPTAGS.utils.options.build_recipe            = build_recipe;
   RPTAGS.utils.options.panel.version           = build_panel_version
   RPTAGS.utils.options.panel.taghelp           = build_panel_taghelp
   RPTAGS.utils.options.source_order            = source_order;
+
  
 -- RPQ -----------------------------------------------------------------------------------------------------------------------------------------------
 end);

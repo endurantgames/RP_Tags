@@ -26,6 +26,7 @@ function(self, event, ...)
   local build_markdown          = RPTAGS.utils.options.build_markdown
   local source_order            = RPTAGS.utils.options.source_order
   local build_panel             = RPTAGS.utils.options.panel
+  local build_recipe            = RPTAGS.utils.options.build_recipe
   
   -- ---------------------------------------------------------------------------------------------------------------------------------------------------------------
   local optionsTable = { 
@@ -37,6 +38,7 @@ function(self, event, ...)
       { order   = 1,
         type    = "group",
         name    = loc("OPT_GENERAL"),
+        childGroups = "tab",
         args    = 
         { panel = build_header("general"),
           instruct = build_instruct("general"),
@@ -93,6 +95,7 @@ function(self, event, ...)
       { order = 2,
         type = "group",
         name = loc("OPT_COLORS"),
+        childGroups = "tab",
         args = 
         { panel = build_header("colors"),
           instruct = build_instruct("colors"),
@@ -185,11 +188,48 @@ function(self, event, ...)
             name              = loc("INTRO_MD"),
           },
           helpTags              = build_panel.taghelp(),
-          helpOptions           = build_markdown( loc( "OPT_OPTIONS"        ), loc( "OPTIONS_MD"            )  ),
-          helpBindings          = build_markdown( loc( "OPT_KEYBINDINGS"    ), loc( "BINDINGS_MD"           )  ),
-          helpRecipes           = build_markdown( loc( "OPT_RECIPES"        ), loc( "RECIPES_MD"            )  ),
-          helpLabels            = build_markdown( loc( "OPT_LABELS"         ), loc( "LABELS_MD"             )  ),
-          helpDebuggingCommands = build_markdown( loc( "OPT_DEBUGGING_CMDS" ), loc( "DEBUGGING_COMMANDS_MD" )  ),
+          -- helpOptions           = build_markdown( loc( "OPT_OPTIONS"        ), loc( "OPTIONS_MD"            )  ),
+          -- helpBindings          = build_markdown( loc( "OPT_KEYBINDINGS"    ), loc( "BINDINGS_MD"           )  ),
+          helpTagModifiers       =
+          { order             = source_order(),
+            type              = "group",
+            name              = loc("OPT_TAG_MODIFIERS"),
+            childGroups       = "tab",
+            args              = 
+            { panel           = 
+              { order         = source_order(),
+                type          = "description",
+                name          = loc("TAG_MODIFIERS_MD"),
+                dialogControl     = AceMarkdownControl.description,
+              },
+              modifierGroup   =
+              { order         = source_order(),
+                name          = loc("OPT_TAG_MODIFIERS"),
+                type          = "group",
+                args          =
+                { helpLabels  = build_markdown(loc("OPT_LABELS"),         loc("LABELS_MD")),
+                  helpSizes   = build_markdown(loc("OPT_SIZE_MODIFIERS"), loc("SIZE_MODIFIERS_MD")),
+                },
+              },
+            },
+          },
+          helpRecipes           = 
+          { name               = loc("OPT_RECIPES"),
+            order = source_order(),
+            type = "group",
+            args = 
+            { nameTitle         = build_recipe("name titles"),
+              eyes              = build_recipe("eyes"),
+              age               = build_recipe("age"),
+              currently         = build_recipe("currently"),
+              genderRaceClass   = build_recipe("gender race class"),
+              target            = build_recipe("target"),
+              profileSize       = build_recipe("profilesize"),
+              rpStyle           = build_recipe("rp style"),
+              friendName        = build_recipe("friend name"),
+              server            = build_recipe("server"),
+            },
+          },
         },
         plugins = RPTAGS.cache.plugins.help,
       },
@@ -197,8 +237,9 @@ function(self, event, ...)
       { name                  = loc("OPT_ABOUT"),
         order                 = 106,
         type                  = "group",
+        childGroups           = "tab",
         args                  =
-        { aboutVersion = build_panel.version(),
+        { aboutVersion        = build_panel.version(),
           aboutChanges        =
           { order             = source_order(),
             type              = "group",
@@ -225,8 +266,9 @@ function(self, event, ...)
               },
             },
           },
+          helpDebuggingCommands = build_markdown( loc( "OPT_DEBUGGING_CMDS" ), loc( "DEBUGGING_COMMANDS_MD" )  ),
+          plugins = RPTAGS.cache.plugins.about,
         },
-        plugins = RPTAGS.cache.plugins.about,
       },
     }, 
   }; 
