@@ -62,8 +62,6 @@ function(self, event, ...)
         local count_0 = 0;
         local rpqType_0 = rpqType .. "_0";
 
-        print(rpqType, rpqType_0);
-        
         if   addOns[rpqType_0]
         then for name, values in pairs(addOns[rpqType_0])
              do  local target = values.rpqTarget;

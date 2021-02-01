@@ -28,6 +28,8 @@ function(self, event, ...)
   local build_panel             = RPTAGS.utils.options.panel
   local build_recipe            = RPTAGS.utils.options.build_recipe
   
+  local AceMarkdownControl = LibStub("AceMarkdownControl-3.0");
+
   -- ---------------------------------------------------------------------------------------------------------------------------------------------------------------
   local optionsTable = { 
     childGroups = "tree",
@@ -184,7 +186,7 @@ function(self, event, ...)
         { helpIntro           =
           { order             = source_order(),
             type              = "description",
-            dialogControl     = AceMarkdownControl.description,
+            dialogControl     = AceMarkdownControl:New().description,
             name              = loc("INTRO_MD"),
           },
           helpTags              = build_panel.taghelp(),
@@ -200,7 +202,7 @@ function(self, event, ...)
               { order         = source_order(),
                 type          = "description",
                 name          = loc("TAG_MODIFIERS_MD"),
-                dialogControl     = AceMarkdownControl.description,
+                dialogControl     = AceMarkdownControl:New().description,
               },
               modifierGroup   =
               { order         = source_order(),
@@ -248,7 +250,7 @@ function(self, event, ...)
             { panel           =
               { order         = source_order(),
                 type          = "description",
-                dialogControl = AceMarkdownControl.description,
+                dialogControl = AceMarkdownControl:New().description,
                 name          = loc("CHANGES_MD")
               },
             },
@@ -261,7 +263,7 @@ function(self, event, ...)
             { panel           =
               { order         = source_order(),
                 type          = "description",
-                dialogControl = AceMarkdownControl.description,
+                dialogControl = AceMarkdownControl:New().description,
                 name          = loc("CREDITS_MD")
               },
             },

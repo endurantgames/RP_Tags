@@ -237,7 +237,7 @@ translations into other languages, you can.
 
 (Primarily for my own use)
 
-  - Get configuration/~~help working~~
+  - ~~Get configuration/help working~~
   - Get RP:UF working
   - XRP support
   - Config profiles with Ace3
@@ -246,5 +246,6 @@ translations into other languages, you can.
   - Something I forgot
   - ~~Make sure all the libraries are current~~
   - See if RPT can be generalized for any oUF addon
+  - More work on AMDC
   - Miscellaneous bug fixes
 

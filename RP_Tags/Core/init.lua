@@ -65,7 +65,6 @@ function(self, event, ...)
   end;
   
   AceMarkdownControl.OpenProtocol.setting = function(dest, link, text, ... )
-    print ("dest is", dest);
     local path = RPTAGS.utils.text.split(dest, "/");
     AceConfigDialog:SelectGroup(APP_NAME, unpack(path));
   end;

@@ -25,7 +25,7 @@ function(self, event, ...)
   local sizebuffs          = RPTAGS.utils.format.sizebuff;
   local profilesizes       = RPTAGS.utils.format.sizewords;
   local unsup              = RPTAGS.utils.format.unsup;
-  local AceMarkdownControl = RPTAGS.cache.AceMarkdownControl;
+  local AceMarkdownControl = LibStub("AceMarkdownControl-3.0");
   
   local menus =
   { UNITS_HEIGHT          =
@@ -233,7 +233,7 @@ function(self, event, ...)
         { panel =
           { order = source_order(),
             type = "description",
-            dialogControl = AceMarkdownControl.description,
+            dialogControl = AceMarkdownControl:New().description,
             name = str,
           },
         },
@@ -393,11 +393,10 @@ function(self, event, ...)
             order = source_order(),
             name = loc(str .. "_TT"),
             width = "full",
-            dialogControl = AceMarkdownControl.description,
+            dialogControl = AceMarkdownControl:New().description,
           },
         },
       };
-      print(str,"=",string.sub(loc(str .. "_TT"), 1, 20));
       return w;
     
   end;
@@ -432,7 +431,7 @@ function(self, event, ...)
       { type = "description",
         name = "## " .. group.title .. " " .. loc("TAGS") .. "\n\n" .. group.help,
         order = source_order(),
-        dialogControl = AceMarkdownControl.description,
+        dialogControl = AceMarkdownControl:New().description,
       };
       for i,  tag in pairs(group.tags)
       do  if     tag.title 

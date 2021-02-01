@@ -46,7 +46,7 @@ L["APP_VERSION"]        = CONST.VERSION;
 L["APP_VERSION_MODE"]   = CONST.VERSION_MODE;
 L["TAGS"]               = "Tags";
 -- --- slash commands
-L["APP_SLASH"]          = "rpt|rptag|rptags";
+L["APP_SLASH"]          = "rptags|rptag|rpt";
 L["SLASH_HELP"]         = "h|help";
 L["SLASH_CONFIG"]       = "o|c|config|options|settings";
 L["SLASH_COLOR"]        = "c|color|colors";
@@ -329,7 +329,7 @@ L["CONFIG_UNSUP_TAG_TT"]               = "Not all roleplaying addons support the
 
   -- -------------------- - formats -------------------------------------------------------------------------------------------------------------------------------
 L["FMT_A"]                = "a %s";
-L["FMT_APP_LOAD"]         = "%s loaded. Type [[[%s]]] for options.";
+L["FMT_APP_LOAD"]         = "%s loaded. Type [[[/%s]]] for options.";
 L["FMT_APP_NAME"]         = "%s (v%s)";
 L["FMT_BOND_NAME"]        = "%s, %s %s";
 L["FMT_CM"]               = "%d cm";
