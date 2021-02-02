@@ -123,7 +123,6 @@ function(self, event, ...)
     return estr
   end 
   -- ---------------------------------------------------------------------------------------------------
-  --
   local function addOnList()
     local active_addons = { "# Active Addons ", };
     local disabled_addons = { "# Disabled Addons", };
@@ -154,6 +153,7 @@ function(self, event, ...)
   local function changesText() return "v" .. RPTAGS.CONST.VERSION .. " " .. loc("CHANGES") .. ": " .. loc("APP_CHANGES") end;
   
   local function notify(message) print(hiliteTags("[RPTAGS] " .. message)); end;
+  local function notifyFmt(format, ...) notify(string.format(format, ...)) end;
   
        -- debugging function
   local function tellOra(message) print(hiliteTags("|cffbb00bbOra|r, ", message)) end;
@@ -180,5 +180,6 @@ function(self, event, ...)
   RPTAGS.utils.text.unsup      = notSupported;
   RPTAGS.utils.text.unsupcolor = dontChangeTheColor;
   RPTAGS.utils.text.unsupicon  = iconNotSupported;
+  RPTAGS.utils.text.notifyFmt  = notifyFmt;
   
 end);

@@ -26,6 +26,7 @@ function(self, event, ...)
   local profilesizes       = RPTAGS.utils.format.sizewords;
   local unsup              = RPTAGS.utils.format.unsup;
   local AceMarkdownControl = LibStub("AceMarkdownControl-3.0");
+  local split              = RPTAGS.utils.text.split;
   
   local menus =
   { UNITS_HEIGHT          =
@@ -204,6 +205,37 @@ function(self, event, ...)
         w.set      = function(info, value) Config.set(str, value); resizeAll(); end;
         return w;
   end;
+
+  local function build_slider(str, min, max, step, width, hidden, disabled)
+        local w = build_common("range", "config_", str, hidden, disbled, true, true);
+        w.width = width or "full";
+  
+        if     not min
+        then   min = 0
+        elseif type(min) == "table"
+        then   w.min     = min[2];
+               w.softMin = min[1];
+        else   w.min = min;
+        end;
+
+        if     not max
+        then   max = 0
+        elseif type(max) == "table"
+        then   w.max     = max[2];
+               w.softMax = max[1];
+        else   w.max = max;
+        end;
+
+        if     not step
+        then   step = 0
+        elseif type(step) == "table"
+        then   w.step = step[1];
+               w.bigStep = step[2];
+        else   w.step = step;
+        end;
+
+        return w;
+  end;
   
   local function build_pushbutton(str, func, hidden, disabled)
         local w    = build_common("execute", "config ", str, hidden, disabled);
@@ -242,18 +274,28 @@ function(self, event, ...)
   end;
 
   
-  local function build_reset(list, hidden, disabled)
+  local function build_multi_reset(list, hidden, disabled)
         local w = build_pushbutton(
-                    "reset these values", 
-                    function() 
-                      for _, s in ipairs(list) 
-                      do  Config.reset(string.upper(s):gsub("%s","")) 
-                      end 
-                    end, 
-                    hidden, disabled);
+          "reset these values", 
+          function() 
+            for _, s in ipairs(list) 
+            do  Config.reset(string.upper(s):gsub("%s+","_")) 
+            end 
+          end, 
+          hidden, disabled);
         return w;
   end;
   
+  local function build_reset(str, hiden, disabled)
+        local w = build_pushbutton(
+          "reset",
+          function() Config.reset(str:upper():gsub("%s+","_")) end,
+          hidden, disabled
+        );
+        w.width = 1 / 2;
+        return w
+  end;
+
   local function build_header(str, hidden, disabled)
         local w = build_common("header", "opt ", str, hidden, disabled, nil, nil, true);
         return w;
@@ -469,25 +511,70 @@ function(self, event, ...)
   
   end; -- 
 
-  RPTAGS.utils.options                         = RPTAGS.utils.options or {};
-  RPTAGS.utils.options.panel                   = RPTAGS.utils.options.panel or {};
-  RPTAGS.utils.options.build_common            = build_common
-  RPTAGS.utils.options.build_checkbox          = build_checkbox
-  RPTAGS.utils.options.build_textbox           = build_textbox
-  RPTAGS.utils.options.build_dropdown          = build_dropdown
-  RPTAGS.utils.options.build_color_picker      = build_color_picker
-  RPTAGS.utils.options.build_frame_scaler      = build_frame_scaler
-  RPTAGS.utils.options.build_dimensions_slider = build_dimensions_slider
-  RPTAGS.utils.options.build_pushbutton        = build_pushbutton
-  RPTAGS.utils.options.build_tagpanel          = build_tagpanel
-  RPTAGS.utils.options.build_reset             = build_reset
-  RPTAGS.utils.options.build_header            = build_header
-  RPTAGS.utils.options.build_instruct          = build_instruct
-  RPTAGS.utils.options.build_markdown          = build_markdown
-  RPTAGS.utils.options.build_recipe            = build_recipe;
-  RPTAGS.utils.options.panel.version           = build_panel_version
-  RPTAGS.utils.options.panel.taghelp           = build_panel_taghelp
-  RPTAGS.utils.options.source_order            = source_order;
+  local function openDialog(...)
+        local AceConfigDialog = LibStub("AceConfigDialog-3.0");
+        local loc = RPTAGS.utils.locale.loc;
+        AceConfigDialog:Open(loc("APP_NAME"));
+        AceConfigDialog:SelectGroup(loc("APP_NAME"), ...);
+  end;
+
+  local function openDialogByPath(dest)
+        local protocol, path = dest:match("^(opt://)(.+)$");
+        openDialog(unpack(RPTAGS.utils.text.split(path, "/")));
+  end;
+
+  local function sliceUp(group)
+    local dups = {};
+    local uniq = {};
+    for _, fullString in ipairs(group)
+    do  local aliases = split(fullString, "|");
+        for i, str in ipairs(aliases)
+        do local s = "";
+           for c in str:gmatch(".")
+           do  s = s .. c;
+               if not dups[s] and not uniq[s] 
+               then   uniq[s] = aliases[1]
+               elseif dups[s]                 
+               then   dups[s] = dups[s] .. "|" .. aliases[1];
+               elseif uniq[s] and uniq[s] ~= aliases[1]
+               then   dups[s] = uniq[s] .. "|" .. aliases[1];
+                      uniq[s] = nil;
+               end;
+           end;
+        end;
+    end;
+    return uniq, dups;
+  end;
+
+  RPTAGS.utils.options                   = RPTAGS.utils.options or {};
+  RPTAGS.utils.options.panel             = RPTAGS.utils.options.panel or {};
+
+  RPTAGS.utils.options.source_order      = source_order;
+  RPTAGS.utils.options.sliceUp           = sliceUp;
+  RPTAGS.utils.options.open              = openDialogByPath;
+  RPTAGS.utils.options.openDialog        = openDialog;
+
+  RPTAGS.utils.options.blank_line        = build_blank_line;
+  RPTAGS.utils.options.checkbox          = build_checkbox
+  RPTAGS.utils.options.color_picker      = build_color_picker
+  RPTAGS.utils.options.common            = build_common
+  RPTAGS.utils.options.dimensions_slider = build_dimensions_slider
+  RPTAGS.utils.options.dropdown          = build_dropdown
+  RPTAGS.utils.options.frame_scaler      = build_frame_scaler
+  RPTAGS.utils.options.header            = build_header
+  RPTAGS.utils.options.instruct          = build_instruct
+  RPTAGS.utils.options.markdown          = build_markdown
+  RPTAGS.utils.options.multi_reset       = build_multi_reset
+  RPTAGS.utils.options.panel.taghelp     = build_panel_taghelp
+  RPTAGS.utils.options.panel.version     = build_panel_version
+  RPTAGS.utils.options.pushbutton        = build_pushbutton
+  RPTAGS.utils.options.recipe            = build_recipe;
+  RPTAGS.utils.options.reset             = build_reset
+  RPTAGS.utils.options.slider            = build_slider;
+  RPTAGS.utils.options.spacer            = build_spacer;
+  RPTAGS.utils.options.tagpanel          = build_tagpanel
+  RPTAGS.utils.options.textbox           = build_textbox
+
 
  
 -- RPQ -----------------------------------------------------------------------------------------------------------------------------------------------

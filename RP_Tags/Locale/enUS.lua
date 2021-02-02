@@ -27,13 +27,12 @@ local _t = Icon._t;
 
 local RP             = CONST.APP_COLOR .. "rp:" .. "|r";
 local APP_NAME       = RP .. "tags";
-local RAINBOW_COLORS = "|cffff0000" .. "C" ..  -- presented like this so we can figure out what it actually says!
-                       "|cffff9900" .. "o" ..
-                       "|cffffff00" .. "l" ..
-                       "|cff00ff00" .. "o" ..
-                       "|cff00ffff" .. "r" ..
+local RAINBOW_COLORS = "|cffff0000" .. "C" .. "|r" ..  -- presented like this so we can figure out what it actually says!
+                       "|cffff9900" .. "o" .. "|r" ..
+                       "|cffffff00" .. "l" .. "|r" ..
+                       "|cff00ff00" .. "o" .. "|r" ..
+                       "|cff00ffff" .. "r" .. "|r" ..
                        "|cffff00ff" .. "s" .. "|r"; 
-
 RPTAGS.cache          = RPTAGS.cache or {};
 RPTAGS.cache.APP_NAME = APP_NAME;
 RPTAGS.cache.RP       = RP;
@@ -47,17 +46,33 @@ L["APP_VERSION_MODE"]   = CONST.VERSION_MODE;
 L["TAGS"]               = "Tags";
 -- --- slash commands
 L["APP_SLASH"]          = "rptags|rptag|rpt";
-L["SLASH_HELP"]         = "h|help";
-L["SLASH_CONFIG"]       = "o|c|config|options|settings";
-L["SLASH_COLOR"]        = "c|color|colors";
-L["SLASH_LAYOUT"]       = "l|layout|frames";
-L["SLASH_TAGS"]         = "p|tags|panels";
-L["SLASH_KEYBIND"]      = "k|keybind|kb|keys|bind|bindings";
-L["SLASH_VERSION"]      = "v|version";
-L["SLASH_CHANGES"]      = "C|changes";
-L["SLASH_ADDONS"]       = "A|addons";
+
+L["SLASH_ABOUT"]        = "about";
+L["SLASH_CHANGES"]      = "changes";
+L["SLASH_COLORS"]       = "colors";
 L["SLASH_CREDITS"]      = "credits";
-L["SLASH_ABOUT"]        = "a|about";
+L["SLASH_HELP"]         = "help";
+
+L["SLASH_KEYBIND"]      = "keybind|keybindings|keys|bindings";
+L["SLASH_OPTIONS"]      = "options|configuration|settings";
+L["SLASH_TAGS"]         = "tags";
+L["SLASH_VERSION"]      = "version";
+L["SLASH_COMMANDS"]     = "commands|cmds|list";
+
+L["SLASH_COMMAND_LIST"] = [====[
+RPTAGS Commands:
+
+[[/rptags]] [[[options]]] - Open the configuration menu
+[[/rptags]] |cffff0000c|r|cffff9900o|r|cffffff00l|r|cff00ff00o|r|cff00ffffr|r - Configure colors used by RPTAGS
+[[/rptags]] [[[keybind]]] - Set keybindings
+[[/rptags]] [[[help]]] - Get help
+[[/rptags]] [[[tags]]] - Tag reference
+[[/rptags]] [[[version]]] - See the current version
+[[/rptags]] [[[changes]]] - See what's changed recently
+[[/rptags]] [[[credits]]] - See who is to blame for RPTAGS
+[[/rptags]] [[[about]]] - General AddOn information
+[[/rptags]] [[[commands]]] - View this notice again
+]====];
 -- --- login messages
 L["CHANGES"]            = "Changes";
 L["VERSION"]            = "Version";
@@ -88,6 +103,7 @@ L["CLIENT_TRPE_SHORT"]  = "TRP:E";
 L["CLIENT_TRP_SHORT"]   = "TRP";
 L["CLIENT_XRP"]         = "XRP";
 L["CLIENT_XRP_SHORT"]   = "XRP";
+L["FMT_UNKNOWN_SLASH"]    = "Unknown command [[%s]]. Type [[[%s commands]]] for help.";
 -- --- link types
 L["HYPERLINK_CONFIG"]   = "Click to go to the %s screen.";
 L["HYPERLINK_HELP"]     = "Click to view help about %s.";
@@ -123,7 +139,7 @@ L["URL_XRP_TT"]         = "XRP";
 L["CANCEL"]                 = "Cancel";
 L["CLOSE_DIALOG"]           = "Close";
 L["MORE_TAGS"]              = "More ...";
-L["RESET"]                  = "Reset Now";
+L["RESET"]                  = "Reset";
 L["TOGGLE"]                 = "Toggle and Reload";
 -- --- help
 L["HELP_DEFAULT"]           = "Introduction";
@@ -139,6 +155,7 @@ L["OPT_COLORS_GENDER"]     = "Gender Colors";          -- used
 L["OPT_COLORS_HILITE"]     = "Hilite Colors";          -- used
 L["OPT_COLORS_I"]          = "You can customize the colors used in RPTAGS.";
 L["OPT_COLORS_STATUS"]     = "Status Colors";          -- used
+L["OPT_TAG_SIZES"]         = "Tag Sizes"; 
 L["OPT_DISPLAY"]           = "Add-On Behavior";        -- used
 L["OPT_FORMATS"]           = "Tag Formats";            -- used
 L["OPT_FORMATS"]           = RP .. "Formats";
@@ -155,7 +172,6 @@ L["OPT_TITLE_FORMATS"]     = APP_NAME .." Formats";
 L["OPT_TITLE_GENERAL"]     = APP_NAME .." General Settings";
 L["OPT_TITLE_REFERENCE"]   = APP_NAME .." Reference";
 L["OPT_RPTAGS_HELP"]       = APP_NAME .. " Help";
-
 L["OPT_OPTIONS"]           = "Options";
 L["OPT_RECIPES"]           = "Recipes";
 L["OPT_LABELS"]            = "Labels";
@@ -316,9 +332,27 @@ L["CONFIG_REFERENCE_TOPIC"]            = "Choose a Topic";
 L["CONFIG_REFERENCE_TOPIC_TT"]         = "Choose a topic. Topics in |cffdddd00gold|r are general information, while those in |cffffffffwhite|r are specific tag families.";
 L["CONFIG_RESET_THESE_VALUES"]         = "Reset These Values";
 L["CONFIG_RESET_THESE_VALUES_TT"]      = "Set the displayed values back to their default values.";
+L["CONFIG_RESET"]                      = "Reset";
+L["CONFIG_RESET_TT"]                   = "Set this back to its default value.";
 L["CONFIG_SIZEBUFF_FMT"]               = "Size buffs";
 L["CONFIG_SIZEBUFF_FMT_TT"]            = "Select how you wish to display [rp:sizebuff]. Size buffs make character larger or smaller for at least several minutes.";
 L["CONFIG_TRP3"]                       = "To configure [rp:tags] processing, see TRP3's configuration screens.";
+L["CONFIG_TAG_SIZE_XS"]                = "Very Small";
+L["CONFIG_TAG_SIZE_S"]                 = "Small";
+L["CONFIG_TAG_SIZE_M"]                 = "Medium";
+L["CONFIG_TAG_SIZE_L"]                 = "Large";
+L["CONFIG_TAG_SIZE_XL"]                = "Extra Large";
+L["CONFIG_TAG_SIZE_XXL"]               = "2 XL";
+L["CONFIG_TAG_SIZE_XXXL"]              = "3 XL";
+
+L["CONFIG_TAG_SIZE_XS_TT"]             = "Set the size, in characters, of tags with the [[:xs]] modifier.";
+L["CONFIG_TAG_SIZE_S_TT"]              = "Set the size, in characters, of tags with the [[:s]] modifier.";
+L["CONFIG_TAG_SIZE_M_TT"]              = "Set the size, in characters, of tags with the [[:m]] modifier.";
+L["CONFIG_TAG_SIZE_L_TT"]              = "Set the size, in characters, of tags with the [[:l]] modifier.";
+L["CONFIG_TAG_SIZE_XL_TT"]             = "Set the size, in characters, of tags with the [[:xl]] modifier.";
+L["CONFIG_TAG_SIZE_XXL_TT"]            = "Set the size, in characters, of tags with the [[:xxl]] modifier.";
+L["CONFIG_TAG_SIZE_XXXL_TT"]           = "Set the size, in characters, of tags with the [[:xxxl]] modifier.";
+
 L["CONFIG_UNITS_HEIGHT"]               = "Height";
 L["CONFIG_UNITS_HEIGHT_TT"]            = "Select how to display [rp:height] when there is only a number given, or when the value is parsed. Mary Sue Protocol defines a number alone as centimeters; this is how you want those centimeters to be displayed.";
 L["CONFIG_UNITS_WEIGHT"]               = "Weight";
@@ -372,6 +406,9 @@ L["FMT_SZ_WRD_BRC_NUM"]   = "%s [%d]";
 L["FMT_SZ_WRD_PAR_NUM"]   = "%s (%d)";
 L["FMT_TAG_TEST"]         = "%s Testing your tags now.";
 L["FMT_WEIGHT_PASSTHRU"]  = "%s";
+L["FMT_Q"]                = "%s?";
+L["FMT_AMBIGUOUS_RESULT"] = "Did you mean %s or %s?";
+L["FMT_UNKNOWN_SLASH"]    = "Unknown command [[%s]]. Type [[[%s commands]]] for help.";
 
   -- parsing - ----------------------------------------------------------------------------------------------------------------------------------------------
 L["RACE_1"]     = "Human,Stormwind,Arath,Lordae";

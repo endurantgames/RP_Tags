@@ -410,8 +410,26 @@ C.CONFIG =
       UNITS_HEIGHT      = "CM_FT_IN",
       UNITS_WEIGHT      = "KG_LB",
       UNSUP_TAG         = "??",
+      TAG_SIZE_XS       = 5,
+      TAG_SIZE_S        = 10,
+      TAG_SIZE_M        = 15,
+      TAG_SIZE_L        = 20,
+      TAG_SIZE_XL       = 50,
 
     }, -- DEFAULTS
   } -- config
+
+C.UIPANELS =
+{ ABOUT    = "opt://about",
+  CHANGES  = "opt://about/changes",
+  COLORS   = "opt://colors",
+  CREDITS  = "opt://about/credits",
+  HELP     = "opt://help",
+  KEYBIND  = "opt://general/keybinds",
+  OPTIONS  = "opt://general",
+  TAGS     = "opt://help/tags",
+  VERSION  = "opt://about/version",
+  COMMANDS = true,
+};
   
 end);
