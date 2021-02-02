@@ -206,7 +206,7 @@ function(self, event, ...)
         return w;
   end;
 
-  local function build_slider(str, min, max, step, width, hidden, disabled)
+  local function build_slider(str, min, max, step, width, hidden, disabled, get, set)
         local w = build_common("range", "config_", str, hidden, disbled, true, true);
         w.width = width or "full";
   
@@ -294,6 +294,14 @@ function(self, event, ...)
         );
         w.width = 1 / 2;
         return w
+  end;
+
+  local function build_question_mark(str, hidden, disabled)
+        local w = build_common("execute", "question_", "mark", hidden, disabled);
+        w.func = function() end;
+        w.desc = str;
+        w.width = 0.10;
+        return w;
   end;
 
   local function build_header(str, hidden, disabled)
@@ -573,7 +581,8 @@ function(self, event, ...)
   RPTAGS.utils.options.slider            = build_slider;
   RPTAGS.utils.options.spacer            = build_spacer;
   RPTAGS.utils.options.tagpanel          = build_tagpanel
-  RPTAGS.utils.options.textbox           = build_textbox
+  RPTAGS.utils.options.textbox           = build_textbox;
+  RPTAGS.utils.options.question_mark     = build_question_mark;
 
 
  

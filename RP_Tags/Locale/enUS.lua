@@ -76,6 +76,8 @@ RPTAGS Commands:
 -- --- login messages
 L["CHANGES"]            = "Changes";
 L["VERSION"]            = "Version";
+L["QUESTION_MARK"]      = "?";
+L["QUESTION_MARK_TT"]   = "?";
 L["CHANGES_MOVED"]      = "Changes have been moved to the help system. Type [[/rptags changes]] to view the latest changes.";
 -- --- rpq
 L["RPQ_TYPE_UNITFRAMES"]         = "|cffdd9933"         .. "Unit Frames Module" .. "|r";

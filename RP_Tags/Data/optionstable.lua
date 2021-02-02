@@ -26,6 +26,7 @@ function(self, event, ...)
   local Multi_Reset        = RPTAGS.utils.options.multi_reset
   local Panel              = RPTAGS.utils.options.panel
   local Pushbutton         = RPTAGS.utils.options.pushbutton
+  local Question_Mark      = RPTAGS.utils.options.question_mark
   local Recipe             = RPTAGS.utils.options.recipe
   local Reset              = RPTAGS.utils.options.reset
   local Slider             = RPTAGS.utils.options.slider
@@ -50,7 +51,8 @@ function(self, event, ...)
           instruct = Instruct("general"),
           headerDisplay  = Header("display"),
           loginMessage   = Checkbox("login message"),
-          changesMessage = Checkbox("changes message" , nil, function() return not Config.get("LOGIN_MESSAGE") end),
+          changesMessage = Checkbox("changes message" , nil, true),
+          changesQM      = Question_Mark(loc("CHANGES_MOVED")),
           linebreaks     = Checkbox("linebreaks"),
           parsing        = 
           { type = "group",
