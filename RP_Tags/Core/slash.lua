@@ -53,6 +53,8 @@ function(self, event, ...)
                       tc(last));
              elseif uniq == "commands"
              then   notify(loc("SLASH_COMMAND_LIST"))
+             elseif uniq == "open"
+             then   openTo(params)
              elseif uniq and CONST.UIPANELS[uniq]
              then   openTo(CONST.UIPANELS[uniq]);
              else   notifyFmt(loc("FMT_UNKNOWN_SLASH"), cmd, Cache.slash.slashCmd)

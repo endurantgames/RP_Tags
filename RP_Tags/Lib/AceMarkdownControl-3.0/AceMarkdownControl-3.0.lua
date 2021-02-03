@@ -179,12 +179,19 @@ function lib:New(str)
 
         local function donothing() end;
   
+        widget["OnWidthSet"] = function(self, width)
+          self.frame:SetWidth(width);
+          self.html:ClearAllPoints();
+          self.html:SetPoint("TOPLEFT");
+          self.html:SetPoint("BOTTOMRIGHT");
+        end;
+
         widget["OnAcquire"] = function(self) 
           self:SetText(); 
           self:SetJustifyH("left");
           self:SetFonts();
-          self.frame:SetWidth(width or 450);
-          self.html:SetWidth((width or 450) - 70);
+          self.frame:SetWidth(libInstance.width or 450);
+          self.html:SetWidth((libInstance.width or 450) - 70);
           self.frame:SetHeight(height or self.html:GetContentHeight());
           self:SetAllPoints();
           self.html:SetFont(     "h1",    libInstance.FontFile.h1     
@@ -307,7 +314,6 @@ function lib:New(str)
         widget["SetAllPoints"]         = function(self, ...) self.frame:SetAllPoints(); end;
         widget["SetSpacing"]           = function(self, ...) self.html:SetSpacing(...); end;
         widget["SetColor"]             = donothing;
-        widget["OnWidthGet"]           = donothing;
         widget["SetColor"]             = donothing;
         widget["SetImage"]             = donothing;
         widget["SetFont"]              = function(self, ...) self.html:SetFont(...); end;

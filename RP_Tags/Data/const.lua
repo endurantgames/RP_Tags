@@ -419,7 +419,19 @@ C.CONFIG =
     }, -- DEFAULTS
   } -- config
 
-C.UIPANELS =
+C.UIPANELS_1 =
+{ about    = "opt://about",
+  changes  = "opt://about",
+  colors   = "opt://colors",
+  credits  = "opt://about",
+  help     = "opt://help",
+  keybind  = "opt://general",
+  options  = "opt://general",
+  tags     = "opt://help",
+  version  = "opt://about",
+}
+  
+C.UIPANELS = 
 { about    = "opt://about",
   changes  = "opt://about/changes",
   colors   = "opt://colors",
@@ -429,6 +441,7 @@ C.UIPANELS =
   options  = "opt://general",
   tags     = "opt://help/tags",
   version  = "opt://about/version",
+  open     = true,
   commands = true,
 };
 

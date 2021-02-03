@@ -30,6 +30,7 @@ function(self, event, ...)
   local Slider             = RPTAGS.utils.options.slider
   local Spacer             = RPTAGS.utils.options.spacer
   local Textbox            = RPTAGS.utils.options.textbox
+  local Textbox_Wide       = RPTAGS.utils.options.textbox_wide
   local Keybind            = RPTAGS.utils.options.keybind
 
   -- ---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -66,9 +67,10 @@ function(self, event, ...)
         name = loc("OPT_NOTES"),
         args = 
         { header   = Header("notes", 2),
-          note1          = Textbox("note 1 string"),
-          note2          = Textbox("note 2 string"),
-          note3          = Textbox("note 3 string"),
+          instruct = Instruct("notes"),
+          note1          = Textbox_Wide("note 1 string"),
+          note2          = Textbox_Wide("note 2 string"),
+          note3          = Textbox_Wide("note 3 string"),
         },
         plugins = RPTAGS.cache.plugins.notes,
       },
@@ -96,6 +98,7 @@ function(self, event, ...)
         name = loc("OPT_TAG_SIZES"),
         args =
         { header           = Header("tag sizes", 2                               ),
+          instruct         = Instruct("tag sizes"),
 
           extraSmall       = Slider("tag size xs", { 5, 1 }, { 50, 200 }, 1, 1.5 ),
           spacerExtraSmall = Spacer(                                             ),
@@ -120,11 +123,14 @@ function(self, event, ...)
         plugins = RPTAGS.cache.plugins.sizes,
       },
       keybind              =
-      { name = loc("OPT_KEYBINDINGS"),
+      { 
+          name = loc("OPT_KEYBINDINGS"),
         order    = source_order(),
         type = "group",
         args =
-        { options = Keybind("options"),
+        { header = Header("keybindings"),
+          instruct = Instruct("keybindings"),
+          options = Keybind("options"),
           help = Keybind("help"),
         },
         plugins = RPTAGS.cache.plugins.keybind,
@@ -139,26 +145,23 @@ function(self, event, ...)
     name = loc("OPT_COLORS"),
     childGroups = "tab",
     args = 
-    { panel = Header("colors"),
+    { -- panel = Header("colors"),
       instruct = Instruct("colors"),
-      unknown = Color_Picker("unknown"),
-      reset = Multi_Reset({ "color unknown"}),
+      -- reset = Multi_Reset({ "color unknown"}),
       status = 
       { type             = "group",
-        childGroups      = "inline",
         name             = loc("OPT_COLORS_STATUS"),
         order            = source_order(),
         args             = 
         { headerStatus     = Header("colors status"),
           colorIC          = Color_Picker("ic"),
-          colorNPC         = Color_Picker("npc"),
           colorOOC         = Color_Picker("ooc"),
-          reset            = Multi_Reset( { "color_ic", "color_npc", "color_ooc" } ),
+          colorNPC         = Color_Picker("npc"),
+          -- reset            = Multi_Reset( { "color_ic", "color_npc", "color_ooc" } ),
         },
       },
       gender           = 
       { type             = "group",
-        childGroups = "inline",
         name             = loc("OPT_COLORS_GENDER"),
         order            = source_order(),
         args             = 
@@ -167,12 +170,11 @@ function(self, event, ...)
           colorFemale      = Color_Picker("female"),
           colorNeuter      = Color_Picker("neuter"),
           colorThey        = Color_Picker("they", nil, nil, function() return not Config.get("PARSE_GENDER") end),
-          reset            = Multi_Reset( { "color_male", "color_female", "color_neuter", "color_they" } ),
+          -- reset            = Multi_Reset( { "color_male", "color_female", "color_neuter", "color_they" } ),
         }, 
       }, 
       comparison       = 
       { type             = "group",
-        childGroups = "inline",
         name             = loc("OPT_COLORS_COMPARISON"),
         order            = source_order(),
         args             = 
@@ -180,12 +182,11 @@ function(self, event, ...)
           colorLessThan    = Color_Picker("lessthan"),
           colorEqualish    = Color_Picker("equalish"),
           colorGreaterThan = Color_Picker("greaterthan"),
-          reset            = Multi_Reset( { "color_lessthan", "color equalish", "color greaterthan" } ),
+          -- reset            = Multi_Reset( { "color_lessthan", "color equalish", "color greaterthan" } ),
         }, 
       },
       hilite           = 
       { type             = "group",
-        childGroups = "inline",
         name             = loc("OPT_COLORS_HILITE"),
         order            = source_order(),
         args             = 
@@ -193,8 +194,16 @@ function(self, event, ...)
           colorHilite1     = Color_Picker("hilite 1"),
           colorHilite2     = Color_Picker("hilite 2"),
           colorHilite3     = Color_Picker("hilite 3"),
-          reset            = Multi_Reset( { "color hilite 1", "color hilite 2", "color hilite 3" } ),
+          -- reset            = Multi_Reset( { "color hilite 1", "color hilite 2", "color hilite 3" } ),
         }, 
+      },
+      default = 
+      { type = "group",
+        name = loc("OPT_COLORS_DEFAULT"),
+        order = source_order(),
+        args =
+        { unknown = Color_Picker("unknown"),
+        },
       },
     }, 
     plugins = RPTAGS.cache.plugins.colors,
@@ -204,6 +213,7 @@ function(self, event, ...)
   { name                  = loc("OPT_HELP"),
     order    = source_order(),
     type                  = "group",
+    childGroups = "tab",
     args                  =
     { intro               = 
       { type = "group",
@@ -242,8 +252,10 @@ function(self, event, ...)
     type                  = "group",
     childGroups           = "tab",
     args                  =
-    { version             = Panel.version(),
-      changes             = Markdown({ loc("OPT_CHANGES"), loc("CREDITS_MD") }),
+    { header  = Markdown("## " .. loc("APP_NAME") .. " " .. loc("VERSION") .. " " .. 
+                            RPTAGS.metadata.Version),
+      version             = Panel.version(),
+      changes             = Markdown({ loc("OPT_CHANGES"), loc("CHANGES_MD") }),
       credits             = Markdown({ loc("OPT_CREDITS"), loc("CREDITS_MD") }),
       debuggingCommands   = Markdown({ loc( "OPT_DEBUGGING_CMDS" ), loc( "DEBUGGING_COMMANDS_MD" )  }),
       plugins = RPTAGS.cache.plugins.about,

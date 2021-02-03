@@ -114,6 +114,115 @@ function(self, event, ...)
         return RPTAGS.cache.orderCount;
   end;
   
+  local NormalFont = OptionsFontHighlight;
+  local BiggerFont = OptionsFontLarge;
+
+  local fi, si, fl;
+  local r, g, b;
+  local sp;
+  local step;
+
+  local fontData            =
+        { FontStep          = 1,
+          FontSize          = {},
+          FontFile          = {},
+          FontFlags         = {},
+          FontColor         = { },
+          LineSpacing       = { },
+        };
+
+  fi, si, fl                = NormalFont:GetFont();
+  r, g, b                   = NormalFont:GetTextColor();
+  sp                        = NormalFont:GetSpacing();
+
+  fontData.FontSize.base    = si;
+  fontData.FontFile.base    = fi;
+  fontData.FontFlags.base   = fl;
+  fontData.FontColor.base   = { r, g, b };
+  fontData.LineSpacing.base = sp;
+
+  fontData.FontSize.p       = si;
+  fontData.FontFile.p       = fi;
+  fontData.FontFlags.p      = fl;
+  fontData.FontColor.p      = { r, g, b };
+  fontData.LineSpacing.p    = sp;
+
+  fi, si, fl                = BiggerFont:GetFont();
+  r, g, b                   = BiggerFont:GetTextColor();
+  sp                        = BiggerFont:GetSpacing();
+
+  step                      = si - fontData.FontSize.base;
+  if step < 2 then step     = 2 end;
+
+  fontData.FontSize.h       = si;
+  fontData.FontFlags.h      = fl;
+  fontData.FontFile.h       = fi;
+  fontData.LineSpacing.h    = sp;
+  fontData.FontColor.h      = { r, g, b };
+
+  fontData.FontSize.h3      = si;
+  fontData.FontFlags.h3     = fl;
+  fontData.FontFile.h3      = fi;
+  fontData.LineSpacing.h3   = sp;
+  fontData.FontColor.h3     = { r, g, b };
+
+  fontData.FontSize.h2      = si + step;
+  fontData.FontFlags.h2     = fl;
+  fontData.FontFile.h2      = fi;
+  fontData.LineSpacing.h2   = sp;
+  fontData.FontColor.h2     = { r, g, b };
+
+  fontData.FontSize.h1      = si + step * 2;
+  fontData.FontFlags.h1     = fl;
+  fontData.FontFile.h1      = fi;
+  fontData.LineSpacing.h1   = sp;
+  fontData.FontColor.h1     = { r, g, b };
+
+  RPTAGS.cache.optionsFonts = fontData;
+
+  local function build_markdown(text, hidden, disabled)
+
+      local AMC = AceMarkdownControl:New();
+      AMC.Cursor = RPTAGS.CONST.CURSOR;
+      AMC.width = 600;
+      
+      for k, v in pairs(RPTAGS.cache.optionsFonts)
+      do if type(v) == "table"
+          then for a, b in pairs(v) 
+               do  AMC[k][a] = b;
+               end;
+          else AMC[k] = v;
+          end;
+      end;
+
+      AMC.OpenProtocol.opt = function(dest, link) RPTAGS.utils.options.open(link); end;
+      AMC.OpenProtocol.tag = function(dest, link) RPTAGS.utils.options.open(link); end;
+      AMC.Cursor.opt       = "Interface\\OPTIONS\\QuestRepeatable.PNG";
+      AMC.Cursor.tag       = "Interface\\OPTIONS\\WorkOrders.PNG";
+
+      local w =
+      { order = source_order(),
+        type = "description",
+        dialogControl = AMC.description,
+        width = "full",
+      };
+
+      if type(text) == "table"
+      then w.name = hilite(text[2], true);
+           w = 
+           { type = "group",
+             name = hilite(text[1], true),
+             width = "full",
+             order = source_order(),
+             args = { 
+               text = w }
+           };
+      elseif type(text) == "string"
+      then w.name = hilite(text, true);
+      end;
+
+      return w
+  end;
   local function build_common(type, prefix, str, hidden, disabled, get, set, no_tooltip)
         local widget = {};
   
@@ -157,6 +266,12 @@ function(self, event, ...)
         return w;
   end;  
   
+  local function build_textbox_wide(str, hidden, disabled)
+        local w    = build_common("input", "CONFIG_", str, hidden, disabled, true, true);
+        w.width = "full";
+        return w;
+  end;  
+
   local function build_dropdown(str, hidden, disabled)
         local w    = build_common("select", "CONFIG_", str, hidden, disabled, true, true);
         w.values   = menus[str:upper():gsub("%s+","_")]
@@ -164,19 +279,36 @@ function(self, event, ...)
   end;
   
   local function build_color_picker(str, hidden, disabled)
-        local w    = build_common("color", "CONFIG_COLOR_", str, hidden, disabled);
         str = "COLOR_" .. string.upper(str):gsub("%s","_");
-        w.hasAlpha = false;
-        w.get      = function(info, value) 
+        local w =
+        { name = loc("CONFIG_" .. str),
+          order = source_order(),
+          width = "full",
+          type = "group" ,
+            inline = true,
+        };
+
+        local c    = build_common("color", "UI_", "BLANK", hidden, disabled);
+        c.hasAlpha = false;
+        c.get      = function(info, value) 
                        local  hexString = Config.get(str);
                        if     type(hexString) == "number" then hexString = "000000"; end;
                        local  r, g, b, a = RPTAGS.utils.color.colorToDecimals(hexString);
                        return r, g, b, a;
                      end;
-        w.set      = function(info, r, g, b, a) 
+        c.set      = function(info, r, g, b, a) 
                        local value = RPTAGS.utils.color.decimalsToColor(r, g, b);
                        Config.set(str, value);
                      end;
+        c.width = 0.25;
+        c.desc = loc("CONFIG_" .. str .. "_TT");
+
+        local s = build_spacer();
+
+        local l = build_markdown(loc("CONFIG_" .. str .. "_TT"));
+
+        w.args = { color = c, spacer = s, label = l };
+
         return w;
   end;
   
@@ -215,40 +347,7 @@ function(self, event, ...)
         local w    = build_common("execute", "config ", str, hidden, disabled);
         w.func = func;
         return w;
-  end;
-
-  local function build_markdown(text, hidden, disabled)
-      local AMC = AceMarkdownControl:New();
-      AMC.Cursor = RPTAGS.CONST.CURSOR;
-      -- AMC.OpenProtocol.opt = RPTAGS.utils.options.open;
-      AMC.OpenProtocol.opt = function(dest, link) 
-        print(dest, link)
-        RPTAGS.utils.options.open(link); 
-        end;
-      local w =
-      { order = source_order(),
-        type = "description",
-        dialogControl = AMC.description,
-        width = "full",
-      };
-
-      if type(text) == "table"
-      then w.name = text[2];
-           w = 
-           { type = "group",
-             name = text[1],
-             width = "full",
-             order = source_order(),
-             args = { 
-               text = w }
-           };
-      elseif type(text) == "string"
-      then w.name = text;
-      end;
-
-      return w
-  end;
-
+  end
   
   local function build_multi_reset(list, hidden, disabled)
         local w = build_pushbutton(
@@ -511,16 +610,39 @@ function(self, event, ...)
   
   end; -- 
 
-  local function openDialog(dest)
-        local protocol, path = dest:match("^(opt://)(.+)$");
-        local path = RPTAGS.utils.text.split(path, "/");
-        InterfaceOptionsFrame:Show()
-        InterfaceOptionsFrame_OpenToCategory(RPTAGS.cache.panels.help)
-        -- AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
-        -- AceConfigDialog:Open(loc("APP_NAME"))
-        -- AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
-        
-  end;
+--   local function openDialog(dest)
+--         local protocol, path = dest:match("^(opt)://(.+)$");
+--         path = RPTAGS.utils.text.split(path, "/");
+--         local panel = path[1];
+--         if RPTAGS.cache.panels[panel] and protocol == "opt"
+--         else notify(loc("SLASH_COMMAND_LIST"))
+--         end;
+--         -- AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
+--         -- AceConfigDialog:Open(loc("APP_NAME"))
+--         -- AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
+--   end;
+
+  local function linkHandler(dest)
+        local protocol, path = dest:match("^(%a+)://(.+)$");
+        path = split(path, "/");
+        if     protocol == "opt" and RPTAGS.cache.panels[path[1]]
+        then   InterfaceOptionsFrame:Show()
+               InterfaceOptionsFrame_OpenToCategory(RPTAGS.cache.panels[path[1]])
+               AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
+        elseif protocol == "tag" and RPTAGS.cache.help.tagIndex[path[1]]
+        then   linkHandler(RPTAGS.cache.help.tagIndex[path[1]])
+        end;
+   end;
+
+  
+--  local function openDialogByTag(dest)
+--        local protocol, path = dest:match("^([^:])://)(.+)$");
+--        local try1, try2 = RPTAGS.cache.help.tagIndex[path[1]],
+--                           RPTAGS.cache.help.tagIndex["rp:" .. path[1]];
+--        if try1 or try2 then openDialog(try1 or try2) end;
+--  end;
+
+
 
   local function sliceUp(group)
     local dups = {};
@@ -550,7 +672,10 @@ function(self, event, ...)
 
   RPTAGS.utils.options.source_order      = source_order;
   RPTAGS.utils.options.sliceUp           = sliceUp;
-  RPTAGS.utils.options.open              = openDialog;
+  -- RPTAGS.utils.options.open              = openDialog;
+  -- RPTAGS.utils.options.openTag           = openDialogByTag;
+
+  RPTAGS.utils.options.open              = linkHandler;
 
   RPTAGS.utils.options.blank_line        = build_blank_line;
   RPTAGS.utils.options.checkbox          = build_checkbox
@@ -571,6 +696,7 @@ function(self, event, ...)
   RPTAGS.utils.options.textbox           = build_textbox;
   RPTAGS.utils.options.question_mark     = build_question_mark;
   RPTAGS.utils.options.keybind           = build_keybind;
+  RPTAGS.utils.options.textbox_wide      = build_textbox_wide;
  
 -- RPQ -----------------------------------------------------------------------------------------------------------------------------------------------
 end);

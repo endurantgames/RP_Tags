@@ -73,6 +73,14 @@ function(self, event, ...)
         return str:gsub("(%a)([%w_']*)", tchelper)
   end;
   
+  local function tagReferences(str)
+        local md = "";
+        for ref, tag in str:gmatch("^(.-%[(rp:.-)%])")
+        do  md = md .. ref .. "(tag://" .. tag .. ")";
+        end
+        return md ~= "" and md or str
+  end;
+
   local function textTruncate(text, maxLength)
         local ellipse;
   
@@ -90,7 +98,7 @@ function(self, event, ...)
   -- ---------------------------------------------------------------------------------------------------------------------
   
         -- changes multiple [[[these]]] into hilited text
-  local function hiliteTags(s, forHTML)
+  local function hiliteTags(s, forMarkdown)
         if not s then return "" end;
         local reset = "|r";
   
@@ -98,14 +106,15 @@ function(self, event, ...)
         s = s:gsub("%]%]%]",    reset);
         s = s:gsub("%[%[",      "|cff" .. Config.get("COLOR_HILITE_2"));
         s = s:gsub("%]%]",      reset);
-        if forHTML
-           then s = s:gsub("(<a [^>]+>.-</a>)", "|cff00dd00%1|r");
-                s = s:gsub("\n\n", "\n<br />\n");
-                s = s:gsub("&nbsp;", RPTAGS.CONST.NBSP);
-                s = s:gsub("%[(.-)%]", "[<a href='rptag:%1'>" .. RPTAGS.CONST.APP_COLOR .. "%1|r</a>]")
-           else s = s:gsub("%[", "[" .. "|cff" .. Config.get("COLOR_HILITE_1"));
-                s = s:gsub("%]",        reset .. "]");
-        end;
+        -- if   forMarkdown 
+        -- then s = tagReferences(s)
+           -- s = s:gsub("(<a [^>]+>.-</a>)", "|cff00dd00%1|r");
+           --      s = s:gsub("\n\n", "\n<br />\n");
+           --      s = s:gsub("&nbsp;", RPTAGS.CONST.NBSP);
+           --      s = s:gsub("%[(.-)%]", "[<a href='rptag:%1'>" .. RPTAGS.CONST.APP_COLOR .. "%1|r</a>]")
+           -- else s = s:gsub("%[", "[" .. "|cff" .. Config.get("COLOR_HILITE_1"));
+            --     s = s:gsub("%]",        reset .. "]");
+        -- end;
           
         s = s:gsub("RPTAGS",    loc("APP_NAME"));
         return s;
@@ -184,5 +193,6 @@ function(self, event, ...)
   RPTAGS.utils.text.unsupcolor = dontChangeTheColor;
   RPTAGS.utils.text.unsupicon  = iconNotSupported;
   RPTAGS.utils.text.notifyFmt  = notifyFmt;
+  RPTAGS.utils.text.tagRefs    = tagReferences;
   
 end);

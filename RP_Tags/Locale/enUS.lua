@@ -58,6 +58,7 @@ L["SLASH_OPTIONS"]      = "options|configuration|settings";
 L["SLASH_TAGS"]         = "tags";
 L["SLASH_VERSION"]      = "version";
 L["SLASH_COMMANDS"]     = "commands|cmds|list";
+L["SLASH_OPEN"]         = "open";
 
 L["SLASH_COMMAND_LIST"] = [====[
 RPTAGS Commands:
@@ -140,6 +141,8 @@ L["URL_XRP_TT"]         = "XRP";
 
 L["UI_CANCEL"]                 = "Cancel";
 L["UI_CLOSE"]           = "Close";
+L["UI_BLANK"]               = "";
+L["UI_BLANK_TT"]            = "";
 L["MORE_TAGS"]              = "More ...";
 L["UI_RESET"]               = "Reset";
 L["RESET"]                  = "Reset";
@@ -163,17 +166,21 @@ L["OPT_COLORS_HILITE"]     = "Hilite Colors";          -- used
 L["OPT_COLORS_I"]          = "You can customize the colors used in RPTAGS.";
 L["OPT_COLORS_STATUS"]     = "Status Colors";          -- used
 L["OPT_TAG_SIZES"]         = "Tag Sizes"; 
+L["OPT_TAG_SIZES_I"]       = "The tag modifiers [[[:xs]]], [[[:s]]], [[[:m]]], [[[:l]]], and [[[:xl]]] can be added to many to limit the size of the field to a certain number of characters. You can configure the values for each size of modifier tag.";
 L["OPT_HELP"]              = "Help";
 L["OPT_HELP_INTRO"]        = "Introduction";
 L["OPT_DISPLAY"]           = "Add-On Behavior";        -- used
 L["OPT_FORMATS"]           = "Tag Formats";            -- used
-L["OPT_FORMATS"]           = RP .. "Formats";
 L["OPT_KEYBINDINGS"]       = "Keybindings";
+L["OPT_KEYBINDINGS_I"]       = "You can set keybindings to open specific panels in RPTAGS.";
 L["OPT_FORMATS_I"]         = "These options control how RPTAGS displays certain tags.";
 L["OPT_GENERAL"]           = "General Options";
 L["OPT_GENERAL_I"]         = "These options control the basic functionality of RPTAGS.";
 L["OPT_NOTES"]             = "Notes";
+L["OPT_NOTES_I"]           = "You can choose specific [keywords](opt://help) in notes that you want to be alerted. They will show up in [rp:note-1](tag://rp:note-1), [rp:note-2](tag://rp:note-2), or [rp:note-3](tag://rp:note-3). Keyword patterns must be at least  characters long and can contain Lua patterns.";
 L["OPT_PARSE"]             = "Parsing Tag Values";     -- used
+L["OPT_PARSE_I"]           = "RPTAGS can try to determine specific values that a unit may not have set.";
+
 L["OPT_TAG_REFERENCE"]     = "Tag Reference";
 L["OPT_REFERENCE_I"]       = "Configure RPTAGS with the options on the left, or choose a topic for help. You can use the |cffdd0000Defaults|r button to reset the options on each screen.\n\n In the reference below, clickable hyperlinks are shown |cff00dd00in green|r.";
 L["OPT_TITLE_COLORS"]      = APP_NAME .." ".. RAINBOW_COLORS;

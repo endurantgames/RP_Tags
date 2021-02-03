@@ -43,6 +43,9 @@ local function addTag(tag, group)
   --  registerTag("rp:tag", method,  "EXTRA_EVENTS");
   --              ^name     ^method  ^events
   
+  RPTAGS.cache.help = RPTAGS.cache.help or {};
+  RPTAGS.cache.help.tagIndex = RPTAGS.cache.help.tagIndex or {};
+
   local registerTag = RPTAGS.utils.tags.registerTag;
   local function sizeTrim(t, s) return t end; -- this is a dummy function for now
 
@@ -57,6 +60,8 @@ local function addTag(tag, group)
          if RPTAGS.CONST.UNSUP[tag.name]
          then tagMethod = RPTAGS.utils.text[RPTAGS.CONST.UNSUP[tag.name]];
          end;
+
+         RPTAGS.cache.help.tagIndex[tag.name] = "opt://help/tags/" .. group.key;
 
          registerTag(tag.name, tagMethod, tag.events);
 
