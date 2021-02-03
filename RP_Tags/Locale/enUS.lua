@@ -138,10 +138,13 @@ L["URL_XRP_TT"]         = "XRP";
 
 -- ------------------ - user interface -----------------------------------------------------------------------------------------------------------------------------
 
-L["CANCEL"]                 = "Cancel";
-L["CLOSE_DIALOG"]           = "Close";
+L["UI_CANCEL"]                 = "Cancel";
+L["UI_CLOSE"]           = "Close";
 L["MORE_TAGS"]              = "More ...";
+L["UI_RESET"]               = "Reset";
 L["RESET"]                  = "Reset";
+L["UI_SELECT"]              = "Select";
+L["UI_SELECT_TT"]           = "Select this text.";
 L["TOGGLE"]                 = "Toggle and Reload";
 -- --- help
 L["HELP_DEFAULT"]           = "Introduction";
@@ -152,7 +155,7 @@ L["KEYBIND_OPTIONS_TT"]      = "Set a keybinding to automatically open RPTGAS op
 L["KEYBIND_HELP_TT"]         = "Set a keybinding to automatically open RPTAGS help.";
 
 -- --------------------- - options ---------------------------------------------------------------------------------------------------------------------------------
-L["OPT_COLORS"]            = RP .. RAINBOW_COLORS;
+L["OPT_COLORS"]            = RAINBOW_COLORS;
 L["OPT_COLORS_COMPARISON"] = "Comparison Colors";      -- used
 L["OPT_COLORS_DEFAULT"]    = "Default Colors";         -- used
 L["OPT_COLORS_GENDER"]     = "Gender Colors";          -- used
@@ -160,12 +163,14 @@ L["OPT_COLORS_HILITE"]     = "Hilite Colors";          -- used
 L["OPT_COLORS_I"]          = "You can customize the colors used in RPTAGS.";
 L["OPT_COLORS_STATUS"]     = "Status Colors";          -- used
 L["OPT_TAG_SIZES"]         = "Tag Sizes"; 
+L["OPT_HELP"]              = "Help";
+L["OPT_HELP_INTRO"]        = "Introduction";
 L["OPT_DISPLAY"]           = "Add-On Behavior";        -- used
 L["OPT_FORMATS"]           = "Tag Formats";            -- used
 L["OPT_FORMATS"]           = RP .. "Formats";
 L["OPT_KEYBINDINGS"]       = "Keybindings";
 L["OPT_FORMATS_I"]         = "These options control how RPTAGS displays certain tags.";
-L["OPT_GENERAL"]           = APP_NAME .." Settings";
+L["OPT_GENERAL"]           = "General Options";
 L["OPT_GENERAL_I"]         = "These options control the basic functionality of RPTAGS.";
 L["OPT_NOTES"]             = "Notes";
 L["OPT_PARSE"]             = "Parsing Tag Values";     -- used
@@ -175,14 +180,15 @@ L["OPT_TITLE_COLORS"]      = APP_NAME .." ".. RAINBOW_COLORS;
 L["OPT_TITLE_FORMATS"]     = APP_NAME .." Formats";
 L["OPT_TITLE_GENERAL"]     = APP_NAME .." General Settings";
 L["OPT_TITLE_REFERENCE"]   = APP_NAME .." Reference";
-L["OPT_RPTAGS_HELP"]       = APP_NAME .. " Help";
+L["OPT_RPTAGS_HELP"]       = "Help";
 L["OPT_OPTIONS"]           = "Options";
 L["OPT_RECIPES"]           = "Recipes";
+L["OPT_RECIPES_I"]         = "You can copy and paste these tag recipes into your unit frames.";
 L["OPT_LABELS"]            = "Labels";
 L["OPT_SIZE_MODIFIERS"]    = "Size";
 L["OPT_TAG_MODIFIERS"]     = "Tag Modifiers";
 L["OPT_DEBUGGING_CMDS"]    = "Debugging Commands";
-L["OPT_ABOUT"]             = "About " .. APP_NAME;
+L["OPT_ABOUT"]             = "About";
 L["OPT_VERSION"]           = "Version";
 L["OPT_CHANGES"]           = "Changes";
 L["OPT_CREDITS"]           = "Credits";

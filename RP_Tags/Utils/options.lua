@@ -144,6 +144,7 @@ function(self, event, ...)
   end;
   
   local function build_spacer()     return { name = "", order = source_order(), width = 0.05,   type = "description", fontSize = "medium", }; end;
+
   local function build_blank_line() return { name = "", order = source_order(), width = "full", type = "description", fontSize = "medium", }; end;
 
   local function build_checkbox(str, hidden, disabled)
@@ -228,6 +229,7 @@ function(self, event, ...)
       { order = source_order(),
         type = "description",
         dialogControl = AMC.description,
+        width = "full",
       };
 
       if type(text) == "table"
@@ -235,7 +237,8 @@ function(self, event, ...)
            w = 
            { type = "group",
              name = text[1],
-             order = source_order,
+             width = "full",
+             order = source_order(),
              args = { 
                text = w }
            };
@@ -259,7 +262,7 @@ function(self, event, ...)
         return w;
   end;
   
-  local function build_reset(str, hiden, disabled)
+  local function build_reset(str, hidden, disabled)
         local w = build_pushbutton(
           "reset",
           function() Config.reset(str:upper():gsub("%s+","_")) end,
@@ -282,6 +285,7 @@ function(self, event, ...)
                     string.rep("#", level or 1) .. 
                     loc("OPT_" .. str:upper():gsub("%s+","_")), 
                     hidden, disabled);
+        w.width = "full";
         -- w.type = "header";
         -- local w = build_common("header", "opt ", str, hidden, disabled, nil, nil, true);
         return w;
@@ -310,10 +314,9 @@ function(self, event, ...)
          local rpqType = addOn.rpqType;
 
          if not rpqType then rpqType = ""
-         elseif rpqType == "core" or rpqType == "header" or rpqType:match("^targetOf")
-         then   rpqType = loc("RPQ_TYPE_" .. rpqType:upper()); 
+         -- elseif rpqType == "core" or rpqType == "header" or rpqType:match("^targetOf")
+         -- then   rpqType = loc("RPQ_TYPE_" .. rpqType:upper()); 
          else   rpqType = loc("RPQ_TYPE_" .. rpqType:upper());
-                name = RPTAGS.CONST.NBSP .. name;
          end;
 
          if not addOn.enabled 
@@ -324,28 +327,27 @@ function(self, event, ...)
         
          args[addOn.name .. "Name"] =
          { type           = "description",
-           fontSize       = "medium",
+           fontSize       = "small",
            order          = source_order(),
-           width          = 1.15,
+           width          = 1.5,
            name           = name,
          };
 
          args[addOn.name .. "Version"]     =
          { type           = "description",
            order          = source_order(),
-           width          = 0.35,
-           fontSize       = "medium",
+           width          = 0.5,
+           fontSize       = "small",
            name           = version,
          };
 
-         args[addOn.name .. "Type"]        =
+         args[addOn.name .. "Type"] =
          { type           = "description",
            order          = source_order(),
-           width          = 0.65,
-           fontSize       = "medium",
+           width          = 1,
+           fontSize       = "small",
            name           = rpqType,
          };
-
        end;
 
        args.tableHeader = build_addOn(
@@ -405,30 +407,36 @@ function(self, event, ...)
   end;
 
   local function build_recipe(str)
+      RPTAGS.cache.recipes = RPTAGS.cache.recipes or {};
       local str = "RECIPE_" .. str:gsub("%s+","_"):upper();
-      local w = 
+      local desc = build_markdown(
+                     "### " .. loc(str .. "_TITLE") .. "\n\n"
+                     .. loc(str .. "_TT")
+                   );
+      local box = 
+            { type = "input",
+              order = source_order(),
+              name = "",
+              get = function(self) return loc(str) end,
+              width = 1.5,
+              desc = loc(str .. "_TT"),
+            };
+      local spacer = build_spacer();
+      local button = build_common("execute", "ui ", "select");
+      button.width = 0.5;
+      button.func = function(self) 
+        return end;
+                    
+      local w =
       { type = "group",
         name = loc(str .. "_TITLE"),
         order = source_order(),
-        inline = true,
         args =
-        { recipeBox = 
-          { type = "input",
-            order = source_order(),
-            name = "",
-            get = function() return loc(str) end,
-            width = "full",
-            desc = loc(str .. "_TT"),
-          },
-          recipeDesc =
-          { type = "description",
-            
-            order = source_order(),
-            name = loc(str .. "_TT"),
-            width = "full",
-            dialogControl = AceMarkdownControl:New().description,
-          },
-        },
+        { desc = desc,
+          box = box,
+          spacer = spacer,
+          button = button,
+        }
       };
       return w;
     
@@ -464,6 +472,7 @@ function(self, event, ...)
       { type = "description",
         name = "## " .. group.title .. " " .. loc("TAGS") .. "\n\n" .. group.help,
         order = source_order(),
+        width = "full",
         dialogControl = AceMarkdownControl:New().description,
       };
       for i,  tag in pairs(group.tags)
@@ -503,10 +512,11 @@ function(self, event, ...)
   end; -- 
 
   local function openDialog(dest)
-        -- local protocol, path = dest:match("^(opt://)(.+)$");
-        -- local path = RPTAGS.utils.text.split(path, "/");
-        notify(RPTAGS.cache.OptionsPanel.name)
-        InterfaceOptionsFrame_OpenToCategory(RPTAGS.cache.OptionsPanel.name)
+        local protocol, path = dest:match("^(opt://)(.+)$");
+        local path = RPTAGS.utils.text.split(path, "/");
+        InterfaceOptionsFrame:Show()
+        InterfaceOptionsFrame_OpenToCategory(RPTAGS.cache.panels.help)
+        -- AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
         -- AceConfigDialog:Open(loc("APP_NAME"))
         -- AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
         

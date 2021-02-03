@@ -33,219 +33,237 @@ function(self, event, ...)
   local Keybind            = RPTAGS.utils.options.keybind
 
   -- ---------------------------------------------------------------------------------------------------------------------------------------------------------------
-  local optionsTable = { 
-    childGroups = "tree",
-    type = "group",
-    plugins = RPTAGS.cache.options.top,
-    args = { 
-      general = 
-      { order    = source_order(),
-        type    = "group",
-        name    = loc("OPT_GENERAL"),
-        childGroups = "tab",
-        args    = 
-        { -- panel = Header("general"),
-          header         = Header("display"),
-          instruct       = Instruct("general"),
-          loginMessage   = Checkbox("login message"),
-          changesMessage = Checkbox("changes message" , nil, true),
-          changesQM      = Question_Mark(loc("CHANGES_MOVED")),
-          linebreaks     = Checkbox("linebreaks"),
-          parsing        = 
-          { type = "group",
-            order = source_order(),
-            name = loc("OPT_PARSE"),
-            args = 
-            { headerParse    = Header("parse", 2),
-              parseHW        = Checkbox("parse hw"),
-              parseGender    = Checkbox("parse gender"),
-              parseAge       = Checkbox("parse age"),
-              adultGenders   = Checkbox("adult genders"   , nil, function() return not Config.get("PARSE_GENDER") end),
-            },
-            plugins = RPTAGS.cache.plugins.parse,
-          },
-          notes          =
-          { type = "group",
-            order = source_order(),
-            name = loc("OPT_NOTES"),
-            args = 
-            { headerNote     = Header("notes", 2),
-              note1          = Textbox("note 1 string"),
-              note2          = Textbox("note 2 string"),
-              note3          = Textbox("note 3 string"),
-            },
-            plugins = RPTAGS.cache.plugins.notes,
-          },
-  
-          formats = 
-          { type = "group",
-            order = source_order(),
-            name = loc("OPT_FORMATS"),
-            args = 
-            { headerFormats  = Header("formats", 2),
-              unitsHeight    = Dropdown("units height"    , nil, function() return not Config.get("PARSE_HW") end),
-              unitsWeight    = Dropdown("units weight"    , nil, function() return not Config.get("PARSE_HW") end),
-              sizeBuffFmt    = Dropdown("sizebuff fmt"),
-              glanceDelim    = Dropdown("glance delim"),
-              glancecolon    = Dropdown("glance colon"),
-              profileSizeFmt = Dropdown("profilesize fmt"),
-              unsupTag       = Dropdown("unsup tag"),
-            },
-            plugins = RPTAGS.cache.plugins.formats,
-          },
-          sizes =
-          { type = "group",
-            order = source_order(),
-            name = loc("OPT_TAG_SIZES"),
-            args =
-            { header           = Header("tag sizes", 2                               ),
 
-              extraSmall       = Slider("tag size xs", { 5, 1 }, { 50, 200 }, 1, 1.5 ),
-              spacerExtraSmall = Spacer(                                             ),
-              resetExtraSmall  = Reset( "tag size xs"                                ),
-
-              small            = Slider("tag size s",  { 5, 1 }, { 50, 200 }, 1, 1.5 ),
-              spacerSmall      = Spacer(                                             ),
-              resetSmall       = Reset( "tag size s"                                 ),
-
-              medium           = Slider("tag size m",  { 5, 1 }, { 50, 200 }, 1, 1.5 ),
-              spacerMedium     = Spacer(                                             ),
-              resetMedium      = Reset( "tag_size_m"                                 ),
-
-              large            = Slider("tag size l",  { 5, 1 }, { 50, 200 }, 1, 1.5 ),
-              spacerLarge      = Spacer(                                             ),
-              resetLarge       = Reset( "tag size l"                                 ),
-
-              extraLarge       = Slider("tag size xl", { 5, 1 }, { 50, 200 }, 1, 1.5 ),
-              spacerExtraLarge = Spacer(                                             ),
-              resetExtraLarge  = Reset( "tag size xl"                                ),
-            },
-            plugins = RPTAGS.cache.plugins.sizes,
-          },
-          keybind              =
-          { name = loc("OPT_KEYBINDINGS"),
-            order    = source_order(),
-            type = "group",
-            args =
-            { options = Keybind("options"),
-              help = Keybind("help"),
-            },
-            plugins = RPTAGS.cache.plugins.keybind,
-          }, 
-        },
-        plugins = RPTAGS.cache.plugins.general,
-      },
-      colors = 
-      { order    = source_order(),
-        type = "group",
-        name = loc("OPT_COLORS"),
-        childGroups = "tab",
+  local generalOptions = 
+  { order    = source_order(),
+    type    = "group",
+    name    = loc("OPT_GENERAL"),
+    childGroups = "tab",
+    args    = 
+    { -- panel = Header("general"),
+      -- header         = Header("display"),
+      instruct       = Instruct("general"),
+      loginMessage   = Checkbox("login message"),
+      -- changesMessage = Checkbox("changes message" , nil, true),
+      -- changesQM      = Question_Mark(loc("CHANGES_MOVED")),
+      linebreaks     = Checkbox("linebreaks"),
+      parsing        = 
+      { type = "group",
+        order = source_order(),
+        name = loc("OPT_PARSE"),
         args = 
-        { panel = Header("colors"),
-          instruct = Instruct("colors"),
-          unknown = Color_Picker("unknown"),
-          reset = Multi_Reset({ "color unknown"}),
-          status = 
-          { type             = "group",
-            childGroups      = "inline",
-            name             = loc("OPT_COLORS_STATUS"),
-            order            = source_order(),
-            args             = 
-            { headerStatus     = Header("colors status"),
-              colorIC          = Color_Picker("ic"),
-              colorNPC         = Color_Picker("npc"),
-              colorOOC         = Color_Picker("ooc"),
-              reset            = Multi_Reset( { "color_ic", "color_npc", "color_ooc" } ),
-            },
-          },
-          gender           = 
-          { type             = "group",
-            childGroups = "inline",
-            name             = loc("OPT_COLORS_GENDER"),
-            order            = source_order(),
-            args             = 
-            { headerGender     = Header("colors gender"),
-              colorMale        = Color_Picker("male"),
-              colorFemale      = Color_Picker("female"),
-              colorNeuter      = Color_Picker("neuter"),
-              colorThey        = Color_Picker("they", nil, nil, function() return not Config.get("PARSE_GENDER") end),
-              reset            = Multi_Reset( { "color_male", "color_female", "color_neuter", "color_they" } ),
-            }, 
-          }, 
-          comparison       = 
-          { type             = "group",
-            childGroups = "inline",
-            name             = loc("OPT_COLORS_COMPARISON"),
-            order            = source_order(),
-            args             = 
-            { headerComparison = Header("colors comparison"),
-              colorLessThan    = Color_Picker("lessthan"),
-              colorEqualish    = Color_Picker("equalish"),
-              colorGreaterThan = Color_Picker("greaterthan"),
-              reset            = Multi_Reset( { "color_lessthan", "color equalish", "color greaterthan" } ),
-            }, 
-          },
-          hilite           = 
-          { type             = "group",
-            childGroups = "inline",
-            name             = loc("OPT_COLORS_HILITE"),
-            order            = source_order(),
-            args             = 
-            { headerHilite     = Header("colors hilite"),
-              colorHilite1     = Color_Picker("hilite 1"),
-              colorHilite2     = Color_Picker("hilite 2"),
-              colorHilite3     = Color_Picker("hilite 3"),
-              reset            = Multi_Reset( { "color hilite 1", "color hilite 2", "color hilite 3" } ),
-            }, 
-          },
-        }, 
-        plugins = RPTAGS.cache.plugins.colors,
-      }, 
-      plugins = RPTAGS.cache.plugins.modules,
-      help = 
-      { name                  = loc("OPT_RPTAGS_HELP"),
-        order    = source_order(),
-        type                  = "group",
-        args                  =
-        { intro               = Markdown(loc("INTRO_MD")),
-          tags              = Panel.taghelp(),
-          tagModifiers       = Markdown({ loc("OPT_TAG_MODIFIERS"), loc("TAG_MODIFIERS_MD") }), 
-          recipes               = 
-          { name               = loc("OPT_RECIPES"),
-            order = source_order(),
-            type = "group",
-            args = 
-            { nameTitle         = Recipe("name titles"),
-              eyes              = Recipe("eyes"),
-              age               = Recipe("age"),
-              currently         = Recipe("currently"),
-              genderRaceClass   = Recipe("gender race class"),
-              target            = Recipe("target"),
-              profileSize       = Recipe("profilesize"),
-              rpStyle           = Recipe("rp style"),
-              friendName        = Recipe("friend name"),
-              server            = Recipe("server"),
-            },
-          },
+        { headerParse    = Header("parse", 2),
+          parseHW        = Checkbox("parse hw"),
+          parseGender    = Checkbox("parse gender"),
+          parseAge       = Checkbox("parse age"),
+          adultGenders   = Checkbox("adult genders"   , nil, function() return not Config.get("PARSE_GENDER") end),
         },
-        plugins = RPTAGS.cache.plugins.help,
+        plugins = RPTAGS.cache.plugins.parse,
       },
-      about                   = 
-      { name                  = loc("OPT_ABOUT"),
-        order    = source_order(),
-        type                  = "group",
-        childGroups           = "tab",
-        args                  =
-        { version             = Panel.version(),
-          changes             = Markdown({ loc("OPT_CHANGES"), loc("CREDITS_MD") }),
-          credits             = Markdown({ loc("OPT_CREDITS"), loc("CREDITS_MD") }),
-          debuggingCommands = Markdown({ loc( "OPT_DEBUGGING_CMDS" ), loc( "DEBUGGING_COMMANDS_MD" )  }),
-          plugins = RPTAGS.cache.plugins.about,
+      notes          =
+      { type = "group",
+        order = source_order(),
+        name = loc("OPT_NOTES"),
+        args = 
+        { header   = Header("notes", 2),
+          note1          = Textbox("note 1 string"),
+          note2          = Textbox("note 2 string"),
+          note3          = Textbox("note 3 string"),
         },
+        plugins = RPTAGS.cache.plugins.notes,
+      },
+  
+      formats = 
+      { type = "group",
+        order = source_order(),
+        name = loc("OPT_FORMATS"),
+        args = 
+        { header = Header("formats", 2),
+          instruct = Instruct("formats"),
+          unitsHeight    = Dropdown("units height"    , nil, function() return not Config.get("PARSE_HW") end),
+          unitsWeight    = Dropdown("units weight"    , nil, function() return not Config.get("PARSE_HW") end),
+          sizeBuffFmt    = Dropdown("sizebuff fmt"),
+          glanceDelim    = Dropdown("glance delim"),
+          glancecolon    = Dropdown("glance colon"),
+          profileSizeFmt = Dropdown("profilesize fmt"),
+          unsupTag       = Dropdown("unsup tag"),
+        },
+        plugins = RPTAGS.cache.plugins.formats,
+      },
+      sizes =
+      { type = "group",
+        order = source_order(),
+        name = loc("OPT_TAG_SIZES"),
+        args =
+        { header           = Header("tag sizes", 2                               ),
+
+          extraSmall       = Slider("tag size xs", { 5, 1 }, { 50, 200 }, 1, 1.5 ),
+          spacerExtraSmall = Spacer(                                             ),
+          resetExtraSmall  = Reset( "tag size xs"                                ),
+
+          small            = Slider("tag size s",  { 5, 1 }, { 50, 200 }, 1, 1.5 ),
+          spacerSmall      = Spacer(                                             ),
+          resetSmall       = Reset( "tag size s"                                 ),
+
+          medium           = Slider("tag size m",  { 5, 1 }, { 50, 200 }, 1, 1.5 ),
+          spacerMedium     = Spacer(                                             ),
+          resetMedium      = Reset( "tag_size_m"                                 ),
+
+          large            = Slider("tag size l",  { 5, 1 }, { 50, 200 }, 1, 1.5 ),
+          spacerLarge      = Spacer(                                             ),
+          resetLarge       = Reset( "tag size l"                                 ),
+
+          extraLarge       = Slider("tag size xl", { 5, 1 }, { 50, 200 }, 1, 1.5 ),
+          spacerExtraLarge = Spacer(                                             ),
+          resetExtraLarge  = Reset( "tag size xl"                                ),
+        },
+        plugins = RPTAGS.cache.plugins.sizes,
+      },
+      keybind              =
+      { name = loc("OPT_KEYBINDINGS"),
+        order    = source_order(),
+        type = "group",
+        args =
+        { options = Keybind("options"),
+          help = Keybind("help"),
+        },
+        plugins = RPTAGS.cache.plugins.keybind,
+      }, 
+    },
+    plugins = RPTAGS.cache.plugins.general,
+  };
+
+  local colorsOptions = 
+  { order    = source_order(),
+    type = "group",
+    name = loc("OPT_COLORS"),
+    childGroups = "tab",
+    args = 
+    { panel = Header("colors"),
+      instruct = Instruct("colors"),
+      unknown = Color_Picker("unknown"),
+      reset = Multi_Reset({ "color unknown"}),
+      status = 
+      { type             = "group",
+        childGroups      = "inline",
+        name             = loc("OPT_COLORS_STATUS"),
+        order            = source_order(),
+        args             = 
+        { headerStatus     = Header("colors status"),
+          colorIC          = Color_Picker("ic"),
+          colorNPC         = Color_Picker("npc"),
+          colorOOC         = Color_Picker("ooc"),
+          reset            = Multi_Reset( { "color_ic", "color_npc", "color_ooc" } ),
+        },
+      },
+      gender           = 
+      { type             = "group",
+        childGroups = "inline",
+        name             = loc("OPT_COLORS_GENDER"),
+        order            = source_order(),
+        args             = 
+        { headerGender     = Header("colors gender"),
+          colorMale        = Color_Picker("male"),
+          colorFemale      = Color_Picker("female"),
+          colorNeuter      = Color_Picker("neuter"),
+          colorThey        = Color_Picker("they", nil, nil, function() return not Config.get("PARSE_GENDER") end),
+          reset            = Multi_Reset( { "color_male", "color_female", "color_neuter", "color_they" } ),
+        }, 
+      }, 
+      comparison       = 
+      { type             = "group",
+        childGroups = "inline",
+        name             = loc("OPT_COLORS_COMPARISON"),
+        order            = source_order(),
+        args             = 
+        { headerComparison = Header("colors comparison"),
+          colorLessThan    = Color_Picker("lessthan"),
+          colorEqualish    = Color_Picker("equalish"),
+          colorGreaterThan = Color_Picker("greaterthan"),
+          reset            = Multi_Reset( { "color_lessthan", "color equalish", "color greaterthan" } ),
+        }, 
+      },
+      hilite           = 
+      { type             = "group",
+        childGroups = "inline",
+        name             = loc("OPT_COLORS_HILITE"),
+        order            = source_order(),
+        args             = 
+        { headerHilite     = Header("colors hilite"),
+          colorHilite1     = Color_Picker("hilite 1"),
+          colorHilite2     = Color_Picker("hilite 2"),
+          colorHilite3     = Color_Picker("hilite 3"),
+          reset            = Multi_Reset( { "color hilite 1", "color hilite 2", "color hilite 3" } ),
+        }, 
       },
     }, 
+    plugins = RPTAGS.cache.plugins.colors,
+  };
+
+  local helpSystem = 
+  { name                  = loc("OPT_HELP"),
+    order    = source_order(),
+    type                  = "group",
+    args                  =
+    { intro               = 
+      { type = "group",
+        name = loc("OPT_HELP_INTRO"),
+        order = source_order(),
+        args = { panel = Markdown(loc("INTRO_MD")), },
+      },
+      tags              = Panel.taghelp(),
+      tagModifiers       = Markdown({ loc("OPT_TAG_MODIFIERS"), loc("TAG_MODIFIERS_MD") }), 
+      recipes               = 
+      { name               = loc("OPT_RECIPES"),
+        order = source_order(),
+        type = "group",
+        args = 
+        { header = Header("recipes"),
+          instruct = Instruct("recipes"),
+          nameTitle         = Recipe("name titles"),
+          eyes              = Recipe("eyes"),
+          age               = Recipe("age"),
+          currently         = Recipe("currently"),
+          genderRaceClass   = Recipe("gender race class"),
+          target            = Recipe("target"),
+          profileSize       = Recipe("profilesize"),
+          rpStyle           = Recipe("rp style"),
+          friendName        = Recipe("friend name"),
+          server            = Recipe("server"),
+        },
+      },
+    },
+    plugins = RPTAGS.cache.plugins.help,
+  };
+  
+  local aboutScreen             = 
+  { name                  = loc("OPT_ABOUT"),
+    order    = source_order(),
+    type                  = "group",
+    childGroups           = "tab",
+    args                  =
+    { version             = Panel.version(),
+      changes             = Markdown({ loc("OPT_CHANGES"), loc("CREDITS_MD") }),
+      credits             = Markdown({ loc("OPT_CREDITS"), loc("CREDITS_MD") }),
+      debuggingCommands   = Markdown({ loc( "OPT_DEBUGGING_CMDS" ), loc( "DEBUGGING_COMMANDS_MD" )  }),
+      plugins = RPTAGS.cache.plugins.about,
+    },
+  };
+
+  local optionsTable = 
+  { childGroups = "tree",
+    type = "group",
+    plugins = RPTAGS.cache.options.top,
+    plugins = RPTAGS.cache.plugins.modules,
+    args = { 
+      general = generalOptions,
+      colors = colorsOptions,
+      help = helpSystem,
+      about = aboutScreen,
+    },
   }; 
 
+  RPTAGS.cache.optionsSections = { "colors", "help", "about" };
   RPTAGS.cache.optionsTable = optionsTable;
   
 end);
