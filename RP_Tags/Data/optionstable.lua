@@ -17,9 +17,7 @@ function(self, event, ...)
   local Checkbox           = RPTAGS.utils.options.checkbox
   local Color_Picker       = RPTAGS.utils.options.color_picker
   local Common             = RPTAGS.utils.options.common
-  local Dimensions_Slider  = RPTAGS.utils.options.dimensions_slider
   local Dropdown           = RPTAGS.utils.options.dropdown
-  local Frame_Scaler       = RPTAGS.utils.options.frame_scaler
   local Header             = RPTAGS.utils.options.header
   local Instruct           = RPTAGS.utils.options.instruct
   local Markdown           = RPTAGS.utils.options.markdown
@@ -31,25 +29,24 @@ function(self, event, ...)
   local Reset              = RPTAGS.utils.options.reset
   local Slider             = RPTAGS.utils.options.slider
   local Spacer             = RPTAGS.utils.options.spacer
-  local Tagpanel           = RPTAGS.utils.options.tagpanel
   local Textbox            = RPTAGS.utils.options.textbox
+  local Keybind            = RPTAGS.utils.options.keybind
 
-  
   -- ---------------------------------------------------------------------------------------------------------------------------------------------------------------
   local optionsTable = { 
     childGroups = "tree",
     type = "group",
     plugins = RPTAGS.cache.options.top,
     args = { 
-      generaL = 
-      { order   = 1,
+      general = 
+      { order    = source_order(),
         type    = "group",
         name    = loc("OPT_GENERAL"),
         childGroups = "tab",
         args    = 
-        { panel = Header("general"),
-          instruct = Instruct("general"),
-          headerDisplay  = Header("display"),
+        { -- panel = Header("general"),
+          header         = Header("display"),
+          instruct       = Instruct("general"),
           loginMessage   = Checkbox("login message"),
           changesMessage = Checkbox("changes message" , nil, true),
           changesQM      = Question_Mark(loc("CHANGES_MOVED")),
@@ -59,7 +56,7 @@ function(self, event, ...)
             order = source_order(),
             name = loc("OPT_PARSE"),
             args = 
-            { headerParse    = Header("parse"),
+            { headerParse    = Header("parse", 2),
               parseHW        = Checkbox("parse hw"),
               parseGender    = Checkbox("parse gender"),
               parseAge       = Checkbox("parse age"),
@@ -72,7 +69,7 @@ function(self, event, ...)
             order = source_order(),
             name = loc("OPT_NOTES"),
             args = 
-            { headerNote     = Header("notes"),
+            { headerNote     = Header("notes", 2),
               note1          = Textbox("note 1 string"),
               note2          = Textbox("note 2 string"),
               note3          = Textbox("note 3 string"),
@@ -85,7 +82,7 @@ function(self, event, ...)
             order = source_order(),
             name = loc("OPT_FORMATS"),
             args = 
-            { headerFormats  = Header("formats"),
+            { headerFormats  = Header("formats", 2),
               unitsHeight    = Dropdown("units height"    , nil, function() return not Config.get("PARSE_HW") end),
               unitsWeight    = Dropdown("units weight"    , nil, function() return not Config.get("PARSE_HW") end),
               sizeBuffFmt    = Dropdown("sizebuff fmt"),
@@ -101,7 +98,7 @@ function(self, event, ...)
             order = source_order(),
             name = loc("OPT_TAG_SIZES"),
             args =
-            { header           = Header("tag sizes"                                  ),
+            { header           = Header("tag sizes", 2                               ),
 
               extraSmall       = Slider("tag size xs", { 5, 1 }, { 50, 200 }, 1, 1.5 ),
               spacerExtraSmall = Spacer(                                             ),
@@ -123,22 +120,15 @@ function(self, event, ...)
               spacerExtraLarge = Spacer(                                             ),
               resetExtraLarge  = Reset( "tag size xl"                                ),
             },
+            plugins = RPTAGS.cache.plugins.sizes,
           },
           keybind              =
           { name = loc("OPT_KEYBINDINGS"),
-            order = 104,
+            order    = source_order(),
             type = "group",
             args =
-            { options =
-              { name = loc("APP_NAME") .. " Options",
-                order = source_order(),
-                type = "keybinding",
-              },
-              help =
-              { name = loc("APP_NAME") .. " Help",
-                order = source_order(),
-                type = "keybinding",
-              },
+            { options = Keybind("options"),
+              help = Keybind("help"),
             },
             plugins = RPTAGS.cache.plugins.keybind,
           }, 
@@ -146,7 +136,7 @@ function(self, event, ...)
         plugins = RPTAGS.cache.plugins.general,
       },
       colors = 
-      { order = 2,
+      { order    = source_order(),
         type = "group",
         name = loc("OPT_COLORS"),
         childGroups = "tab",
@@ -214,41 +204,12 @@ function(self, event, ...)
       plugins = RPTAGS.cache.plugins.modules,
       help = 
       { name                  = loc("OPT_RPTAGS_HELP"),
-        order                 = 105,
+        order    = source_order(),
         type                  = "group",
         args                  =
-        { intro           =
-          { order             = source_order(),
-            type              = "description",
-            dialogControl     = AceMarkdownControl:New().description,
-            name              = loc("INTRO_MD"),
-          },
+        { intro               = Markdown(loc("INTRO_MD")),
           tags              = Panel.taghelp(),
-          -- helpOptions           = Markdown( loc( "OPT_OPTIONS"        ), loc( "OPTIONS_MD"            )  ),
-          -- helpBindings          = Markdown( loc( "OPT_KEYBINDINGS"    ), loc( "BINDINGS_MD"           )  ),
-          tagModifiers       =
-          { order             = source_order(),
-            type              = "group",
-            name              = loc("OPT_TAG_MODIFIERS"),
-            childGroups       = "tab",
-            args              = 
-            { panel           = 
-              { order         = source_order(),
-                type          = "description",
-                name          = loc("TAG_MODIFIERS_MD"),
-                dialogControl     = AceMarkdownControl:New().description,
-              },
-              modifierGroup   =
-              { order         = source_order(),
-                name          = loc("OPT_TAG_MODIFIERS"),
-                type          = "group",
-                args          =
-                { helpLabels  = Markdown(loc("OPT_LABELS"),         loc("LABELS_MD")),
-                  helpSizes   = Markdown(loc("OPT_SIZE_MODIFIERS"), loc("SIZE_MODIFIERS_MD")),
-                },
-              },
-            },
-          },
+          tagModifiers       = Markdown({ loc("OPT_TAG_MODIFIERS"), loc("TAG_MODIFIERS_MD") }), 
           recipes               = 
           { name               = loc("OPT_RECIPES"),
             order = source_order(),
@@ -271,38 +232,14 @@ function(self, event, ...)
       },
       about                   = 
       { name                  = loc("OPT_ABOUT"),
-        order                 = 106,
+        order    = source_order(),
         type                  = "group",
         childGroups           = "tab",
         args                  =
         { version             = Panel.version(),
-          changes             =
-          { order             = source_order(),
-            type              = "group",
-            name              = loc("OPT_CHANGES"),
-            args              =
-            { panel           =
-              { order         = source_order(),
-                type          = "description",
-                dialogControl = AceMarkdownControl:New().description,
-                name          = loc("CHANGES_MD")
-              },
-            },
-          },
-          credits             =
-          { order             = source_order(),
-            type              = "group",
-            name              = loc("OPT_CREDITS"),
-            args              =
-            { panel           =
-              { order         = source_order(),
-                type          = "description",
-                dialogControl = AceMarkdownControl:New().description,
-                name          = loc("CREDITS_MD")
-              },
-            },
-          },
-          debuggingCommands = Markdown( loc( "OPT_DEBUGGING_CMDS" ), loc( "DEBUGGING_COMMANDS_MD" )  ),
+          changes             = Markdown({ loc("OPT_CHANGES"), loc("CREDITS_MD") }),
+          credits             = Markdown({ loc("OPT_CREDITS"), loc("CREDITS_MD") }),
+          debuggingCommands = Markdown({ loc( "OPT_DEBUGGING_CMDS" ), loc( "DEBUGGING_COMMANDS_MD" )  }),
           plugins = RPTAGS.cache.plugins.about,
         },
       },
@@ -310,7 +247,5 @@ function(self, event, ...)
   }; 
 
   RPTAGS.cache.optionsTable = optionsTable;
-
-
   
 end);

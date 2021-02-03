@@ -37,7 +37,7 @@ function(self, event, ...)
   Cache.slash.slashCmd = slashes[1];
   
   local keys = {}; 
-  for k, _ in pairs(CONST.UIPANELS) do tinsert(keys, loc("SLASH_" .. k)) end;
+  for k, _ in pairs(CONST.UIPANELS) do tinsert(keys, loc("SLASH_" .. k:upper())) end;
   Cache.slash.uniq, Cache.slash.ambig = sliceUp(keys);
 
   SlashCmdList["RPTAGS"] =
@@ -45,7 +45,6 @@ function(self, event, ...)
       local  cmd, params = str:match("(%S+)%s*(.*)$");
       if     cmd == nil then openTo("opt://help");
       else   local  uniq, ambig = Cache.slash.uniq[cmd], Cache.slash.ambig[cmd];
-             print("uniq =", uniq);
              if     ambig
              then   local poss = split(ambig, "|")
                     local last = table.remove(poss);
@@ -54,8 +53,8 @@ function(self, event, ...)
                       tc(last));
              elseif uniq == "commands"
              then   notify(loc("SLASH_COMMAND_LIST"))
-             elseif uniq and CONST.UIPANELS[uniq:upper()]
-             then   openTo(CONST.UIPANELS[uniq:upper()]);
+             elseif uniq and CONST.UIPANELS[uniq]
+             then   openTo(CONST.UIPANELS[uniq]);
              else   notifyFmt(loc("FMT_UNKNOWN_SLASH"), cmd, Cache.slash.slashCmd)
              end;
       end;

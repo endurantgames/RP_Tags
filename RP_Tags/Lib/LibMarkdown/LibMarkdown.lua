@@ -1,7 +1,7 @@
 -- lua implementation of markdown originally from https://github.com/mpeterv/markdown
 
 local  MARKDOWN10 = "LibMarkdown-1.0";
-local  MARKDOWN10_MINOR = 5;
+local  MARKDOWN10_MINOR = 6;
 if not LibStub then error(MARKDOWN10 .. " requires LibStub."); end;
 local  LibMarkdown = LibStub:NewLibrary(MARKDOWN10, MARKDOWN10_MINOR);
 
@@ -687,10 +687,8 @@ function LibMarkdown.blockquotes(self, lines)
    end
 
    local function process_blockquote(lines)
-      print(lines[1].text);
       local raw = self:escape_special_chars(lines[1].text)
       for i = 2,#lines do
-         print(lines[i].text);
          raw = raw .. self:escape_special_chars(lines[i].text) .. (lines[i].text == "" and "<br /> " .. self.config.nbsp .. ' <br />"' or '')
       end
       local bt = self:block_transform(raw)

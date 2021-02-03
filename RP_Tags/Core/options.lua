@@ -12,12 +12,16 @@ local RPTAGS          = RPTAGS;
 RPTAGS.queue:WaitUntil("CORE_OPTIONS",
 function(self, event, ...)
   
-  local AceConfig       = LibStub("AceConfig-3.0");
-  local AceConfigDialog = LibStub("AceConfigDialog-3.0");
+  local ACR       = LibStub("AceConfig-3.0");
+  local ACD = LibStub("AceConfigDialog-3.0");
   
   local loc             = RPTAGS.utils.locale.loc;
+  local addOnName       = RPTAGS.addOnName;
+  local APP_NAME        = loc("APP_NAME");
   
-  AceConfig:RegisterOptionsTable(loc("APP_NAME"), RPTAGS.cache.optionsTable);
-  RPTAGS.cache.OptionsPanel = AceConfigDialog:AddToBlizOptions(loc("APP_NAME"));
-  
+  local optionsFrame = {};
+
+  ACR:RegisterOptionsTable(APP_NAME, RPTAGS.cache.optionsTable, nil);
+  ACD:AddToBlizOptions(APP_NAME);
+
 end);

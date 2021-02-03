@@ -29,6 +29,9 @@ function(self, event, ...)
   
         -- function to split a string based on a pattern
   local function split(str, pat)
+        return { strsplit(pat, str) }
+  end;
+  local function old_split(str, pat)
         local t          = {};
         local fpat       = "(.-)" .. pat;
         local last_end   = 1;

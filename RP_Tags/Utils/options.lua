@@ -25,7 +25,9 @@ function(self, event, ...)
   local sizebuffs          = RPTAGS.utils.format.sizebuff;
   local profilesizes       = RPTAGS.utils.format.sizewords;
   local unsup              = RPTAGS.utils.format.unsup;
+  local notify             = RPTAGS.utils.text.notify;
   local AceMarkdownControl = LibStub("AceMarkdownControl-3.0");
+  local AceConfigDialog = LibStub("AceConfigDialog-3.0");
   local split              = RPTAGS.utils.text.split;
   
   local menus =
@@ -106,19 +108,6 @@ function(self, event, ...)
     },
   } ;
   
-  local function openUrl(site, url, name)
-        if site and loc("URL_" .. site:upper()) ~= "" then url = loc("URL_" .. site:upper()) end;
-        StaticPopup_Show("RPTAGS_OPEN_URL", nil, nil, { url = url, name = name, });
-  end;
-  
-  local version     = Utils.text.v(); -- yes, meant as a function call
-  
-  -- libraries
-  --
-  
-  local LSM         = LibStub("LibSharedMedia-3.0")
-  
-  -- handlers
   
   local function source_order()
         RPTAGS.cache.orderCount = (RPTAGS.cache.orderCount or 0) + 1;
@@ -190,22 +179,6 @@ function(self, event, ...)
         return w;
   end;
   
-  local function build_frame_scaler(str, hidden, disabled)
-        local w    = build_common("range", "CONFIG_", str .. "frame scale", hidden, disabled, true, true);
-        w.min      = 0.25;
-        w.max      = 2;
-        w.step     = 0.05;
-        return w;
-  end;
-  local function build_dimensions_slider(str, min, max, step, hidden, disabled)
-        local w    = build_common("range", "CONFIG_", str, hidden, disabled, true);
-        w.min      = min or 0;
-        w.max      = max or 100;
-        w.step     = step or 1;
-        w.set      = function(info, value) Config.set(str, value); resizeAll(); end;
-        return w;
-  end;
-
   local function build_slider(str, min, max, step, width, hidden, disabled, get, set)
         local w = build_common("range", "config_", str, hidden, disbled, true, true);
         w.width = width or "full";
@@ -243,34 +216,34 @@ function(self, event, ...)
         return w;
   end;
 
-  local function build_tagpanel(str, ttstr, hidden, disabled)
-        local str = str:upper():gsub("%s", "_");
-        local w    = 
-        { type = "group",
-          name     = loc("CONFIG_" .. str);
-          args     = 
-          { panel   = build_pushbutton(str,   function() openEditor(str)   end, hidden, disabled),
-            tooltip = build_pushbutton(ttstr, function() openEditor(ttstr) end, hidden, disabled),
-          };
-        };
-        return w;
-  end;
-
-  local function build_markdown(title, str, hidden, disabled)
+  local function build_markdown(text, hidden, disabled)
+      local AMC = AceMarkdownControl:New();
+      AMC.Cursor = RPTAGS.CONST.CURSOR;
+      -- AMC.OpenProtocol.opt = RPTAGS.utils.options.open;
+      AMC.OpenProtocol.opt = function(dest, link) 
+        print(dest, link)
+        RPTAGS.utils.options.open(link); 
+        end;
       local w =
-      { type = "group",
-        name = title,
-        order = source_order(),
-        args = 
-        { panel =
-          { order = source_order(),
-            type = "description",
-            dialogControl = AceMarkdownControl:New().description,
-            name = str,
-          },
-        },
+      { order = source_order(),
+        type = "description",
+        dialogControl = AMC.description,
       };
-      return title and w or w.args.panel;
+
+      if type(text) == "table"
+      then w.name = text[2];
+           w = 
+           { type = "group",
+             name = text[1],
+             order = source_order,
+             args = { 
+               text = w }
+           };
+      elseif type(text) == "string"
+      then w.name = text;
+      end;
+
+      return w
   end;
 
   
@@ -304,8 +277,13 @@ function(self, event, ...)
         return w;
   end;
 
-  local function build_header(str, hidden, disabled)
-        local w = build_common("header", "opt ", str, hidden, disabled, nil, nil, true);
+  local function build_header(str, level, hidden, disabled)
+        local w = build_markdown(
+                    string.rep("#", level or 1) .. 
+                    loc("OPT_" .. str:upper():gsub("%s+","_")), 
+                    hidden, disabled);
+        -- w.type = "header";
+        -- local w = build_common("header", "opt ", str, hidden, disabled, nil, nil, true);
         return w;
   end;
   
@@ -315,6 +293,11 @@ function(self, event, ...)
         return w;
   end; -- beep
   
+  local function build_keybind(str, hidden, disabled)
+        local w = build_common("keybinding", "keybind ", str, hidden, disabled);
+        return w
+  end;
+
   local function build_panel_version(hidden, disabled)
         
        local args = {}
@@ -409,7 +392,7 @@ function(self, event, ...)
 
       args.blankBeforeFollowUp = build_blank_line();
 
-      args.followUpText = build_markdown(nil, loc("RPQ_FOLLOWUP"));
+      args.followUpText = build_markdown(loc("RPQ_FOLLOWUP"));
 
       local w =
       { type = "group",
@@ -519,16 +502,14 @@ function(self, event, ...)
   
   end; -- 
 
-  local function openDialog(...)
-        local AceConfigDialog = LibStub("AceConfigDialog-3.0");
-        local loc = RPTAGS.utils.locale.loc;
-        AceConfigDialog:Open(loc("APP_NAME"));
-        AceConfigDialog:SelectGroup(loc("APP_NAME"), ...);
-  end;
-
-  local function openDialogByPath(dest)
-        local protocol, path = dest:match("^(opt://)(.+)$");
-        openDialog(unpack(RPTAGS.utils.text.split(path, "/")));
+  local function openDialog(dest)
+        -- local protocol, path = dest:match("^(opt://)(.+)$");
+        -- local path = RPTAGS.utils.text.split(path, "/");
+        notify(RPTAGS.cache.OptionsPanel.name)
+        InterfaceOptionsFrame_OpenToCategory(RPTAGS.cache.OptionsPanel.name)
+        -- AceConfigDialog:Open(loc("APP_NAME"))
+        -- AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
+        
   end;
 
   local function sliceUp(group)
@@ -559,16 +540,13 @@ function(self, event, ...)
 
   RPTAGS.utils.options.source_order      = source_order;
   RPTAGS.utils.options.sliceUp           = sliceUp;
-  RPTAGS.utils.options.open              = openDialogByPath;
-  RPTAGS.utils.options.openDialog        = openDialog;
+  RPTAGS.utils.options.open              = openDialog;
 
   RPTAGS.utils.options.blank_line        = build_blank_line;
   RPTAGS.utils.options.checkbox          = build_checkbox
   RPTAGS.utils.options.color_picker      = build_color_picker
   RPTAGS.utils.options.common            = build_common
-  RPTAGS.utils.options.dimensions_slider = build_dimensions_slider
   RPTAGS.utils.options.dropdown          = build_dropdown
-  RPTAGS.utils.options.frame_scaler      = build_frame_scaler
   RPTAGS.utils.options.header            = build_header
   RPTAGS.utils.options.instruct          = build_instruct
   RPTAGS.utils.options.markdown          = build_markdown
@@ -580,11 +558,9 @@ function(self, event, ...)
   RPTAGS.utils.options.reset             = build_reset
   RPTAGS.utils.options.slider            = build_slider;
   RPTAGS.utils.options.spacer            = build_spacer;
-  RPTAGS.utils.options.tagpanel          = build_tagpanel
   RPTAGS.utils.options.textbox           = build_textbox;
   RPTAGS.utils.options.question_mark     = build_question_mark;
-
-
+  RPTAGS.utils.options.keybind           = build_keybind;
  
 -- RPQ -----------------------------------------------------------------------------------------------------------------------------------------------
 end);

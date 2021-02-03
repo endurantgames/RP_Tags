@@ -148,6 +148,8 @@ L["HELP_DEFAULT"]           = "Introduction";
 -- --- keybindings
 L["KEYBIND_OPTIONS"]        = "Open " .. APP_NAME .. " Options";
 L["KEYBIND_HELP"]           = "Open " .. APP_NAME .. " Help";
+L["KEYBIND_OPTIONS_TT"]      = "Set a keybinding to automatically open RPTGAS options.";
+L["KEYBIND_HELP_TT"]         = "Set a keybinding to automatically open RPTAGS help.";
 
 -- --------------------- - options ---------------------------------------------------------------------------------------------------------------------------------
 L["OPT_COLORS"]            = RP .. RAINBOW_COLORS;
@@ -1226,29 +1228,46 @@ RPTAGS offers a number of keybinds to allow you to control the addon with a sing
 Key bindings are accessible through the standard [WoW Key Bindings Menu](rpconfig:keybind), on the AddOns sub-menu.
 ]==========================================================================];
 
-L["LABELS_MD"] = 
-[==========================================================================[
-## Tag Labels
-
-Most tags can autogenerate their own labels. If a tag's contents are empty, the label won't appear.
-
-To use a label, simply add -label to the tag.
-
-For example, to add a label to rp:eyes, write:
-
-### &nbsp; &nbsp; [rp:eyes-label]
-]==========================================================================];
-
-L["SIZE_MODIFIERS_MD"] =
-[==========================================================================[
-## Tag Sizes
-
-]==========================================================================];
-
 L["TAG_MODIFIERS_MD"] = 
 [==========================================================================[
-# Tag Modifiers
+There are two types of modifier tags -- labels and sizes. 
 
+A modifier is applied after the main tag, with a color (`:`)
+between them. Like this:
+
+    [rp:title:label] [rp:title:xs]
+
+> Title: Stormwind Fashion Icon Storm
+
+You can even mix the two if you want, but if you do, the `:label`
+modifier has to come first:
+
+    [rp:title:label:xs]
+
+> Title: Storm
+
+These two sequences don't actually do the same thing. The first one
+puts a label in front of the unit's title, then the titled, 
+followed again by their title -- but only the first 5 characters --
+`:xs` stands for "extra small."
+
+While the combined tag displays a label before the unit's title,
+and then 5 their title itself -- but again, only 5 characters.
+
+ - `:extrasmall`, `:veryshort` (`:xs`, `:vs`):  5 characters
+ - `:small`, `:short`          (`:s`):  10 characters 
+ - `:medium`                   (`:m`):  15 characters
+ - `:large`, `:long`           (`:l`):  20 characters
+ - `:extralarge`, `:verylong`  (`:xl`, `:vl`):  50 characters
+^
+
+You can change the number of characters in [options](opt://general/sizes).
+
+Test: [keybindings](opt://general/keybind)
+
+Test2: [about](opt://help/recipes)
+
+Test3: [email oraibi](mailto:oraibi@gmail.com)
 ]==========================================================================];
 
 L["DEBUGGING_COMMANDS_MD"] = 

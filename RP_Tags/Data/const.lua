@@ -420,16 +420,23 @@ C.CONFIG =
   } -- config
 
 C.UIPANELS =
-{ ABOUT    = "opt://about",
-  CHANGES  = "opt://about/changes",
-  COLORS   = "opt://colors",
-  CREDITS  = "opt://about/credits",
-  HELP     = "opt://help",
-  KEYBIND  = "opt://general/keybinds",
-  OPTIONS  = "opt://general",
-  TAGS     = "opt://help/tags",
-  VERSION  = "opt://about/version",
-  COMMANDS = true,
+{ about    = "opt://about",
+  changes  = "opt://about/changes",
+  colors   = "opt://colors",
+  credits  = "opt://about/credits",
+  help     = "opt://help",
+  keybind  = "opt://general/keybinds",
+  options  = "opt://general",
+  tags     = "opt://help/tags",
+  version  = "opt://about/version",
+  commands = true,
+};
+
+C.CURSOR =
+{ http   = "Interface\\CURSOR\\ArgusTeleporter.PNG",
+  https  = "Interface\\CURSOR\\BastionTeleporter.PNG",
+  mailto = "Interface\\CURSOR\\Mail.PNG",
+  opt    = "Interface\\CURSOR\\QuestRepeatable.PNG",
 };
   
 end);
