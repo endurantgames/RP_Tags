@@ -16,12 +16,29 @@ local RPTAGS = RPTAGS;
 RPTAGS.queue:WaitUntil("UTILS_MODULES",
 function(self, event, ...)
 
-  RPTAGS.cache.plugins = {};
+  RPTAGS.cache.plugins = RPTAGS.cache.plugins or {};
+  local PCache = RPTAGS.cache.plugins;
 
-  local function addPluginOptions(location, title, options)
-    if location and title and options
-    then RPTAGS.cache.plugins[location] = RPTAGS.cache.plugins[location] or {};
-         RPTAGS.cache.plugins[location][title] = options
+  local function addOptions(addOnName, location, options)
+    if   addOnName and location and options
+    then PCache[location] = PCache[location] or {};
+         PCache[location][addOnName] = PCache[location][addOnName] or {};
+         local MountPoint = PCache[location][addOnName]
+         for k, v in pairs(options)
+         do  if   v.order 
+             then v.order = 1999 + v.order;
+             else v.order = 1000 + RPTAGS.utils.options.source_order();
+             end;
+             MountPoint[k] = v;
+         end;
+    end;
+  end;
+
+  local function registerTargetFunction(target, funcType, func)
+    if RPTAGS.cache.addOns.targets[target]
+    then RPTAGS.cache.addOns.targets[target][funcType]= func;
+    elseif RPTAGS.cache.addOns.other[target]
+    then RPTAGS.cache.addOns.other[target][funcType] = func;
     end;
   end;
 
@@ -40,7 +57,8 @@ function(self, event, ...)
     end;
   end;
 
-  RPTAGS.utils.modules.extend = extendUtility;
-  RPTAGS.utils.modules.plugOptions = addPluginOptions;
+  RPTAGS.utils.modules.registerFunction = registerTargetFunction;
+  RPTAGS.utils.modules.extend           = extendUtility;
+  RPTAGS.utils.modules.addOptions       = addOptions;
 end);
 

@@ -123,8 +123,7 @@ function(self, event, ...)
         plugins = RPTAGS.cache.plugins.sizes,
       },
       keybind              =
-      { 
-          name = loc("OPT_KEYBINDINGS"),
+      { name = loc("OPT_KEYBINDINGS"),
         order    = source_order(),
         type = "group",
         args =

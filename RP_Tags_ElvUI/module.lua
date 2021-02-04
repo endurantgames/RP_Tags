@@ -111,8 +111,15 @@ function(self, event, ...)
 
 end);
 
+Module:WaitUntil("before DATA OPTIONS",
+function(self, event, ...)
+  RPTAGS.utils.modules.registerFunction("ElvUI", "options",
+    function() 
+      ElvUI[1]:ToggleOptionsUI();
+    end);
+end);
 Module:WaitUntil("UTILS_FRAMES",
-function(Self, event, ...)
+function(self, event, ...)
 
   local E, _, _, _, _, _  = unpack(_G["ElvUI"]); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
   local UF                = E:GetModule('UnitFrames');

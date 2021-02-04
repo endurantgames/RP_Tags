@@ -5,6 +5,7 @@
     <Script file="colors.lua"  />
     <Script file="config.lua"  />
     <Script file="formats.lua" />
+    <Script file="frames.lua"  />
     <Script file="get.lua"     />
     <Script file="locale.lua"  />
     <Script file="modules.lua" />

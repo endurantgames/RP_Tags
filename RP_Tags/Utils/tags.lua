@@ -107,13 +107,16 @@ local function addTag(tag, group)
   -- and that tag is done!
 end;
 
-local function registerTag(...) return ... end;
+-- this will be extended by UF-specific functions
+local function registerTag(...)  return ... end;
+local function refreshFrame(...) return ... end;
+local function refreshAll(...)   return ... end;
  
-RPTAGS.utils.tags             = RPTAGS.utils.tags or {};
-RPTAGS.utils.tags.registerTag = registerTag;
-RPTAGS.utils.tags.addTag      = addTag;
-RPTAGS.utils.tags.addTagGroup = addTagGroup;
-RPTAGS.utils.tags.addAllTags  = addAllTags;
+RPTAGS.utils.tags              = RPTAGS.utils.tags or {};
+RPTAGS.utils.tags.registerTag  = registerTag;
+RPTAGS.utils.tags.addTag       = addTag;
+RPTAGS.utils.tags.addTagGroup  = addTagGroup;
+RPTAGS.utils.tags.addAllTags   = addAllTags;
 
 -- RPQ -----------------------------------------------------------------------------------------------------------------------
 end);

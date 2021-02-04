@@ -17,11 +17,15 @@ function(self, event, ...)
     local getUnitID = RPTAGS.utils.get.core.unitID;
     local refreshFrame = RPTAGS.utils.tags.refreshFrame;
       table.insert(msp.callback.received, 
-        function(updatedUnitName)
-          if getUnitID('target') == updatedUnitName then RPTAGS.utils.tags.refreshAll(); end;
-          if getUnitID('focus')  == updatedUnitName then RPTAGS.utils.tags.refreshAll(); end;
-          if getUnitID('player') == updatedUnitName then RPTAGS.utils.tags.refreshAll(); end;
+        function(unitID)
+          RPTAGS.utils.frames.refreshAll();
         end);
    end
 );
+
+Module:WaitUntil("before DATA OPTIONS",
+function(self, event, ...)
+  RPTAGS.utils.modules.registerFunction("MyRolePlay", "options",
+    function() InterfaceOptionsFrame_OpenToCategory("MyRolePlay") end);
+end);
 

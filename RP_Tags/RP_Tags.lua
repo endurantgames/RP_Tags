@@ -34,6 +34,7 @@ local EVENTS =
           "UTILS_FORMATS",
           "UTILS_PARSE",
           "UTILS_GET",
+          "UTILS_FRAMES",
 
       "UTILS_TAGS",
           "DATA_TAGS",

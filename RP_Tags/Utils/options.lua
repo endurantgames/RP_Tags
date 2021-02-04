@@ -27,7 +27,8 @@ function(self, event, ...)
   local unsup              = RPTAGS.utils.format.unsup;
   local notify             = RPTAGS.utils.text.notify;
   local AceMarkdownControl = LibStub("AceMarkdownControl-3.0");
-  local AceConfigDialog = LibStub("AceConfigDialog-3.0");
+  local AceConfigDialog    = LibStub("AceConfigDialog-3.0");
+  local AceGUI             = LibStub("AceGUI-3.0");
   local split              = RPTAGS.utils.text.split;
   
   local menus =
@@ -397,7 +398,24 @@ function(self, event, ...)
   end; -- beep
   
   local function build_keybind(str, hidden, disabled)
-        local w = build_common("keybinding", "keybind ", str, hidden, disabled);
+        local str = "KEYBIND_" .. str:upper():gsub("%s+", "");
+        local w = 
+        { name = loc(str),
+          type = "group",
+          order = source_order(),
+          inline = true,
+        };
+
+        local kb1 = build_common("keybinding", "UI_", "BLANK", hidden, disabled);
+        local kb2 = build_common("keybinding", "UI_", "BLANK", hidden, disabled);
+        local desc = build_markdown(loc(str .. "_TT"));
+
+        w.args =
+        { kb1 = kb1,
+          kb2 = kb2,
+          desc = desc,
+        };
+
         return w
   end;
 
@@ -641,8 +659,6 @@ function(self, event, ...)
 --                           RPTAGS.cache.help.tagIndex["rp:" .. path[1]];
 --        if try1 or try2 then openDialog(try1 or try2) end;
 --  end;
-
-
 
   local function sliceUp(group)
     local dups = {};

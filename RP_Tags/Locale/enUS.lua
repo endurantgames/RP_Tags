@@ -44,6 +44,9 @@ L["APP_NAME"]           = APP_NAME;
 L["APP_VERSION"]        = CONST.VERSION;
 L["APP_VERSION_MODE"]   = CONST.VERSION_MODE;
 L["TAGS"]               = "Tags";
+-- temporary cruft
+L["AND_A_CLEAR_PUSHBUTTON"] = "And a clear pushbutton";
+L["AND_A_CLEAR_PUSHBUTTON_TT"] = "And a clear pushbutton";
 -- --- slash commands
 L["APP_SLASH"]          = "rptags|rptag|rpt";
 
@@ -154,8 +157,8 @@ L["HELP_DEFAULT"]           = "Introduction";
 -- --- keybindings
 L["KEYBIND_OPTIONS"]        = "Open " .. APP_NAME .. " Options";
 L["KEYBIND_HELP"]           = "Open " .. APP_NAME .. " Help";
-L["KEYBIND_OPTIONS_TT"]      = "Set a keybinding to automatically open RPTGAS options.";
-L["KEYBIND_HELP_TT"]         = "Set a keybinding to automatically open RPTAGS help.";
+L["KEYBIND_OPTIONS_TT"]      = "Set a keybinding to open RPTGAS options.";
+L["KEYBIND_HELP_TT"]         = "Set a keybinding to open RPTAGS help.";
 
 -- --------------------- - options ---------------------------------------------------------------------------------------------------------------------------------
 L["OPT_COLORS"]            = RAINBOW_COLORS;
@@ -267,7 +270,6 @@ L["GET_LINK"]                       = "Get Link";
 L["GET_LINK_INSTRUCT"]              = "You can copy this link by using the %s keyboard shortcut and then paste the link into your browser using the %s shortcut.";
 L["IMPORT_TRP3_CONFIG_DONE"]        = "Import of Total RP 3 settings [[complete]]. This is a one-time message and you won't need to see it again."; -- should be NOTIFY_
 L["IMPORT_TRP3_CONFIG_START"]       = "RPTAGS has a [[new configuration system]], accessible via the normal [[[WoW addons options menu]]]. Initializing the RPTAGS options with your Total RP 3 settings."; -- should be NOTIFY_
-L["NOTIFY_KEYBIND_IC_OOC"]          = "You are now ";
 L["NOTIFY_KEYBIND_TAG_EDITOR_OPEN"] = "|cffdddd00Ignored:|r You used the keybinding to open the tag editor, but you already have it open.";
 L["OPTIONS_ARE_RESET"]              = "Options have been reset to their default values.";
 L["RELOAD_UI_WARNING"]              = "This will reload your user interface. Are you sure you want to do that?"; -- should be ALERT_
