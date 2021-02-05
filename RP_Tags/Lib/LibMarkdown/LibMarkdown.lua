@@ -1,9 +1,12 @@
 -- lua implementation of markdown originally from https://github.com/mpeterv/markdown
 
 local  MARKDOWN10 = "LibMarkdown-1.0";
-local  MARKDOWN10_MINOR = 6;
+local  MARKDOWN10_MINOR = 7;
 if not LibStub then error(MARKDOWN10 .. " requires LibStub."); end;
 local  LibMarkdown = LibStub:NewLibrary(MARKDOWN10, MARKDOWN10_MINOR);
+
+LibMarkdown.name = MARKDOWN10
+LibMarkdown.minor = MARKDOWN10_MINOR;
 
 LibMarkdown.config = {
   [ 'rt1'             ] = '|TInterface\\TARGETINGFRAME\\UI-RAIDTARGETINGICON_1.PNG:0|t',
@@ -31,11 +34,12 @@ LibMarkdown.config = {
   [ 'li'              ] = '',
   ['/li'              ] = '<br />',
   -- ['list_marker'      ] = '|TInterface\\MINIMAP\\TempleofKotmogu_ball_purple.PNG:0|t',
-  ['list_marker'     ] = '*',
+  ['list_marker'      ] = '*',
   [ 'pre'             ] = '<p>|cff66bbbb',
   ['/pre'             ] = '|r</p><br />',
   [ 'code'            ] = '|cff66bbbb',
   ['/code'            ] = '|r',
+  ['br'               ] = '<br />',
   [ 'blockquote'      ] = '<hr width="100"/><p align="center">|cffbbbb00"',
   ['/blockquote'      ] = '"|r</p><br /><hr width="100"/><br />',
   [ 'blockquote_quot' ] = '',
@@ -689,7 +693,7 @@ function LibMarkdown.blockquotes(self, lines)
    local function process_blockquote(lines)
       local raw = self:escape_special_chars(lines[1].text)
       for i = 2,#lines do
-         raw = raw .. self:escape_special_chars(lines[i].text) .. (lines[i].text == "" and "<br /> " .. self.config.nbsp .. ' <br />"' or '')
+         raw = raw .. self:escape_special_chars(lines[i].text) .. (lines[i].text == "" and "<br /> " .. ' <br />"' or '')
       end
       local bt = self:block_transform(raw)
       -- if not bt:find("<pre>") then bt = LibMarkdown.indent(bt) end
@@ -1194,3 +1198,4 @@ function LibMarkdown.ShowConfig(self)
     print("}");
   end;
 
+LibMarkdown.ToHtml = LibMarkdown.ToHTML;

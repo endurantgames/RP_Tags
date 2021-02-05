@@ -26,11 +26,10 @@ function(self, event, ...)
   local profilesizes       = RPTAGS.utils.format.sizewords;
   local unsup              = RPTAGS.utils.format.unsup;
   local notify             = RPTAGS.utils.text.notify;
-  local AceMarkdownControl = LibStub("AceMarkdownControl-3.0");
   local AceConfigDialog    = LibStub("AceConfigDialog-3.0");
   local AceGUI             = LibStub("AceGUI-3.0");
   local split              = RPTAGS.utils.text.split;
-  
+
   local menus =
   { UNITS_HEIGHT          =
     { CM                  =  heights(168, "CM"),
@@ -48,6 +47,7 @@ function(self, event, ...)
       KG_LB               =  weights(73, "KG_LB"),
       KG_ST_LB            =  weights(73, "KG_ST_LB"),
       LB_KG               =  weights(73, "LB_KG"),
+      LB_ST               =  weights(73, "LB_ST"),
       LB_ST               =  weights(73, "LB_ST"),
       ST_LB               =  weights(73, "ST_LB"),
       ST_LB_KG            =  weights(73, "ST_LB_KG"),
@@ -115,97 +115,13 @@ function(self, event, ...)
         return RPTAGS.cache.orderCount;
   end;
   
-  local NormalFont = OptionsFontHighlight;
-  local BiggerFont = OptionsFontLarge;
-
-  local fi, si, fl;
-  local r, g, b;
-  local sp;
-  local step;
-
-  local fontData            =
-        { FontStep          = 1,
-          FontSize          = {},
-          FontFile          = {},
-          FontFlags         = {},
-          FontColor         = { },
-          LineSpacing       = { },
-        };
-
-  fi, si, fl                = NormalFont:GetFont();
-  r, g, b                   = NormalFont:GetTextColor();
-  sp                        = NormalFont:GetSpacing();
-
-  fontData.FontSize.base    = si;
-  fontData.FontFile.base    = fi;
-  fontData.FontFlags.base   = fl;
-  fontData.FontColor.base   = { r, g, b };
-  fontData.LineSpacing.base = sp;
-
-  fontData.FontSize.p       = si;
-  fontData.FontFile.p       = fi;
-  fontData.FontFlags.p      = fl;
-  fontData.FontColor.p      = { r, g, b };
-  fontData.LineSpacing.p    = sp;
-
-  fi, si, fl                = BiggerFont:GetFont();
-  r, g, b                   = BiggerFont:GetTextColor();
-  sp                        = BiggerFont:GetSpacing();
-
-  step                      = si - fontData.FontSize.base;
-  if step < 2 then step     = 2 end;
-
-  fontData.FontSize.h       = si;
-  fontData.FontFlags.h      = fl;
-  fontData.FontFile.h       = fi;
-  fontData.LineSpacing.h    = sp;
-  fontData.FontColor.h      = { r, g, b };
-
-  fontData.FontSize.h3      = si;
-  fontData.FontFlags.h3     = fl;
-  fontData.FontFile.h3      = fi;
-  fontData.LineSpacing.h3   = sp;
-  fontData.FontColor.h3     = { r, g, b };
-
-  fontData.FontSize.h2      = si + step;
-  fontData.FontFlags.h2     = fl;
-  fontData.FontFile.h2      = fi;
-  fontData.LineSpacing.h2   = sp;
-  fontData.FontColor.h2     = { r, g, b };
-
-  fontData.FontSize.h1      = si + step * 2;
-  fontData.FontFlags.h1     = fl;
-  fontData.FontFile.h1      = fi;
-  fontData.LineSpacing.h1   = sp;
-  fontData.FontColor.h1     = { r, g, b };
-
-  RPTAGS.cache.optionsFonts = fontData;
-
   local function build_markdown(text, hidden, disabled)
-
-      local AMC = AceMarkdownControl:New();
-      AMC.Cursor = RPTAGS.CONST.CURSOR;
-      AMC.width = 600;
-      
-      for k, v in pairs(RPTAGS.cache.optionsFonts)
-      do if type(v) == "table"
-          then for a, b in pairs(v) 
-               do  AMC[k][a] = b;
-               end;
-          else AMC[k] = v;
-          end;
-      end;
-
-      AMC.OpenProtocol.opt = function(dest, link) RPTAGS.utils.options.open(link); end;
-      AMC.OpenProtocol.tag = function(dest, link) RPTAGS.utils.options.open(link); end;
-      AMC.Cursor.opt       = "Interface\\OPTIONS\\QuestRepeatable.PNG";
-      AMC.Cursor.tag       = "Interface\\OPTIONS\\WorkOrders.PNG";
 
       local w =
       { order = source_order(),
         type = "description",
-        dialogControl = AMC.description,
-        width = "full",
+        dialogControl = "LMD30_Description",
+        width = 2,
       };
 
       if type(text) == "table"
@@ -394,6 +310,7 @@ function(self, event, ...)
   local function build_instruct(str, hidden, disabled)
         local w = build_common("description", "opt ", str .. "_i", hidden, disabled, nil, nil, true);
         w.fontSize = "medium";
+        w.dialogControl = "LMD30_Description";
         return w;
   end; -- beep
   
@@ -590,7 +507,7 @@ function(self, event, ...)
         name = "## " .. group.title .. " " .. loc("TAGS") .. "\n\n" .. group.help,
         order = source_order(),
         width = "full",
-        dialogControl = AceMarkdownControl:New().description,
+        dialogControl = "LMD30_Description",
       };
       for i,  tag in pairs(group.tags)
       do  if     tag.title 
@@ -640,25 +557,33 @@ function(self, event, ...)
 --         -- AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
 --   end;
 
-  local function linkHandler(dest)
-        local protocol, path = dest:match("^(%a+)://(.+)$");
+  local function linkHandler(dest, link, text, amdwProtocol)
+        link = link or dest;
+        local protocol, path = link:match("^(%a+)://(.+)$");
         path = split(path, "/");
-        if     protocol == "opt" and RPTAGS.cache.panels[path[1]]
+        local path1 = path[1];
+        if     (protocol == "opt"
+               or protocol == "setting")
+               and RPTAGS.cache.panels[path1]
         then   InterfaceOptionsFrame:Show()
-               InterfaceOptionsFrame_OpenToCategory(RPTAGS.cache.panels[path[1]])
+               InterfaceOptionsFrame_OpenToCategory(RPTAGS.cache.panels[path1])
                AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
-        elseif protocol == "tag" and RPTAGS.cache.help.tagIndex[path[1]]
-        then   linkHandler(RPTAGS.cache.help.tagIndex[path[1]])
+        elseif protocol == "help"
+        then   InterfaceOptionsFrame:Show()
+               InterfaceOptionsFrame_OpenToCategory("help");
+               AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
+        elseif protocol == "tag" and RPTAGS.cache.help.tagIndex[path1]
+        then   linkHandler(RPTAGS.cache.help.tagIndex[path1])
+        elseif protocol == "urldb" and RPTAGS.CONST.URLS[path1] and amdwProtocol
+        then   link = loc(RPTAGS.CONST.URLS[path1].url);
+               text = loc(RPTAGS.CONST.URLS[path1].name);
+               amdwProtocol:ShowPopup(dest, link, text);
+        else   print("oops", dest, link, text);
         end;
    end;
-
   
---  local function openDialogByTag(dest)
---        local protocol, path = dest:match("^([^:])://)(.+)$");
---        local try1, try2 = RPTAGS.cache.help.tagIndex[path[1]],
---                           RPTAGS.cache.help.tagIndex["rp:" .. path[1]];
---        if try1 or try2 then openDialog(try1 or try2) end;
---  end;
+   local function linkHandlerCustomClick(amdwProtocol, dest, link, text) return 
+                  linkHandler(dest, link, text, amdwProtocol) end;
 
   local function sliceUp(group)
     local dups = {};
@@ -683,14 +608,87 @@ function(self, event, ...)
     return uniq, dups;
   end;
 
+  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "pre"] =  "<h3>|cff00ffff";
+  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/pre"] = "|r</h3>";
+  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "code"] =  "<h3>|cff00ffff";
+  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/code"] = "|r</h3>";
+  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "code"] =  "<h3>|cff00ffff";
+  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/code"] = "|r</h3>";
+  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "h3"  ] =  "<h2>";
+  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/h3"  ] = "</h2>";
+
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.red   = 1;
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.green = 1;
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.blue  = 1;
+
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].FontFile =
+    RPTAGS.CONST.FONT.FIXED;
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].red   = 0.000;
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].green = 1.000;
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].blue  = 1.000;
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].Spacing = 6;
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].JustifyH = "CENTER";
+
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.default.Popup =
+    { Text = loc("LINK_DEFAULT_TEXT"),
+      PrefixText = loc("APP_NAME") .. "\n\n",
+      ButtonText = loc("UI_GOT_IT"), 
+    };
+
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.http.Popup =
+    { Text = loc("LINK_HTTP_TEXT"),
+      PrefixText = loc("APP_NAME") .. "\n\n",
+      ButtonText = loc("UI_GOT_IT"), 
+    };
+
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.https.Popup =
+    { Text = loc("LINK_HTTPS_TEXT"),
+      PrefixText = loc("APP_NAME") .. "\n\n",
+      ButtonText = loc("UI_GOT_IT"), 
+    };
+
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.mailto.Popup =
+    { Text = loc("LINK_MAILTO_TEXT"),
+      PrefixText = loc("APP_NAME") .. "\n\n",
+      ButtonText = loc("UI_GOT_IT"), 
+    };
+
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.opt =
+    { Cursor = "Interface\\CURSOR\\QuestTurnIn.PNG",
+      CustomClick = linkHandlerCustomClick,
+    };
+    
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.help =
+    { Cursor = "Interface\\CURSOR\\QuestRepeatable.PNG",
+      CustomClick = linkHandlerCustomClick,
+    };
+    
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.urldb =
+    -- { Cursor = "Interface\\CURSOR\\MapPinCursor.PNG",
+    { Cursor = "Interface\\CURSOR\\QuestRepeatable.PNG",
+      CustomClick = linkHandlerCustomClick,
+      Popup = 
+      { Text = loc("LINK_URLDB_TEXT"),
+        PrefixText = loc("APP_NAME") .. "\n\n",
+        ButtonText = loc("UI_GOT_IT"), 
+      },
+    };
+
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.setting =
+    { Cursor = "Interface\\CURSOR\\Interact.PNG",
+      CustomClick = linkHandlerCustomClick,
+    };
+    
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.tag =
+    { Cursor = "Interface\\CURSOR\\Interact.PNG",
+      CustomClick = linkHandlerCustomClick, 
+    };
+
   RPTAGS.utils.options                   = RPTAGS.utils.options or {};
   RPTAGS.utils.options.panel             = RPTAGS.utils.options.panel or {};
 
   RPTAGS.utils.options.source_order      = source_order;
   RPTAGS.utils.options.sliceUp           = sliceUp;
-  -- RPTAGS.utils.options.open              = openDialog;
-  -- RPTAGS.utils.options.openTag           = openDialogByTag;
-
   RPTAGS.utils.options.open              = linkHandler;
 
   RPTAGS.utils.options.blank_line        = build_blank_line;

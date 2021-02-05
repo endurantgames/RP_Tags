@@ -9,7 +9,6 @@ function(self, event, ...)
 -- RPQ -----------------------------------------------------------------------------------------------------------------------------
 --
   local Config             = RPTAGS.utils.config;
-  local AceMarkdownControl = LibStub("AceMarkdownControl-3.0");
   local loc                = RPTAGS.utils.locale.loc
   local source_order       = RPTAGS.utils.options.source_order
 

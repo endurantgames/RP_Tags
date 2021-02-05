@@ -139,10 +139,16 @@ L["URL_TWITTER_TT"]     = CONST.ORAIBI .. "'s Twitter";
 
 L["URL_XRP"]            = "https://www.curseforge.com/wow/addons/xrp";
 L["URL_XRP_TT"]         = "XRP";
+L["LINK_DEFAULT_TEXT"]    = "Copy the following, then close this window.";
+L["LINK_HTTP_TEXT"]    = "Copy the following URL for {text} and paste it into your browser, then close this window.";
+L["LINK_HTTPS_TEXT"]    = "Copy the following URL for {text} and paste it into your browser, then close this window.";
+L["LINK_MAILTO_TEXT"]    = "Copy the following email address for {text}, then close this window.";
+L["LINK_URLDB_TEXT"]    = "Copy the following URL for {text} and paste it into your browser, then close this window.";
 
 -- ------------------ - user interface -----------------------------------------------------------------------------------------------------------------------------
 
 L["UI_CANCEL"]                 = "Cancel";
+L["UI_GOT_IT"]              = "Got It";
 L["UI_CLOSE"]           = "Close";
 L["UI_BLANK"]               = "";
 L["UI_BLANK_TT"]            = "";
@@ -1158,9 +1164,9 @@ L["INTRO_MD"] =
 # Introduction
 
 RPTAGS is an addon that lets you create special panels, called unit frames, to display roleplaying information of your
-choice, drawn from roleplaying addons such as [MyRolePlay](http:mrp), [Total RP 3](http:trp3), or [XRP](http:xrp).
+choice, drawn from roleplaying addons such as [MyRolePlay](urldb://mrp), [Total RP 3](urldb://trp3), or [XRP](urldb://xrp).
 
-In addition, you can use any tags from RPTAGS in [ElvUI](http:elvui), although ElvUI is not required for RPTAGS.
+In addition, you can use any tags from RPTAGS in [ElvUI](urldb://elvui), although ElvUI is not required for RPTAGS.
 
 ## What's a Unit Frame?
 
@@ -1176,46 +1182,17 @@ and your focus, if any, in the focus frame.
 A tag, in this context, refers to a string of text that you asisgn to locations on the unit frames known
 as panels. Tags look like this:
 
-### &nbsp; [rp:tagname]
+    [rp:tagname]
 
 There are nearly 200 RPTAGS you can use, as well as several dozen provided by oUF, the framework addon upon
 which RPTAGS is built. Some of the most useful tags include:
 
-### &nbsp; [rp:name], [rp:race], [rp:class], [rp:icon], [rp:color], [rp:status], [rp:curr]
-
-## What are Panels?
-
-There are two types of panels: panels for text tags, and panels for icons. The text panels are Name Panel, Info Panel,
-Details Panel, and Status Bar. The icon panels are numbered from one to six.
-
-You can customize what is shown in each panel; in addition, you can also set the tooltips for when you move your
-mouse over that part of the unit frame.
-
-## What's a Layout?
-
-There are five layouts provided by RPTAGS. Standard Layout shows all six icons, the name panel, info panel, and
-status bar. The Compact Layout only shows the first icon, name panel, and info panel. The Detailed Layout
-displays an animated 3-D portrait, all six icons, name panel, info panel, status bar, and a large space for the details
-panel. Portrait Layout is modeled after Blizzard's "paper doll" character screen and features a larger portrait,
-the name panel, the info panel, and all six icon slots. The Thumbnail Layout shows a small portrait, the name
-panel, and a single icon.
-
-You can set each panel to a different layout if you wish.
-
-## Getting Started
-
-By default, RPTAGS begins with a set of predefined tags, but you can change those to whatever you wish. For example,
-the default tag found in the Name Panel is [rp:color][rp:name]. The first tag, [rp:color], changes the
-color of the following text to the the unit's personal color or custom class color. Then the second tag inserts the
-roleplaying name of the character.
-
-You can edit the content of a panel by right-clicking on that part of the frame, or by using the RPTAGS options
-panels. Your changes will immediately be reflected in the player frame, and also in whoever you target or focus on.
+    [rp:name], [rp:race], [rp:class], [rp:icon], [rp:color], [rp:status], [rp:curr]
 
 ## Further Help
 
 If you need more assistance, you can peruse the rest of these help topics or ask for assistance on the
-[RPTAGS discord](http:discord) or ask [Oraibi on twitter](http:twitter).
+[RPTAGS discord](urldb://discord) or ask [Oraibi on twitter](urldb://twitter).
 The easiest way to learn is to just start editing tags and experimenting. Have fun!
 
 ]==========================================================================];
@@ -1226,10 +1203,10 @@ L["OPTIONS_MD"] =
 
 All settings are available through the RPTAGS options system.
 
-[General Settings](rpconfig:general) let you determine what messages to show, how to display certain tags, and how to respond
+[General Settings](opt://general) let you determine what messages to show, how to display certain tags, and how to respond
 to notes that you've set on a unit. 
 
-[Colors Settings](rpconfig:colors) let you change the various colors used by RPTAGS.
+[Colors Settings](opt://colors) let you change the various colors used by RPTAGS.
 
 If you want to restore the settings on a particular page to their default values, use the "Defaults" button in the lower left corner of the Interface window.
 ]==========================================================================];
@@ -1240,7 +1217,7 @@ L["BINDINGS_MD"] =
 
 RPTAGS offers a number of keybinds to allow you to control the addon with a single keypress.
 
-Key bindings are accessible through the standard [WoW Key Bindings Menu](rpconfig:keybind), on the AddOns sub-menu.
+Key bindings are accessible through the standard [WoW Key Bindings Menu](opt://keybind), on the AddOns sub-menu.
 ]==========================================================================];
 
 L["TAG_MODIFIERS_MD"] = 

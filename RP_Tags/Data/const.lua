@@ -357,7 +357,7 @@ C.SCALE =
   [":xs"] = 5,
 };
 
-C.URLs =
+C.URLS =
 { discord        = { url = "URL_DISCORD",        name = "URL_DISCORD_TT",        },
   download       = { url = "URL_DOWNLOAD_CURSE", name = "URL_DOWNLOAD_CURSE_TT", },
   download_tukui = { url = "URL_DOWNLOAD_TUKUI", name = "URL_DOWNLOAD_TUKUI_TT", },
@@ -451,5 +451,5 @@ C.CURSOR =
   mailto = "Interface\\CURSOR\\Mail.PNG",
   opt    = "Interface\\CURSOR\\QuestRepeatable.PNG",
 };
-  
+
 end);

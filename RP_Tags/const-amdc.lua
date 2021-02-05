@@ -24,3 +24,35 @@ RPTAGS.queue:WaitUntil("INIT_CACHE",   function(self, event, ...) RPTAGS.cache  
 RPTAGS.queue:WaitUntil("INIT_LOCALE",  function(self, event, ...) RPTAGS.locale        = RPTAGS.locale        or {} end);
 RPTAGS.queue:WaitUntil("INIT_UTILS",   function(self, event, ...) RPTAGS.utils         = RPTAGS.utils         or {} end);
 RPTAGS.queue:WaitUntil("INIT_OPTIONS", function(self, event, ...) RPTAGS.cache.options = RPTAGS.cache.options or {} end);
+
+local RPTAGS     = RPTAGS;
+RPTAGS.queue:WaitUntil("after UTILS_OPTIONS",
+function(self, event, ...)
+-- RPQ ----------------------------------------------------------------------------------------------------------------------------------
+
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.red   = 1;
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.green = 1;
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.blue  = 1;
+
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.opt =
+    { Cursor = "Interface\\CURSOR\\QuestTurnIn.PNG",
+      CustomClick = RPTAGS.utils.options.open };
+    
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.help =
+    { Cursor = "Interface\\CURSOR\\QuestRepeatable.PNG",
+      CustomClick = RPTAGS.utils.options.open };
+    
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.urldb =
+    { Cursor = "Interface\\CURSOR\\MapPinCursor.PNG",
+      CustomClick = RPTAGS.utils.options.open };
+
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.setting =
+    { Cursor = "Interface\\CURSOR\\Interact.PNG",
+      CustomClick = RPTAGS.utils.options.open };
+    
+  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.tag =
+    { Cursor = "Interface\\CURSOR\\Interact.PNG",
+      CustomClick = RPTAGS.utils.options.open };
+
+-- /RPQ ---------------------------------------------------------------------------------------------------------------------------------
+end);

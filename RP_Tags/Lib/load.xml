@@ -13,5 +13,4 @@
         <Include file="AceConfig-3.0\AceConfig-3.0.xml"                   />
 
         <Include file="LibMarkdown\LibMarkdown.xml"                       />
-        <Include file="AceMarkdownControl-3.0\AceMarkdownControl-3.0.xml" />
 </Ui>
