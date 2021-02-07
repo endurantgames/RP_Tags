@@ -1,14 +1,14 @@
 <Bindings>
-  <Binding name="RPTAGS_DISABLE_RPUF" header="RPTAGS" category="ADDONS">
+  <Binding name="RPTAGS_DISABLE_RPUF" category="BINDING_HEADER_RPTAGS">
     RPTAGS.utils.keybinds.disableRPUF()
   </Binding>
-  <Binding name="RPTAGS_HIDE_IN_COMBAT" category="ADDONS">
+  <Binding name="RPTAGS_HIDE_IN_COMBAT" category="BINDING_HEADER_RPTAGS">
     RPTAGS.utils.keybinds.hideInCombat()
   </Binding>
-  <Binding name="RPTAGS_LOCK_FRAMES" category="ADDONS">
+  <Binding name="RPTAGS_LOCK_FRAMES" category="BINDING_HEADER_RPTAGS">
     RPTAGS.utils.keybinds.lockFrames()
   </Binding>
-  <Binding name="RPTAGS_TAG_EDITOR" category="ADDONS">
+  <Binding name="RPTAGS_TAG_EDITOR" category="BINDING_HEADER_RPTAGS">
     RPTAGS.utils.keybinds.tagEditor()
   </Binding>
 </Bindings>

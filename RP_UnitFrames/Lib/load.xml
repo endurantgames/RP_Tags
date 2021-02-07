@@ -1,0 +1,11 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	
+        <Script  file="LibStub\LibStub.lua"         />
+        <Include file="oUF\oUF.xml"                 />
+        <Include file="LibSharedMedia-3.0\lib.xml"  />
+        <Include file="LibMarkdown\LibMarkdown.xml" />
+        <Include file="AceGUI-3.0\AceGUI-3.0.xml"       />
+
+</Ui>

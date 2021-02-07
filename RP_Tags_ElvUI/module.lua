@@ -86,7 +86,7 @@ function(self, event, ...)
 
     -- registers one tag, an event to wait for, and a method to invoke when found --------------------------
     local function registerTag(tag, tagMethod, extraEvents)
-      local events = RPTAGS.CONST.MAIN_EVENT .. (extraEvents or "");
+      local events = RPTAGS.CONST.MAIN_EVENT .. (extraEvents and (" " .. extraEvents) or "");
 
       if not _G["ElvUF"].Tags.Events[tag] -- only make the tag if there isn't one by that name already
       then   _G["ElvUF"].Tags.Events[tag] = RPTAGS.CONST.MAIN_EVENT .. (extraEvents or "");
@@ -118,6 +118,7 @@ function(self, event, ...)
       ElvUI[1]:ToggleOptionsUI();
     end);
 end);
+
 Module:WaitUntil("UTILS_FRAMES",
 function(self, event, ...)
 

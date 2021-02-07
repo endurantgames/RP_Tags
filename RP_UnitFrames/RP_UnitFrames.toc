@@ -9,7 +9,6 @@
 ## X-RPQVersion: 1
 ## X-RPQModuleId: rpuf
 ## X-RPQModuleType: unitFrames
-## X-RPQModuleTarget: RP_Tags
 ## X-Child-Of: RP_Tags
 
 load.xml
