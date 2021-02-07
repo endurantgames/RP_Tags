@@ -344,7 +344,7 @@ C.ICONS = {
 }; -- icons
   
 C.FONT = 
-{ FIXED = "Interface\\AddOns\\RP_Tags\\resources\\Fonts\\SourceCodePro-Regular.ttf", 
+{ FIXED = "Interface\\AddOns\\RP_Tags\\resources\\Fonts\\Source_Code_Pro\\SourceCodePro-Regular.ttf", 
 };
 
 C.NBSP = "|TInterface\\Store\\ServicesAtlas:0::0:0:1024:1024:1023:1024:1023:1024|t";
