@@ -211,7 +211,9 @@ function(self, event, ...)
   RPTAGS.CONST.ICONS.IC           = "RAIDFRAME\\ReadyCheck-Ready";
   RPTAGS.CONST.ICONS.STATUS       = "RAIDFRAME\\UI-RaidFrame-Threat";
 
-  RPTAGS.CONST.FONT.FIXED        = "Interface\\AddOns\\RP_UnitFrames\\Resources\\Fonts\\SourceCodePro-Regular.ttf";
+  -- RPTAGS.CONST.FONT.FIXED        = "Interface\\AddOns\\RP_UnitFrames\\Resources\\Fonts\\Source_Code_Pro\\SourceCodePro-Regular.ttf";
+  -- RPTAGS.CONST.FONT.FIXED        = "Interface\\AddOns\\RP_UnitFrames\\Resources\\Fonts\\ShareTechMono\\ShareTechMono-Regular.ttf";
+  RPTAGS.CONST.FONT.FIXED        = "Interface\\AddOns\\RP_UnitFrames\\Resources\\Fonts\\Syne_Mono\\SyneMono-Regular.ttf";
   RPTAGS.CONST.NBSP              = "|TInterface\\Store\\ServicesAtlas:0::0:0:1024:1024:1023:1024:1023:1024|t";
 
   -- disable
