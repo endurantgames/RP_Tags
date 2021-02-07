@@ -1,0 +1,8 @@
+<Bindings>
+  <Binding name="RPTAGS_MOUSEOVER_OPEN" category="BINDING_HEADER_RPTAGS">
+    RPTAGS.utils.keybinds.mouseover_open()
+  </Binding>
+  <Binding name="RPTAGS_IC_OOC" category="BINDING_HEADER_RPTAGS">
+    RPTAGS.utils.keybinds.ic_ooc()
+  </Binding>
+</Bindings>

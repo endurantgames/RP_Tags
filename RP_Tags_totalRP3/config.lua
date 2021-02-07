@@ -9,7 +9,7 @@
 --     https://creativecommons.org/licenses/by/4.0/
 
 local RPTAGS = RPTAGS;
-local Module = RPTAGS.queue:GetModule("totalRP3");
+local Module = RPTAGS.queue:GetModule("RP_Tags_totalRP3");
 
 Module:WaitUntil("DATA_CONFIG",
 function (self, event, ...)
@@ -117,7 +117,7 @@ function (self, event, ...)
       then local register = TRP3_API.configuration.registerConfigKey;
            for setting, key in pairs(KEYS)
            do  if    setting and key 
-               then  TRP3_API.configuration.registerConfigKey(key, RPTAGS.const.CONFIG.DEFAULT[setting]); 
+               then  TRP3_API.configuration.registerConfigKey(key, RPTAGS.CONST.CONFIG.DEFAULT[setting]); 
                -- trp3 has to be aware of these tags to get the values from them
                      local value = TRP3_API.configuration.getValue(key);
                      if    RP_TagsDB.settings[setting].trp3key == key         -- just make sure we are importing the same setting

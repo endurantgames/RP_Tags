@@ -9,14 +9,14 @@
 --     https://creativecommons.org/licenses/by/4.0/
 
 local RPTAGS = RPTAGS;
-local Module = RPTAGS.queue:GetModule("totalRP3");
+local Module = RPTAGS.queue:GetModule("RP_Tags_totalRP3");
 
 Module:WaitUntil("UTILS_GET",
   function(self, event, ...)
     -- constants
     --
-    local Const            = RPTAGS.const;
-    local ICON             = Const.ICONS;
+    local CONST            = RPTAGS.CONST;
+    local ICON             = CONST.ICONS;
     local STATUS           = ICON.STATUS;
     local GENDER           = ICON.GENDER; -- category
     local PARAMS           = ICON.PARAMS;  -- category
@@ -50,7 +50,7 @@ Module:WaitUntil("UTILS_GET",
     local UnitRace                   = UnitRace;
     local UnitSex                    = UnitSex;
 
---     RPTAGS.get = { core = {}, color = {}, text = {}, icon = {}, }; 
+--     RPTAGS.utils.get = { core = {}, color = {}, text = {}, icon = {}, }; 
 
           -- primary method of retrieving TRP3 data --------------------------------------------------------------------
     local function getField(fieldName, u)           if not u               then return "" end;
@@ -436,13 +436,13 @@ Module:WaitUntil("UTILS_GET",
           local  unitID = getUnitID(u);                               if not unitID then return "" end;
           local  Char = TRP3_API.register.getCharacterList()[unitID]; if not Char then return "" end;
                                                                       if not Char.client then return "" end;
-          local  knownClient  = Const.CLIENT.LOOKUP[Char.client];     if not knownClient then   return "" end;
+          local  knownClient  = CONST.CLIENT.LOOKUP[Char.client];     if not knownClient then   return "" end;
 
           if     request == "long"                              then return loc("CLIENT_" .. knownClient)
           elseif request == "short"                             then return loc("CLIENT_" .. knownClient .. "_SHORT")
           elseif request == "version" and Char.clientVersion    then return Char.clientVersion
           elseif request == "full"    and Char.clientVersion    then return loc("CLIENT_" .. knownClient) .. " " .. Char.clientVersion
-          elseif request == "icon"                              then return Const.CLIENT.ICON[knownClient] or ""
+          elseif request == "icon"                              then return CONST.CLIENT.ICON[knownClient] or ""
           elseif request == "TRP"     and knownClient == "TRPE" then return loc("CLIENT_TRP")
           elseif request == knownClient                         then return loc("CLIENT_" .. knownClient)
           else   return ""
@@ -540,7 +540,7 @@ Module:WaitUntil("UTILS_GET",
           local profileID = getProfileID(u);
           if not profileID then return ""; end; -- don't change the color
           local rel = TRP3_API.register.relation.getRelation(profileID);
-          if rel == "NONE" then return "" else return Const.RELCOLOR[rel]; end;
+          if rel == "NONE" then return "" else return CONST.RELCOLOR[rel]; end;
     end;
 
     local function getGuildStatusColor(u) 
@@ -608,7 +608,7 @@ Module:WaitUntil("UTILS_GET",
     end;
 
     local function getProfileSize(u, request) if not u then return "" end;
-      local BIG_PROFILE = RPTAGS.const.BIG_PROFILE;
+      local BIG_PROFILE = RPTAGS.CONST.BIG_PROFILE;
       local pick = getField("about/TE", u);
       local size;
 
@@ -642,7 +642,7 @@ Module:WaitUntil("UTILS_GET",
     end; -- function
 
     local function getRaceIcon(u)
-      local RACEICON = Const.ICONS.RACE;
+      local RACEICON = CONST.ICONS.RACE;
       local rpRace = getRace(u);
       local _, _, gameRaceCode  = UnitRace(u);
       local raceCode, raceFallback, _ = RPTAGS.utils.parse.race(u, "icon", rpRace)
@@ -665,61 +665,66 @@ Module:WaitUntil("UTILS_GET",
     end;
     
     --
-    RPTAGS.get.color.age         = getRelativeAgeColor;
-    RPTAGS.get.color.custom      = getColor;
-    RPTAGS.get.color.eye         = getEyeColor;
-    RPTAGS.get.color.gender      = getGenderColor;
-    RPTAGS.get.color.guildstatus = getGuildStatusColor;
-    RPTAGS.get.color.height      = getRelativeHeightColor;
-    RPTAGS.get.color.name        = getNameColor;
-    RPTAGS.get.color.relation    = getRelationColor;
-    RPTAGS.get.color.status      = getStatusColor;
-    RPTAGS.get.color.weight      = getRelativeWeightColor;
-    RPTAGS.get.core.chara        = getChara;
-    RPTAGS.get.core.data         = getData;
-    RPTAGS.get.core.field        = getField;
-    RPTAGS.get.core.misc         = getMisc;
-    RPTAGS.get.core.unitID       = getUnitID;
-    RPTAGS.get.icon.gender       = getGenderIcon;
-    RPTAGS.get.icon.glances      = getGlanceIcons;
-    RPTAGS.get.icon.relation     = relationshipIcon;
-    RPTAGS.get.icon.status       = getStatusIcon;
-    RPTAGS.get.icon.unit         = unitIcon;
-    RPTAGS.get.text.age          = getAge;
-    RPTAGS.get.text.birthplace   = getBP;
-    RPTAGS.get.text.class        = getClass;
-    RPTAGS.get.text.client       = getClientInfo;
-    RPTAGS.get.text.curr         = getCurr;
-    RPTAGS.get.text.eyes         = getEyes;
-    RPTAGS.get.text.firstname    = getFirstName;
-    RPTAGS.get.text.fulltitle    = getFT;
-    RPTAGS.get.text.gender       = getGender;
-    RPTAGS.get.text.glance       = getGlance;
-    RPTAGS.get.text.guild        = getGuildInfo;
-    RPTAGS.get.text.height       = getHeight;
-    RPTAGS.get.text.home         = getHome;
-    RPTAGS.get.text.ic           = getIcStatus;
-    RPTAGS.get.text.info         = getInfo;
-    RPTAGS.get.text.knownName    = getKnownName;
-    RPTAGS.get.text.lastname     = getLastName;
-    RPTAGS.get.text.misc         = getMiscAndTweakOutput;
-    RPTAGS.get.text.name         = getName;
-    RPTAGS.get.text.note         = scanNote;
-    RPTAGS.get.text.ooc          = getOocStatus;
-    RPTAGS.get.text.profileSize  = getProfileSize;
-    RPTAGS.get.text.pronoun      = getPronoun;
-    RPTAGS.get.text.pronouns     = getAllPronouns;
-    RPTAGS.get.text.race         = getRace;
-    RPTAGS.get.text.relation     = getRelation;
-    RPTAGS.get.text.relwho       = getRelWho;
-    RPTAGS.get.text.status       = getStatus;
-    RPTAGS.get.text.style        = getRoleplayingStyle;
-    RPTAGS.get.text.title        = getTitle;
-    RPTAGS.get.text.weight       = getWeight;
-    RPTAGS.get.text.xp           = getExperience;
-    RPTAGS.get.text.years        = getYears;
-    RPTAGS.get.icon.race         = getRaceIcon;
-    RPTAGS.get.text.extStatus    = RPTAGS.utils.text.unsup;
+    RPTAGS.utils.get                   = RPTAGS.utils.get or {};
+    RPTAGS.utils.get.color             = RPTAGS.utils.get.color or {};
+    RPTAGS.utils.get.color.age         = getRelativeAgeColor;
+    RPTAGS.utils.get.color.custom      = getColor;
+    RPTAGS.utils.get.color.eye         = getEyeColor;
+    RPTAGS.utils.get.color.gender      = getGenderColor;
+    RPTAGS.utils.get.color.guildstatus = getGuildStatusColor;
+    RPTAGS.utils.get.color.height      = getRelativeHeightColor;
+    RPTAGS.utils.get.color.name        = getNameColor;
+    RPTAGS.utils.get.color.relation    = getRelationColor;
+    RPTAGS.utils.get.color.status      = getStatusColor;
+    RPTAGS.utils.get.color.weight      = getRelativeWeightColor;
+    RPTAGS.utils.get.core              = RPTAGS.utils.get.core or {};
+    RPTAGS.utils.get.core.chara        = getChara;
+    RPTAGS.utils.get.core.data         = getData;
+    RPTAGS.utils.get.core.field        = getField;
+    RPTAGS.utils.get.core.misc         = getMisc;
+    RPTAGS.utils.get.core.unitID       = getUnitID;
+    RPTAGS.utils.get.icon              = RPTAGS.utils.get.icon or {};
+    RPTAGS.utils.get.icon.gender       = getGenderIcon;
+    RPTAGS.utils.get.icon.glances      = getGlanceIcons;
+    RPTAGS.utils.get.icon.relation     = relationshipIcon;
+    RPTAGS.utils.get.icon.status       = getStatusIcon;
+    RPTAGS.utils.get.icon.unit         = unitIcon;
+    RPTAGS.utils.get.icon              = RPTAGS.utils.get.icon or {};
+    RPTAGS.utils.get.text.age          = getAge;
+    RPTAGS.utils.get.text.birthplace   = getBP;
+    RPTAGS.utils.get.text.class        = getClass;
+    RPTAGS.utils.get.text.client       = getClientInfo;
+    RPTAGS.utils.get.text.curr         = getCurr;
+    RPTAGS.utils.get.text.eyes         = getEyes;
+    RPTAGS.utils.get.text.firstname    = getFirstName;
+    RPTAGS.utils.get.text.fulltitle    = getFT;
+    RPTAGS.utils.get.text.gender       = getGender;
+    RPTAGS.utils.get.text.glance       = getGlance;
+    RPTAGS.utils.get.text.guild        = getGuildInfo;
+    RPTAGS.utils.get.text.height       = getHeight;
+    RPTAGS.utils.get.text.home         = getHome;
+    RPTAGS.utils.get.text.ic           = getIcStatus;
+    RPTAGS.utils.get.text.info         = getInfo;
+    RPTAGS.utils.get.text.knownName    = getKnownName;
+    RPTAGS.utils.get.text.lastname     = getLastName;
+    RPTAGS.utils.get.text.misc         = getMiscAndTweakOutput;
+    RPTAGS.utils.get.text.name         = getName;
+    RPTAGS.utils.get.text.note         = scanNote;
+    RPTAGS.utils.get.text.ooc          = getOocStatus;
+    RPTAGS.utils.get.text.profileSize  = getProfileSize;
+    RPTAGS.utils.get.text.pronoun      = getPronoun;
+    RPTAGS.utils.get.text.pronouns     = getAllPronouns;
+    RPTAGS.utils.get.text.race         = getRace;
+    RPTAGS.utils.get.text.relation     = getRelation;
+    RPTAGS.utils.get.text.relwho       = getRelWho;
+    RPTAGS.utils.get.text.status       = getStatus;
+    RPTAGS.utils.get.text.style        = getRoleplayingStyle;
+    RPTAGS.utils.get.text.title        = getTitle;
+    RPTAGS.utils.get.text.weight       = getWeight;
+    RPTAGS.utils.get.text.xp           = getExperience;
+    RPTAGS.utils.get.text.years        = getYears;
+    RPTAGS.utils.get.icon.race         = getRaceIcon;
+    RPTAGS.utils.get.text.extStatus    = RPTAGS.utils.text.unsup;
 
   end
 );

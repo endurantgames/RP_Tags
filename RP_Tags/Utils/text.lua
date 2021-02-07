@@ -173,26 +173,35 @@ function(self, event, ...)
   local function notSupported()       return "|cff" .. Config.get("COLOR_UNKNOWN") .. Config.get("UNSUP_TAG") .. "|r" end;
   local function dontChangeTheColor() return "" end;
   local function iconNotSupported()   if Config.get("UNSUP_TAG") == "" then return "" else return "|TRAIDFRAME\\ReadyCheck-NotReady:0|t" end; end;
+
+  local function parseVersion(str)
+        local v1, v2, v3, greek, v4 = str:match("^(%d+)(%.?%d*)(%.?%d*)-?(%a*)(%d*)");
+        local versionNumber = (v1 or 0) * 1 +
+                              (v2 or 0) * 0.001 + 
+                              (v3 or 0) * 0.000001;
+        return versionNumber;
+  end;
   
   -- Utilities available under RPTAGS.utils.text
   --
-  RPTAGS.utils.text.hilite     = hiliteTags;
-  RPTAGS.utils.text.isnum      = isNumber;
-  RPTAGS.utils.text.match      = match;
-  RPTAGS.utils.text.rot13      = rot13;
-  RPTAGS.utils.text.split      = split;
-  RPTAGS.utils.text.truncate   = textTruncate;
-  RPTAGS.utils.text.titlecase  = titleCase;
-  RPTAGS.utils.text.notify     = notify;
-  RPTAGS.utils.text.ora        = tellOra;
-  RPTAGS.utils.text.version    = versionText;
-  RPTAGS.utils.text.v          = vText;
-  RPTAGS.utils.text.addons     = addOnList;
-  RPTAGS.utils.text.changes    = changesText;
-  RPTAGS.utils.text.unsup      = notSupported;
-  RPTAGS.utils.text.unsupcolor = dontChangeTheColor;
-  RPTAGS.utils.text.unsupicon  = iconNotSupported;
-  RPTAGS.utils.text.notifyFmt  = notifyFmt;
-  RPTAGS.utils.text.tagRefs    = tagReferences;
-  
+  RPTAGS.utils.text.hilite       = hiliteTags;
+  RPTAGS.utils.text.isnum        = isNumber;
+  RPTAGS.utils.text.match        = match;
+  RPTAGS.utils.text.rot13        = rot13;
+  RPTAGS.utils.text.split        = split;
+  RPTAGS.utils.text.truncate     = textTruncate;
+  RPTAGS.utils.text.titlecase    = titleCase;
+  RPTAGS.utils.text.notify       = notify;
+  RPTAGS.utils.text.ora          = tellOra;
+  RPTAGS.utils.text.version      = versionText;
+  RPTAGS.utils.text.v            = vText;
+  RPTAGS.utils.text.addons       = addOnList;
+  RPTAGS.utils.text.changes      = changesText;
+  RPTAGS.utils.text.unsup        = notSupported;
+  RPTAGS.utils.text.unsupcolor   = dontChangeTheColor;
+  RPTAGS.utils.text.unsupicon    = iconNotSupported;
+  RPTAGS.utils.text.notifyFmt    = notifyFmt;
+  RPTAGS.utils.text.tagRefs      = tagReferences;
+  RPTAGS.utils.text.parseVersion = parseVersion;
+
 end);

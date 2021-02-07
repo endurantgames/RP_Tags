@@ -11,4 +11,4 @@
 ## X-RPQModuleTarget: totalRP3
 ## X-Child-Of: RP_Tags
 
-module.xml
+load.xml

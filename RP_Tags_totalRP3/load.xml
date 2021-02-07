@@ -3,7 +3,7 @@
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 
     <Script file="module.lua" />
-    <Script file="config.lua" />
+    <!-- <Script file="config.lua" /> -->
     <Script file="get.lua" />
     <Script file="keybind.lua" />
 
