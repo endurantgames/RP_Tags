@@ -167,9 +167,6 @@ function(self, event, ...)
   local function notify(message) print(hiliteTags("[RPTAGS] " .. message)); end;
   local function notifyFmt(format, ...) notify(string.format(format, ...)) end;
   
-       -- debugging function
-  local function tellOra(message) print(hiliteTags("|cffbb00bbOra|r, ", message)) end;
-  
   local function notSupported()       return "|cff" .. Config.get("COLOR_UNKNOWN") .. Config.get("UNSUP_TAG") .. "|r" end;
   local function dontChangeTheColor() return "" end;
   local function iconNotSupported()   if Config.get("UNSUP_TAG") == "" then return "" else return "|TRAIDFRAME\\ReadyCheck-NotReady:0|t" end; end;
@@ -192,7 +189,6 @@ function(self, event, ...)
   RPTAGS.utils.text.truncate     = textTruncate;
   RPTAGS.utils.text.titlecase    = titleCase;
   RPTAGS.utils.text.notify       = notify;
-  RPTAGS.utils.text.ora          = tellOra;
   RPTAGS.utils.text.version      = versionText;
   RPTAGS.utils.text.v            = vText;
   RPTAGS.utils.text.addons       = addOnList;

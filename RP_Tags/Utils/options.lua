@@ -455,11 +455,6 @@ function(self, event, ...)
               width = 1.5,
               desc = loc(str .. "_TT"),
             };
-      local spacer = build_spacer();
-      local button = build_common("execute", "ui ", "select");
-      button.width = 0.5;
-      button.func = function(self) 
-        return end;
                     
       local w =
       { type = "group",
@@ -468,8 +463,6 @@ function(self, event, ...)
         args =
         { desc = desc,
           box = box,
-          spacer = spacer,
-          button = button,
         }
       };
       return w;
@@ -536,7 +529,7 @@ function(self, event, ...)
     local w =
     { type = "group",
       name = loc("OPT_TAG_REFERENCE"),
-      childGroups = "select",
+      -- childGroups = "select",
       order = source_order(),
       args = args,
     };

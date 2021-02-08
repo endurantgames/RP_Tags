@@ -3,9 +3,7 @@
 -- ------------------------------------------------------------------------------
 --
 -- This work is licensed under the Creative Commons Attribution 4.0 International
--- (CC BY 4.0) license. To view a copy of the license, visit
---
---     https://creativecommons.org/licenses/by/4.0/
+-- (CC BY 4.0) 
 
 local addOnName, addOn = ...;
 local RPTAGS = RPTAGS;
@@ -38,7 +36,6 @@ function(self, event, ...)
   local Utils       = RPTAGS.utils;
   local LSM         = LibStub("LibSharedMedia-3.0");
   local CW          = Const.ICONS.COLORWHEEL;
-  local Ora         = RPTAGS.utils.text.ora;
   local notify      = RPTAGS.utils.text.notify;
   local refreshAll  = RPTAGS.utils.tags.refreshAll;
   local scaleFrame  = RPTAGS.utils.rpuf.frame.scale;
@@ -190,7 +187,6 @@ function(self, event, ...)
         textbox:SetMultiLine(true);
         textbox:SetSize(440,120);
         local monoFont = LSM:Fetch("font", "SourceCodePro Regular"); -- set the font
-        if monoFont then textbox:SetFont(monoFont, 14); else Ora("|cffdd0000Ora! The font didn't load!") end;
         textbox:SetText("");
         textbox:SetPoint("TOP", textboxScroll, "TOP", 0, -20);
         textbox:SetAutoFocus(false)

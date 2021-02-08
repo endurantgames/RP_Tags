@@ -43,7 +43,7 @@ function(self, event, ...)
   SlashCmdList["RPTAGS"] =
     function(str)
       local  cmd, params = str:match("(%S+)%s*(.*)$");
-      if     cmd == nil then openTo("opt://help");
+      if     cmd == nil then openTo("opt://general");
       else   local  uniq, ambig = Cache.slash.uniq[cmd], Cache.slash.ambig[cmd];
              if     ambig
              then   local poss = split(ambig, "|")

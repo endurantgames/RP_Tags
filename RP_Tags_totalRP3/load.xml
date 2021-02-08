@@ -3,6 +3,8 @@
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 
     <Script file="module.lua" />
+
+    <Include file="Locale\load.xml" />
     <Script file="get.lua" />
     <Script file="keybind.lua" />
 
