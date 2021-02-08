@@ -1,0 +1,3 @@
+[submodule "RP_Tags/Lib/LibMarkdown"]
+	path = RP_Tags/Lib/LibMarkdown
+	url = https://github.com/caderaspindrift/WoW-LibMarkdown
