@@ -163,7 +163,7 @@ L["HELP_DEFAULT"]           = "Introduction";
 -- --- keybindings
 L["KEYBIND_OPTIONS"]        = "Open " .. APP_NAME .. " Options";
 L["KEYBIND_HELP"]           = "Open " .. APP_NAME .. " Help";
-L["KEYBIND_OPTIONS_TT"]      = "Set a keybinding to open RPTGAS options.";
+L["KEYBIND_OPTIONS_TT"]      = "Set a keybinding to open RPTAGS options.";
 L["KEYBIND_HELP_TT"]         = "Set a keybinding to open RPTAGS help.";
 
 -- --------------------- - options ---------------------------------------------------------------------------------------------------------------------------------

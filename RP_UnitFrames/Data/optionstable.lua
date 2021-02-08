@@ -24,6 +24,7 @@ function(self, event, ...)
   local TagPanel          = RPTAGS.utils.options.tagpanel;
   local requiresRPUF      = RPTAGS.utils.options.requiresRPUF;
 
+  print("Options loading.");
 
   addOptions("color",
   { type                    = "group",

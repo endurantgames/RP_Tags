@@ -10,7 +10,8 @@
 
 local RPTAGS = RPTAGS;
 
-local Module = RPTAGS.queue:NewModule("RP_Tags_totalRP3", "rpClient");
+local addOnName, addOn = ...;
+local Module = RPTAGS.queue:NewModule(addOnName, "rpClient");
 local TRP3_API     = TRP3_API;
  
 TRP3_API.module.registerModule(

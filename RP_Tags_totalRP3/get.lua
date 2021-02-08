@@ -9,7 +9,8 @@
 --     https://creativecommons.org/licenses/by/4.0/
 
 local RPTAGS = RPTAGS;
-local Module = RPTAGS.queue:GetModule("RP_Tags_totalRP3");
+local addOnName, addOn = ...;
+local Module = RPTAGS.queue:GetModule(addOnName);
 
 Module:WaitUntil("UTILS_GET",
   function(self, event, ...)

@@ -12,7 +12,6 @@ local addOnName, addOn = ...
 local RPTAGS     = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-print("sup um?");
 Module:WaitUntil("DATA_CONST",
 function(self, event, ...)
 
