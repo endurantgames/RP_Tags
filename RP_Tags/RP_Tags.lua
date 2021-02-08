@@ -13,7 +13,7 @@ if not RPQ then error(addOnName .. " requires RPQ"); end;
 
 local Queue = RPQ:New(addOnName);
 
-local EVENTS = 
+local RPQ_EVENTS = 
 { "ADDON_INIT", 
 
       "INIT_DATA",
@@ -55,8 +55,8 @@ local EVENTS =
   "ADDON_LOAD",
 };
 
-Queue:NewEvents(EVENTS);
-Queue:SetOrder(EVENTS);
+Queue:NewEvents(RPQ_EVENTS);
+Queue:SetOrder(RPQ_EVENTS);
 
 --- error handling
 
@@ -104,7 +104,4 @@ StartupFrame:SetScript("OnEvent", function(self, event, ...) RPTAGS.queue:FireAl
 RPTAGS.StartupFrame = StartupFrame;
 
 _G["RPTAGS"] = RPTAGS;
-
-
-
 

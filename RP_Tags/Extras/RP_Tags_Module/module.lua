@@ -19,23 +19,83 @@ function(self, event, ...)
 -- /RPQ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 end);
 
+-- Modules of the type rpClient will want to support custom functions
+-- to get data. RP_Tags_MyRolePlay can be a good example, if LibMSP is
+-- being used.
 Module:WaitUntil("UTILS_GET",
 function(self, event, ...)
 -- RPQ  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- 
-  local function myNiftyGetFunction(str)
-    if type(str) == "string"
-    then string = "|cffbb00bb" .. str .. "|r";
-    end;
+
+  local function myNiftyGetFunction(field)
+    return SomeProgram.data[field]
   end;
 
-  RPTAGS.utils.modules.extend({
-    ["get.name"] = myNiftyGetFunction,
-    ["get.race"] = myNiftyGetFunction,
-  });
-    
+  RPTAGS.utils.get.name = myNiftyGetFunction("name");
+  RPTAGS.utils.get.race = myNiftyGetFunction("race");
+
 -- /RPQ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 end);
 
+-- UnitFrames modules _must_ extend the registerTag and refresh (frame)
+-- functions, as shown here:
+Module:WaitUntil("UTILS_TAGS",
+function(self, event, ...)
+-- RPQ  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- 
+
+  local function myNiftyTagRegisterer(tagName, tagMethod, extraEvents)
+     SomeProgram.events[tag] = RPTAGS.UTILS.MAIN_EVENT .. 
+                               (extraEvents and (" " .. extraEvents) or "");
+     SomeProgram.methods[tag] = tagMethod;
+  end;
+
+  RPTAGS.utils.modules.extend(
+    { ["tags.registerTag"] = myNiftyTagRegisterer,
+    }
+ );
+-- /RPQ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+end);
+
+Module:WaitUntil("UTILS_FRAMES",
+function(self, event, ...)
+-- RPQ  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- 
+
+  local function myNiftyFrameUpdater(frameName)
+     SomeProgram.update.frame(frameName);
+  end;
+
+  RPTAGS.utils.modules.extend(
+    { ["frames.refresh"] = myNiftyFrameUpdater,
+    }
+ );
+-- /RPQ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+end);
+
+-- To add configuration options, call the addOptions function *before*
+-- DATA_OPTIONS executes, like this:
+Module:WaitUntil("before DATA_OPTIONS",
+function(self, event, ...)
+-- RPQ  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- 
+
+  -- Most of the RPTAGS.utils.options functions will automatically do a loc()
+  -- on their text arguments, so make sure to declare localizations for those.
+  -- It's recommended, but not required, that you separate the localizations
+  -- into a Locale/enUS.lua (or whatever) file.
+  --
+  local build = RPTAGS.utils.options;
+
+  RPTAGS.utils.modules.addOptions(moduleName, "keybind",
+    { activate_my_module = build.keybind("activate my module") 
+    });
+
+  RPTAGS.utils.modules.addOptions(moduleName, "about",
+    { myModule = build.markdown( { loc("OPT_MY_MODULE"), loc("MY_MODULE_MD") }) 
+    });
+
+-- /RPQ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+end);
+
+-- For the full list of events currently loaded by RPTAGS, see
+-- RP_Tags/RP_Tags.lua
 Module:WaitUntil("ADDON_LOAD",
 function(self, event, ...)
 -- RPQ  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- 

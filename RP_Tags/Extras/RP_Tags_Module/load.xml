@@ -4,8 +4,10 @@
 
     <!-- Include file="Libs\load.xml"   / --> <!-- optional libraries                 -->
     <Script file="module.lua"           />    <!-- the module can be one file or many -->
-    <!-- Include file="Locale\load.xml" / --> <!-- remaining code can be in .lua      -->
-    <!-- Script  file="settings.lua"    / --> <!-- .xml files, order doesn't since    -->
+    <Include file="Locale\load.xml"     />    <!-- remaining code can be in .lua      -->
+    <!-- Script  file="options.lua"     / --> <!-- .xml files, order doesn't since    -->
                                               <!-- everything will be deferred        -->
-                                              <!-- execution                          -->
+                                              <!-- execution: but your first file     -->
+                                              <!-- has to contain the :NewModule()    -->
+                                              <!-- call.                              -->
 </Ui>
