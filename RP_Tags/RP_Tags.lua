@@ -24,10 +24,11 @@ local RPQ_EVENTS =
           "DATA_CONST",
 
       "INIT_UTILS",
+
           "UTILS_LOCALE",
           "DATA_LOCALE",
 
-      "UTILS_MODULES",
+          "UTILS_MODULES",
           "UTILS_CONFIG",
           "UTILS_TEXT",
           "UTILS_COLOR",

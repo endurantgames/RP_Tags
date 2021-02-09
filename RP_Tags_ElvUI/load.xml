@@ -3,5 +3,6 @@
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 
     <Script  file="module.lua"  />
+    <Script file="workaround.lua" />
 
 </Ui>

@@ -12,318 +12,29 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("ADDON_LOAD",
 function(self, event, ...)
 
-  local RPTAGS = RPTAGS;
-  
-  RPTAGS.utils = RPTAGS.utils or {};
+  local RP_TagsDB      = RP_TagsDB;
+  local oUF            = RPTAGS.oUF; -- this is automatically added by oUF
+  local CONST          = RPTAGS.CONST;
+  local Utils          = RPTAGS.utils;
+  local Config         = Utils.config;
+  local FrameUtils     = Utils.frames;
+  local AllFrameUtils  = Utils.frames.all;
+  local getFrameLayout = FrameUtils.layout.get;
+  local getLeftPoint   = FrameUtils.panels.layout.getLeft;
+  local getTopPoint    = FrameUtils.panels.layout.getTop;
+  local getHeight      = FrameUtils.panels.size.getHeight;
+  local getWidth       = FrameUtils.panels.size.getWidth;
+  local IP             = RPTAGS.CONST.RPUF.INITIAL_POSITION;
+  local loc            = RPTAGS.utils.locale.loc;
+  local notify         = Utils.text.notify;
+  local refreshAll     = Utils.frames.refreshAll;
+  local scaleFrame     = FrameUtils.size.scale.set;
+  local lockFrames     = FrameUtils.all.move.lock;
+  local FRAME_NAMES    = RPTAGS.CONST.FRAMES.NAMES;
 
-  local CreateFrame = CreateFrame;
-  local fontFrame   = CreateFrame('frame');
-  local font        = fontFrame:CreateFontString(nil, 'OVERLAY', 'GameFontNormal');
-  local FONTFILE, 
-        FONTSIZE, _ = font:GetFont();
-  local RP_TagsDB   = RP_TagsDB;
-  local oUF         = RPTAGS.oUF;
-  local Const       = RPTAGS.const;
-  local Config      = RPTAGS.utils.config;
-  local getLayout   = RPTAGS.utils.rpuf.frame.layout;
-  local Left        = RPTAGS.utils.rpuf.element.left;
-  local Top         = RPTAGS.utils.rpuf.element.top;
-  local Height      = RPTAGS.utils.rpuf.element.height;
-  local Width       = RPTAGS.utils.rpuf.element.width;
-  local IP          = RPTAGS.const.RPUF.INITIAL_POSITION;
-  local loc         = RPTAGS.utils.locale.loc;
-  local loc         = RPTAGS.utils.locale.loc;
-  local Utils       = RPTAGS.utils;
-  local LSM         = LibStub("LibSharedMedia-3.0");
-  local CW          = Const.ICONS.COLORWHEEL;
-  local notify      = RPTAGS.utils.text.notify;
-  local refreshAll  = RPTAGS.utils.tags.refreshAll;
-  local scaleFrame  = RPTAGS.utils.rpuf.frame.scale;
-  local Rpuf        = RPTAGS.utils.rpuf;
-  local lockFrames  = Utils.rpuf.allFrames.lock;
-
-  if not Config.get("DISABLE_BLIZZARD") then function oUF:DisableBlizzard() return false end; end; -- prevent oUF from disabling blizzard frames
-
-  -- tag editor -------------------------------------------------------------------------------------------------------------------------------------------
-  local function hiliteError(box, bad) local start = string.find(box:GetText(), bad, 1, true) - 1; box:HighlightText(start, start + string.len(bad)); end;
-
-  if not RP_TagsDB.editor then RP_TagsDB.editor = {} end;
-
-        -- base editor frame -------------------------------------------------------------------------------------------
-  local TagEdit = CreateFrame("frame", "RPTAGS_TagEdit", UIParent, "BasicFrameTemplate");
-        TagEdit:SetSize(500, 400);
-        TagEdit:SetPoint("CENTER");
-        TagEdit:SetMovable(true)
-        TagEdit:EnableMouse(true)
-        TagEdit:RegisterForDrag("LeftButton")
-        TagEdit:SetScript("OnDragStart", TagEdit.StartMoving)
-        TagEdit:SetScript("OnDragStop", TagEdit.StopMovingOrSizing)
-        TagEdit:SetToplevel(true);
-        TagEdit:SetUserPlaced(true);
-        TagEdit:SetFrameStrata("DIALOG");
-        TagEdit:SetScript("OnShow", RPTAGS.utils.rpuf.updateTagEdit);
-        tinsert(UISpecialFrames, TagEdit:GetName()); -- closes when we hit escape
-
-    -- wrapper function for testTags that stores the results in the editor test result panel(s)
-  local function testTagsForEditor(s)
-
-    local err, good, bad = RPTAGS.utils.rpuf.tags.test(s);
-
-    if   err
-    then TagEdit.testResultsLabel:SetText(loc("TAG_EDIT_RESULTS_FAIL"));
-         TagEdit.testResultsLabel:SetTextColor(1, 0.1, 0.1);
-         TagEdit.testResults:SetText(loc("TAG_TEST_FAIL" .. ("_SINGULAR" and err == 1 or "")) .. "|cffffffff" .. table.concat(bad, ", ") .. "|r")
-    else TagEdit.testResultsLabel:SetText(loc("TAG_EDIT_RESULTS_PASS"));
-         TagEdit.testResultsLabel:SetTextColor(0.1, 1, 0.1);
-         TagEdit.testResults:SetText(loc("TAG_TEST_PASS"));
-    end; --if
-    return err, good, bad;
-
-  end; -- function
-
-        -- title of editor frame --------------------------------------------------------------------------------------
-  local frameTitle = TagEdit:CreateFontString(nil, "OVERLAY", "GameFontNormal");
-        frameTitle:SetText(loc("APP_NAME") .. loc("TAG_EDITOR"));
-        frameTitle:SetPoint("TOPLEFT", TagEdit, "TOPLEFT", 5, -5);
-
-        -- container to hold all the content that isn't part of the title ---------------------------------------------
-  local contentPane = CreateFrame("Frame", nil, TagEdit, BackdropTemplateMixin and "BackdropTemplate");
-        contentPane:SetPoint("TOPLEFT", TagEdit, "TOPLEFT", 5, -25);
-        contentPane:SetPoint("BOTTOMRIGHT", TagEdit, "BOTTOMRIGHT", -10, 20);
-
-        -- title of the content, i.e. the name of the setting being edited --------------------------------------------
-  local contentTitle = contentPane:CreateFontString("RPTAGS_TagEditTitle", "OVERLAY", "GameFontNormalLarge");
-        contentTitle:SetText("");
-        contentTitle:SetPoint("TOPLEFT", contentPane, "TOPLEFT", 5, -5);
-        TagEdit.contentTitle = contentTitle;
-
-        -- the helpful message / instructions (a.k.a. "tooltip" _TT in loc) -------------------------------------------
-  local displayBox = contentPane:CreateFontString("RPTAGS_TagEditDisplay", "OVERLAY", "GameFontNormal");
-        displayBox:SetSize(420, 40);
-        displayBox:SetJustifyH("LEFT");
-        displayBox:SetJustifyV("TOP");
-        displayBox:SetText(loc("CONFIG_STATUSPANEL_TT"));
-        displayBox:SetPoint("TOPLEFT", contentTitle, "BOTTOMLEFT", 0, -10);
-        TagEdit.displayBox = displayBox;
-
-        -- tag insert buttons above the editbox -----------------------------------------------------------------------
-  local buttons = -- CW is the Color Wheel graphic
-  { {-- button    tag         width       2nd button           width      third button  tag         width     4th button             width
-      { "name",   "[rp:name]",   55, }, { CW, "[rp:color]",       25 }, { "eyes",       "[rp:eyes]",   55, }, { CW, "[rp:eyecolor]",    25 },   -- 1,   2 ,  3,   4 ,
-      { "class",  "[rp:class]"                                       }, { "icon",       "[rp:icon]"                                        },   -- 5,  (6),  7,  (8),
-      { "height", "[rp:height]",                                     }, { CW .. " off", "[nocolor]"                                        } }, -- 9, (10), 11, (12)
-    { { "ic/ooc", "[rp:status]", 55, }, { CW, "[rp:statuscolor]", 25 }, { "sex",        "[rp:gender]", 55, }, { CW, "[rp:gendercolor]", 25 },   -- 1,   2 ,  3,   4 ,
-      { "race",   "[rp:race]",                                       }, { "age",        "[rp:age]",                                        },   -- 5,  (6),  7,  (8),
-      { "body",   "[rp:body]",                                       },                                                                         -- 9, (10),  "More"
-    } }; 
-
-  local   lastButton, lastButtonRow;
-  for _,  row in ipairs(buttons) -- button bar builder
-  do  for i, buttonData in ipairs(row)
-      do  local title, value, width = unpack(buttonData);
-          local button = CreateFrame("button", nil, contentPane, "UIPanelButtonTemplate");
-          button:SetText(title)
-          button.value = value;
-          button.tooltipText = vaue;
-          button:SetWidth(width or 80);
-          button:SetScript("OnClick", function(self) TagEdit.textbox:Insert(self.value) end);
-          if not lastButton then button:SetPoint("TOPLEFT", displayBox,    "BOTTOMLEFT", 0, -10); lastButtonRow = button;
-          elseif i == 1     then button:SetPoint("TOPLEFT", lastButtonRow, "BOTTOMLEFT", 0,   0); lastButtonRow = button;
-          else                   button:SetPoint("LEFT",    lastButton,    "RIGHT",      0,   0); 
-          end;   
-          lastButton = button;
-      end; -- for i,buttonData
-  end;
-
-  -- dropdown for "More..." tags ---------------------------------------------------------------------------------------
-  local dropDownData = {};
-  local dropDownFrame = CreateFrame("Frame", "ExampleMenuFrame", contentPane, "UIDropDownMenuTemplate")
-        dropDownFrame:SetPoint("TOPLEFT", moretagsButton, "TOPRIGHT", 0, 0);
-  local tagsSoFar; local currentMenu;
-  for i, tagData in ipairs(RPTAGS.cache.tagorder) -- menu builder
-  do  local  tagType, tagTitle, tagValue = unpack(tagData);
-      if     tagType == "submenu" and not tagsSoFar  -- it's a submenu but our first apparently
-      then   currentMenu = tagTitle;                 -- save the title of this submenu
-             tagsSoFar = {};                         -- start a clean list of tSF
-      elseif tagType == "submenu" and currentMenu    -- it's a new submenu but not our first
-      then   table.insert(dropDownData, { text     = currentMenu, hasArrow = true, -- let's insert the data we have so far into the menu
-                                          menuList = tagsSoFar, });
-             currentMenu = tagTitle;                 -- then save the new submenu name
-             tagsSoFar = {};                         -- then clear the tags
-      elseif tagType == "title"
-      then   table.insert(tagsSoFar, { text = tagTitle or "", isTitle = true, });
-      elseif tagType == "tag"                     -- it's a tag so insert it into tagsSoFar
-      then   table.insert(tagsSoFar, { text  = tagTitle, value = tagValue,
-                                       func  = function(self) TagEdit.textbox:Insert(tagValue); ToggleDropDownMenu(1, nil, dropDownFrame); end, });
-      end; -- if
-  end; -- for tagData
-
-  table.insert(dropDownData, { text = currentMenu, hasArrow = true, menuList = tagsSoFar }); -- do the final pass
-
-  local moretagsButton = CreateFrame("button", "RPTAGS_TagEdit_moretagsButton", contentPane, "UIPanelButtonTemplate");
-        moretagsButton:SetText(loc("MORE_TAGS"));
-        moretagsButton:SetWidth(80);
-        moretagsButton:SetPoint("TOP", lastButton, "TOP", 0, 0);
-        moretagsButton:SetPoint("RIGHT", contentPane, "RIGHT", 0, 0);
-        moretagsButton:SetScript("OnClick", function() EasyMenu(dropDownData, dropDownFrame, moretagsButton, 75, 5, "not MENU") end);
-
-        -- container for the editbox ---------------------------------------------------------------------------------------------------------------
-  local textboxContainer = CreateFrame("Frame", "RPTAGS_TagEditTextbox", contentPane, BackdropTemplateMixin and "BackdropTemplate");
-        textboxContainer:SetBackdrop({ bgFile   = [[Interface\Buttons\WHITE8x8]], edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]],
-                                       edgeSize = 14, insets = {left = 3, right = 3, top = 3, bottom = 3}, });
-        textboxContainer:SetBackdropColor(0, 0, 0, 0.5)
-        textboxContainer:SetSize(480,125);
-        textboxContainer:SetBackdropBorderColor(0.3, 0.3, 0.3)
-        textboxContainer:SetPoint("LEFT", lastButtonRow, "LEFT", 0, 0);
-        textboxContainer:SetPoint("TOP", lastButtonRow, "BOTTOM", 0, -5);
-
-        -- scroller for the editbox ---------------------------------------------------------------------------------------------------------------
-  local textboxScroll = CreateFrame("ScrollFrame", nil, textboxContainer, "UIPanelScrollFrameTemplate");
-        textboxScroll:SetPoint("TOPLEFT", textboxContainer, "TOPLEFT", 5, -5);
-        textboxScroll:SetSize(449,115);
-
-        -- the editbox itself ---------------------------------------------------------------------------------------------------------------------
-  local textbox = CreateFrame("editbox", nil, textboxScroll, BackdropTemplateMixin and "BackdropTemplate");
-        textbox:SetMultiLine(true);
-        textbox:SetSize(440,120);
-        local monoFont = LSM:Fetch("font", "SourceCodePro Regular"); -- set the font
-        textbox:SetText("");
-        textbox:SetPoint("TOP", textboxScroll, "TOP", 0, -20);
-        textbox:SetAutoFocus(false)
-        textbox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end);
-        textbox:SetScript("OnTabPressed", function(self) self:ClearFocus() end);
-        textbox:SetCursorPosition(0)
-        textbox:SetJustifyH("LEFT")
-        textbox:SetJustifyV("TOP")
-        textbox:SetScript("OnShow", function(self) self:SetFocus() end);
-        textbox:SetTextInsets(2, 2, 2, 2);
-        textboxScroll:SetScrollChild(textbox);
-        TagEdit.textbox = textbox;
-
-  -- start of the lower button bar, below the editbox ------------------------------------------------------------------------------------------------------------
-     -- saveButton, a.k.a. "update tags" --------------------------------------------------------------------------------------------
-  local saveButton = CreateFrame("button", nil, contentPane, "UIPanelButtonTemplate");
-        saveButton:SetText(loc("TAG_EDIT_UPDATE"));
-        saveButton:SetWidth(90);
-        saveButton:SetPoint("TOPLEFT", textboxContainer, "BOTTOMLEFT", 0, -5)
-        saveButton:SetScript("OnClick",
-            function(self)
-              local text           = TagEdit.textbox:GetText();
-              local err, good, bad = testTagsForEditor(text);
-
-              if   err
-              then StaticPopup_Show("RPTAGS_TAGEDIT_ERROR");
-                   hiliteError(TagEdit.textbox, bad[1]);
-              else if  TagEdit.setting == "STATUSPANEL" or TagEdit.setting == "DETAILPANEL" or TagEdit.setting:gmatch("_TOOLTIP")
-                   then text = text:gsub("%[p%]", "\n\n"):gsub("%[br%]", "\n"):gsub("\n\n+", "%[p%]"):gsub("\n","%[br%]");
-                   else text = text:gsub("\n", "");
-                   end;
-                   text = text:trim();
-                   Config.set(TagEdit.setting, text);
-                   TagEdit.draft = nil;
-                   TagEdit:Hide(); 
-                   return RPTAGS.cache.tagsRefresh and refreshAll();
-              end;
-           end);
-
-        -- testButton, a.k.a. "test tags" ----------------------------------------------------------------------------------------------
-  local testButton = CreateFrame("button", nil, contentPane, "UIPanelButtonTemplate");
-        testButton:SetText(loc("TAG_EDIT_TEST"));
-        testButton:SetWidth(90);
-        testButton:SetPoint("LEFT", saveButton, "RIGHT", 7, 0)
-        testButton:SetScript("OnClick",
-            function(self)
-              local err, good, bad = testTagsForEditor(TagEdit.textbox:GetText());
-              if err then hiliteError(TagEdit.textbox, bad[1]) end;
-            end);
-
-        -- revertButton, a.k.a. "revert" ----------------------------------------------------------------------------------------------
-  local revertButton = CreateFrame("button", nil, contentPane, "UIPanelButtonTemplate");
-        revertButton:SetText(loc("TAG_EDIT_REVERT"));
-        revertButton:SetWidth(90);
-        revertButton:SetPoint("LEFT", testButton, "RIGHT", 7, 0)
-        revertButton:SetScript("OnClick", function(self) TagEdit.textbox:SetText(Config.get(TagEdit.setting)); end);
-
-        -- defaultButton, a.k.a. "defaults" -------------------------------------------------------------------------------------------
-  local defaultButton = CreateFrame("button", nil, contentPane, "UIPanelButtonTemplate");
-        defaultButton:SetText(loc("TAG_EDIT_DEFAULT"));
-        defaultButton:SetWidth(90);
-        defaultButton:SetPoint("LEFT", revertButton, "RIGHT", 7, 0)
-        defaultButton:SetScript("OnClick", function(self) TagEdit.textbox:SetText(Config.default(TagEdit.setting)); end);
-
-        -- cancelButton, a.k.a. "cancel" ---------------------------------------------------------------------------------------------
-  local cancelButton = CreateFrame("button", nil, contentPane, "UIPanelButtonTemplate");
-        cancelButton:SetText(loc("TAG_EDIT_CANCEL"));
-        cancelButton:SetWidth(90);
-        cancelButton:SetPoint("LEFT", defaultButton, "RIGHT", 7, 0)
-        cancelButton:SetScript("OnClick", function(self) TagEdit.setting = nil; TagEdit.draft = nil; TagEdit:Hide(); end);
-
-  -- end of lower button bar ---------------------------------------------------------------------------------------------------------------------------
-
-  -- results of testing tags
-        -- label for the results
-  local testResultsLabel = contentPane:CreateFontString(nil, "OVERLAY", "GameFontNormal");
-        testResultsLabel:SetText(loc("TAG_EDIT_RESULTS"));
-        testResultsLabel:SetPoint("TOP", cancelButton, "BOTTOM", 0, -5);
-        testResultsLabel:SetPoint("LEFT", contentPane, "LEFT", 5, 0);
-        testResultsLabel:SetTextColor(0.7, 0.7, 0.7)
-        TagEdit.testResultsLabel = testResultsLabel;
-
-        -- text of the results
-  local testResults = contentPane:CreateFontString(nil, "OVERLAY", "GameFontNormal");
-        testResults:SetText("");
-        testResults:SetPoint("TOPLEFT", testResultsLabel, "BOTTOMLEFT", 10, -5);
-        testResults:SetPoint("RIGHT", contentPane, "RIGHT", -20, 0);
-        testResults:SetHeight(40);
-        testResults:SetJustifyH("LEFT");
-        testResults:SetJustifyV("TOP");
-        TagEdit.testResults = testResults;
-
-  -- function to cause the tag editor to re-load its content
-  local function updateTagEdit()
-    TagEdit.textbox:SetFocus()
-    TagEdit.contentTitle:SetText(loc("CONFIG_" .. TagEdit.setting));
-    TagEdit.displayBox:SetText(loc("CONFIG_" .. TagEdit.setting .. "_TT"));
-    if   TagEdit.draft
-    then TagEdit.textbox:SetText(TagEdit.draft)
-         TagEdit.draft = nil;
-    else TagEdit.textbox:SetText(Config.get(TagEdit.setting):gsub("%[p%]", "\n\n"):gsub("%[br%]", "\n"));
-         TagEdit.testResults:SetText("");
-         TagEdit.testResultsLabel:SetText(loc("TAG_EDIT_RESULTS"))
-         TagEdit.testResultsLabel:SetTextColor(0.7, 0.7, 0.7)
-    end;
-  end; -- function
-
-  -- function to open the editor to edit a set of settings
-  local function tagEdit(setting)
-    TagEdit:Hide();
-    if TagEdit.setting ~= setting then TagEdit.draft = nil; end;
-    TagEdit.setting = setting;
-    RP_TagsDB.editor.last = setting;
-    updateTagEdit();
-    TagEdit:Show();
-  end;
-
-  -- we'll need this elsewhere later
-  RPTAGS.utils.rpuf      = RPTAGS.utils.rpuf      or {};
-  RPTAGS.utils.rpuf.tags = RPTAGS.utils.rpuf.tags or {};
-
-  RPTAGS.utils.rpuf.tags.edit = tagEdit;
-
-  -- Popup dialog
-
-  StaticPopupDialogs["RPTAGS_TAGEDIT_ERROR"] = {
-     showAlert    =  1,
-     text         =  loc("TAG_EDIT_ERRORS"),
-     button1      =  loc("TAG_EDIT_ERRORS_SAVE"),
-     button2      =  loc("TAG_EDIT_ERRORS_EDIT"),
-     exclusive    =  true,
-     timeout      =  0,
-     whileDead    =  true,
-     OnShow       =  function(self) TagEdit.textbox:ClearFocus(); end,
-     OnAccept     =  function(self) RPTAGS.utils.config.set(TagEdit.setting, TagEdit.textbox:GetText()) TagEdit:Hide(); end,
-     OnCancel     =  function(self) TagEdit.draft = TagEdit.textbox:GetText(); self:Hide();            tagEdit(TagEdit.setting); end,
-  };
+  if   not Config.get("DISABLE_BLIZZARD") 
+  then function oUF:DisableBlizzard() return false end; 
+  end; -- prevent oUF from automatically disabling blizzard frames
 
   -- rpuf tooltip -------------------------------------------------------------------------------------------------------------------------------
   local TTwidth, TTborder, TTpadding = 200, 5, 5;
@@ -331,7 +42,7 @@ function(self, event, ...)
         Tooltip:SetWidth(TTwidth);
         Tooltip:SetHeight(1)
         Tooltip:SetPoint("CENTER");
-        Tooltip:SetBackdrop(RPTAGS.const.BACKDROP.BLIZZTOOLTIP)
+        Tooltip:SetBackdrop(RPTAGS.CONST.BACKDROP.BLIZZTOOLTIP)
         Tooltip:SetBackdropColor(0, 0, 0, 1)
         Tooltip:SetFrameStrata("TOOLTIP")
         Tooltip:Hide();
@@ -460,10 +171,10 @@ function(self, event, ...)
   -- rpuf "style" for oUF ----------------------------------------------------------------------------------------------------------------------------------
   local function RPUF_Style(self, unit)
 
-    local fix = RPTAGS.utils.rpuf.tags.fix;
+    local fix = RPTAGS.utils.tags.fix;
           unit = unit:match('^(.-)%d+') or unit
-    local layout = getLayout(self);
-    local framewidth, frameheight = RPTAGS.utils.rpuf.frame.size(layout);
+    local layout = getFrameLayout(self);
+    local framewidth, frameheight = RPTAGS.utils.frames.layout.getFrameDimensions(layout);
           self:RegisterForClicks('AnyUp');
           self:SetScript('OnEnter', UnitFrame_OnEnter);
           self:SetScript('OnLeave', UnitFrame_OnLeave);
@@ -486,20 +197,20 @@ function(self, event, ...)
     if unit == "targettarget" then content.onUpdateFrequency = 10; end; 
 
     local bgRed, bgGreen, bgBlue = RPTAGS.utils.color.hexaToNumber(Config.get("COLOR_RPUF"));
-          content:SetBackdrop(RPTAGS.const.BACKDROP[RPTAGS.utils.config.get("RPUF_BACKDROP")])
+          content:SetBackdrop(RPTAGS.CONST.BACKDROP[RPTAGS.utils.config.get("RPUF_BACKDROP")])
           content:SetBackdropColor(bgRed / 255, bgGreen / 255, bgBlue / 255, Config.get("RPUFALPHA") / 100)
 
     local NamePanel = CreateFrame('Frame', nil, content, BackdropTemplateMixin and "BackdropTemplate") NamePanel:SetFrameLevel(20) content.NamePanel = NamePanel;
-          NamePanel:SetPoint('TOPLEFT', content, 'TOPLEFT', Left('NamePanel', layout), Top('NamePanel', layout))
-          NamePanel:SetSize(Width('NamePanel', layout), Height('NamePanel', layout));
+          NamePanel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('NamePanel', layout), getTopPoint('NamePanel', layout))
+          NamePanel:SetSize(getWidth('NamePanel', layout), getHeight('NamePanel', layout));
 
     local NameFontString = content.NamePanel:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightLarge')
           tinsert(content.fontStrings, NameFontString);
           NamePanel.text = NameFontString;
           NameFontString.setting = "NAMEPANEL";
-          NameFontString:SetJustifyH(RPTAGS.utils.rpuf.element.align("NamePanel", layout))
+          NameFontString:SetJustifyH(RPTAGS.utils.frames.element.align("NamePanel", layout))
           NameFontString:SetJustifyV('TOP')
-          NameFontString:SetSize(Width('NamePanel', layout), Height('NamePanel', layout));
+          NameFontString:SetSize(getWidth('NamePanel', layout), getHeight('NamePanel', layout));
           NameFontString:SetFont(FONTFILE, FONTSIZE + 4);
           NameFontString:SetPoint("TOPLEFT", NamePanel, "TOPLEFT", 0, 0);
           self:Tag(NameFontString, fix(Config.get("NAMEPANEL")))
@@ -521,18 +232,18 @@ function(self, event, ...)
           NamePanel:SetScript("OnMouseUp", RPUF_Panel_OnMouseUp);
           -- ---------------------------------------------------------------------------------------------------------
     local InfoPanel = CreateFrame('Frame', nil, content, BackdropTemplateMixin and "BackdropTemplate") InfoPanel:SetFrameLevel(20) content.InfoPanel = InfoPanel;
-          InfoPanel:SetPoint('TOPLEFT', content, 'TOPLEFT', Left('InfoPanel', layout), Top('InfoPanel', layout))
-          InfoPanel:SetSize(Width('InfoPanel', layout), Height('InfoPanel', layout));
+          InfoPanel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('InfoPanel', layout), getTopPoint('InfoPanel', layout))
+          InfoPanel:SetSize(getWidth('InfoPanel', layout), getHeight('InfoPanel', layout));
 
     local InfoFontString = content.InfoPanel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
           InfoPanel.text = InfoFontString;
           tinsert(content.fontStrings, InfoFontString);
           InfoFontString.setting = "INFOPANEL";
           InfoFontString:SetPoint("TOPLEFT", InfoPanel, "TOPLEFT", 0, 0);
-          InfoFontString:SetJustifyH(RPTAGS.utils.rpuf.element.align("InfoPanel", layout))
+          InfoFontString:SetJustifyH(RPTAGS.utils.frames.element.setAlign("InfoPanel", layout))
           InfoFontString:SetJustifyV('TOP')
-          InfoFontString:SetWidth(Width('InfoPanel', layout));
-          InfoFontString:SetHeight(Height('InfoPanel', layout));
+          InfoFontString:SetWidth(getWidth('InfoPanel', layout));
+          InfoFontString:SetHeight(getHeight('InfoPanel', layout));
           InfoFontString:SetFont(FONTFILE, FONTSIZE + 2);
           self:Tag(InfoFontString, fix(Config.get("INFOPANEL")))
 
@@ -553,8 +264,8 @@ function(self, event, ...)
           InfoPanel:SetScript("OnMouseUp", RPUF_Panel_OnMouseUp);
           -- ---------------------------------------------------------------------------------------------------------
     local DetailsPanel = CreateFrame('Frame', nil, content, BackdropTemplateMixin and "BackdropTemplate") DetailsPanel:SetFrameLevel(20) content.DetailsPanel = DetailsPanel;
-          DetailsPanel:SetPoint('TOPLEFT', content, 'TOPLEFT', Left('DetailsPanel', layout), Top('DetailsPanel', layout));
-          DetailsPanel:SetSize(Width('DetailsPanel', layout), Height('DetailsPanel', layout));
+          DetailsPanel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('DetailsPanel', layout), getTopPoint('DetailsPanel', layout));
+          DetailsPanel:SetSize(getWidth('DetailsPanel', layout), getHeight('DetailsPanel', layout));
 
     local DetailsFontString = content.DetailsPanel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal');
           DetailsPanel.text = DetailsFontString;
@@ -564,8 +275,8 @@ function(self, event, ...)
           DetailsFontString.setting = "DETAILPANEL";
           DetailsFontString:SetJustifyV('TOP');
           DetailsFontString:SetWordWrap(true);
-          DetailsFontString:SetWidth(Width('DetailsPanel', layout));
-          DetailsFontString:SetHeight(Height('DetailsPanel', layout));
+          DetailsFontString:SetWidth(getWidth('DetailsPanel', layout));
+          DetailsFontString:SetHeight(getHeight('DetailsPanel', layout));
           self:Tag(DetailsFontString, fix(Config.get("DETAILPANEL")));
 
     local DetailsTooltip       = Tooltip.panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
@@ -585,9 +296,9 @@ function(self, event, ...)
           DetailsPanel:SetScript("OnMouseUp", RPUF_Panel_OnMouseUp);
           -- ---------------------------------------------------------------------------------------------------------
     local PortraitPanel = CreateFrame('FRAME', nil, content, BackdropTemplateMixin and "BackdropTemplate")
-          PortraitPanel:SetPoint("TOPLEFT", content, 'TOPLEFT', Left('PortraitPanel', layout), Top('PortraitPanel', layout));
-          PortraitPanel:SetWidth(Width('PortraitPanel', layout))
-          PortraitPanel:SetHeight(Height('PortraitPanel', layout))
+          PortraitPanel:SetPoint("TOPLEFT", content, 'TOPLEFT', getLeftPoint('PortraitPanel', layout), getTopPoint('PortraitPanel', layout));
+          PortraitPanel:SetWidth(getWidth('PortraitPanel', layout))
+          PortraitPanel:SetHeight(getHeight('PortraitPanel', layout))
           content.PortraitPanel = PortraitPanel;
 
     local PortraitBackground = PortraitPanel:CreateTexture(nil, "BACKGROUND");
@@ -600,7 +311,7 @@ function(self, event, ...)
     local Portrait = CreateFrame('PlayerModel', nil, PortraitPanel, BackdropTemplateMixin and "BackdropTemplate")
           Portrait:SetPoint("TOPLEFT",     PortraitPanel, "TOPLEFT",      1, -1);
           Portrait:SetPoint("BOTTOMRIGHT", PortraitPanel, "BOTTOMRIGHT", -1,  1);
-          -- Portrait:SetPoint("TOPLEFT", content, 'TOPLEFT', Left('Portrait', layout), Top('Portrait', layout));
+          -- Portrait:SetPoint("TOPLEFT", content, 'TOPLEFT', getLeftPoint('Portrait', layout), getTopPoint('Portrait', layout));
           -- Portrait:SetFrameLevel(PortraitPanel:GetFrameLevel() - 1)
           content.Portrait = Portrait;
 
@@ -631,8 +342,8 @@ function(self, event, ...)
 
           -- ---------------------------------------------------------------------------------------------------------
     local Icon_1Panel = CreateFrame('Frame', nil, content, BackdropTemplateMixin and "BackdropTemplate") Icon_1Panel:SetFrameLevel(20) content.Icon_1Panel = Icon_1Panel;
-          Icon_1Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', Left('Icon_1Panel', layout), Top('Icon_1Panel', layout))
-          Icon_1Panel:SetSize(Width('Icon_1Panel', layout), Height('Icon_1Panel', layout));
+          Icon_1Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('Icon_1Panel', layout), getTopPoint('Icon_1Panel', layout))
+          Icon_1Panel:SetSize(getWidth('Icon_1Panel', layout), getHeight('Icon_1Panel', layout));
 
     local Icon_1FontString = content.Icon_1Panel:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightLarge')
           Icon_1Panel.text = Icon_1FontString;
@@ -662,8 +373,8 @@ function(self, event, ...)
           Icon_1Panel:SetScript("OnMouseUp", RPUF_Panel_OnMouseUp);
           -- ---------------------------------------------------------------------------------------------------------
     local Icon_2Panel = CreateFrame('Frame', nil, content, BackdropTemplateMixin and "BackdropTemplate") Icon_2Panel:SetFrameLevel(20) content.Icon_2Panel = Icon_2Panel;
-          Icon_2Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', Left('Icon_2Panel', layout), Top('Icon_2Panel', layout));
-          Icon_2Panel:SetSize(Width('Icon_2Panel', layout), Height('Icon_2Panel', layout));
+          Icon_2Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('Icon_2Panel', layout), getTopPoint('Icon_2Panel', layout));
+          Icon_2Panel:SetSize(getWidth('Icon_2Panel', layout), getHeight('Icon_2Panel', layout));
 
     local Icon_2FontString = content.Icon_2Panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
           Icon_2Panel.text = Icon_2FontString;
@@ -693,8 +404,8 @@ function(self, event, ...)
           Icon_2Panel:SetScript("OnMouseUp", RPUF_Panel_OnMouseUp);
           -- ---------------------------------------------------------------------------------------------------------
     local Icon_3Panel = CreateFrame('Frame', nil, content, BackdropTemplateMixin and "BackdropTemplate") Icon_3Panel:SetFrameLevel(20) content.Icon_3Panel = Icon_3Panel;
-          Icon_3Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', Left('Icon_3Panel', layout), Top('Icon_3Panel', layout));
-          Icon_3Panel:SetSize(Width('Icon_3Panel', layout), Height('Icon_3Panel', layout));
+          Icon_3Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('Icon_3Panel', layout), getTopPoint('Icon_3Panel', layout));
+          Icon_3Panel:SetSize(getWidth('Icon_3Panel', layout), getHeight('Icon_3Panel', layout));
 
     local Icon_3FontString = content.Icon_3Panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
           Icon_3Panel.text = Icon_3FontString;
@@ -724,8 +435,8 @@ function(self, event, ...)
           Icon_3Panel:SetScript("OnMouseUp", RPUF_Panel_OnMouseUp);
           -- ---------------------------------------------------------------------------------------------------------
     local Icon_4Panel = CreateFrame('Frame', nil, content, BackdropTemplateMixin and "BackdropTemplate") Icon_4Panel:SetFrameLevel(20) content.Icon_4Panel = Icon_4Panel;
-          Icon_4Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', Left('Icon_4Panel', layout), Top('Icon_4Panel', layout));
-          Icon_4Panel:SetSize(Width('Icon_4Panel', layout), Height('Icon_4Panel', layout));
+          Icon_4Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('Icon_4Panel', layout), getTopPoint('Icon_4Panel', layout));
+          Icon_4Panel:SetSize(getWidth('Icon_4Panel', layout), getHeight('Icon_4Panel', layout));
 
     local Icon_4FontString = content.Icon_4Panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
           Icon_4Panel.text = Icon_4FontString;
@@ -755,8 +466,8 @@ function(self, event, ...)
           Icon_4Panel:SetScript("OnMouseUp", RPUF_Panel_OnMouseUp);
           -- ---------------------------------------------------------------------------------------------------------
     local Icon_5Panel = CreateFrame('Frame', nil, content, BackdropTemplateMixin and "BackdropTemplate") Icon_5Panel:SetFrameLevel(20) content.Icon_5Panel = Icon_5Panel;
-          Icon_5Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', Left('Icon_5Panel', layout), Top('Icon_5Panel', layout));
-          Icon_5Panel:SetSize(Width('Icon_5Panel', layout), Height('Icon_5Panel', layout));
+          Icon_5Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('Icon_5Panel', layout), getTopPoint('Icon_5Panel', layout));
+          Icon_5Panel:SetSize(getWidth('Icon_5Panel', layout), getHeight('Icon_5Panel', layout));
 
     local Icon_5FontString = content.Icon_5Panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
           Icon_5Panel.text = Icon_5FontString;
@@ -786,8 +497,8 @@ function(self, event, ...)
           Icon_5Panel:SetScript("OnMouseUp", RPUF_Panel_OnMouseUp);
           -- ---------------------------------------------------------------------------------------------------------
     local Icon_6Panel = CreateFrame('Frame', nil, content, BackdropTemplateMixin and "BackdropTemplate") Icon_6Panel:SetFrameLevel(20) content.Icon_6Panel = Icon_6Panel;
-          Icon_6Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', Left('Icon_6Panel', layout), Top('Icon_6Panel', layout));
-          Icon_6Panel:SetSize(Width('Icon_6Panel', layout), Height('Icon_6Panel', layout));
+          Icon_6Panel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('Icon_6Panel', layout), getTopPoint('Icon_6Panel', layout));
+          Icon_6Panel:SetSize(getWidth('Icon_6Panel', layout), getHeight('Icon_6Panel', layout));
 
     local Icon_6FontString = content.Icon_6Panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
           Icon_6Panel.text = Icon_6FontString;
@@ -817,23 +528,23 @@ function(self, event, ...)
           Icon_6Panel:SetScript("OnMouseUp", RPUF_Panel_OnMouseUp);
           -- ---------------------------------------------------------------------------------------------------------
     local StatusBarPanel = CreateFrame('Frame', nil, content, BackdropTemplateMixin and "BackdropTemplate") StatusBarPanel:SetFrameLevel(20) content.StatusBarPanel = StatusBarPanel;
-          StatusBarPanel:SetPoint('TOPLEFT', content, 'TOPLEFT', Left('StatusBarPanel', layout), Top('StatusBarPanel', layout));
-          StatusBarPanel:SetSize(Width('StatusBarPanel', layout), Height('StatusBarPanel', layout));
+          StatusBarPanel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('StatusBarPanel', layout), getTopPoint('StatusBarPanel', layout));
+          StatusBarPanel:SetSize(getWidth('StatusBarPanel', layout), getHeight('StatusBarPanel', layout));
           content.StatusBarPanel = StatusBarPanel;
           bgRed, bgGreen, bgBlue = RPTAGS.utils.color.hexaToNumber(Config.get("COLOR_RPUF"));
-          StatusBarPanel:SetBackdrop(RPTAGS.const.STATUSBAR_TEXTURE[Config.get("STATUS_TEXTURE")]);
-          StatusBarPanel:SetBackdropColor(bgRed / 255, bgGreen / 255, bgBlue / 255, RPTAGS.const.STATUSBAR_ALPHA[Config.get("STATUS_TEXTURE")]);
+          StatusBarPanel:SetBackdrop(RPTAGS.CONST.STATUSBAR_TEXTURE[Config.get("STATUS_TEXTURE")]);
+          StatusBarPanel:SetBackdropColor(bgRed / 255, bgGreen / 255, bgBlue / 255, RPTAGS.CONST.STATUSBAR_ALPHA[Config.get("STATUS_TEXTURE")]);
 
     local StatusBarFontString = content.StatusBarPanel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
           StatusBarPanel.text = StatusBarFontString;
-          StatusBarFontString:SetJustifyH(RPTAGS.const.ALIGN[Config.get("STATUS_ALIGN")].H);
+          StatusBarFontString:SetJustifyH(RPTAGS.CONST.ALIGN[Config.get("STATUS_ALIGN")].H);
           StatusBarFontString:SetPoint("TOPLEFT", StatusBarPanel, "TOPLEFT", Config.get("GAPSIZE"), Config.get("GAPSIZE") / -2);
-          StatusBarFontString:SetJustifyH(RPTAGS.const.ALIGN[Config.get("STATUS_ALIGN")].H);
-          StatusBarFontString:SetJustifyV(RPTAGS.const.ALIGN[Config.get("STATUS_ALIGN")].V);
+          StatusBarFontString:SetJustifyH(RPTAGS.CONST.ALIGN[Config.get("STATUS_ALIGN")].H);
+          StatusBarFontString:SetJustifyV(RPTAGS.CONST.ALIGN[Config.get("STATUS_ALIGN")].V);
           StatusBarFontString.setting = "STATUSPANEL";
           tinsert(content.fontStrings, StatusBarFontString);
           StatusBarFontString:SetWordWrap(true);
-          StatusBarFontString:SetSize(Width('StatusBarPanel', layout) - Config.get("GAPSIZE") * 2, Height('StatusBarPanel', layout) - Config.get("GAPSIZE"));
+          StatusBarFontString:SetSize(getWidth('StatusBarPanel', layout) - Config.get("GAPSIZE") * 2, getHeight('StatusBarPanel', layout) - Config.get("GAPSIZE"));
           self:Tag(StatusBarFontString, fix(Config.get("STATUSPANEL")))
 
     local StatusBarTooltip       = Tooltip.panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
@@ -855,7 +566,7 @@ function(self, event, ...)
     -- Drag panel for moving the frame -------------------------------------------------------------------------
     local DragFrame = CreateFrame("frame", nil, content, BackdropTemplateMixin and "BackdropTemplate")
           content.DragFrame = DragFrame;
-          DragFrame:SetBackdrop(RPTAGS.const.BACKDROP.BLIZZTOOLTIP)
+          DragFrame:SetBackdrop(RPTAGS.CONST.BACKDROP.BLIZZTOOLTIP)
           DragFrame:SetBackdropColor(0, 0, 0, 1)
           DragFrame:SetSize(50, 72);
           DragFrame:SetPoint("TOPRIGHT", content, "TOPLEFT", 5, 0)
@@ -888,7 +599,7 @@ function(self, event, ...)
           DragFrameResetButton:SetScript("OnClick",
             function(content)
               local frame = content:GetParent():GetParent();
-              local IP = RPTAGS.const.RPUF.INITIAL_POSITION[frame.unit];
+              local IP = RPTAGS.CONST.RPUF.INITIAL_POSITION[frame.unit];
               frame:ClearAllPoints();
               frame:SetPoint(IP.pt, _G[IP.relto], IP.relpt, IP.x, IP.y);
               RP_TagsDB[frame.unit .. "UFlocation"] = nil;
@@ -920,17 +631,26 @@ function(self, event, ...)
       -- self:Spawn('player', 'RPUF_Player'):SetPoint(GetRightLocation("player"));
       -- self:Spawn('focus',  'RPUF_Focus' ):SetPoint(GetRightLocation("focus"));
       -- self:Spawn('target', 'RPUF_Target'):SetPoint(GetRightLocation("target"));
-      -- self:Spawn("player", 'RPUF_Player', BackdropTemplateMixin and "BackdropTemplate"):SetPoint(GetRightLocation("player"));
-      -- self:Spawn("foxu",   'RPUF_Focus' , BackdropTemplateMixin and "BackdropTemplate"):SetPoint(GetRightLocation("focus" ));
-      -- self:Spawn("target", 'RPUF_Target', BackdropTemplateMixin and "BackdropTemplate"):SetPoint(GetRightLocation("target"));
+      self:Spawn("player", 
+             FRAME_NAMES.PLAYER, 
+             BackdropTemplateMixin and "BackdropTemplate"):SetPoint(GetRightLocation("player")
+           );
+      self:Spawn("focus",   
+             FRAME_NAMES.FOCUS,
+             BackdropTemplateMixin and "BackdropTemplate"):SetPoint(GetRightLocation("focus")
+           );
+      self:Spawn("target", 
+             FRAME_NAMES.TARGET,
+             BackdropTemplateMixin and "BackdropTemplate"):SetPoint(GetRightLocation("target")
+           );
 
-      -- UnregisterUnitWatch(RPUF_Player);
-      -- UnregisterUnitWatch(RPUF_Target);
-      -- UnregisterUnitWatch(RPUF_Focus);
+      UnregisterUnitWatch( FRAME_NAMES.PLAYER );
+      UnregisterUnitWatch( FRAME_NAMES.FOCUS  );
+      UnregisterUnitWatch( FRAME_NAMES.TARGET );
       
-      -- RPTAGS.utils.rpuf.allFrames.visibility(true); -- true here means "initialization, i.e. it hasn't been run before
-      -- RPTAGS.utils.rpuf.allFrames.disable(true);    -- same
-      -- RPTAGS.utils.rpuf.allFrames.scale();
+      RPTAGS.utils.frames.all.visibility.set(true); -- true here means "initialization, i.e. it hasn't been run before
+      RPTAGS.utils.frames.all.disable.set(true);    -- same
+      RPTAGS.utils.frames.all.size.scale.set();
 
 --    self:SpawnHeader(nil, nil, 
 --      'custom [group:party] show; [@raid3,exists] show; [@raid26,exists] hide; hide', 

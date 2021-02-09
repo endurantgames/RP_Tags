@@ -81,19 +81,57 @@ function(self, event, ...)
         return md ~= "" and md or str
   end;
 
+  function sliceUp(tableOfStrings)
+    local dups = {};
+    local uniq = {};
+    for _, fullString in ipairs(tableOfStrings)
+    do  local aliases = split(fullString, "|");
+        for i, str in ipairs(aliases)
+        do local s = "";
+           for c in str:gmatch(".")
+           do  s = s .. c;
+               if not dups[s] and not uniq[s] 
+               then   uniq[s] = aliases[1]
+               elseif dups[s]                 
+               then   dups[s] = dups[s] .. "|" .. aliases[1];
+               elseif uniq[s] and uniq[s] ~= aliases[1]
+               then   dups[s] = uniq[s] .. "|" .. aliases[1];
+                      uniq[s] = nil;
+               end;
+           end;
+        end;
+    end;
+    return uniq, dups;
+  end;
+
   local function textTruncate(text, maxLength)
-        local ellipse;
-  
-        if Config("REAL_ELLIPSES") 
-           then ellipse = "…" 
-           else ellipse = "..." 
-           end; -- if
-  
+        local ellipse = Config("REAL_ELLIPSES")  and "…" or "..." ;
         if text:len() > maxLength 
            then text = text:sub(1, maxLength) .. ellipse 
            end; -- if
-  
         return text 
+  end;
+
+  local function sizeTrim(text, size)
+    size = size or "0";
+    size = size:gsub("%s",""):lower();
+    local uniq = RPTAGS.cache.sizeCodes;
+    if   not uniq
+    then local keys =
+         { loc("SIZE_CODE_XS"),
+           loc("SIZE_CODE_S"),
+           loc("SIZE_CODE_M"),
+           loc("SIZE_CODE_L"),
+           loc("SIZE_CODE_XL"),
+         };
+        uniq, _ = sliceUp(keys)
+        RPTAGS.cache.sizeCodes = uniq;
+    end;
+    size = uniq[size] and Config.get("TAG_SIZE_" .. uniq[size])
+        or tonumber(size);
+
+    return size > 0 and textTruncate(text, size) or text;
+
   end;
   -- ---------------------------------------------------------------------------------------------------------------------
   
@@ -186,7 +224,9 @@ function(self, event, ...)
   RPTAGS.utils.text.match        = match;
   RPTAGS.utils.text.rot13        = rot13;
   RPTAGS.utils.text.split        = split;
+  RPTAGS.utils.text.sliceUp      = sliceUp;
   RPTAGS.utils.text.truncate     = textTruncate;
+  RPTAGS.utils.text.sizeTrim     = sizeTrim;
   RPTAGS.utils.text.titlecase    = titleCase;
   RPTAGS.utils.text.notify       = notify;
   RPTAGS.utils.text.version      = versionText;

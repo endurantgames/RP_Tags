@@ -201,6 +201,24 @@ function(self, event, ...)
     },
   };
 
+  RPTAGS.CONST.FRAMES = 
+  { NAMES = 
+    { PLAYER    = "RP_UnitFrames_PlayerUnitFrame",
+      TARGET    = "RP_UnitFrames_TargetUnitFrame",
+      FOCUS     = "RP_UnitFrames_FocusUnitFrame",
+      MOUSEOVER = "RP_UnitFrames_MouseoverUnitFrame",
+    },
+   PANELS = 
+   { "NamePanel", 
+     "InfoPanel", 
+     "PortraitPanel", 
+     "DetailsPanel", 
+     "StatusBarPanel", 
+     "Icon_1Panel", 
+     "Icon_2Panel", 
+     "Icon_3Panel", 
+   },
+  };
   RPTAGS.CONST.ICONS.COLORWHEEL   = "|TInterface\\OptionsFrame\\ColorblindSettings:0::0:0:256:256:0:148:0:148|t";
   RPTAGS.CONST.ICONS.WHITE_       = "|TInterface\\BUTTONS\\WHITE8X8.PNG:0:{w}:" .. "0:0:" .. "8:8:" ..
                                     "0:8:0:8:" .. "{r}:{g}:{b}|t";

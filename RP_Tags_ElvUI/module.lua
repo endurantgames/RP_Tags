@@ -1,4 +1,4 @@
--- ------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- RP Tags
 -- by Oraibi, Moon Guard (US) server
 --
@@ -12,6 +12,14 @@
 local addOnName, addOn = ...
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:NewModule(addOnName, "unitFrames")
+
+Module:WaitUntil("ADDON_INIT",
+function(self, event, ...)
+  RPTAGS.cache = RPTAGS.cache or {};
+  RPTAGS.cache.workAround = RPTAGS.cache.workAround or {};
+  -- RPTAGS.cache.workAround["ElvUI's oUF is old."] = (ElvUF and ElvUF.version == "devel")
+  -- RPTAGS.cache.workAround["ElvUI loads too much tag info."] = true;
+end);
 
 Module:WaitUntil("ADDON_LOAD",
 function(self, event, ...)
@@ -31,6 +39,9 @@ function(self, event, ...)
       EP:RegisterPlugin(
         RPTAGS.addOnName, 
         RPT.InsertOptions) 
+      -- if   RPTAGS.cache.workAround["ElvUI loads too much tag info."]
+      -- then E.Options.args.tagGroup.args.Miscellaneous = nil;
+      -- end;
     end;
 
     E:RegisterModule(RPT:GetName())
@@ -91,17 +102,21 @@ function(self, event, ...)
       if not _G["ElvUF"].Tags.Events[tag] -- only make the tag if there isn't one by that name already
       then   _G["ElvUF"].Tags.Events[tag] = RPTAGS.CONST.MAIN_EVENT .. (extraEvents or "");
              _G["ElvUF"].Tags.Methods[tag] = tagMethod;
+      else 
       end;
+
+      return tag, tagMethod, extraEvents;
     end; -- function
     
     local function addTag(tag, group)
-       if   tag and group
+       if   tag and tag.name and group
        then local tagDesc = tag.desc;
             if RPTAGS.CONST.UNSUP[tag.name] 
             then tagDesc = "|cff" .. RPTAGS.utils.config.get("COLOR_UNKNOWN") .. tagDesc .. "|r" 
             end;
             E:AddTagInfo(tag.name, MAP.TAG[tag.name] or MAP.GROUP[group.key] or group.title, tagDesc);
        end;
+       return tag, group;
     end;
 
     RPTAGS.utils.modules.extend({ 
@@ -130,10 +145,12 @@ function(self, event, ...)
     elseif frame == "raid"  then UF:CreateAndUpdateHeaderGroup("raid")
     else                         UF:CreateAndUpdateUF(frame);
     end; -- if
+    return frame;
   end;
 
-  local function refreshAll() 
+  local function refreshAll(...) 
     UF:Update_AllFrames(); 
+    return ...;
   end;
 
   RPTAGS.utils.modules.extend(

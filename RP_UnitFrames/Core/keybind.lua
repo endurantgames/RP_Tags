@@ -13,7 +13,8 @@ local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnNames, "rpClient");
 
 Module:WaitUntil("CORE_KEYBIND",
-  function(self, event ...)
+  function(self, event, ...)
+
     local RPTAGS = RPTAGS;
 
     RPTAGS.utils = RPTAGS.utils or {};

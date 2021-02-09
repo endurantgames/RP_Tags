@@ -21,7 +21,7 @@ function(self, event, ...)
   local notify    = Utils.text.notify;
   local notifyFmt = Utils.text.notifyFmt;
   local openTo    = Utils.options.open;
-  local sliceUp   = Utils.options.sliceUp;
+  local sliceUp   = Utils.text.sliceUp;
   local split     = Utils.text.split;
   local tc        = Utils.text.titlecase;
 

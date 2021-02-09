@@ -1,0 +1,52 @@
+CONTENT RPTAGS.utils.frames.content
+
+  RPTAGS.utils.rpuf.frame.refresh        = refreshFrame;
+  RPTAGS.utils.rpuf.frame.tag            = setTag;
+  RPTAGS.utils.rpuf.allFrames.refresh    = refreshAllFrames;
+  RPTAGS.utils.rpuf.allFrames.tag        = tagAll;
+
+LOOK RPTAGS.utils.frames.look
+  RPTAGS.utils.rpuf.frame.textcolor      = textColors;
+  RPTAGS.utils.rpuf.frame.statusAlign    = setStatusBarAlignment;
+  RPTAGS.utils.rpuf.frame.statusTexture  = setStatusBarTexture;
+  RPTAGS.utils.rpuf.allFrames.setbg      = setAllBackground;
+  RPTAGS.utils.rpuf.allFrames.statusTexture = setAllStatusBarTextures;
+  RPTAGS.utils.rpuf.allFrames.statusAlign = setAllStatusBarAlignments;
+  RPTAGS.utils.rpuf.allFrames.textcolor  = allTextColors;
+  RPTAGS.utils.rpuf.allFrames.backdrop   = setAllBackground;
+
+FRAMES RPTAGS.utils.frames
+  RPTAGS.utils.rpuf.frame.layout         = frameLayout;
+  RPTAGS.utils.rpuf.frame.resize         = resizeFrame;
+  RPTAGS.utils.rpuf.allFrames.resize     = resizeAllFrames;
+  RPTAGS.utils.rpuf.allFrames.scale       = setAllFrameScales;
+
+MOVE RPTAGS.utils.frames.move
+  RPTAGS.utils.rpuf.allFrames.lock       = lockFrames;
+  RPTAGS.utils.rpuf.allFrames.move       = setAllMovable;
+  RPTAGS.utils.rpuf.allFrames.resetloc   = resetAllLocations;
+
+VISIBILITY RPTAGS.utils.frames.visibility
+  RPTAGS.utils.rpuf.allFrames.visibility = setHide;
+  RPTAGS.utils.rpuf.allFrames.disable    = setHide;
+
+TAGS RPTAGS.utils.tags
+  RPTAGS.utils.rpuf.tags.register        = registerTag; 
+  RPTAGS.utils.rpuf.tags.registerall     = registerAllTags;
+  RPTAGS.utils.rpuf.tags.fix             = fixTagErrors;
+  RPTAGS.utils.rpuf.tags.test            = testTags;
+
+SIZE RPTAGS.utils.frames.size
+  RPTAGS.utils.rpuf.frame.size           = frameDimensions;
+  RPTAGS.utils.rpuf.element.left         = elementLeft;
+  RPTAGS.utils.rpuf.element.resize       = resizePanel;
+  RPTAGS.utils.rpuf.element.top          = elementTop;
+  RPTAGS.utils.rpuf.element.topleft      = elementLeftTop;
+  RPTAGS.utils.rpuf.element.width        = elementWidth;
+  RPTAGS.utils.rpuf.element.align        = elementAlignH;
+  RPTAGS.utils.rpuf.element.height       = elementHeight;
+
+
+
+
+

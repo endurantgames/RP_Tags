@@ -578,29 +578,6 @@ function(self, event, ...)
    local function linkHandlerCustomClick(amdwProtocol, dest, link, text) return 
                   linkHandler(dest, link, text, amdwProtocol) end;
 
-  local function sliceUp(group)
-    local dups = {};
-    local uniq = {};
-    for _, fullString in ipairs(group)
-    do  local aliases = split(fullString, "|");
-        for i, str in ipairs(aliases)
-        do local s = "";
-           for c in str:gmatch(".")
-           do  s = s .. c;
-               if not dups[s] and not uniq[s] 
-               then   uniq[s] = aliases[1]
-               elseif dups[s]                 
-               then   dups[s] = dups[s] .. "|" .. aliases[1];
-               elseif uniq[s] and uniq[s] ~= aliases[1]
-               then   dups[s] = uniq[s] .. "|" .. aliases[1];
-                      uniq[s] = nil;
-               end;
-           end;
-        end;
-    end;
-    return uniq, dups;
-  end;
-
   ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "pre"] =  "<h3>|cff00ffff";
   ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/pre"] = "|r</h3>";
   ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "code"] =  "<h3>|cff00ffff";
@@ -681,7 +658,6 @@ function(self, event, ...)
   RPTAGS.utils.options.panel             = RPTAGS.utils.options.panel or {};
 
   RPTAGS.utils.options.source_order      = source_order;
-  RPTAGS.utils.options.sliceUp           = sliceUp;
   RPTAGS.utils.options.open              = linkHandler;
 
   RPTAGS.utils.options.blank_line        = build_blank_line;
