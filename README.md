@@ -237,15 +237,15 @@ translations into other languages, you can.
 
 (Primarily for my own use)
 
-  - ~~Get configuration/help working~~
-  - Get RP:UF working
-  - XRP support
-  - Config profiles with Ace3
-  - `:xs`, `:s`, etc
-  - Update for new gender settings in trp3
-  - Something I forgot
-  - ~~Make sure all the libraries are current~~
-  - See if RPT can be generalized for any oUF addon
-  - More work on AMDC
-  - Miscellaneous bug fixes
+  - [x] Get configuration/help working
+  - [ ] Get RP:UF working
+  - [ ] XRP support
+  - [ ] Config profiles with Ace3
+  - [ ] `:xs`, `:s`, etc
+  - [ ] Update for new gender settings in trp3
+  - [x] Something I forgot
+  - [x] Make sure all the libraries are current
+  - [ ] See if RPT can be generalized for any oUF addon
+  - [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
+  - [ ] Miscellaneous bug fixes
 

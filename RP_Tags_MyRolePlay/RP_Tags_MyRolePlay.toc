@@ -4,7 +4,7 @@
 ## Author: Oraibi-MoonGuard
 ## Notes: |cffdd33aarp|r|cffffffffTags|r integration module for MyRolePlay
 ## RequiredDeps: RP_Tags, MyRolePlay
-## URL: http://tinyurl.com/rptags-curse
+## URL: http://spindrift.games/rptags
 ## X-RPQModuleId: mrp
 ## X-RPQModuleType: rpClient
 ## X-RPQVersion: 1

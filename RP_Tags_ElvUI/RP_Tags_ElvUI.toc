@@ -4,7 +4,7 @@
 ## Author: Oraibi-MoonGuard
 ## Notes: |cffdd33aarp|r|cffffffffTags|r integration module for |cff1784d1ElvUI|r
 ## RequiredDeps: RP_Tags, ElvUI
-## URL: http://tinyurl.com/rptags-curse
+## URL: http://spindrift.games/rptags
 ## X-RPQModuleId: elvui
 ## X-RPQModuleType: unitFrames
 ## X-RPQVersion: 1

@@ -4,7 +4,8 @@
 ## Author: Oraibi-MoonGuard
 ## Notes: |cffdd33aarp|r|cffffffffTags|r integration module for xrp
 ## RequiredDeps: RP_Tags, XRP
-## URL: http://tinyurl.com/rptags-curse
+## DefaultState: disabled
+## URL: http://spindrift.games/rptags
 ## X-RPQVersion: 1
 ## X-RPQModuleId: xrp
 ## X-RPQModuleType: rpClient

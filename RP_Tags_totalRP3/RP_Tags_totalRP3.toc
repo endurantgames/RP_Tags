@@ -4,7 +4,7 @@
 ## Author: Oraibi-MoonGuard
 ## Notes: |cffdd33aarp|r|cffffffffTags|r rpTags integration module for Total RP 3
 ## RequiredDeps: RP_Tags, totalRP3
-## URL: http://tinyurl.com/rptags-curse
+## URL: http://spindrift.games/rptags
 ## X-RPQVersion: 1
 ## X-RPQModuleId: trp3
 ## X-RPQModuleType: rpClient

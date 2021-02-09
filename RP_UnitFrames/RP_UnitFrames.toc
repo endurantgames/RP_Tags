@@ -4,7 +4,7 @@
 ## Author: Oraibi-MoonGuard
 ## Notes: Custom roleplaying unit frames for rpTags
 ## RequiredDeps: RP_Tags
-## URL: http://tinyurl.com/rptags-curse
+## URL: http://spindrift.games/rptags
 ## X-oUF: oUF_RP_UnitFrames
 ## X-RPQVersion: 1
 ## X-RPQModuleId: rpuf
