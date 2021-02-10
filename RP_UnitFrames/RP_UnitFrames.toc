@@ -4,8 +4,9 @@
 ## Author: Oraibi-MoonGuard
 ## Notes: Custom roleplaying unit frames for rpTags
 ## RequiredDeps: RP_Tags
+## SavedVariables: RP_UnitFramesDB
 ## URL: http://spindrift.games/rptags
-## X-oUF: oUF_RP_UnitFrames
+## X-oUF: RP_UnitFrames_oUF
 ## X-RPQVersion: 1
 ## X-RPQModuleId: rpuf
 ## X-RPQModuleType: unitFrames

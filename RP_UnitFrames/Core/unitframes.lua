@@ -12,25 +12,31 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("ADDON_LOAD",
 function(self, event, ...)
 
-  local RP_TagsDB      = RP_TagsDB;
-  local oUF            = RPTAGS.oUF; -- this is automatically added by oUF
-  local CONST          = RPTAGS.CONST;
-  local Utils          = RPTAGS.utils;
-  local Config         = Utils.config;
-  local FrameUtils     = Utils.frames;
-  local AllFrameUtils  = Utils.frames.all;
-  local getFrameLayout = FrameUtils.layout.get;
-  local getLeftPoint   = FrameUtils.panels.layout.getLeft;
-  local getTopPoint    = FrameUtils.panels.layout.getTop;
-  local getHeight      = FrameUtils.panels.size.getHeight;
-  local getWidth       = FrameUtils.panels.size.getWidth;
-  local IP             = RPTAGS.CONST.RPUF.INITIAL_POSITION;
-  local loc            = RPTAGS.utils.locale.loc;
-  local notify         = Utils.text.notify;
-  local refreshAll     = Utils.frames.refreshAll;
-  local scaleFrame     = FrameUtils.size.scale.set;
-  local lockFrames     = FrameUtils.all.move.lock;
-  local FRAME_NAMES    = RPTAGS.CONST.FRAMES.NAMES;
+  local RP_TagsDB          = RP_TagsDB;
+  local oUF                = _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- auto-added by oUF
+  local CONST              = RPTAGS.CONST;
+  local Utils              = RPTAGS.utils;
+  local Config             = Utils.config;
+  local frameUtils         = Utils.frames;
+  local allFrameUtils      = Utils.frames.all;
+  local getFrameLayout     = frameUtils.layout.get;
+  local getLeftPoint       = frameUtils.panels.layout.getLeft;
+  local getTopPoint        = frameUtils.panels.layout.getTop;
+  local getPoint           = frameUtils.panels.layout.getPoint;
+  local getHeight          = frameUtils.panels.size.getHeight;
+  local getWidth           = frameUtils.panels.size.getWidth;
+  local getPanelHJustify   = frameUtils.panels.align.getH;
+  local getFrameDimensions = frameUtils.size.get;
+  local IP                 = CONST.RPUF.INITIAL_POSITION;
+  local loc                = Utils.locale.loc;
+  local hilite             = Utils.text.hilite;
+  local notify             = Utils.text.notify;
+  local refreshAll         = Utils.frames.all.refresh;
+  local scaleFrame         = frameUtils.size.scale.set;
+  local lockFrames         = frameUtils.all.move.lock;
+  local toRGB              = Utils.color.hexaToNumber;
+  local FRAME_NAMES        = CONST.FRAMES.NAMES;
+  local openEditor         = Utils.editor.open;
 
   if   not Config.get("DISABLE_BLIZZARD") 
   then function oUF:DisableBlizzard() return false end; 
@@ -42,13 +48,13 @@ function(self, event, ...)
         Tooltip:SetWidth(TTwidth);
         Tooltip:SetHeight(1)
         Tooltip:SetPoint("CENTER");
-        Tooltip:SetBackdrop(RPTAGS.CONST.BACKDROP.BLIZZTOOLTIP)
+        Tooltip:SetBackdrop(CONST.BACKDROP.BLIZZTOOLTIP)
         Tooltip:SetBackdropColor(0, 0, 0, 1)
         Tooltip:SetFrameStrata("TOOLTIP")
         Tooltip:Hide();
 
         function Tooltip:UpdateColors()
-          local bgRed, bgGreen, bgBlue = RPTAGS.utils.color.hexaToNumber(Config.get("COLOR_RPUF"));
+          local bgRed, bgGreen, bgBlue = toRGBConfig.get("COLOR_RPUF"));
           self:SetBackdropColor(bgRed / 511, bgGreen / 511, bgBlue /511, 0.5 + Config.get("RPUFALPHA") / 200)
         end;
         Tooltip:UpdateColors();
@@ -85,9 +91,9 @@ function(self, event, ...)
     then local contextMenuFrame = CreateFrame("Frame", "RPUF_Panel_ContextMenu", UIParent, "UIDropDownMenuTemplate");
          local contextMenu = { { text = loc("CONTEXT_MENU_TITLE"), isTitle = true, } };
          local subMenu = {};
-         if self.source   then table.insert(subMenu, { text = RPTAGS.utils.text.hilite(loc("EDIT_TAGS_FOR").. "[[[" .. loc("CONFIG_"..self.source) .. "]]]"),
+         if self.source   then table.insert(subMenu, { text = hilite(loc("EDIT_TAGS_FOR").. "[[[" .. loc("CONFIG_"..self.source) .. "]]]"),
                                                        func = function() RPTAGS.utils.rpuf.tags.edit(self.source) contextMenuFrame:Hide();                    end }) end;
-         if self.ttsource then table.insert(subMenu, { text = RPTAGS.utils.text.hilite(loc("EDIT_TAGS_FOR").."[["..loc("CONFIG_"..self.ttsource) .."]]"),
+         if self.ttsource then table.insert(subMenu, { text = hilite(loc("EDIT_TAGS_FOR").."[["..loc("CONFIG_"..self.ttsource) .."]]"),
                                                        func = function() RPTAGS.utils.rpuf.tags.edit(self.ttsource) contextMenuFrame:Hide();                  end }) end;
          table.insert(contextMenu, { text = loc("USE_TAG_EDITOR"), hasArrow = true, menuList = subMenu, });
          if self.contextmenu then for _, item in ipairs(self.contextmenu) do table.insert(contextMenu, item) end; end; -- if contextmenu
@@ -111,7 +117,7 @@ function(self, event, ...)
          end; -- for opts
 
          table.insert(contextMenu,
-           { text = RPTAGS.utils.text.hilite(loc("SET_LAYOUT") ..  "[[[" .. loc("CONFIG_" .. RPTAGS.cache.layoutOptions[unitFrameName].config) .. "]]]"),
+           { text = hilite(loc("SET_LAYOUT") ..  "[[[" .. loc("CONFIG_" .. RPTAGS.cache.layoutOptions[unitFrameName].config) .. "]]]"),
              hasArrow = true, menuList = unitFrameContextMenu })
 
          local function setScale(f, s, c) Config.set(c, s) f:SetScale(s); contextMenuFrame:Hide(); f:UpdateAllElements('now') end; 
@@ -119,7 +125,7 @@ function(self, event, ...)
          local scaleConfig = unitFrameParent.unit .. "FRAME_SCALE";
          scaleConfig = scaleConfig:upper();
          table.insert(contextMenu,
-           { text = RPTAGS.utils.text.hilite("Set the " ..  "[[" .. loc("CONFIG_" .. scaleConfig) .. "]]"),
+           { text = hilite("Set the " ..  "[[" .. loc("CONFIG_" .. scaleConfig) .. "]]"),
              hasArrow = true,
              menuList = { 
                { text =  "50%", value = 0.50, checked = 0.50 == Config.get(scaleConfig), func = function(self) setScale(unitFrameParent, self.value, scaleConfig) end }, 
@@ -174,7 +180,7 @@ function(self, event, ...)
     local fix = RPTAGS.utils.tags.fix;
           unit = unit:match('^(.-)%d+') or unit
     local layout = getFrameLayout(self);
-    local framewidth, frameheight = RPTAGS.utils.frames.layout.getFrameDimensions(layout);
+    local framewidth, frameheight = getFrameDimensions(layout);
           self:RegisterForClicks('AnyUp');
           self:SetScript('OnEnter', UnitFrame_OnEnter);
           self:SetScript('OnLeave', UnitFrame_OnLeave);
@@ -196,7 +202,7 @@ function(self, event, ...)
 
     if unit == "targettarget" then content.onUpdateFrequency = 10; end; 
 
-    local bgRed, bgGreen, bgBlue = RPTAGS.utils.color.hexaToNumber(Config.get("COLOR_RPUF"));
+    local bgRed, bgGreen, bgBlue = toRGBConfig.get("COLOR_RPUF"));
           content:SetBackdrop(RPTAGS.CONST.BACKDROP[RPTAGS.utils.config.get("RPUF_BACKDROP")])
           content:SetBackdropColor(bgRed / 255, bgGreen / 255, bgBlue / 255, Config.get("RPUFALPHA") / 100)
 
@@ -208,7 +214,7 @@ function(self, event, ...)
           tinsert(content.fontStrings, NameFontString);
           NamePanel.text = NameFontString;
           NameFontString.setting = "NAMEPANEL";
-          NameFontString:SetJustifyH(RPTAGS.utils.frames.element.align("NamePanel", layout))
+          NameFontString:SetJustifyH(getPanelJustifyH("NamePanel", layout))
           NameFontString:SetJustifyV('TOP')
           NameFontString:SetSize(getWidth('NamePanel', layout), getHeight('NamePanel', layout));
           NameFontString:SetFont(FONTFILE, FONTSIZE + 4);
@@ -240,7 +246,7 @@ function(self, event, ...)
           tinsert(content.fontStrings, InfoFontString);
           InfoFontString.setting = "INFOPANEL";
           InfoFontString:SetPoint("TOPLEFT", InfoPanel, "TOPLEFT", 0, 0);
-          InfoFontString:SetJustifyH(RPTAGS.utils.frames.element.setAlign("InfoPanel", layout))
+          InfoFontString:SetJustifyH(getPanelJustifyH("InfoPanel", layout))
           InfoFontString:SetJustifyV('TOP')
           InfoFontString:SetWidth(getWidth('InfoPanel', layout));
           InfoFontString:SetHeight(getHeight('InfoPanel', layout));
@@ -531,7 +537,7 @@ function(self, event, ...)
           StatusBarPanel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('StatusBarPanel', layout), getTopPoint('StatusBarPanel', layout));
           StatusBarPanel:SetSize(getWidth('StatusBarPanel', layout), getHeight('StatusBarPanel', layout));
           content.StatusBarPanel = StatusBarPanel;
-          bgRed, bgGreen, bgBlue = RPTAGS.utils.color.hexaToNumber(Config.get("COLOR_RPUF"));
+          bgRed, bgGreen, bgBlue = toRGBConfig.get("COLOR_RPUF"));
           StatusBarPanel:SetBackdrop(RPTAGS.CONST.STATUSBAR_TEXTURE[Config.get("STATUS_TEXTURE")]);
           StatusBarPanel:SetBackdropColor(bgRed / 255, bgGreen / 255, bgBlue / 255, RPTAGS.CONST.STATUSBAR_ALPHA[Config.get("STATUS_TEXTURE")]);
 
@@ -604,9 +610,9 @@ function(self, event, ...)
               frame:SetPoint(IP.pt, _G[IP.relto], IP.relpt, IP.x, IP.y);
               RP_TagsDB[frame.unit .. "UFlocation"] = nil;
             end);
-     local ttRed, ttGreen, ttBlue = RPTAGS.utils.color.hexaToNumber(Config.get("COLOR_RPUF_TOOLTIP"));
+     local ttRed, ttGreen, ttBlue = toRGBConfig.get("COLOR_RPUF_TOOLTIP"));
      for _, tt in ipairs(content.tooltips)    do tt:SetTextColor(ttRed / 255, ttGreen / 255, ttBlue / 255) end;
-     local txRed, txGreen, txBlue = RPTAGS.utils.color.hexaToNumber(Config.get("COLOR_RPUF_TEXT"));
+     local txRed, txGreen, txBlue = toRGBConfig.get("COLOR_RPUF_TEXT"));
      for _, tx in ipairs(content.fontStrings) do tx:SetTextColor(txRed / 255, txGreen / 255, txBlue / 255) end;
           -- ---------------------------------------------------------------------------------------------------------
   end;

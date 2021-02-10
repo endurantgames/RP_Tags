@@ -11,8 +11,11 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 
 -- local oUF    = RPTAGS.oUF;
 
+  print("RP_UnitFrames/Utils/layout.lua read");
 Module:WaitUntil("after UTILS_FRAMES", -- depends on size functions
 function(self, event, ...)
+
+  print("RP_UnitFrames/Utils/layout.lua loading");
 
   local RPTAGS = RPTAGS;
   
@@ -24,23 +27,23 @@ function(self, event, ...)
   local FOCUS_FRAMENAME     = CONST.FRAMES.NAMES.FOCUS;
   local MOUSEOVER_FRAMENAME = CONST.FRAMES.NAMES.MOUSEOVER;
   local Frames              = RPTAGS.cache.UnitFrames;
-  local panelWidth          = RPTAGS.utils.frames.panels.size.getWidth
-  local panelHeight         = RPTAGS.utils.frames.panels.size.getHeight
+  local panelWidth          = RPTAGS.utils.frames.panels.size.getWidth;
+  local panelHeight         = RPTAGS.utils.frames.panels.size.getHeight;
 
   local function getFrameLayout(frame)
-    local   frameName =  frame:GetName();
-    return ( frameName == PLAYER_FRAMENAME    and return Config.get("PLAYERLAYOUT"    )  )
-           ( frameName == TARGET_FRAMENAME    and return Config.get("TARGETLAYOUT"    )  )
-           ( frameName == FOCUS_FRAMENAME     and return Config.get("FOCUSLAYOUT"     )  )
-           ( frameName == MOUSEOVER_FRAMENAME and return Config.get("MOUSEOVERLAYOUT" )  )
-           or "COMPACT"
+    local frameName = frame:GetName();
+    return ( frameName == PLAYER_FRAMENAME    and Config.get("PLAYERLAYOUT"    )  )
+        or ( frameName == TARGET_FRAMENAME    and Config.get("TARGETLAYOUT"    )  )
+        or ( frameName == FOCUS_FRAMENAME     and Config.get("FOCUSLAYOUT"     )  )
+        or ( frameName == MOUSEOVER_FRAMENAME and Config.get("MOUSEOVERLAYOUT" )  )
+        or "COMPACT";
   end; -- function
 
   local function hgap(n) return Config.get("GAPSIZE") * (n or 1);      end;
   local function vgap(n) return Config.get("GAPSIZE") * (n or 1) * -1; end;
 
   local function getPanelTopLeftPoint(panel, layout)
-    local left, top, border, nborder;
+    local top, left, border, nborder;
 
     if   layout == "HIDDEN" then return 0, 0 end;
 
@@ -334,21 +337,21 @@ function(self, event, ...)
        else left, top = 5000, 5000
        end; -- if layout
 
-    return left, top;
+    return top, left;
   end;
 
   local function getPanelTopPoint(panel, layout)  
-    local _,   top = panelLeftTop(panel, layout) 
+    local top, _ = getPanelTopLeftPoint(panel, layout) 
     return top;  
   end;
   local function getPanelLeftPoint(panel, layout) 
-    local left, _  = panelLeftTop(panel, layout) 
+    local _, left = getPanelTopLeftPoint(panel, layout) 
     return left; 
   end;
 
-  RPTAGS.utils.frames.panels.size.getLeft    = getPanelLeftPoint;
-  RPTAGS.utils.frames.panels.size.getTop     = getPanelTopPoint;
-  RPTAGS.utils.frames.panels.size.getTopLeft = getPanelTopLeftPoints;
-  RPTAGS.utils.frames.layout.get             = getFrameLayout;
+  RPTAGS.utils.frames.panels.layout.getLeft    = getPanelLeftPoint;
+  RPTAGS.utils.frames.panels.layout.getTop     = getPanelTopPoint;
+  RPTAGS.utils.frames.panels.layout.getPoint   = getPanelTopLeftPoint;
+  RPTAGS.utils.frames.layout.get               = getFrameLayout;
 
 end);

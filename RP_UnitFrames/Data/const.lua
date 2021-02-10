@@ -234,81 +234,88 @@ function(self, event, ...)
   RPTAGS.CONST.FONT.FIXED        = "Interface\\AddOns\\RP_UnitFrames\\Resources\\Fonts\\Syne_Mono\\SyneMono-Regular.ttf";
   RPTAGS.CONST.NBSP              = "|TInterface\\Store\\ServicesAtlas:0::0:0:1024:1024:1023:1024:1023:1024|t";
 
+  local CONFIG = RPTAGS.CONST.CONFIG.DEFAULTS;
+
   -- disable
-  RPTAGS.CONST.CONFIG.DEFAULTS.DISABLE_RPUF        = false;
-  RPTAGS.CONST.CONFIG.DEFAULTS.DISABLE_BLIZZARD    = false;
-  RPTAGS.CONST.CONFIG.DEFAULTS.RPUF_WITH_ELVUI     = true;
+  CONFIG.DISABLE_RPUF        = false;
+  CONFIG.DISABLE_BLIZZARD    = false;
+  CONFIG.RPUF_WITH_ELVUI     = true;
 
   -- reset
-  RPTAGS.CONST.CONFIG.DEFAULTS.RESET_FRAMES        = true;
-  RPTAGS.CONST.CONFIG.DEFAULTS.RESET_TAGS          = true;
-  RPTAGS.CONST.CONFIG.DEFAULTS.LOCK_FRAMES         = false;
+  CONFIG.RESET_FRAMES        = true;
+  CONFIG.RESET_TAGS          = true;
+  CONFIG.LOCK_FRAMES         = false;
 
   -- hiding
-  RPTAGS.CONST.CONFIG.DEFAULTS.RPUF_HIDE_COMBAT    = true;
-  RPTAGS.CONST.CONFIG.DEFAULTS.RPUF_HIDE_VEHICLE   = true;
-  RPTAGS.CONST.CONFIG.DEFAULTS.RPUF_HIDE_PETBATTLE = true;
-  RPTAGS.CONST.CONFIG.DEFAULTS.RPUF_HIDE_PARTY     = false;
-  RPTAGS.CONST.CONFIG.DEFAULTS.RPUF_HIDE_DEAD      = false;
-  RPTAGS.CONST.CONFIG.DEFAULTS.RPUF_HIDE_RAID      = true;
+  CONFIG.RPUF_HIDE_COMBAT    = true;
+  CONFIG.RPUF_HIDE_VEHICLE   = true;
+  CONFIG.RPUF_HIDE_PETBATTLE = true;
+  CONFIG.RPUF_HIDE_PARTY     = false;
+  CONFIG.RPUF_HIDE_DEAD      = false;
+  CONFIG.RPUF_HIDE_RAID      = true;
 
   -- appearance
-  RPTAGS.CONST.CONFIG.DEFAULTS.COLOR_RPUF          = BLACK;
-  RPTAGS.CONST.CONFIG.DEFAULTS.COLOR_RPUF_TEXT     = WHITE;
-  RPTAGS.CONST.CONFIG.DEFAULTS.COLOR_RPUF_TOOLTIP  = YELLOW;
-  RPTAGS.CONST.CONFIG.DEFAULTS.RPUFALPHA           = 65;
-  RPTAGS.CONST.CONFIG.DEFAULTS.RPUF_BACKDROP       = "BLIZZTOOLTIP";
-  RPTAGS.CONST.CONFIG.DEFAULTS.STATUS_ALIGN        = "CENTER";
-  RPTAGS.CONST.CONFIG.DEFAULTS.STATUS_TEXTURE      = "SHADED";
-  RPTAGS.CONST.CONFIG.DEFAULTS.PORTRAIT_STYLE      = "LAYOUT";
+  CONFIG.COLOR_RPUF          = BLACK;
+  CONFIG.COLOR_RPUF_TEXT     = WHITE;
+  CONFIG.COLOR_RPUF_TOOLTIP  = YELLOW;
+  CONFIG.RPUFALPHA           = 65;
+  CONFIG.RPUF_BACKDROP       = "BLIZZTOOLTIP";
+  CONFIG.STATUS_ALIGN        = "CENTER";
+  CONFIG.STATUS_TEXTURE      = "SHADED";
+  CONFIG.PORTRAIT_STYLE      = "LAYOUT";
 
   -- scale
-  RPTAGS.CONST.CONFIG.DEFAULTS.PLAYERFRAME_SCALE   = 0.9;
-  RPTAGS.CONST.CONFIG.DEFAULTS.TARGETFRAME_SCALE   = 0.9;
-  RPTAGS.CONST.CONFIG.DEFAULTS.FOCUSFRAME_SCALE    = 0.75;
+  CONFIG.PLAYERFRAME_SCALE   = 0.9;
+  CONFIG.TARGETFRAME_SCALE   = 0.9;
+  CONFIG.FOCUSFRAME_SCALE    = 0.75;
 
   -- layouts
-  RPTAGS.CONST.CONFIG.DEFAULTS.FOCUSLAYOUT         = "COMPACT";
-  RPTAGS.CONST.CONFIG.DEFAULTS.PLAYERLAYOUT        = "ABRIDGED";
-  RPTAGS.CONST.CONFIG.DEFAULTS.TARGETLAYOUT        = "FULL";
-  RPTAGS.CONST.CONFIG.DEFAULTS.PARTYLAYOUT         = "ABRIDGED";    -- not implemented yet
-  RPTAGS.CONST.CONFIG.DEFAULTS.RAIDLAYOUT          = "COMPACT";     -- not implemented yet
-  RPTAGS.CONST.CONFIG.DEFAULTS.PARTY_ORIENTATION   = "VERTICAL";
-  RPTAGS.CONST.CONFIG.DEFAULTS.RAID_GRID           = "5X8";
+  CONFIG.FOCUSLAYOUT         = "COMPACT";
+  CONFIG.PLAYERLAYOUT        = "ABRIDGED";
+  CONFIG.TARGETLAYOUT        = "FULL";
+  CONFIG.PARTYLAYOUT         = "ABRIDGED";    -- not implemented yet
+  CONFIG.RAIDLAYOUT          = "COMPACT";     -- not implemented yet
+  CONFIG.PARTY_ORIENTATION   = "VERTICAL";
+  CONFIG.RAID_GRID           = "5X8";
 
   -- dimensions
-  RPTAGS.CONST.CONFIG.DEFAULTS.DETAILHEIGHT        = 100;
-  RPTAGS.CONST.CONFIG.DEFAULTS.GAPSIZE             = 6;
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICONWIDTH           = 25;
-  RPTAGS.CONST.CONFIG.DEFAULTS.INFOWIDTH           = 200;
-  RPTAGS.CONST.CONFIG.DEFAULTS.PORTRAIT_TYPE       = "FACE";
-  RPTAGS.CONST.CONFIG.DEFAULTS.PORTWIDTH           = 100;
-  RPTAGS.CONST.CONFIG.DEFAULTS.STATUSHEIGHT        = 35;
+  CONFIG.DETAILHEIGHT        = 100;
+  CONFIG.GAPSIZE             = 6;
+  CONFIG.ICONWIDTH           = 25;
+  CONFIG.INFOWIDTH           = 200;
+  CONFIG.PORTRAIT_TYPE       = "FACE";
+  CONFIG.PORTWIDTH           = 100;
+  CONFIG.STATUSHEIGHT        = 35;
 
   -- panels
-  RPTAGS.CONST.CONFIG.DEFAULTS.DETAILPANEL         = "[rp:oocinfo]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_1              = "[rp:icon]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_2              = "[rp:glance-1-icon]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_3              = "[rp:glance-2-icon]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_4              = "[rp:glance-3-icon]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_5              = "[rp:glance-4-icon]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_6              = "[rp:glance-5-icon]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.INFOPANEL           = "[rp:race] [rp:class]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.NAMEPANEL           = "[rp:color][rp:name]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.STATUSPANEL         = "[rp:statuscolor][rp:ic][rp:ooc] [nocolor][rp:currently]";
+  CONFIG.DETAILPANEL         = "[rp:oocinfo]";
+  CONFIG.ICON_1              = "[rp:icon]";
+  CONFIG.ICON_2              = "[rp:glance-1-icon]";
+  CONFIG.ICON_3              = "[rp:glance-2-icon]";
+  CONFIG.ICON_4              = "[rp:glance-3-icon]";
+  CONFIG.ICON_5              = "[rp:glance-4-icon]";
+  CONFIG.ICON_6              = "[rp:glance-5-icon]";
+  CONFIG.INFOPANEL           = "[rp:race] [rp:class]";
+  CONFIG.NAMEPANEL           = "[rp:color][rp:name]";
+  CONFIG.STATUSPANEL         = "[rp:statuscolor][rp:ic][rp:ooc] [nocolor][rp:currently]";
 
   -- tooltips
-  RPTAGS.CONST.CONFIG.DEFAULTS.DETAIL_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc][nocolor] [rp:oocinfo-label]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_1_TOOLTIP      = "[rp:style-yes-label][br][rp:style-ask-label][br][rp:style-no-label]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_2_TOOLTIP      = "[rp:glance-1-full]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_3_TOOLTIP      = "[rp:glance-2-full]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_4_TOOLTIP      = "[rp:glance-3-full]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_5_TOOLTIP      = "[rp:glance-4-full]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.ICON_6_TOOLTIP      = "[rp:glance-5-full]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.INFO_TOOLTIP        = "[rp:gendercolor][rp:gender][nocolor] [rp:guildcolor][race] [rp:friendcolor][class] [level]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.NAME_TOOLTIP        = "[rp:namecolor][rp:friendcolor][rp:firstname] [rp:nick-quoted] [rp:lastname][nocolor][br][rp:title-long][p][rp:guildcolor][rp:guild-label][nocolor] [rp:guildstatuscolor][rp:guild-status][nocolor][br][rp:guild-rank-label]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.PORTRAIT_TOOLTIP    = "[rp:eyecolor][rp:eyes-label][nocolor][br][rp:hair-label][br][rp:actor-label]";
-  RPTAGS.CONST.CONFIG.DEFAULTS.STATUS_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc] [nocolor][rp:currently-label]";
+  CONFIG.DETAIL_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc][nocolor] [rp:oocinfo-label]";
+  CONFIG.ICON_1_TOOLTIP      = "[rp:style-yes-label][br][rp:style-ask-label][br][rp:style-no-label]";
+  CONFIG.ICON_2_TOOLTIP      = "[rp:glance-1-full]";
+  CONFIG.ICON_3_TOOLTIP      = "[rp:glance-2-full]";
+  CONFIG.ICON_4_TOOLTIP      = "[rp:glance-3-full]";
+  CONFIG.ICON_5_TOOLTIP      = "[rp:glance-4-full]";
+  CONFIG.ICON_6_TOOLTIP      = "[rp:glance-5-full]";
+  CONFIG.INFO_TOOLTIP        = "[rp:gendercolor][rp:gender][nocolor] [rp:guildcolor][race] [rp:friendcolor][class] [level]";
+  CONFIG.NAME_TOOLTIP        = "[rp:namecolor][rp:friendcolor][rp:firstname] [rp:nick-quoted] [rp:lastname][nocolor][br][rp:title-long][p][rp:guildcolor][rp:guild-label][nocolor] [rp:guildstatuscolor][rp:guild-status][nocolor][br][rp:guild-rank-label]";
+  CONFIG.PORTRAIT_TOOLTIP    = "[rp:eyecolor][rp:eyes-label][nocolor][br][rp:hair-label][br][rp:actor-label]";
+  CONFIG.STATUS_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc] [nocolor][rp:currently-label]";
 
+  -- editor
+  CONFIG.EDITOR_FONT         = "Interface\\AddOns\\RP_UnitFrames\\Resources\\Fonts\\Syne_Mono\\SyneMono-Regular.ttf";
+  CONFIG.EDITOR_CUSTOM_FONT  = false;
+  CONFIG.EDITOR_BUTTONS      = "rp:name|rp:color|rp:eyes|rp:eyecolor|rp:class|rp:icon|rp:height|rp:gender|rp:race|rp:fulltitle|rp:age|rp:body|rp:status|rp:statuscolor|rp:gendercolor";
+  CONFIG.EDITOR_BUTTON_BAR   = true;
  
 end);

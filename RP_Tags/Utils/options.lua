@@ -28,6 +28,7 @@ function(self, event, ...)
   local notify             = RPTAGS.utils.text.notify;
   local AceConfigDialog    = LibStub("AceConfigDialog-3.0");
   local AceGUI             = LibStub("AceGUI-3.0");
+  local LibSharedMedia     = LibStub("LibSharedMedia-3.0");
   local split              = RPTAGS.utils.text.split;
 
   local menus =
@@ -538,6 +539,48 @@ function(self, event, ...)
   
   end; -- 
 
+  local function build_lsm_font(str, hidden, disabled, get, set)
+    local w    = build_common("select", "", str, hidden, disabled, get or true, set or true);
+    w.dialogControl = "LSM30_Font";
+    w.values   = LibSharedMedia:HashTable("font");
+    return w;
+  end;
+
+  local function build_lsm_sound(str, hidden, disabled, get, set)
+    local w    = build_common("select", "", str, hidden, disabled, get or true, set or true);
+    w.dialogControl = "LSM30_Sound";
+    w.values   = LibSharedMedia:HashTable("sound");
+    return w;
+  end;
+
+  local function build_lsm_statusbar(str, hidden, disabled, get, set)
+    local w    = build_common("select", "", str, hidden, disabled, get or true, set or true);
+    w.dialogControl = "LSM30_Statusbar";
+    w.values   = LibSharedMedia:HashTable("statusbar");
+    return w;
+  end;
+
+  local function build_lsm_background(str, hidden, disabled, get, set)
+    local w    = build_common("select", "", str, hidden, disabled, get or true, set or true);
+    w.dialogControl = "LSM30_Background";
+    w.values   = LibSharedMedia:HashTable("background");
+    return w;
+  end;
+
+  local function build_lsm_border(str, hidden, disabled, get, set)
+    local w    = build_common("select", "", str, hidden, disabled, get or true, set or true);
+    w.dialogControl = "LSM30_Border";
+    w.values   = LibSharedMedia:HashTable("border");
+    return w;
+  end;
+
+  local function collectionBrowser()
+    return print("This isn't working yet, sorry.")
+  end;
+
+  local function listOfAllTags()
+    return {};
+  end;
 --   local function openDialog(dest)
 --         local protocol, path = dest:match("^(opt)://(.+)$");
 --         path = RPTAGS.utils.text.split(path, "/");
@@ -551,32 +594,33 @@ function(self, event, ...)
 --   end;
 
   local function linkHandler(dest, link, text, amdwProtocol)
-        link = link or dest;
-        local protocol, path = link:match("^(%a+)://(.+)$");
-        path = split(path, "/");
-        local path1 = path[1];
-        if     (protocol == "opt"
-               or protocol == "setting")
-               and RPTAGS.cache.panels[path1]
-        then   InterfaceOptionsFrame:Show()
-               InterfaceOptionsFrame_OpenToCategory(RPTAGS.cache.panels[path1])
-               AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
-        elseif protocol == "help"
-        then   InterfaceOptionsFrame:Show()
-               InterfaceOptionsFrame_OpenToCategory("help");
-               AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
-        elseif protocol == "tag" and RPTAGS.cache.help.tagIndex[path1]
-        then   linkHandler(RPTAGS.cache.help.tagIndex[path1])
-        elseif protocol == "urldb" and RPTAGS.CONST.URLS[path1] and amdwProtocol
-        then   link = loc(RPTAGS.CONST.URLS[path1].url);
-               text = loc(RPTAGS.CONST.URLS[path1].name);
-               amdwProtocol:ShowPopup(dest, link, text);
-        else   print("oops", dest, link, text);
-        end;
-   end;
+    link = link or dest;
+    local protocol, path = link:match("^(%a+)://(.+)$");
+    path = split(path, "/");
+    local path1 = path[1];
+    if     (protocol == "opt"
+        or protocol == "setting")
+        and RPTAGS.cache.panels[path1]
+    then   InterfaceOptionsFrame:Show()
+           InterfaceOptionsFrame_OpenToCategory(RPTAGS.cache.panels[path1])
+           AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
+    elseif protocol == "help"
+    then   InterfaceOptionsFrame:Show()
+           InterfaceOptionsFrame_OpenToCategory("help");
+           AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
+    elseif protocol == "tag" and RPTAGS.cache.help.tagIndex[path1]
+    then   linkHandler(RPTAGS.cache.help.tagIndex[path1])
+    elseif protocol == "urldb" and RPTAGS.CONST.URLS[path1] and amdwProtocol
+    then   link = loc(RPTAGS.CONST.URLS[path1].url);
+           text = loc(RPTAGS.CONST.URLS[path1].name);
+           amdwProtocol:ShowPopup(dest, link, text);
+    else   print("oops", dest, link, text);
+    end;
+  end;
   
-   local function linkHandlerCustomClick(amdwProtocol, dest, link, text) return 
-                  linkHandler(dest, link, text, amdwProtocol) end;
+  local function linkHandlerCustomClick(amdwProtocol, dest, link, text) 
+    return linkHandler(dest, link, text, amdwProtocol) 
+  end;
 
   ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "pre"] =  "<h3>|cff00ffff";
   ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/pre"] = "|r</h3>";
@@ -671,7 +715,12 @@ function(self, event, ...)
   RPTAGS.utils.options.multi_reset       = build_multi_reset
   RPTAGS.utils.options.panel.taghelp     = build_panel_taghelp
   RPTAGS.utils.options.panel.version     = build_panel_version
-  RPTAGS.utils.options.pushbutton        = build_pushbutton
+  RPTAGS.utils.options.font              = build_lsm_font;
+  RPTAGS.utils.options.background        = build_lsm_background;
+  RPTAGS.utils.options.border            = build_lsm_border;
+  RPTAGS.utils.options.statusbar         = build_lsm_statusbar;
+  RPTAGS.utils.options.sound             = build_lsm_sound;
+  RPTAGS.utils.options.pushbutton        = build_pushbutton;
   RPTAGS.utils.options.recipe            = build_recipe;
   RPTAGS.utils.options.reset             = build_reset
   RPTAGS.utils.options.slider            = build_slider;
@@ -680,6 +729,9 @@ function(self, event, ...)
   RPTAGS.utils.options.question_mark     = build_question_mark;
   RPTAGS.utils.options.keybind           = build_keybind;
   RPTAGS.utils.options.textbox_wide      = build_textbox_wide;
+
+  RPTAGS.utils.options.collectionBrowser = collectionBrowser;
+  RPTAGS.utils.options.listOfAllTags     = listOfAllTags;
  
 -- RPQ -----------------------------------------------------------------------------------------------------------------------------------------------
 end);

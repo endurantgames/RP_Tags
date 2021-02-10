@@ -87,11 +87,139 @@ function(self, event, ...)
   end;
   
   -- this will be extended by UF-specific functions
-  local function registerTag( ... )  return ... end;
+  local function registerTag( ... ) return ... end;
   local function refreshFrame(... ) return ... end;
-  local function refreshAll(  ... )   return ... end;
+  local function refreshAll(  ... ) return ... end;
    
+  local function evalTagString(tagstr, unit, realUnit, use_oUF) -- adapted from oUF/elements/tags.lua
+
+    local TAG_PATTERN = '%[..-%]+'
+    local funcResults = {};
+
+    local function getBracketData(tag)
+      -- full tag syntax: '[prefix$>tag-name<$suffix(a,r,g,s)]'
+      local  suffixEnd                 = (tag:match('()%(') or -1) - 1
+      local  prefixEnd, prefixOffset   = tag:match('()%$>'), 1
+    
+      if not prefixEnd
+      then   prefixEnd                 = 1
+      else   prefixEnd                 = prefixEnd - 1
+             prefixOffset              = 3
+      end;
+    
+      local  suffixStart, suffixOffset = tag:match('%<$()', prefixEnd), 1
+    
+      if not suffixStart
+      then   suffixStart               = suffixEnd + 1
+      else   suffixOffset              = 3
+      end;
+    
+      return 
+        tag:sub(prefixEnd + prefixOffset, suffixStart - suffixOffset), 
+        prefixEnd, 
+        suffixStart, 
+        suffixEnd, 
+        tag:match('%((.-)%)')
+    end
+   
+    local func;
+  
+    local format, numTags = tagstr:gsub('%%', '%%%%'):gsub(TAG_PATTERN, '%%s')
+    local args = {}
+    local methods = use_oUF.Tags.Methods or _G[GetAddOnMetadata(addOnName, "X-oUF")].Tags.Methods;
+  
+    for bracket in tagstr:gmatch(TAG_PATTERN) 
+    do  local tagFunc;
+        local tagName, prefixEnd, suffixStart, suffixEnd, customArgs = getBracketData(bracket)
+        local tag = methods[tagName]
+    
+        if   tag 
+        then if     prefixEnd ~= 1 and suffixStart - suffixEnd ~= 1  
+             then   local prefix = bracket:sub(2, prefixEnd)
+                    local suffix = bracket:sub(suffixStart, suffixEnd)
+         
+                    tagFunc = 
+                      function(unit, realUnit)
+                        local str
+                        if   customArgs
+                        then str = tag(unit, realUnit, strsplit(',', customArgs))
+                        else str = tag(unit, realUnit)
+                        end
+                        if str and str ~= '' then return prefix .. str .. suffix end
+                      end
+              
+             elseif prefixEnd ~= 1  
+             then   local prefix = bracket:sub(2, prefixEnd)
+    
+                    tagFunc = 
+                      function(unit, realUnit)
+                      local str
+                      if   customArgs  
+                      then str = tag(unit, realUnit, strsplit(',', customArgs))
+                      else str = tag(unit, realUnit)
+                      end
+                      if str and str ~= '' then return prefix .. str end
+                    end
+    
+             elseif suffixStart - suffixEnd ~= 1  
+             then   local suffix = bracket:sub(suffixStart, -2)
+    
+                    tagFunc = 
+                      function(unit, realUnit)
+                        local str
+                        if   customArgs 
+                        then str = tag(unit, realUnit, strsplit(',', customArgs))
+                        else str = tag(unit, realUnit)
+                        end
+                        if str and str ~= '' then return str .. suffix end
+                      end
+    
+             else   tagFunc = 
+                      function(unit, realUnit)
+                        local str
+                        if   customArgs  
+                        then str = tag(unit, realUnit, strsplit(',', customArgs))
+                        else str = tag(unit, realUnit)
+                        end
+                        if str and str ~= '' then return str end
+                      end
+             end -- if (lotsa stuff)
+        end -- if tag
+    
+        if   tagFunc  
+        then table.insert(args, tagFunc)
+        -- else return error(string.format('Attempted to use invalid tag %s.', bracket), 3)
+        else table.insert(args, function() return "[" .. tagName .. "]" end);
+        end
+    end -- for
+    
+    -- func = function(unit, realUnit)
+    --   local parent = self.parent
+    --   local unit = parent.unit
+    --   local realUnit
+    --   if(self.overrideUnit) then
+    --     realUnit = parent.realUnit
+    --   end
+    -- 
+    --  _ENV._COLORS = parent.colors
+    --  _ENV._FRAME = parent
+    --
+    --  for i, f in next, args do tmp[i] = f(unit, realUnit or unit) or '' end
+    --
+    -- return self:SetFormattedText(format, unpack(tmp, 1, numTags))
+  
+    for i, f in next, args do funcResults[i] = f(unit, realUnit or unit) or '' end
+    
+    return string.format(format, unpack(funcResults));
+  end; -- function evalTagString
+
+  local function evalTagStringAsPlayer(tagStr, oUF)
+    return evalTagString(tagStr, "player", "player", oUF);
+  end;
+
   RPTAGS.utils.tags              = RPTAGS.utils.tags or {};
+  RPTAGS.utils.tags.eval         = evalTagString;
+  RPTAGS.utils.tags.evalPlayer   = evalTagStringAsPlayer;
   RPTAGS.utils.tags.registerTag  = registerTag;
   RPTAGS.utils.tags.addTag       = addTag;
   RPTAGS.utils.tags.addTagGroup  = addTagGroup;

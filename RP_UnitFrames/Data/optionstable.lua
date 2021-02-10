@@ -4,13 +4,12 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 
 Module:WaitUntil("before DATA_OPTIONS",
 function(self, event, ...)
-  local RPTAGS = RPTAGS;
 
-  local loc = RPTAGS.utils.locale.loc;
-  local Get = RPTAGS.utils.config.get;
+  local loc               = RPTAGS.utils.locale.loc;
+  local Get               = RPTAGS.utils.config.get;
+  local Default           = RPTAGS.utils.config.default;
   local addOptions        = RPTAGS.utils.modules.addOptions;
   local source_order      = RPTAGS.utils.options.source_order;
-
   local Checkbox          = RPTAGS.utils.options.checkbox
   local Color_Picker      = RPTAGS.utils.options.color_picker
   local Common            = RPTAGS.utils.options.common
@@ -23,8 +22,8 @@ function(self, event, ...)
   local Dimensions_Slider = RPTAGS.utils.options.dimensions_slider;
   local TagPanel          = RPTAGS.utils.options.tagpanel;
   local requiresRPUF      = RPTAGS.utils.options.requiresRPUF;
-
-  print("Options loading.");
+  local collectionBrowser = RPTAGS.utils.options.collectionBrowser;
+  local Font              = RPTAGS.utils.options.font;
 
   addOptions("color",
   { type                    = "group",
@@ -102,8 +101,34 @@ function(self, event, ...)
           iconFPanel        = TagPanel("icon 6", "icon 6 tooltip"),
         },
       },
-    },
-  });
+      tagEditor             = 
+      { name                = loc("OPT_EDITOR"),
+        order               = source_order(),
+        type                = "group",
+        args                = 
+        { panel             = Header("editor", nil, requiresRPUF ),
+          -- instruct          = Instruct("editor", nil, requiresRPUF ),
+          useCustomFont     = Checkbox("editor custom font", nil, requiresRPUF, true, true),
+          customFont        = Font("config editor font", nil, requiresRPUF and Get("EDITOR_CUSTOM_FONT")),
+          useButtonBar      = Checkbox("editor button bar", nil, requiresRPUF),
+          chooseButtons     = Pushbutton("editor buttons", nil, requiresRPUF, 
+                                function(self)
+                                  Set("EDITOR_BUTTONS",
+                                    collectionBrowser(
+                                      { current  = split(Get("EDITOR_BUTTONS"), "|"),
+                                        all      = listOfAllTags(),
+                                        defaults = split(Default("EDITOR_BUTTONS"), "|"), 
+                                        nameFunc = function(str) return loc("TAG_" .. str .. "_NAME") end,
+                                        descFunc = function(str) return loc("TAG_" .. str .. "_DESC") end,
+                                      } -- params to collectionBrowser
+                                    )   -- collectionBrowser function call
+                                  ) -- Set function call
+                                end -- "on pushed" function
+                              ), -- Pushbutton function call
+        }, -- tagEditor.args
+      }, -- tagEditor
+    }, -- module.rpuf.args
+  }); -- module.rpuf
 
   addOptions("keybindings",
   { disableRPUF             =

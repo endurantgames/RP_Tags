@@ -26,14 +26,14 @@ Module:WaitUntil("CORE_KEYBIND",
     
     local function keybind_disableRPUF()
       Config.set("DISABLE_RPUF", not(Config.get("DISABLE_RPUF")))
-      RPTAGS.utils.rpuf.allFrames.disable();
+      -- RPTAGS.utils.rpuf.allFrames.disable();
     end;
     
     local function keybind_hideInCombat()
       if Config.get("DISABLE_RPUF")
       then notify("ERROR_KEYBIND_NO_RPUF")
       else Config.set("RPUF_HIDE", not(Config.get("RPUF_HIDE")))
-           RPTAGS.utils.rpuf.allFrames.visibility();
+           -- RPTAGS.utils.rpuf.allFrames.visibility();
       end;
     end;
     
@@ -41,20 +41,20 @@ Module:WaitUntil("CORE_KEYBIND",
       if Config.get("DISABLE_RPUF")
       then notify("ERROR_KEYBIND_NO_RPUF")
       else Config.set("LOCK_FRAMES", not(Config.get("LOCK_FRAMES")))
-           RPTAGS.utils.rpuf.allFrames.lock();
+           -- RPTAGS.utils.rpuf.allFrames.lock();
       end;
     end;
     
     local function keybind_tagEditor()
       if     Config.get("DISABLE_RPUF")
       then   notify("ERROR_KEYBIND_NO_RPUF")
-      elseif RPTAGS_TagEdit:IsVisible()
-      then   notify("NOTIFY_KEYBIND_TAG_EDITOR_OPEN")
-      elseif RP_TagsDB.editor and RP_TagsDB.editor.last 
-      then   RPTAGS.utils.rpuf.tags.edit(RP_TagsDB.editor.last)
-             notify("NOTIFY_KEYBIND_TAG_EDITOR")
-      else   notify("ERROR_KEYBIND_TAG_EDITOR")
-             InterfaceOptionsFrame_Show(); InterfaceOptionsFrame_OpenToCategory(RPTAGS_Tags_OptionsPanel)
+      -- elseif RPTAGS_TagEdit:IsVisible()
+      -- then   notify("NOTIFY_KEYBIND_TAG_EDITOR_OPEN")
+      -- elseif RP_TagsDB.editor and RP_TagsDB.editor.last 
+      -- then   RPTAGS.utils.rpuf.tags.edit(RP_TagsDB.editor.last)
+      --        notify("NOTIFY_KEYBIND_TAG_EDITOR")
+      -- else   notify("ERROR_KEYBIND_TAG_EDITOR")
+      --        InterfaceOptionsFrame_Show(); InterfaceOptionsFrame_OpenToCategory(RPTAGS_Tags_OptionsPanel)
       end;    
     end;
     

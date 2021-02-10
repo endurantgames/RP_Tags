@@ -16,6 +16,7 @@ function(self, event, ...)
   local RPUF_ABBR                         = RP .. APP_COLOR_RPUF .. "UF" .. "|r";
   local ERROR_INLINE                      = "|cffdd0000Error!|r";
   local ERROR_STARTUP                     = APP_NAME .. "|cffff0000 Startup Error:|r\n\n";
+  local EDITOR                            = APP_NAME .. " Tag Editor";
 
   L["RPUF_NAME"                         ] = RPUF_NAME;
   L["RPUF_ABBR"                         ] = RPUF_ABBR;
@@ -42,9 +43,9 @@ function(self, event, ...)
   L["KEYBIND_DISABLE_RPUF"              ] = "Toggle " .. RPUF_NAME;
   L["KEYBIND_HIDE_IN_COMBAT"            ] = "Toggle Hide in Combat";
   L["KEYBIND_LOCK_FRAMES"               ] = "Toggle Frame Lock";
-  L["KEYBIND_TAG_EDITOR"                ] = "Open the Tag Editor";
+  L["KEYBIND_TAG_EDITOR"                ] = "Open the " .. EDITOR;
   -- --- tag editor
-  L["TAG_EDITOR"                        ] = " Tag Editor";
+  L["TAG_EDITOR"                        ] = EDITOR;
   L["TAG_EDIT_CANCEL"                   ] = "Cancel";
   L["TAG_EDIT_DEFAULT"                  ] = "Default";
   L["TAG_EDIT_ERRORS"                   ] = "You have unknown tags. Save anyway?";
@@ -61,11 +62,12 @@ function(self, event, ...)
   L["TAG_TEST_FAIL"                     ] = "Unknown tags found: ";
   L["TAG_TEST_FAIL_SINGULAR"            ] = "Unknown tag found: ";
   L["TAG_TEST_PASS"                     ] = "No errors found.";
-  L["UNKNOWN_TAG_END"                   ] = "                                                                                                                                                                                                             ] |r";
+  L["UNKNOWN_TAG_END"                   ] = "] |r";
   L["UNKNOWN_TAG_START"                 ] = "|cffff0000Tag Error: [";
   L["USE_TAG_EDITOR"                    ] = "Tag Editor";
   L["OPT_COLORS_RPUF"                   ] = RPUF_NAME .. " Colors";   -- used
   L["OPT_FORMATS"                       ] = "Tag Formats";            -- used
+  L["OPT_EDITOR"                        ] = "Tag Editor";
   L["OPT_FORMATS"                       ] = RP .. "Formats";
   L["OPT_KEYBINDINGS"                   ] = "Keybindings";
   L["OPT_FORMATS_I"                     ] = "These options control how RPTAGS displays certain tags.";
@@ -87,7 +89,7 @@ function(self, event, ...)
   L["FRAMES_ARE_RESET"                  ] = "All " .. RPUF_NAME .. " have been reset to their original panel dimensions."; -- should be NOTIFY_
   L["FRAME_LOCATIONS_ARE_RESET"         ] = "All " .. RPUF_NAME .. " have been reset to their original locations."; -- should be NOTIFY_
   L["LOCKING_FRAMES"                    ] = RPUF_NAME .. " are now locked in position."; -- should be NOTIFY_
-  L["NOTIFY_KEYBIND_TAG_EDITOR"         ] = "Opening the RPUF Tag Editor with the last tag you edited.";
+  L["NOTIFY_KEYBIND_TAG_EDITOR"         ] = "Opening the " .. EDITOR  .. " with the last tag you edited.";
   L["NOTIFY_KEYBIND_TAG_EDITOR_OPEN"    ] = "|cffdddd00Ignored:|r You used the keybinding to open the tag editor, but you already have it open.";
   L["RPUF_ARE_DISABLED"                 ] = "RPUF are now disabled."; -- should be NOTIFY_
   L["RPUF_ARE_ENABLED"                  ] = "RPUF are now enabled."; -- should be NOTIFY_
@@ -204,6 +206,15 @@ function(self, event, ...)
   L["CONFIG_TARGETTARGETFRAME_SCALE"    ] = "TargetTarget Frame Scale";
   L["CONFIG_TARGETTARGETFRAME_SCALE_TT" ] = "Adjust the relative scale of the RPUF target-of-target frame so it takes up more or less space on your screen.";
   L["CONFIG_UNLOCK_FRAMES"              ] = "Unlock Frames";
+    -- --- editor settings
+  L["CONFIG_EDITOR_FONT"                ] = "Editor Font";
+  L["CONFIG_EDITOR_FONT_TT"             ] = "Select a font to use in the " .. EDITOR .. ".";
+  L["CONFIG_EDITOR_CUSTOM_FONT"         ] = "Use Custom Font";
+  L["CONFIG_EDITOR_CUSTOM_FONT_TT"      ] = "Choose whether to use a custom font in the " .. EDITOR .. ".";
+  L["CONFIG_EDITOR_BUTTON_BAR"          ] = "Show Tag Button Bar";
+  L["CONFIG_EDITOR_BUTTON_BAR_TT"       ] = "Choose whether the tag button bar is shown in the " .. EDITOR .. ".";
+  L["CONFIG_EDITOR_BUTTONS"             ] = "Buttons";
+  L["CONFIG_EDITOR_BUTTONS_TT"          ] = "Choose which buttons to show in the " .. EDITOR .. ".";
     -- --- layouts
   L["RPUF_ABRIDGED"                     ] = "Standard";
   L["RPUF_COMPACT"                      ] = "Compact";

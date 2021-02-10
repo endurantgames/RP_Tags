@@ -9,4 +9,6 @@ local addOnName, addOn = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:NewModule(addOnName, "rpClient");
 
-RPTAGS.oUF = addOn.oUF;
+_G["RP_UnitFramesDB"] = RP_UnitFramesDB or {};
+
+RPTAGS.oUF = addOn.oUF;   -- give RPTAGS access to our oUF

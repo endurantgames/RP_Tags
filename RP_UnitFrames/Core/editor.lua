@@ -14,285 +14,394 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("ADDON_LOAD",
 function(self, event, ...)
 
-  local loc = RPTAGS.utils.locale.loc;
+  RP_UnitFramesDB.editor_config = RP_UnitFramesDB.editor_config or {};
+  local _
 
-  local ToolBarButtonWidth = 86;
-  local ToolBarSmallButtonWidth = 43;
-  local ToolBarButtonHeight = 20;
-  local TOOLBAR_BUTTONS =
-  { ["rp:name"] = "Name", 
-    ["rp:race"] = "Race",
-    ["rp:class"] = "Class", 
-    ["rp:color"] = "Color",
-    ["rp:icon"] = "Icon",
-    ["rp:fulltitle"] = "Title",
-    ["rp:age"] = "Age",
-  };
+  local AceGUI          = LibStub("AceGUI-3.0");
+  local loc             = RPTAGS.utils.locale.loc;
+  local ConfigSet       = RPTAGS.utils.config.set;
+  local ConfigGet       = RPTAGS.utils.config.get;
+  local ConfigValid     = RPTAGS.utils.config.valid;
+  local ConfigDefault   = RPTAGS.utils.config.default;
+  local ConfigReset     = RPTAGS.utils.config.reset;
+  local testTags        = RPTAGS.utils.tags.test;
+  local errorDialogName = "RPTAGS_RP_UNITFRAMES_EDITOR_ERRORS";
+  local editorFrameName         = "RP_UnitFrames_TagEditor";
+  local db              = RP_UnitFramesDB.editor_config;
+  local RGB_GRAY        = { 0.7, 0.7, 0.7 };
+  local RGB_RED         = { 1.0, 0.1, 0.1 };
+  local RGB_GREEN       = { 0.1, 1.0, 0.1 };
 
-  local function findTagStartStop(text, cursor)
-        local next_str = text:sub(cursor + 1)
-        local prev_str = text:sub(0, cursor):reverse();
 
-        local next_left_offset  = next_str:find("[", nil, true);
-        local next_right_offset = next_str:find("]", nil, true);
+  local function CreateEditor()
 
-        local prev_left_offset  = prev_str:find("[", nil, true);
-        local prev_right_offset = prev_str:find("]", nil, true);
+    local Editor                  = AceGUI:Create("Window");
+    Editor.editor                 = Editor;
+    Editor.frame.editor           = Editor;
 
-        local next_left = next_left_offset   and (cursor + next_left_offset) or nil;
-        local next_right = next_right_offset and (cursor + next_right_offset + 14) or nil;
+    -- toolbar config
+    local ToolbarButtonWidth      = 86;
+    local ToolbarSmallButtonWidth = 43;
+    local ToolbarButtonHeight     = 20;
+    local TOOLBAR_BUTTONS         =
+    { ["rp:name"]                 = "Name",
+      ["rp:color"]                = "Color",
+      ["rp:eyes"]                 = "Eyes",
+      ["rp:eyecolor"]             = "Eye Color",
+      ["rp:class"]                = "Class",
+      ["rp:icon"]                 = "Icon",
+      ["rp:height"]               = "Height",
+      ["rp:gender"]               = "Gender",
+      ["rp:race"]                 = "Race",
+      ["rp:fulltitle"]            = "Title",
+      ["rp:age"]                  = "Age",
+      ["rp:body"]                 = "Body",
+      ["rp:status"]               = "Status",
+      ["rp:statuscolor"]          = "Status Color",
+      ["rp:gendercolor"]          = "Gender Color",
+    };
 
-        local prev_left = prev_left_offset   and (cursor - prev_left_offset + 14) or nil;
-        local prev_right = prev_right_offset and (cursor - prev_right_offset) or nil;
 
-        if     not next_right then inTag = false;
-        elseif not prev_left  then inTag = false;
-        elseif prev_left and prev_right and (prev_left < prev_right) then inTag = false;
-        elseif next_right and next_left and (next_right > next_left) then inTag = false;
-        else   inTag = true;
-        end;
-
-        -- print( inTag, prev_right, prev_left, inTag and ("|cff00ff00" .. cursor .. "|r") or cursor, next_right, next_left);
-        return inTag, prev_right, prev_left, next_right, next_left;
-  end;
-
-  local AceGUI = LibStub("AceGUI-3.0");
-
-  local Editor = AceGUI:Create("Window");
-  -- local Editor = AceGUI:Create("Frame");
-
-  Editor:SetHeight(400);
-  Editor:SetWidth(500);
-  Editor:SetPoint("CENTER");
-  Editor:SetLayout("Flow");
-  Editor:SetTitle(loc("APP_NAME") .. " " .. loc("TAG_EDITOR") );
-
-  Editor.frame:SetMinResize(375, 375);
-  _G["RpUnitFrames_EditorFrame"] = Editor.frame;
-  tinsert(UISpecialFrames, "RpUnitFrames_EditorFrame"); -- closes when we hit escape
-
-  RPTAGS.cache.Editor = Editor;
-
-  local TagMultiLineEditBox = AceGUI:Create("MultiLineEditBox");
-
-  local ToolBar = AceGUI:Create("SimpleGroup");
-  ToolBar:SetLayout("Flow");
-  ToolBar:SetFullWidth(true);
-
-  local ColorButton = AceGUI:Create("Button");
-  -- ColorButton:SetWidth(ToolBarButtonWidth);
-  ColorButton:SetWidth(ToolBarSmallButtonWidth);
-  ColorButton:SetHeight(ToolBarButtonHeight);
-  ColorButton:SetText(RPTAGS.CONST.ICONS.COLORWHEEL);
-  ColorButton.editBox = TagMultiLineEditBox.editBox;
-  ColorButton:SetCallback("OnEnter",
-    function(self)
-      GameTooltip:ClearLines();
-      GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
-      GameTooltip:AddLine("Change the text color.", 1, 1, 1, true);
-      GameTooltip:Show();
-    end);
-  ColorButton:SetCallback("OnLeave", function(self) GameTooltip:FadeOut() end);
-  ColorButton:SetCallback("OnClick",
-    function(self)
-      self.editBox:Insert(RPTAGS.CONST.ICONS.WHITE_:gsub("{w}", 3):gsub("{r}", 255):gsub("{g}", 0):gsub("{b}", 255));
-    end);
-  local NoColorButton = AceGUI:Create("Button");
-  NoColorButton:SetWidth(ToolBarSmallButtonWidth);
-  NoColorButton:SetHeight(ToolBarButtonHeight);
-  NoColorButton:SetText(RPTAGS.CONST.ICONS.COLORWHEEL);
-  NoColorButton.editBox = TagMultiLineEditBox.editBox;
-  NoColorButton.frame.Left:SetDesaturated(true);
-  NoColorButton.frame.Right:SetDesaturated(true);
-  NoColorButton.frame.Middle:SetDesaturated(true);
-  NoColorButton:SetCallback("OnEnter",
-    function(self)
-      GameTooltip:ClearLines();
-      GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
-      GameTooltip:AddLine("[nocolor]", 0, 1, 1, false);
-      GameTooltip:AddLine("Insert a tag to reset the text color.");
-      GameTooltip:Show();
-    end);
-  NoColorButton:SetCallback("OnLeave", function(self) GameTooltip:FadeOut() end);
-  NoColorButton:SetCallback("OnClick",
-    function(self)
-      self.editBox:Insert("[nocolor]");
-    end);
-
-  ToolBar:AddChild(ColorButton);
-  ToolBar:AddChild(NoColorButton);
-
-  for tag, label in pairs(TOOLBAR_BUTTONS)
-  do  local Button = AceGUI:Create("Button");
-      Button.tag = tag;
-      Button.editBox = TagMultiLineEditBox.editBox;
-      Button:SetWidth(ToolBarButtonWidth);
-      Button:SetHeight(ToolBarButtonHeight);
-      Button:SetText(label);
-      Button.frame.Left:SetWidth(10);
-      Button.frame.Right:SetWidth(10);
-
-      Button:SetCallback("OnEnter", 
-        function(self)
-          GameTooltip:ClearLines();
-          GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
-          GameTooltip:AddLine("[" .. self.tag .. "]", 0, 1, 1, false);
-          GameTooltip:AddLine( "Insert the tag for " .. loc("TAG_" .. self.tag .. "_DESC") .. ".", 1, 1, 1, true)
-          GameTooltip:Show();
-        end);
-      Button:SetCallback("OnLeave", function(self) GameTooltip:FadeOut() end);
-      Button:SetCallback("OnClick", 
-        function(self) 
-          local cursor = self.editBox:GetCursorPosition();
-          local text = self.editBox:GetText();
-          local inTag, prev_right, prev_left, next_right, next_left = findTagStartStop(text, cursor);
-          -- print("inTag", inTag, "prev_left", prev_left, "cursor", cursor, "next_right", next_right);
-          if inTag then self.editBox:SetCursorPosition(next_right); end;
-          self.editBox:Insert("[" .. self.tag .. "]");
-          self.editBox:SetFocus();
-        end);
-      ToolBar:AddChild(Button);
-  end;
-
-  Editor:AddChild(ToolBar);
-
-  TagMultiLineEditBox:SetNumLines(6);
-  TagMultiLineEditBox:SetText("Edit Box [br] this is some [rp:name][rp:color] test material [rp:pronouns]");
-  TagMultiLineEditBox:SetFullWidth(true);
-  TagMultiLineEditBox:DisableButton(true);
-  TagMultiLineEditBox:SetLabel(nil);
-  local _, TMLEBFontSize = TagMultiLineEditBox.editBox:GetFont();
-  TagMultiLineEditBox.editBox:SetFont(RPTAGS.CONST.FONT.FIXED, TMLEBFontSize);
-
-  TagMultiLineEditBox.editBox:SetScript("OnKeyDown", 
-    function(self, key)
-      local  cursor = self:GetCursorPosition();
-      local  text = self:GetText();
-      local  inTag, prev_right, prev_left, next_right, next_left = findTagStartStop(text, cursor);
-      if     key == "BACKSPACE" and not inTag and prev_right and prev_left and prev_right == cursor - 1
-      then   self:HighlightText(prev_left, cursor);
-      elseif key == "DELETE" and not inTag and next_left and next_right and next_left == cursor + 1
-      then   self:HighlightText(cursor, next_right)
-      elseif key == "ENTER" and inTag
-      then   self:SetCursorPosition( next_right);
-             if IsShiftKeyDown() then self:Insert("[br]") end;
-      -- else   print("pressed: ", key);
+    function Editor.CreateInfoBox(self)
+      local InfoBox = AceGUI:Create("LMD30_Description")
+      InfoBox:SetFullWidth(true);
+      InfoBox:SetText("");
+      self:AddChild(InfoBox);
+      self.info = InfoBox;
+    end;
+  
+    function Editor.CreateToolbar(self)
+      local Toolbar = AceGUI:Create("SimpleGroup");
+  
+      Toolbar:SetLayout("Flow");
+      Toolbar:SetFullWidth(true);
+      Toolbar.editor = self;
+    
+      function Toolbar.CreateColorButton(self)
+        local ColorButton = AceGUI:Create("Button");
+        ColorButton.editor = self.editor;
+        ColorButton:SetWidth(ToolbarSmallButtonWidth);
+        ColorButton:SetHeight(ToolbarButtonHeight);
+        ColorButton:SetText(RPTAGS.CONST.ICONS.COLORWHEEL);
+        ColorButton:SetCallback("OnEnter",
+          function(self)
+            GameTooltip:ClearLines();
+            GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
+            GameTooltip:AddLine("Change the text color.", 1, 1, 1, true);
+            GameTooltip:Show();
+          end);
+        ColorButton:SetCallback("OnLeave", function(self) GameTooltip:FadeOut() end);
+        ColorButton:SetCallback("OnClick",
+          function(self)
+            self.editor.editBox:Insert(RPTAGS.CONST.ICONS.WHITE_:gsub("{w}", 3):gsub("{r}", 255):gsub("{g}", 0):gsub("{b}", 255));
+          end);
+        self:AddChild(ColorButton);
       end;
-    end);
+  
+      function Toolbar.CreateNoColorButton(self)
+        local NoColorButton = AceGUI:Create("Button");
+        NoColorButton.editor = self.editor;
+        NoColorButton:SetWidth(ToolbarSmallButtonWidth);
+        NoColorButton:SetHeight(ToolbarButtonHeight);
+        NoColorButton:SetText(RPTAGS.CONST.ICONS.COLORWHEEL);
+        NoColorButton.frame.Left:SetDesaturated(true);
+        NoColorButton.frame.Right:SetDesaturated(true);
+        NoColorButton.frame.Middle:SetDesaturated(true);
+        NoColorButton:SetCallback("OnEnter",
+          function(self)
+            GameTooltip:ClearLines();
+            GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
+            GameTooltip:AddLine("[nocolor]", 0, 1, 1, false);
+            GameTooltip:AddLine("Insert a tag to reset the text color.");
+            GameTooltip:Show();
+          end);
+        NoColorButton:SetCallback("OnLeave", function(self) GameTooltip:FadeOut() end);
+        NoColorButton:SetCallback("OnClick",
+          function(self)
+            self.editor.editBox:Insert("[nocolor]");
+          end);
+        self:AddChild(NoColorButton);
+      end;
+      
+      function Toolbar.CreateButton(tag, label)
+        local Button = AceGUI:Create("Button");
+        Button.tag = tag;
+        Button.editor = self.editor;
+        Button:SetWidth(ToolbarButtonWidth);
+        Button:SetHeight(ToolbarButtonHeight);
+        Button:SetText(label);
+        Button.frame.Left:SetWidth(10);
+        Button.frame.Right:SetWidth(10);
+  
+        Button:SetCallback("OnEnter", 
+          function(self)
+            GameTooltip:ClearLines();
+            GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
+            GameTooltip:AddLine("[" .. self.tag .. "]", 0, 1, 1, false);
+            GameTooltip:AddLine( "Insert the tag for " .. loc("TAG_" .. self.tag .. "_DESC") .. ".", 1, 1, 1, true)
+            GameTooltip:Show();
+          end);
+        Button:SetCallback("OnLeave", function(self) GameTooltip:FadeOut() end);
+        Button:SetCallback("OnClick", 
+          function(self) 
+            local cursor = self.editor.editBox:GetCursorPosition();
+            local text = self.editor.editBox:GetText();
+            local inTag, prev_right, prev_left, next_right, next_left = self.editor:FindTagEnds(text, cursor);
+            -- print("inTag", inTag, "prev_left", prev_left, "cursor", cursor, "next_right", next_right);
+            if inTag then self.editor.editBox:SetCursorPosition(next_right); end;
+            self.editor.editBox:Insert("[" .. self.tag .. "]");
+            self.editor.editBox:SetFocus();
+          end);
+        self:AddChild(Button);
+      end;
+  
+      Toolbar:CreateColorButton();
+      Toolbar:CreateNoColorButton();
+      for tag, label in pairs(TOOLBAR_BUTTONS) do Toolbar:CreateButton(tag, label) end;
+  
+      self:AddChild(Toolbar);
+    end;
+  
+    function Editor.CreateEditBox(self)
+      local MultiLineEditBox = AceGUI:Create("MultiLineEditBox");
+      MultiLineEditBox.editor = self;
+  
+      MultiLineEditBox:SetNumLines(6);
+      MultiLineEditBox:SetText("Edit Box [br] this is some [rp:name][rp:color] test material [rp:pronouns]");
+      MultiLineEditBox:SetFullWidth(true);
+      MultiLineEditBox:DisableButton(true);
+      MultiLineEditBox:SetLabel(nil);
+      local _, TMLEBFontSize = MultiLineEditBox.editBox:GetFont();
+      MultiLineEditBox.editBox:SetFont(RPTAGS.CONST.FONT.FIXED, TMLEBFontSize);
+    
+      MultiLineEditBox.editBox:SetScript("OnKeyDown", 
+        function(self, key)
+          local  cursor = self:GetCursorPosition();
+          local  text = self:GetText();
+          local  inTag, prev_right, prev_left, next_right, next_left = self.editor:FindTagEnds(text, cursor);
+          if     key == "BACKSPACE" and not inTag and prev_right and prev_left and prev_right == cursor - 1
+          then   self:HighlightText(prev_left, cursor);
+          elseif key == "DELETE" and not inTag and next_left and next_right and next_left == cursor + 1
+          then   self:HighlightText(cursor, next_right)
+          elseif key == "ENTER" and inTag
+          then   self:SetCursorPosition( next_right);
+                 if IsShiftKeyDown() then self:Insert("[br]") end;
+          -- else   print("pressed: ", key);
+          end;
+        end);
+    
+      self:AddChild(MultiLineEditBox);
+      self.editBox = MultiLineEditBox.editBox;
+    end;
+  
+    function Editor.CreateResults(self)
+      local ResultsScrollContainer = AceGUI:Create("SimpleGroup");
+            ResultsScrollContainer:SetFullWidth(true);
+            ResultsScrollContainer:SetLayout("Fill");
+            ResultsScrollContainer.editor = self;
+  
+      local ResultsScroll = AceGUI:Create("ScrollFrame");
+            ResultsScroll:SetLayout("Flow");
+            ResultsScroll:SetHeight(150);
+            ResultsScroll.editor = self;
+  
+            ResultsScrollContainer:AddChild(ResultsScroll);
+   
+      local ResultsTitle = AceGUI:Create("LMD30_Description");
+            ResultsTitle:SetText("# " .. loc("TAG_EDIT_RESULTS"));
+            ResultsTitle:SetTextColor(0.7, 0.7, 0.7);
+            ResultsTitle:SetFullWidth(true);
+            ResultsTitle.editor = self;
+  
+            ResultsScroll:AddChild(ResultsTitle);
+  
+      local Results = AceGUI:Create("LMD30_Description");
+            Results:SetText("");
+            Results:SetFullWidth(true);
+            Results.editor = self;
+  
+            ResultsScroll:AddChild(Results);
+  
+      self:AddChild(ResultsScrollContainer);
+      self.results = Results;
+      self.resultsTitle = ResultsTitle;
+    end;
+  
+    function Editor.CreateStatusBar(self)
+      local StatusBar = AceGUI:Create("SimpleGroup");
+      StatusBar:SetLayout("Flow");
+      StatusBar:SetFullWidth(true);
+      StatusBar.editor = self;
+      local buttons = {};
+  
+      table.insert(buttons, AceGUI:Create("Button"):SetText("Config")  );
+      table.insert(buttons, AceGUI:Create("Button"):SetText("Check")   );
+      table.insert(buttons, AceGUI:Create("Button"):SetText("Revert")  );
+      table.insert(buttons, AceGUI:Create("Button"):SetText("Default") );
+      table.insert(buttons, AceGUI:Create("Button"):SetText("Save")    );
+      table.insert(buttons, AceGUI:Create("Button"):SetText("Cancel")  );
+  
+      -- local CheckButton = AceGUI:Create("Button");
+      --       CheckButton:SetText("Check");
+      --       table.insert(buttons, SaveButton);
+  
+      -- local DefaultButton = AceGUI:Create("Button");
+      --       DefaultButton:SetText("Default");
+      --       table.insert(buttons, SaveButton);
 
-  Editor:AddChild(TagMultiLineEditBox);
+      -- local CancelButton = AceGUI:Create("Button");
+      --       CancelButton:SetText("Cancel");
+      --       table.insert(buttons, SaveButton);
 
-  Editor.frame:SetScript("OnShow", function(self) TagMultiLineEditBox:SetFocus() end);
+      for i, b in ipairs(buttons)
+      do  StatusBar:AddChild( button );
+          button.editor = self;
+          button:SetRelativeWidth( 1 / #buttons );
+      end;
 
-  local ResultsScrollContainer = AceGUI:Create("SimpleGroup");
-  ResultsScrollContainer:SetFullWidth(true);
-  ResultsScrollContainer:SetLayout("Fill");
-  Editor:AddChild(ResultsScrollContainer);
+      self:AddChild(StatusButtons)
+    end;
 
-  local ResultsScroll = AceGUI:Create("ScrollFrame");
-  ResultsScroll:SetLayout("Flow");
-  ResultsScroll:SetHeight(150);
-  ResultsScrollContainer:AddChild(ResultsScroll);
- 
-  local Results = AceGUI:Create("LMD30_Description");
-  Results:SetText("Status results");
-  Results:SetFullWidth(true);
-  ResultsScroll:AddChild(Results);
+    function Editor.FindTagEnds(self, text, cursor)
+      local next_str          = text:sub(cursor + 1)
+      local prev_str          = text:sub(0, cursor):reverse();
+      local next_left_offset  = next_str:find("[", nil, true);
+      local next_right_offset = next_str:find("]", nil, true);
+      local prev_left_offset  = prev_str:find("[", nil, true);
+      local prev_right_offset = prev_str:find("]", nil, true);
+      local next_left         = next_left_offset  and (cursor + next_left_offset)       or nil;
+      local next_right        = next_right_offset and (cursor + next_right_offset + 14) or nil;
+      local prev_left         = prev_left_offset  and (cursor - prev_left_offset + 14)  or nil;
+      local prev_right        = prev_right_offset and (cursor - prev_right_offset)      or nil;
 
-  local StatusButtons = AceGUI:Create("SimpleGroup");
-  StatusButtons:SetLayout("Flow");
-  StatusButtons:SetFullWidth(true);
-  local SaveButton = AceGUI:Create("Button");
-  SaveButton:SetText("Save");
-  SaveButton:SetRelativeWidth(0.333);
-  local CheckButton = AceGUI:Create("Button");
-  CheckButton:SetText("Check");
-  CheckButton:SetRelativeWidth(0.333);
-  local CancelButton = AceGUI:Create("Button");
-  CancelButton:SetText("Cancel");
-  CancelButton:SetRelativeWidth(0.333);
+      if     not next_right then inTag = false;
+      elseif not prev_left  then inTag = false;
+      elseif prev_left  and prev_right and (prev_left < prev_right) then inTag = false;
+      elseif next_right and next_left  and (next_right > next_left) then inTag = false;
+      else   inTag = true;
+      end;
 
-  StatusButtons:AddChild( SaveButton );
-  StatusButtons:AddChild( CheckButton );
-  StatusButtons:AddChild( CancelButton );
+      -- print( inTag, prev_right, prev_left, inTag and 
+      --        ("|cff00ff00" .. cursor .. "|r") or cursor, next_right, next_left
+      --      );
+      
+      return inTag, prev_right, prev_left, next_right, next_left;
+    end;
+  
+    function Editor.Initialize(self)
+      self:SetHeight(400);
+      self:SetWidth(500);
+      self:SetPoint("CENTER");
+      self:SetLayout("Flow");
+      self.editor = self;
+      self.frame:SetMinResize(375, 375);
+      _G[editorFrameName] = Editor.frame;
+      tinsert(UISpecialFrames, editorFrameName); -- closes when we hit escape
 
-  Editor:AddChild(StatusButtons)
+      -- Create the components
+      self:CreateInfoBox();
+      self:CreateToolbar();
+      self:CreateEditBox();
+      self:CreateResults();
+      self:CreateStatusBar();
 
-  -- -- tag editor -------------------------------------------------------------------------------------------------------------------------------------------
-  -- local function hiliteError(box, bad) local start = string.find(box:GetText(), bad, 1, true) - 1; box:HighlightText(start, start + string.len(bad)); end;
+    end;
 
-  -- if not RP_TagsDB.editor then RP_TagsDB.editor = {} end;
+    function Editor.LoadTitle(self, str)
+      self:SetTitle(
+        loc("APP_NAME") .. " " .. 
+        loc("TAG_EDITOR") .. " - " .. 
+        (text or loc(self:GetKey()))
+      );
+      return self;
+    end;
 
-    -- -- wrapper function for testTags that stores the results in the editor test result panel(s)
-  -- local function testTagsForEditor(s)
+    function Editor.ClearTitle(self) 
+      self:SetTitle( loc("APP_NAME") .. " " .. loc("TAG_EDITOR") ); 
+      return self;
+    end;
+    function Editor.ClearDraft(self)        self:SetDraft(nil)                                  return self end
+    function Editor.ClearFocus(self)        self.editBox:ClearFocus()                           return self end
+    function Editor.ClearInfo(self)         self.infoBox:SetText("")                            return self end
+    function Editor.ClearResults(self)      self:SetResults(nil, nil, nil)                      return self end
+    function Editor.ClearText(self)         self:SetText("")                                    return self end
+    function Editor.LoadDraft(self)         self:SetText( self:GetDraft() )                     return self end
+    function Editor.LoadInfo(self)          self.infoBox:SetText( loc( self:GetKey() .. "_TT")) return self end
+    function Editor.SaveDraft(self)         self:SetDraft( self:GetText() )                     return self end
+    function Editor.GetCursorPosition(self) return self.editBox:GetCursorPosition()                         end
+    function Editor.GetDraft(self)          return db.draft or ""                                           end
+    function Editor.GetKey(self)            return db.key                                                   end
+    function Editor.ConfigLoad(self)        self:SetText( ConfigGet(     self:GetKey() ))       return self end
+    function Editor.ConfigSet(self)                       ConfigSet(     self:GetKey(), self:GetText() )    end
+    function Editor.ConfigGet(self)         return        ConfigGet(     self:GetKey() )                    end
+    function Editor.ConfigDefault(self)     self:SetText( ConfigDefault( self:GetKey() ))                   end
+    function Editor.ConfigReset(self)                     ConfigReset(   self:GetKey() ) self:ConfigLoad()  end
+    function Editor.SetDraft(self, value)   db.draft = value or ""                              return self end
+    function Editor.SetFocus(self)          self.editBox:SetFocus()                             return self end
+    function Editor.SetInfo(self, text)     self.infoBox:SetText(text)                          return self end
+    function Editor.SetKey(self, key)       if ConfigValid(key) then db.key = key end           return self end
 
-    -- local err, good, bad = RPTAGS.utils.rpuf.tags.test(s);
+    function Editor.SetText(self, text)
+      text = text:gsub("%[p%]","\n\n"):gsub("%[br%]", "\n");
+      text = text:gsub("|cff(%x%x%x%x%x%x)", "[colorcode(%1)]");
+      text = text:gsub("|r", "[nocolor]");
+      self.editBox:SetText(text)
+      db.text = text;
+      table.insert( db.text_history, text );
+      return self;
+    end;
+  
+    function Editor.GetText(self) 
+      local  text = self.editBox:GetText();
+      text = text:gsub("%[colorcode%(%x%x%x%x%x%x)%]","|cff%1");
+      text = text:gsub("\n\n", "[p]");
+      text = text:gsub("\n", "[br]");
+      return text;
+    end;
 
-    -- if   err
-    -- then TagEdit.testResultsLabel:SetText(loc("TAG_EDIT_RESULTS_FAIL"));
-         -- TagEdit.testResultsLabel:SetTextColor(1, 0.1, 0.1);
-         -- TagEdit.testResults:SetText(loc("TAG_TEST_FAIL" .. ("_SINGULAR" and err == 1 or "")) .. "|cffffffff" .. table.concat(bad, ", ") .. "|r")
-    -- else TagEdit.testResultsLabel:SetText(loc("TAG_EDIT_RESULTS_PASS"));
-         -- TagEdit.testResultsLabel:SetTextColor(0.1, 1, 0.1);
-         -- TagEdit.testResults:SetText(loc("TAG_TEST_PASS"));
-    -- end; --if
-    -- return err, good, bad;
+    function Editor.SetResults(self, text, title, color)
+      text  = text  or "";
+      title = title or loc("TAG_EDIT_RESULTS");
+      color = color or RGB_GRAY;
 
-  -- end; -- function
+      self.results:SetText(text);
+      self.resultTitle:SetText("# " .. title);
+      self.resultsTitle:SetTextColor(color[1], color[2], color[3]);
 
-        -- -- title of editor frame --------------------------------------------------------------------------------------
-  -- local frameTitle = TagEdit:CreateFontString(nil, "OVERLAY", "GameFontNormal");
-        -- frameTitle:SetText(loc("APP_NAME") .. loc("TAG_EDITOR"));
-        -- frameTitle:SetPoint("TOPLEFT", TagEdit, "TOPLEFT", 5, -5);
+      return self;
+    end;
 
-        -- -- container to hold all the content that isn't part of the title ---------------------------------------------
-  -- local contentPane = CreateFrame("Frame", nil, TagEdit, BackdropTemplateMixin and "BackdropTemplate");
-        -- contentPane:SetPoint("TOPLEFT", TagEdit, "TOPLEFT", 5, -25);
-        -- contentPane:SetPoint("BOTTOMRIGHT", TagEdit, "BOTTOMRIGHT", -10, 20);
+    function Editor.Update(self)
+      self:SetFocus();
+      _ = self:GetKey()   and self:LoadTitle():LoadInfo()   or self:ClearTitle():ClearInfo();
+      _ = self:GetDraft() and self:LoadDraft():ClearDraft() or self:ConfigLoad():ClearResults(); 
+      return self;
+    end;
 
-        -- -- title of the content, i.e. the name of the setting being edited --------------------------------------------
-  -- local contentTitle = contentPane:CreateFontString("RPTAGS_TagEditTitle", "OVERLAY", "GameFontNormalLarge");
-        -- contentTitle:SetText("");
-        -- contentTitle:SetPoint("TOPLEFT", contentPane, "TOPLEFT", 5, -5);
-        -- TagEdit.contentTitle = contentTitle;
+    function Editor.Edit(self, key)
+      key = key or self:GetKey();
+      self:Hide();
+      if self:GetKey() ~= key then self:ClearDraft(); end;
+      self:SetKey(key):Update():Show();
+      return self;
+    end;
 
-        -- -- the helpful message / instructions (a.k.a. "tooltip" _TT in loc) -------------------------------------------
-  -- local displayBox = contentPane:CreateFontString("RPTAGS_TagEditDisplay", "OVERLAY", "GameFontNormal");
-        -- displayBox:SetSize(420, 40);
-        -- displayBox:SetJustifyH("LEFT");
-        -- displayBox:SetJustifyV("TOP");
-        -- displayBox:SetText(loc("CONFIG_STATUSPANEL_TT"));
-        -- displayBox:SetPoint("TOPLEFT", contentTitle, "BOTTOMLEFT", 0, -10);
-        -- TagEdit.displayBox = displayBox;
-
-        -- -- tag insert buttons above the editbox -----------------------------------------------------------------------
-  -- local buttons = -- CW is the Color Wheel graphic
-  -- { {-- button    tag         width       2nd button           width      third button  tag         width     4th button             width
-      -- { "name",   "[rp:name]",   55, }, { CW, "[rp:color]",       25 }, { "eyes",       "[rp:eyes]",   55, }, { CW, "[rp:eyecolor]",    25 },   -- 1,   2 ,  3,   4 ,
-      -- { "class",  "[rp:class]"                                       }, { "icon",       "[rp:icon]"                                        },   -- 5,  (6),  7,  (8),
-      -- { "height", "[rp:height]",                                     }, { CW .. " off", "[nocolor]"                                        } }, -- 9, (10), 11, (12)
-    -- { { "ic/ooc", "[rp:status]", 55, }, { CW, "[rp:statuscolor]", 25 }, { "sex",        "[rp:gender]", 55, }, { CW, "[rp:gendercolor]", 25 },   -- 1,   2 ,  3,   4 ,
-      -- { "race",   "[rp:race]",                                       }, { "age",        "[rp:age]",                                        },   -- 5,  (6),  7,  (8),
-      -- { "body",   "[rp:body]",                                       },                                                                         -- 9, (10),  "More"
-    -- } }; 
-
-  -- local   lastButton, lastButtonRow;
-  -- for _,  row in ipairs(buttons) -- button bar builder
-  -- do  for i, buttonData in ipairs(row)
-      -- do  local title, value, width = unpack(buttonData);
-          -- local button = CreateFrame("button", nil, contentPane, "UIPanelButtonTemplate");
-          -- button:SetText(title)
-          -- button.value = value;
-          -- button.tooltipText = vaue;
-          -- button:SetWidth(width or 80);
-          -- button:SetScript("OnClick", function(self) TagEdit.textbox:Insert(self.value) end);
-          -- if not lastButton then button:SetPoint("TOPLEFT", displayBox,    "BOTTOMLEFT", 0, -10); lastButtonRow = button;
-          -- elseif i == 1     then button:SetPoint("TOPLEFT", lastButtonRow, "BOTTOMLEFT", 0,   0); lastButtonRow = button;
-          -- else                   button:SetPoint("LEFT",    lastButton,    "RIGHT",      0,   0); 
-          -- end;   
-          -- lastButton = button;
-      -- end; -- for i,buttonData
-  -- end;
+    function Editor.TestTags(self)
+      local err, good, bad = testTags(self:GetText());
+      if    err
+      then  self:SetResults(
+              loc("TAG_TEST_FAIL" .. (err == 1 and "_SINGULAR" or "")) 
+                  .. "|cffffffff" .. table.concat(bad, ", ") .. "|r",
+              loc("TAG_EDIT_RESULTS_FAIL"),
+              RGB_RED
+            );
+      else  self:SetResults(
+              loc("TAG_TEST_PASS"),
+              loc("TAG_EDIT_RESULTS_PASS"),
+              RGB_GREEN
+            );
+      end;  --if
+    end; -- function
 
   -- -- dropdown for "More..." tags ---------------------------------------------------------------------------------------
   -- local dropDownData = {};
@@ -326,41 +435,6 @@ function(self, event, ...)
         -- moretagsButton:SetPoint("RIGHT", contentPane, "RIGHT", 0, 0);
         -- moretagsButton:SetScript("OnClick", function() EasyMenu(dropDownData, dropDownFrame, moretagsButton, 75, 5, "not MENU") end);
 
-        -- -- container for the editbox ---------------------------------------------------------------------------------------------------------------
-  -- local textboxContainer = CreateFrame("Frame", "RPTAGS_TagEditTextbox", contentPane, BackdropTemplateMixin and "BackdropTemplate");
-        -- textboxContainer:SetBackdrop({ bgFile   = [[Interface\Buttons\WHITE8x8]], edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]],
-                                       -- edgeSize = 14, insets = {left = 3, right = 3, top = 3, bottom = 3}, });
-        -- textboxContainer:SetBackdropColor(0, 0, 0, 0.5)
-        -- textboxContainer:SetSize(480,125);
-        -- textboxContainer:SetBackdropBorderColor(0.3, 0.3, 0.3)
-        -- textboxContainer:SetPoint("LEFT", lastButtonRow, "LEFT", 0, 0);
-        -- textboxContainer:SetPoint("TOP", lastButtonRow, "BOTTOM", 0, -5);
-
-        -- -- scroller for the editbox ---------------------------------------------------------------------------------------------------------------
-  -- local textboxScroll = CreateFrame("ScrollFrame", nil, textboxContainer, "UIPanelScrollFrameTemplate");
-        -- textboxScroll:SetPoint("TOPLEFT", textboxContainer, "TOPLEFT", 5, -5);
-        -- textboxScroll:SetSize(449,115);
-
-        -- -- the editbox itself ---------------------------------------------------------------------------------------------------------------------
-  -- local textbox = CreateFrame("editbox", nil, textboxScroll, BackdropTemplateMixin and "BackdropTemplate");
-        -- textbox:SetMultiLine(true);
-        -- textbox:SetSize(440,120);
-        -- local monoFont = LSM:Fetch("font", "SourceCodePro Regular"); -- set the font
-        -- if monoFont then textbox:SetFont(monoFont, 14); else Ora("|cffdd0000Ora! The font didn't load!") end;
-        -- textbox:SetText("");
-        -- textbox:SetPoint("TOP", textboxScroll, "TOP", 0, -20);
-        -- textbox:SetAutoFocus(false)
-        -- textbox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end);
-        -- textbox:SetScript("OnTabPressed", function(self) self:ClearFocus() end);
-        -- textbox:SetCursorPosition(0)
-        -- textbox:SetJustifyH("LEFT")
-        -- textbox:SetJustifyV("TOP")
-        -- textbox:SetScript("OnShow", function(self) self:SetFocus() end);
-        -- textbox:SetTextInsets(2, 2, 2, 2);
-        -- textboxScroll:SetScrollChild(textbox);
-        -- TagEdit.textbox = textbox;
-
-  -- -- start of the lower button bar, below the editbox ------------------------------------------------------------------------------------------------------------
      -- -- saveButton, a.k.a. "update tags" --------------------------------------------------------------------------------------------
   -- local saveButton = CreateFrame("button", nil, contentPane, "UIPanelButtonTemplate");
         -- saveButton:SetText(loc("TAG_EDIT_UPDATE"));
@@ -420,26 +494,6 @@ function(self, event, ...)
 
   -- -- end of lower button bar ---------------------------------------------------------------------------------------------------------------------------
 
-  -- -- results of testing tags
-        -- -- label for the results
-  -- local testResultsLabel = contentPane:CreateFontString(nil, "OVERLAY", "GameFontNormal");
-        -- testResultsLabel:SetText(loc("TAG_EDIT_RESULTS"));
-        -- testResultsLabel:SetPoint("TOP", cancelButton, "BOTTOM", 0, -5);
-        -- testResultsLabel:SetPoint("LEFT", contentPane, "LEFT", 5, 0);
-        -- testResultsLabel:SetTextColor(0.7, 0.7, 0.7)
-        -- TagEdit.testResultsLabel = testResultsLabel;
-
-        -- -- text of the results
-  -- local testResults = contentPane:CreateFontString(nil, "OVERLAY", "GameFontNormal");
-        -- testResults:SetText("");
-        -- testResults:SetPoint("TOPLEFT", testResultsLabel, "BOTTOMLEFT", 10, -5);
-        -- testResults:SetPoint("RIGHT", contentPane, "RIGHT", -20, 0);
-        -- testResults:SetHeight(40);
-        -- testResults:SetJustifyH("LEFT");
-        -- testResults:SetJustifyV("TOP");
-        -- TagEdit.testResults = testResults;
-
-  -- -- function to cause the tag editor to re-load its content
   -- local function updateTagEdit()
     -- TagEdit.textbox:SetFocus()
     -- TagEdit.contentTitle:SetText(loc("CONFIG_" .. TagEdit.setting));
@@ -454,36 +508,26 @@ function(self, event, ...)
     -- end;
   -- end; -- function
 
-  -- -- function to open the editor to edit a set of settings
-  -- local function tagEdit(setting)
-    -- TagEdit:Hide();
-    -- if TagEdit.setting ~= setting then TagEdit.draft = nil; end;
-    -- TagEdit.setting = setting;
-    -- RP_TagsDB.editor.last = setting;
-    -- updateTagEdit();
-    -- TagEdit:Show();
-  -- end;
+    StaticPopupDialogs[errorDialogName] = {
+      showAlert    = 1,
+      text         = loc("TAG_EDIT_ERRORS"),
+      button1      = loc("TAG_EDIT_ERRORS_SAVE"),
+      button2      = loc("TAG_EDIT_ERRORS_EDIT"),
+      exclusive    = true,
+      timeout      = 0,
+      whileDead    = true,
+      OnShow       = function() RPTAGS.cache.Editor:ClearFocus()       end,
+      OnAccept     = function() RPTAGS.cache.Editor:ConfigSet():Hide() end,
+      OnCancel     = function() RPTAGS.cache.Editor:SaveDraft():Edit() end,
+    };
+    
+    Editor.frame:SetScript("OnShow", function(self) RPTAGS.cache.Editor:SetFocus() end);
 
-  -- -- beep
-  -- we'll need this elsewhere later
-  -- if not RPTAGS.utils.rpuf then RPTAGS.utils.rpuf = {}; end;
-  -- if not RPTAGS.utils.rpuf.tags then RPTAGS.utils.rpuf.tags = {} end;
-  -- RPTAGS.utils.rpuf.tags.edit = tagEdit;
+    return Editor;
+  end; -- CreateEditor
+  local Editor = CreateEditor();
 
-  -- Popup dialog
-
-  -- StaticPopupDialogs["RPTAGS_TAGEDIT_ERROR"] = {
-    --  showAlert    =  1,
-     -- text         =  loc("TAG_EDIT_ERRORS"),
-     -- button1      =  loc("TAG_EDIT_ERRORS_SAVE"),
-     -- button2      =  loc("TAG_EDIT_ERRORS_EDIT"),
-     -- exclusive    =  true,
-     -- timeout      =  0,
-     -- whileDead    =  true,
-     -- OnShow       =  function(self) TagEdit.textbox:ClearFocus(); end,
-     -- OnAccept     =  function(self) RPTAGS.utils.config.set(TagEdit.setting, TagEdit.textbox:GetText()) TagEdit:Hide(); end,
-     -- OnCancel     =  function(self) TagEdit.draft = TagEdit.textbox:GetText(); self:Hide();            tagEdit(TagEdit.setting); end,
-  -- };
-
+  Editor:Initialize();
+  RPTAGS.cache.Editor = Editor;
 
 end);

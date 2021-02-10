@@ -23,18 +23,23 @@ function(self, event, ...)
   local Utils         = RPTAGS.utils;
   local Config        = Utils.config;
   local Default       = CONST.CONFIG.DEFAULTS;
-  
+  local db            = RP_TagsDB.settings;
+
+  local function keyIsValid(key) if not key then return false end;
+    if   RP_TagsDB.settings[key]
+    then return true else return false 
+    end;
+  end;
+
   for key, _ in pairs(Default)
-  do  local  db = RP_TagsDB.settings;
-      if not db[key] then db[key] = {} end;
-  
+  do  if not db[key] then db[key] = {} end;
       db[key].value   = (db[key].value == nil) and Default[key] or db[key].value;
       db[key].default = Default[key];
-      db[key].init = nil;
+      db[key].init    = nil;
   end;
         -- return the value of a config setting
   local function getConfig(key) if not key then return nil; end;
-    if   RP_TagsDB.settings[key] 
+    if   keyIsValid(key)
     then if   RP_TagsDB.settings[key].value ~= nil
          then return RP_TagsDB.settings[key].value 
          else return RP_TagsDB.settings[key].default 
@@ -44,7 +49,7 @@ function(self, event, ...)
   end;  
   
   local function setConfig(key, value) if not key then return nil; end;
-    if   RP_TagsDB.settings[key]
+    if   keyIsValid(key)
     then RP_TagsDB.settings[key].value = value;
          return value;
     else return nil;
@@ -52,7 +57,7 @@ function(self, event, ...)
   end; -- function
   
   local function resetConfig(key) if not key then return nil; end; 
-    if   RP_TagsDB.settings[key]
+    if   keyIsValid(key)
     then RP_TagsDB.settings[key].value = RP_TagsDB.settings[key].default;
          return RP_TagsDB.settings[key].default;
     else return nil;
@@ -60,7 +65,7 @@ function(self, event, ...)
   end; -- function
   
   local function getDefault(key) if not key then return nil; end;
-    if RP_TagsDB.settings[key]
+    if   keyIsValid(key)
     then return RP_TagsDB.settings[key].default or Default[key];
     else return nil;
     end;
@@ -68,10 +73,11 @@ function(self, event, ...)
         
   -- Functions available under RPTAGS.utils.config
   --
-  RPTAGS.utils.config.get          = getConfig;
-  RPTAGS.utils.config.set          = setConfig;
-  RPTAGS.utils.config.reset        = resetConfig;
-  RPTAGS.utils.config.default      = getDefault;
-  
+  RPTAGS.utils.config.default = getDefault;
+  RPTAGS.utils.config.get     = getConfig;
+  RPTAGS.utils.config.reset   = resetConfig;
+  RPTAGS.utils.config.set     = setConfig;
+  RPTAGS.utils.config.valid   = keyIsValid;
+
   -- /RPQ ----------------------------------------------------------------------------------------------------------------------------------
 end);

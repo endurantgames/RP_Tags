@@ -14,6 +14,7 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("UTILS_FRAMES",
 function(self, event, ...)
 
+  local CONST = RPTAGS.CONST;
   local PANEL_LIST = CONST.FRAMES.PANELS;
   local Frames     = RPTAGS.cache.UnitFrames;
 
@@ -77,6 +78,20 @@ function(self, event, ...)
     do  setTextColors(frame, request) end; 
   end;
 
+  local function getPanelHorizontalAlignment(panelName, layout);
+    return 
+        (   panelName == "StatusBarPanel" 
+        and RPTAGS.CONST.ALIGN[Config.get("STATUS_ALIGN"].H )
+      or ( ( panelName == "NamePanel" or panel == "InfoPanel")
+           and
+           ( layout == "PAPERDOLL" or layout == "THUMBNAIL" )
+           and
+           "CENTER" )
+         )
+      or "LEFT";
+  end
+
+  RPTAGS.utils.frames.panels.align.getH           = getPanelHorizontalAlignment;
   RPTAGS.utils.frames.all.look.backdrop.set       = setAllBackdrops;
   RPTAGS.utils.frames.all.look.colors.set         = setAllTextColors;
   RPTAGS.utils.frames.all.look.status.align.set   = setAllStatusAlign;

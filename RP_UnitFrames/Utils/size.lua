@@ -63,7 +63,7 @@ function(self, event, ...)
     return height;
   end;
 
-  local function panelWidth(panel, layout)
+  local function getPanelWidth(panel, layout)
     local width;
 
     if not panel then width = 0
@@ -138,67 +138,67 @@ function(self, event, ...)
     if     layout == "FULL" -- -----------------------------------------------------------------------------------------------------------
     then   width  = 
              border
-             + hgap(1) + panelWidth('Icon_1Panel', layout)
-             + hgap(1) + panelWidth('InfoPanel', layout)
-             + hgap(1) + panelWidth('PortraitPanel', layout)
+             + hgap(1) + getPanelWidth('Icon_1Panel', layout)
+             + hgap(1) + getPanelWidth('InfoPanel', layout)
+             + hgap(1) + getPanelWidth('PortraitPanel', layout)
              + hgap(1) + border;
 
            height = math.max(
              -- formula #1
              border
-               + hgap(1) + panelHeight('Icon_1Panel', layout)
-               + hgap(1) + panelHeight('Icon_2Panel', layout)
-               + hgap(1) + panelHeight('Icon_3Panel', layout)
-               + hgap(1) + panelHeight('Icon_4Panel', layout)
-               + hgap(1) + panelHeight('Icon_5Panel', layout)
-               + hgap(1) + panelHeight('Icon_6Panel', layout)
-               + hgap(1) + panelHeight('StatusBarPanel', "FULL")
+               + hgap(1) + getPanelHeight('Icon_1Panel', layout)
+               + hgap(1) + getPanelHeight('Icon_2Panel', layout)
+               + hgap(1) + getPanelHeight('Icon_3Panel', layout)
+               + hgap(1) + getPanelHeight('Icon_4Panel', layout)
+               + hgap(1) + getPanelHeight('Icon_5Panel', layout)
+               + hgap(1) + getPanelHeight('Icon_6Panel', layout)
+               + hgap(1) + getPanelHeight('StatusBarPanel', "FULL")
                + border, 
             -- formula #2
              border
-               + hgap(1) + panelHeight('NamePanel', layout)
-               + hgap(1) + panelHeight('DetailsPanel', layout)
-               + panelHeight('StatusBarPanel', "FULL") 
-               + hgap(1) + panelHeight('InfoPanel', layout)
+               + hgap(1) + getPanelHeight('NamePanel', layout)
+               + hgap(1) + getPanelHeight('DetailsPanel', layout)
+               + getPanelHeight('StatusBarPanel', "FULL") 
+               + hgap(1) + getPanelHeight('InfoPanel', layout)
                + hgap(1) + border,
              -- formula #3
              border
-               + hgap(1) + panelHeight('PortraitPanel', layout)
-               + panelHeight('StatusBarPanel', "FULL")
+               + hgap(1) + getPanelHeight('PortraitPanel', layout)
+               + getPanelHeight('StatusBarPanel', "FULL")
                + border -- ditto
              );
 
     elseif layout == "THUMBNAIL" -- -------------------------------------------------------------------------------------------------------------
     then   width  =  math.max(
                      -- formula #1
-                     border + panelWidth('PortraitPanel', layout)  + border,
+                     border + getPanelWidth('PortraitPanel', layout)  + border,
                      -- formula #2
-                     border + panelWidth('Icon_1Panel', layout) + border)
+                     border + getPanelWidth('Icon_1Panel', layout) + border)
            height =  math.max( -- formula #1
-                     border + panelHeight('Icon_1Panel', layout) + panelHeight('NamePanel', layout) + border,
+                     border + getPanelHeight('Icon_1Panel', layout) + getPanelHeight('NamePanel', layout) + border,
                      -- Formula #2
-                     border + panelHeight('PortraitPanel', layout) + border);
+                     border + getPanelHeight('PortraitPanel', layout) + border);
 
     elseif layout == "PAPERDOLL" -- -------------------------------------------------------------------------------------------------------------
     then   width  =  border
-                     -- + hgap(1) + panelWidth('Icon_1Panel', layout)
-                     + panelWidth('PortraitPanel', layout)
-                     -- + hgap(1) + panelWidth('Icon_4Panel', layout)
+                     -- + hgap(1) + getPanelWidth('Icon_1Panel', layout)
+                     + getPanelWidth('PortraitPanel', layout)
+                     -- + hgap(1) + getPanelWidth('Icon_4Panel', layout)
                      + border;
            height =  math.max(
                      -- formula #1
                      border
-                     + hgap(1) + panelHeight('NamePanel', layout)
-                     + hgap(1) + panelHeight('InfoPanel', layout)
-                     + hgap(1) + panelHeight('PortraitPanel', layout)
+                     + hgap(1) + getPanelHeight('NamePanel', layout)
+                     + hgap(1) + getPanelHeight('InfoPanel', layout)
+                     + hgap(1) + getPanelHeight('PortraitPanel', layout)
                      + border, -- no gap needed here
                      -- formula #2
                      border
-                     + hgap(1) + panelHeight('NamePanel', layout)
-                     + hgap(1) + panelHeight('InfoPanel', layout)
-                     + hgap(2) + panelHeight('Icon_1Panel', layout)
-                     + hgap(2) + panelHeight('Icon_2Panel', layout)
-                     + hgap(2) + panelHeight('Icon_3Panel', layout)
+                     + hgap(1) + getPanelHeight('NamePanel', layout)
+                     + hgap(1) + getPanelHeight('InfoPanel', layout)
+                     + hgap(2) + getPanelHeight('Icon_1Panel', layout)
+                     + hgap(2) + getPanelHeight('Icon_2Panel', layout)
+                     + hgap(2) + getPanelHeight('Icon_3Panel', layout)
                      + hgap(1) + border
                     );
 
@@ -206,57 +206,57 @@ function(self, event, ...)
     then   width = math.max(
                      -- formula #1
                      border
-                     + hgap(1) + panelWidth('Icon_1Panel', layout)
-                     + hgap(1) + panelWidth('NamePanel', layout)
+                     + hgap(1) + getPanelWidth('Icon_1Panel', layout)
+                     + hgap(1) + getPanelWidth('NamePanel', layout)
                      + hgap(1) + border,
                      -- formula #2
                      border
-                     + hgap(1) + panelWidth('Icon_1Panel', layout)
-                     + hgap(1) + panelWidth('InfoPanel', layout)
+                     + hgap(1) + getPanelWidth('Icon_1Panel', layout)
+                     + hgap(1) + getPanelWidth('InfoPanel', layout)
                      + hgap(1) + border,
                      -- formula #3
                      border 
-                     + panelWidth('StatusBarPanel', "ABRIDGED")
+                     + getPanelWidth('StatusBarPanel', "ABRIDGED")
                      + border,
                      -- formula #4
                      border
-                     + hgap(1) + panelWidth('Icon_2Panel', layout)
-                     + hgap(1) + panelWidth('Icon_3Panel', layout)
-                     + hgap(1) + panelWidth('Icon_4Panel', layout)
-                     + hgap(1) + panelWidth('Icon_5Panel', layout)
-                     + hgap(1) + panelWidth('Icon_6Panel', layout)
+                     + hgap(1) + getPanelWidth('Icon_2Panel', layout)
+                     + hgap(1) + getPanelWidth('Icon_3Panel', layout)
+                     + hgap(1) + getPanelWidth('Icon_4Panel', layout)
+                     + hgap(1) + getPanelWidth('Icon_5Panel', layout)
+                     + hgap(1) + getPanelWidth('Icon_6Panel', layout)
                      + hgap(1) + border
                      );
             height = math.max(
                        -- formula #1
                        border
-                       + hgap(1) + panelHeight('Icon_1Panel', layout)
-                       + hgap(1) + panelHeight('StatusBarPanel', "ABRIDGED") 
-                       + hgap(1) + panelHeight('Icon_2Panel', layout)
+                       + hgap(1) + getPanelHeight('Icon_1Panel', layout)
+                       + hgap(1) + getPanelHeight('StatusBarPanel', "ABRIDGED") 
+                       + hgap(1) + getPanelHeight('Icon_2Panel', layout)
                        + hgap(1) + border,
                        -- formula #2
                        border
-                       + hgap(1) + panelHeight('NamePanel' , layout)
-                       + hgap(1) + panelHeight('InfoPanel', layout)
-                       + hgap(1) + panelHeight('StatusBarPanel', "ABRIDGED")
-                       + hgap(1) + panelHeight('Icon_2Panel', layout)
+                       + hgap(1) + getPanelHeight('NamePanel' , layout)
+                       + hgap(1) + getPanelHeight('InfoPanel', layout)
+                       + hgap(1) + getPanelHeight('StatusBarPanel', "ABRIDGED")
+                       + hgap(1) + getPanelHeight('Icon_2Panel', layout)
                        + hgap(1) + border
                        ); --
 
     elseif layout == "COMPACT" -- -----------------------------------------------------------------------------------------------------------
     then   width = border
-                   + hgap(0.5) + panelWidth('Icon_1Panel', layout)
-                   + hgap(0.5) + panelWidth('NamePanel', layout)
+                   + hgap(0.5) + getPanelWidth('Icon_1Panel', layout)
+                   + hgap(0.5) + getPanelWidth('NamePanel', layout)
                    + hgap(0.5) + border;
            height = math.max(
                       -- formula #1
                       border
-                      + hgap(0.5) + panelHeight('NamePanel', layout)
-                      + hgap(0.5) + panelHeight('InfoPanel', layout)
+                      + hgap(0.5) + getPanelHeight('NamePanel', layout)
+                      + hgap(0.5) + getPanelHeight('InfoPanel', layout)
                       + hgap(0.5) + border,
                       -- formula #2
                       border
-                      + hgap(0.5) + panelHeight('Icon_1Panel', layout)
+                      + hgap(0.5) + getPanelHeight('Icon_1Panel', layout)
                       + hgap(0.5) + border
                     );
 
@@ -319,16 +319,12 @@ function(self, event, ...)
     end; 
   end;
 
-  RPTAGS.utils.frames.panels.size.set    = setPanelSize;
-  RPTAGS.utils.frames.size.set           = setFrameSize;
-  RPTAGS.utils.frames.size.scale.set     = setFrameScale;
-  RPTAGS.utils.frames.all.size.set       = setAllFrameSizes;
-  RPTAGS.utils.frames.all.size.scale.set = setAllFrameScales;
-
-end);
-  RPTAGS.utils.frames.size.set               = resizeFrame;
-  RPTAGS.utils.frames.size.get               = getFrameSize;
-  RPTAGS.utils.frames.panels.size.getHeight  = getPanelHeight;
-  RPTAGS.utils.frames.panels.size.getWidth   = getPanelWidth;
-
+  RPTAGS.utils.frames.all.size.scale.set    = setAllFrameScales;
+  RPTAGS.utils.frames.all.size.set          = setAllFrameSizes;
+  RPTAGS.utils.frames.panels.size.getHeight = getPanelHeight;
+  RPTAGS.utils.frames.panels.size.getWidth  = getPanelWidth;
+  RPTAGS.utils.frames.panels.size.set       = setPanelSize;
+  RPTAGS.utils.frames.size.get              = getFrameSize;
+  RPTAGS.utils.frames.size.scale.set        = setFrameScale;
+  RPTAGS.utils.frames.size.set              = setFrameSize;
 end);

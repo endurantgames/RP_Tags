@@ -1,7 +1,7 @@
 local RPTAGS                        = RPTAGS
 local addOnName, ns                 = ...;
 
-Module                              = RPTAGS.cache:GetModule(addOnName);
+Module                              = RPTAGS.queue:GetModule(addOnName);
 
 Module:WaitUntil("INIT_UTILS",
 function(self, event, ...)
@@ -16,6 +16,7 @@ function(self, event, ...)
   frameUtils.content                = frameUtils.content                or {};
   frameUtils.content.all            = frameUtils.content.all            or {};
   frameUtils.layout                 = frameUtils.layout                 or {};
+  frameUtils.look                   = frameUtils.look                   or {};
   frameUtils.look.backdrop          = frameUtils.look.backdrop          or {};
   frameUtils.look.colors            = frameUtils.look.colors            or {};
   frameUtils.look.status            = frameUtils.look.status            or {};
@@ -23,6 +24,7 @@ function(self, event, ...)
   frameUtils.look.status.texture    = frameUtils.look.status.texture    or {};
   frameUtils.move                   = frameUtils.move                   or {};
   frameUtils.panels                 = frameUtils.panels                 or {};
+  frameUtils.panels.align           = frameUtils.panels.align           or {};
   frameUtils.panels.all             = frameUtils.panels.all             or {};
   frameUtils.panels.all.content     = frameUtils.panels.all.content     or {};
   frameUtils.panels.all.layout      = frameUtils.panels.all.layout      or {};
@@ -37,6 +39,7 @@ function(self, event, ...)
   allFrameUtils.content             = allFrameUtils.content             or {};
   allFrameUtils.content.all         = allFrameUtils.content.all         or {};
   allFrameUtils.layout              = allFrameUtils.layout              or {};
+  allFrameUtils.look                = allFrameUtils.look                or {};
   allFrameUtils.look.backdrop       = allFrameUtils.look.backdrop       or {};
   allFrameUtils.look.colors         = allFrameUtils.look.colors         or {};
   allFrameUtils.look.status         = allFrameUtils.look.status         or {};
@@ -44,6 +47,7 @@ function(self, event, ...)
   allFrameUtils.look.status.texture = allFrameUtils.look.status.texture or {};
   allFrameUtils.move                = allFrameUtils.move                or {};
   allFrameUtils.panels              = allFrameUtils.panels              or {};
+  allFrameUtils.panels.align        = allFrameUtils.panels.align        or {};
   allFrameUtils.panels.all          = allFrameUtils.panels.all          or {};
   allFrameUtils.panels.all.content  = allFrameUtils.panels.all.content  or {};
   allFrameUtils.panels.all.layout   = allFrameUtils.panels.all.layout   or {};
