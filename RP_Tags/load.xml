@@ -11,7 +11,7 @@
     <Include file="Core\load.xml"       /> <!-- these are all deferred execution so can -->
     <Include file="Data\load.xml"       /> <!-- be loaded in any order; so they're in   -->
     <Include file="Locale\load.xml"     /> <!-- alphabetical order                      -->
-    <Include file="Resources\load.xml"  />
+    <!-- Include file="Media\load.xml"      / -->
     <Include file="Utils\load.xml"      />
 
 </Ui>

@@ -5,10 +5,9 @@
     <Include file="Lib\load.xml"       />
     <Script  file="module.lua"         />
 
-    <Include file="Resources\load.xml" />
-    <Include file="Locale\load.xml"    />
-    <Include file="Utils\load.xml"     />
-    <Include file="Data\load.xml"      />
     <Include file="Core\load.xml"      />
-
+    <Include file="Data\load.xml"      />
+    <Include file="Locale\load.xml"    />
+    <Include file="Media\load.xml"     />
+    <Include file="Utils\load.xml"     />
 </Ui>

@@ -32,7 +32,6 @@ function(self, event, ...)
   local RGB_RED         = { 1.0, 0.1, 0.1 };
   local RGB_GREEN       = { 0.1, 1.0, 0.1 };
 
-
   local function CreateEditor()
 
     local Editor                  = AceGUI:Create("Window");
@@ -61,29 +60,61 @@ function(self, event, ...)
       ["rp:gendercolor"]          = "Gender Color",
     };
 
+    function Editor.CreatePane(self, name)
+      if self[name .. "Pane"] then return self[name .. "Pane"] end;
+      local Pane = AceGUI:Create("SimpleGroup");
+      Pane:SetFullWidth(true);
+      Pane:SetLayout("Flow");
+      Pane.editor = self;
+      self[name .. "Pane"] = Pane;
+      self:AddChild(Pane);
+      return Pane;
+    end;
 
-    function Editor.CreateInfoBox(self)
+    function Editor.CreateInfoBox(self, pane)
+      pane = pane or self;
       local InfoBox = AceGUI:Create("LMD30_Description")
       InfoBox:SetFullWidth(true);
-      InfoBox:SetText("");
-      self:AddChild(InfoBox);
-      self.info = InfoBox;
+      InfoBox:SetText("meep");
+      pane:AddChild(InfoBox);
+      self.infoBox = InfoBox;
+      return InfoBox;
+    end;
+
+    function Editor.CreateHider(self, pane)
+      pane = pane or self;
+      local HiderButton = AceGUI:Create("Button");
+      HiderButton.target = self.toolbar;
+      HiderButton.editor = self;
+      HiderButton:SetText("Hide!");
+      HiderButton:SetWidth(50);
+      HiderButton:SetCallback("OnClick",
+        function(self)
+          self.editor.toolbar.frame:SetShown(not self.editor.toolbar:IsShown() );
+          -- self.editor:DoLayout();
+        end
+      );
+
+      self.hider = HiderButton;
+      pane:AddChild(HiderButton);
+      return HiderButton;
     end;
   
-    function Editor.CreateToolbar(self)
+
+    function Editor.CreateToolbar(self, pane)
+      pane = pane or self;
       local Toolbar = AceGUI:Create("SimpleGroup");
   
       Toolbar:SetLayout("Flow");
       Toolbar:SetFullWidth(true);
       Toolbar.editor = self;
-    
-      function Toolbar.CreateColorButton(self)
-        local ColorButton = AceGUI:Create("Button");
-        ColorButton.editor = self.editor;
-        ColorButton:SetWidth(ToolbarSmallButtonWidth);
-        ColorButton:SetHeight(ToolbarButtonHeight);
-        ColorButton:SetText(RPTAGS.CONST.ICONS.COLORWHEEL);
-        ColorButton:SetCallback("OnEnter",
+
+      local ColorButton = AceGUI:Create("Button");
+      ColorButton.editor = self;
+      ColorButton:SetWidth(ToolbarSmallButtonWidth);
+      ColorButton:SetHeight(ToolbarButtonHeight);
+      ColorButton:SetText(RPTAGS.CONST.ICONS.COLORWHEEL);
+      ColorButton:SetCallback("OnEnter",
           function(self)
             GameTooltip:ClearLines();
             GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
@@ -96,13 +127,11 @@ function(self, event, ...)
             self.editor.editBox:Insert(RPTAGS.CONST.ICONS.WHITE_:gsub("{w}", 3):gsub("{r}", 255):gsub("{g}", 0):gsub("{b}", 255));
           end);
         self:AddChild(ColorButton);
-      end;
   
-      function Toolbar.CreateNoColorButton(self)
-        local NoColorButton = AceGUI:Create("Button");
-        NoColorButton.editor = self.editor;
-        NoColorButton:SetWidth(ToolbarSmallButtonWidth);
-        NoColorButton:SetHeight(ToolbarButtonHeight);
+      local NoColorButton = AceGUI:Create("Button");
+      NoColorButton.editor = self;
+      NoColorButton:SetWidth(ToolbarSmallButtonWidth);
+      NoColorButton:SetHeight(ToolbarButtonHeight);
         NoColorButton:SetText(RPTAGS.CONST.ICONS.COLORWHEEL);
         NoColorButton.frame.Left:SetDesaturated(true);
         NoColorButton.frame.Right:SetDesaturated(true);
@@ -121,9 +150,8 @@ function(self, event, ...)
             self.editor.editBox:Insert("[nocolor]");
           end);
         self:AddChild(NoColorButton);
-      end;
       
-      function Toolbar.CreateButton(tag, label)
+      function Toolbar.CreateButton(self, tag, label)
         local Button = AceGUI:Create("Button");
         Button.tag = tag;
         Button.editor = self.editor;
@@ -133,15 +161,15 @@ function(self, event, ...)
         Button.frame.Left:SetWidth(10);
         Button.frame.Right:SetWidth(10);
   
-        Button:SetCallback("OnEnter", 
-          function(self)
-            GameTooltip:ClearLines();
-            GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
-            GameTooltip:AddLine("[" .. self.tag .. "]", 0, 1, 1, false);
-            GameTooltip:AddLine( "Insert the tag for " .. loc("TAG_" .. self.tag .. "_DESC") .. ".", 1, 1, 1, true)
-            GameTooltip:Show();
-          end);
-        Button:SetCallback("OnLeave", function(self) GameTooltip:FadeOut() end);
+        -- Button:SetCallback("OnEnter", 
+        --   function(self)
+        --     GameTooltip:ClearLines();
+        --     GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
+        --     GameTooltip:AddLine("[" .. self.tag .. "]", 0, 1, 1, false);
+        --     GameTooltip:AddLine( "Insert the tag for " .. loc("TAG_" .. self.tag .. "_DESC") .. ".", 1, 1, 1, true)
+        --     GameTooltip:Show();
+        --   end);
+        -- Button:SetCallback("OnLeave", function(self) GameTooltip:FadeOut() end);
         Button:SetCallback("OnClick", 
           function(self) 
             local cursor = self.editor.editBox:GetCursorPosition();
@@ -155,16 +183,18 @@ function(self, event, ...)
         self:AddChild(Button);
       end;
   
-      Toolbar:CreateColorButton();
-      Toolbar:CreateNoColorButton();
       for tag, label in pairs(TOOLBAR_BUTTONS) do Toolbar:CreateButton(tag, label) end;
   
-      self:AddChild(Toolbar);
+      self.toolbar = Toolbar;
+      pane:AddChild(Toolbar);
+      return Toolbar;
     end;
   
-    function Editor.CreateEditBox(self)
+    function Editor.CreateEditBox(self, pane)
+      pane = pane or self;
       local MultiLineEditBox = AceGUI:Create("MultiLineEditBox");
       MultiLineEditBox.editor = self;
+      MultiLineEditBox.editBox.editor = self;
   
       MultiLineEditBox:SetNumLines(6);
       MultiLineEditBox:SetText("Edit Box [br] this is some [rp:name][rp:color] test material [rp:pronouns]");
@@ -190,11 +220,15 @@ function(self, event, ...)
           end;
         end);
     
-      self:AddChild(MultiLineEditBox);
+      pane:AddChild(MultiLineEditBox);
       self.editBox = MultiLineEditBox.editBox;
+
+      return MultiLineEditBox;
     end;
   
-    function Editor.CreateResults(self)
+    function Editor.CreateResults(self, pane)
+      pane = pane or self;
+
       local ResultsScrollContainer = AceGUI:Create("SimpleGroup");
             ResultsScrollContainer:SetFullWidth(true);
             ResultsScrollContainer:SetLayout("Fill");
@@ -222,23 +256,25 @@ function(self, event, ...)
   
             ResultsScroll:AddChild(Results);
   
-      self:AddChild(ResultsScrollContainer);
+      pane:AddChild(ResultsScrollContainer);
       self.results = Results;
       self.resultsTitle = ResultsTitle;
+      return ResultsScrollContainer;
     end;
   
-    function Editor.CreateStatusBar(self)
+    function Editor.CreateStatusBar(self, pane)
+      pane = pane or self;
       local StatusBar = AceGUI:Create("SimpleGroup");
       StatusBar:SetLayout("Flow");
       StatusBar:SetFullWidth(true);
       StatusBar.editor = self;
       local buttons = 
-      { { "Config", function(self) print("pushed button!") end },
-        { "Check", function(self) print("pushed button!") end },
-        { "Revert", function(self) print("pushed button!") end },
+      { { "Config",  function(self) print("pushed button!") end },
+        { "Check",   function(self) print("pushed button!") end },
+        { "Revert",  function(self) print("pushed button!") end },
         { "Default", function(self) print("pushed button!") end },
-        { "Save", function(self) print("pushed button!") end },
-        { "Cancel", function(self) print("pushed button!") end },
+        { "Save",    function(self) print("pushed button!") end },
+        { "Cancel",  function(self) print("pushed button!") end },
       };
 
       -- table.insert(buttons, AceGUI:Create("Button"):SetText("Config")  );
@@ -269,7 +305,9 @@ function(self, event, ...)
           StatusBar:AddChild(button);
       end;
 
-      self:AddChild(StatusBar)
+      self.statusBar = StatusBar;
+      pane:AddChild(StatusBar);
+      return StatusBar;
     end;
 
     function Editor.FindTagEnds(self, text, cursor)
@@ -308,18 +346,34 @@ function(self, event, ...)
       _G[editorFrameName] = Editor.frame;
       tinsert(UISpecialFrames, editorFrameName); -- closes when we hit escape
 
-      -- Create the components
-      self:CreateInfoBox();
-      self:CreateToolbar();
-      self:CreateEditBox();
-      self:CreateResults();
-      self:CreateStatusBar();
+      self.content:ClearAllPoints();
+      self.content:SetPoint("TOPLEFT", 25, -25);
+      self.content:SetPoint("BOTTOMRIGHT", -25, 25);
 
+      local UpperPane = self:CreatePane("upper");
+      local CentralPane = self:CreatePane("central");
+      local LowerPane = self:CreatePane("lower");
+
+      -- Create the components
+      self:CreateInfoBox(   UpperPane   );
+      self:CreateHider(     UpperPane   );
+      self:CreateToolbar(   CentralPane );
+      self:CreateEditBox(   CentralPane );
+      self:CreateResults(   LowerPane   );
+      self:CreateStatusBar( LowerPane   );
+
+      self.editBox:ClearAllPoints();
+      self.editBox:SetPoint("TOPRIGHT", -10, -10);
+      self.editBox:SetPoint("BOTTOMLEFT", 10, 10);
+      -- default values
+      self:ClearTitle();
+      self:ClearInfo();
+
+      return self;
     end;
 
     function Editor.LoadTitle(self, str)
       self:SetTitle(
-        loc("APP_NAME") .. " " .. 
         loc("TAG_EDITOR") .. " - " .. 
         (text or loc(self:GetKey()))
       );
@@ -327,14 +381,14 @@ function(self, event, ...)
     end;
 
     function Editor.ClearTitle(self) 
-      self:SetTitle( loc("APP_NAME") .. " " .. loc("TAG_EDITOR") ); 
+      self:SetTitle( loc("TAG_EDITOR") ); 
       return self;
     end;
     function Editor.ClearDraft(self)        self:SetDraft(nil)                                  return self end
     function Editor.ClearFocus(self)        self.editBox:ClearFocus()                           return self end
-    function Editor.ClearInfo(self)         self.infoBox:SetText("")                            return self end
+    function Editor.ClearInfo(self)         self.infoBox:SetText()                            return self end
     function Editor.ClearResults(self)      self:SetResults(nil, nil, nil)                      return self end
-    function Editor.ClearText(self)         self:SetText("")                                    return self end
+    function Editor.ClearText(self)         self:SetText(" ")                                    return self end
     function Editor.LoadDraft(self)         self:SetText( self:GetDraft() )                     return self end
     function Editor.LoadInfo(self)          self.infoBox:SetText( loc( self:GetKey() .. "_TT")) return self end
     function Editor.SaveDraft(self)         self:SetDraft( self:GetText() )                     return self end
@@ -348,7 +402,7 @@ function(self, event, ...)
     function Editor.ConfigReset(self)                     ConfigReset(   self:GetKey() ) self:ConfigLoad()  end
     function Editor.SetDraft(self, value)   db.draft = value or ""                              return self end
     function Editor.SetFocus(self)          self.editBox:SetFocus()                             return self end
-    function Editor.SetInfo(self, text)     self.infoBox:SetText(text)                          return self end
+    function Editor.SetInfo(self, text)     self.infoBox:SetText(text or " ")                          return self end
     function Editor.SetKey(self, key)       if ConfigValid(key) then db.key = key end           return self end
 
     function Editor.SetText(self, text)
@@ -357,7 +411,6 @@ function(self, event, ...)
       text = text:gsub("|r", "[nocolor]");
       self.editBox:SetText(text)
       db.text = text;
-      table.insert( db.text_history, text );
       return self;
     end;
   

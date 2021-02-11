@@ -6,7 +6,7 @@ Module:WaitUntil("MODULE_C",
 function(self, event, ...)
   local LSM=LibStub("LibSharedMedia-3.0");
   local baseFontDir = "Interface\\AddOns\\" .. addOnName .. 
-                      (GetAddOnMetadata(addOnName, "X-FontDir") or "\\Resources\\Fonts\\");
+                      (GetAddOnMetadata(addOnName, "X-FontDir") or "\\Media\\Fonts\\");
 
   local family = { 
     SCP = baseFontDir .. "Source_Code_Pro\\SourceCodePro-",
