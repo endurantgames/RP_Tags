@@ -9,12 +9,14 @@ local addOnName, addOn = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("ADDON_LOAD",
+Module:WaitUntil("MODULE_F",
 function(self, event, ...)
 
   local RP_TagsDB          = RP_TagsDB;
   local oUF                = _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- auto-added by oUF
   local CONST              = RPTAGS.CONST;
+  local FONTSIZE           = 10;
+  local FONTFILE           = RPTAGS.CONST.FONT.FIXED;
   local Utils              = RPTAGS.utils;
   local Config             = Utils.config;
   local frameUtils         = Utils.frames;
@@ -25,7 +27,7 @@ function(self, event, ...)
   local getPoint           = frameUtils.panels.layout.getPoint;
   local getHeight          = frameUtils.panels.size.getHeight;
   local getWidth           = frameUtils.panels.size.getWidth;
-  local getPanelHJustify   = frameUtils.panels.align.getH;
+  local getPanelJustifyH   = frameUtils.panels.align.getH;
   local getFrameDimensions = frameUtils.size.get;
   local IP                 = CONST.RPUF.INITIAL_POSITION;
   local loc                = Utils.locale.loc;
@@ -36,7 +38,7 @@ function(self, event, ...)
   local lockFrames         = frameUtils.all.move.lock;
   local toRGB              = Utils.color.hexaToNumber;
   local FRAME_NAMES        = CONST.FRAMES.NAMES;
-  local openEditor         = Utils.editor.open;
+  local openEditor         = Utils.config.openEditor;
 
   if   not Config.get("DISABLE_BLIZZARD") 
   then function oUF:DisableBlizzard() return false end; 
@@ -54,7 +56,7 @@ function(self, event, ...)
         Tooltip:Hide();
 
         function Tooltip:UpdateColors()
-          local bgRed, bgGreen, bgBlue = toRGBConfig.get("COLOR_RPUF"));
+          local bgRed, bgGreen, bgBlue = toRGB(Config.get("COLOR_RPUF"));
           self:SetBackdropColor(bgRed / 511, bgGreen / 511, bgBlue /511, 0.5 + Config.get("RPUFALPHA") / 200)
         end;
         Tooltip:UpdateColors();
@@ -202,7 +204,7 @@ function(self, event, ...)
 
     if unit == "targettarget" then content.onUpdateFrequency = 10; end; 
 
-    local bgRed, bgGreen, bgBlue = toRGBConfig.get("COLOR_RPUF"));
+    local bgRed, bgGreen, bgBlue = toRGB(Config.get("COLOR_RPUF"));
           content:SetBackdrop(RPTAGS.CONST.BACKDROP[RPTAGS.utils.config.get("RPUF_BACKDROP")])
           content:SetBackdropColor(bgRed / 255, bgGreen / 255, bgBlue / 255, Config.get("RPUFALPHA") / 100)
 
@@ -359,7 +361,7 @@ function(self, event, ...)
           Icon_1FontString:SetJustifyV('TOP')
           Icon_1FontString.setting = "ICON_1";
           Icon_1FontString:SetWordWrap(false)
-          Icon_1FontString:SetFont(FONTFILE, Width('Icon_1Panel', layout) -1 )
+          Icon_1FontString:SetFont(FONTFILE, getWidth('Icon_1Panel', layout) -1 )
           self:Tag(Icon_1FontString, fix(Config.get("ICON_1")))
 
     local Icon_1Tooltip       = Tooltip.panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
@@ -390,7 +392,7 @@ function(self, event, ...)
           Icon_2FontString.setting = "ICON_2";
           tinsert(content.fontStrings, Icon_2FontString);
           Icon_2FontString:SetWordWrap(false)
-          Icon_2FontString:SetFont(FONTFILE, Width('Icon_2Panel', layout) -1 )
+          Icon_2FontString:SetFont(FONTFILE, getWidth('Icon_2Panel', layout) -1 )
           self:Tag(Icon_2FontString, fix(Config.get("ICON_2")))
 
     local Icon_2Tooltip       = Tooltip.panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
@@ -421,7 +423,7 @@ function(self, event, ...)
           tinsert(content.fontStrings, Icon_3FontString);
           Icon_3FontString.setting = "ICON_3";
           Icon_3FontString:SetWordWrap(false)
-          Icon_3FontString:SetFont(FONTFILE, Width('Icon_3Panel', layout) -1 )
+          Icon_3FontString:SetFont(FONTFILE, getWidth('Icon_3Panel', layout) -1 )
           self:Tag(Icon_3FontString, fix(Config.get("ICON_3")))
 
     local Icon_3Tooltip       = Tooltip.panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
@@ -452,7 +454,7 @@ function(self, event, ...)
           Icon_4FontString.setting = "ICON_4";
           Icon_4FontString:SetJustifyV('TOP')
           Icon_4FontString:SetWordWrap(false)
-          Icon_4FontString:SetFont(FONTFILE, Width('Icon_4Panel', layout) -1 )
+          Icon_4FontString:SetFont(FONTFILE, getWidth('Icon_4Panel', layout) -1 )
           self:Tag(Icon_4FontString, fix(Config.get("ICON_4")))
 
     local Icon_4Tooltip       = Tooltip.panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
@@ -482,7 +484,7 @@ function(self, event, ...)
           Icon_5FontString.setting = "ICON_5";
           Icon_5FontString:SetJustifyV('TOP')
           Icon_5FontString:SetWordWrap(false)
-          Icon_5FontString:SetFont(FONTFILE, Width('Icon_5Panel', layout) -1 )
+          Icon_5FontString:SetFont(FONTFILE, getWidth('Icon_5Panel', layout) -1 )
           self:Tag(Icon_5FontString, fix(Config.get("ICON_5")))
           tinsert(content.fontStrings, Icon_5FontString);
 
@@ -514,7 +516,7 @@ function(self, event, ...)
           Icon_6FontString.setting = "ICON_6";
           tinsert(content.fontStrings, Icon_6FontString);
           Icon_6FontString:SetWordWrap(false)
-          Icon_6FontString:SetFont(FONTFILE, Width('Icon_6Panel', layout) -1 )
+          Icon_6FontString:SetFont(FONTFILE, getWidth('Icon_6Panel', layout) -1 )
           self:Tag(Icon_6FontString, fix(Config.get("ICON_6")))
 
     local Icon_6Tooltip       = Tooltip.panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
@@ -537,7 +539,7 @@ function(self, event, ...)
           StatusBarPanel:SetPoint('TOPLEFT', content, 'TOPLEFT', getLeftPoint('StatusBarPanel', layout), getTopPoint('StatusBarPanel', layout));
           StatusBarPanel:SetSize(getWidth('StatusBarPanel', layout), getHeight('StatusBarPanel', layout));
           content.StatusBarPanel = StatusBarPanel;
-          bgRed, bgGreen, bgBlue = toRGBConfig.get("COLOR_RPUF"));
+          bgRed, bgGreen, bgBlue = toRGB(Config.get("COLOR_RPUF"));
           StatusBarPanel:SetBackdrop(RPTAGS.CONST.STATUSBAR_TEXTURE[Config.get("STATUS_TEXTURE")]);
           StatusBarPanel:SetBackdropColor(bgRed / 255, bgGreen / 255, bgBlue / 255, RPTAGS.CONST.STATUSBAR_ALPHA[Config.get("STATUS_TEXTURE")]);
 
@@ -610,9 +612,9 @@ function(self, event, ...)
               frame:SetPoint(IP.pt, _G[IP.relto], IP.relpt, IP.x, IP.y);
               RP_TagsDB[frame.unit .. "UFlocation"] = nil;
             end);
-     local ttRed, ttGreen, ttBlue = toRGBConfig.get("COLOR_RPUF_TOOLTIP"));
+     local ttRed, ttGreen, ttBlue = toRGB(Config.get("COLOR_RPUF_TOOLTIP"));
      for _, tt in ipairs(content.tooltips)    do tt:SetTextColor(ttRed / 255, ttGreen / 255, ttBlue / 255) end;
-     local txRed, txGreen, txBlue = toRGBConfig.get("COLOR_RPUF_TEXT"));
+     local txRed, txGreen, txBlue = toRGB(Config.get("COLOR_RPUF_TEXT"));
      for _, tx in ipairs(content.fontStrings) do tx:SetTextColor(txRed / 255, txGreen / 255, txBlue / 255) end;
           -- ---------------------------------------------------------------------------------------------------------
   end;
@@ -637,25 +639,31 @@ function(self, event, ...)
       -- self:Spawn('player', 'RPUF_Player'):SetPoint(GetRightLocation("player"));
       -- self:Spawn('focus',  'RPUF_Focus' ):SetPoint(GetRightLocation("focus"));
       -- self:Spawn('target', 'RPUF_Target'):SetPoint(GetRightLocation("target"));
-      self:Spawn("player", 
+      local playerFrame = self:Spawn("player", 
              FRAME_NAMES.PLAYER, 
              BackdropTemplateMixin and "BackdropTemplate"):SetPoint(GetRightLocation("player")
            );
-      self:Spawn("focus",   
+      local focusFrame = self:Spawn("focus",   
              FRAME_NAMES.FOCUS,
              BackdropTemplateMixin and "BackdropTemplate"):SetPoint(GetRightLocation("focus")
            );
-      self:Spawn("target", 
+      local targetFrame = self:Spawn("target", 
              FRAME_NAMES.TARGET,
              BackdropTemplateMixin and "BackdropTemplate"):SetPoint(GetRightLocation("target")
            );
+
+      RPTAGS.cache.UnitFrames = RPTAGS.cache.UnitFrames or {};
+
+      RPTAGS.cache.UnitFrames.RPUF_Player = playerFrame;
+      RPTAGS.cache.UnitFrames.RPUF_Focus = focusFrame;
+      RPTAGS.cache.UnitFrames.RPUF_Target = targetFrame;
 
       UnregisterUnitWatch( FRAME_NAMES.PLAYER );
       UnregisterUnitWatch( FRAME_NAMES.FOCUS  );
       UnregisterUnitWatch( FRAME_NAMES.TARGET );
       
       RPTAGS.utils.frames.all.visibility.set(true); -- true here means "initialization, i.e. it hasn't been run before
-      RPTAGS.utils.frames.all.disable.set(true);    -- same
+      -- RPTAGS.utils.frames.all.disable.set(true);    -- same
       RPTAGS.utils.frames.all.size.scale.set();
 
 --    self:SpawnHeader(nil, nil, 

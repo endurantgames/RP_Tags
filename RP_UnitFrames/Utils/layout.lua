@@ -11,11 +11,8 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 
 -- local oUF    = RPTAGS.oUF;
 
-  print("RP_UnitFrames/Utils/layout.lua read");
-Module:WaitUntil("after UTILS_FRAMES", -- depends on size functions
+Module:WaitUntil("after MODULE_E", -- depends on size functions
 function(self, event, ...)
-
-  print("RP_UnitFrames/Utils/layout.lua loading");
 
   local RPTAGS = RPTAGS;
   
@@ -26,7 +23,6 @@ function(self, event, ...)
   local TARGET_FRAMENAME    = CONST.FRAMES.NAMES.PLAYER;
   local FOCUS_FRAMENAME     = CONST.FRAMES.NAMES.FOCUS;
   local MOUSEOVER_FRAMENAME = CONST.FRAMES.NAMES.MOUSEOVER;
-  local Frames              = RPTAGS.cache.UnitFrames;
   local panelWidth          = RPTAGS.utils.frames.panels.size.getWidth;
   local panelHeight         = RPTAGS.utils.frames.panels.size.getHeight;
 

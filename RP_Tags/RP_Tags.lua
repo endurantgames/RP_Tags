@@ -14,46 +14,17 @@ if not RPQ then error(addOnName .. " requires RPQ"); end;
 local Queue = RPQ:New(addOnName);
 
 local RPQ_EVENTS = 
-{ "ADDON_INIT", 
-
-      "INIT_DATA",
-          "INIT_CACHE",
-          "INIT_LOCALE",
-
-      "CORE_STATE",
-          "DATA_CONST",
-
-      "INIT_UTILS",
-
-          "UTILS_LOCALE",
-          "DATA_LOCALE",
-
-          "UTILS_MODULES",
-          "UTILS_CONFIG",
-          "UTILS_TEXT",
-          "UTILS_COLOR",
-          "UTILS_FORMATS",
-          "UTILS_PARSE",
-          "UTILS_GET",
-          "UTILS_FRAMES",
-
-      "UTILS_TAGS",
-          "DATA_TAGS",
-
-      "INIT_OPTIONS",
-
-          "UTILS_OPTIONS",
-          "DATA_OPTIONS",
-
-          "UTILS_HELP",
-          "CORE_HELP",
-
-          "CORE_OPTIONS",
-
-          "CORE_SLASH",
-          "CORE_KEYBIND",
-
-  "ADDON_LOAD",
+{ "ADDON_INIT",        
+      "INIT_DATA",          "INIT_CACHE",     "INIT_LOCALE",                     -- arbitrary:
+          "CORE_STATE",     "DATA_CONST",                                        "MODULE_A",      
+      "INIT_UTILS",         "UTILS_LOCALE",   "DATA_LOCALE",   "UTILS_MODULES",  "MODULE_B", 
+          "UTILS_CONFIG",   "UTILS_TEXT",     "UTILS_COLOR",                     "MODULE_C",      
+          "UTILS_FORMATS",  "UTILS_PARSE",    "UTILS_GET",     "UTILS_FRAMES",   "MODULE_D", 
+          "UTILS_TAGS",     "DATA_TAGS",                                         "MODULE_E",     
+      "INIT_OPTIONS",       "UTILS_OPTIONS",  "DATA_OPTIONS",                    "MODULE_F",      
+          "UTILS_HELP",     "CORE_HELP",      "CORE_OPTIONS",                    "MODULE_G",      
+          "CORE_SLASH",     "CORE_KEYBIND",   "MODULE_H",     
+  "ADDON_LOAD",        
 };
 
 Queue:NewEvents(RPQ_EVENTS);

@@ -11,11 +11,11 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 
 -- local oUF    = RPTAGS.oUF;
 
-Module:WaitUntil("UTILS_FRAMES",
+Module:WaitUntil("after MODULE_E",
 function(self, event, ...)
 
   local Config = RPTAGS.utils.config;
-  local Frames = RPTAGS.cache.UnitFrames;
+  local Frames = RPTAGS.cache.UnitFrames or {};
 
   local function generateVisibilityString(unit)
     local conditions = {};
@@ -34,6 +34,11 @@ function(self, event, ...)
     if unit == 'mouseover' then return "show" else return table.concat(conditions, ";"); end;
   end;
 
+  local function setVisibility(frame)
+    UnregisterStateDriver(frame, 'visibility');
+    RegisterStateDriver(frame, 'visibility', generateVisibilityString(frame.unit));
+  end;
+
   local function setAllVisibility(init)
     for frameName, frame in pairs(Frames)
     do UnregisterStateDriver(frame, 'visibility');
@@ -42,8 +47,10 @@ function(self, event, ...)
     end; -- for
   end;
 
+  RPTAGS.utils.frames.all.disable         = setAllVisibility;
   RPTAGS.utils.frames.all.visibility.set  = setAllVisibility;
   RPTAGS.utils.frames.visibility.generate = generateVisibilityString;
   RPTAGS.utils.frames.visibility.set      = setVisibility;
+  RPTAGS.utils.frames.disable             = setVisibility;
 
 end);

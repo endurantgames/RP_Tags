@@ -213,11 +213,17 @@ function(self, event, ...)
     return string.format(format, unpack(funcResults));
   end; -- function evalTagString
 
-  local function evalTagStringAsPlayer(tagStr, oUF)
-    return evalTagString(tagStr, "player", "player", oUF);
+  local function evalTagStringAsPlayer(tagStr, use_oUF)
+    return evalTagString(tagStr, "player", "player", use_oUF);
+  end;
+
+  local function tagExists(tag, oUF)
+    oUF = oUF or RPTAGS.oUF;
+    return tag and oUF.Tags.Methods[tag] and true or false;
   end;
 
   RPTAGS.utils.tags              = RPTAGS.utils.tags or {};
+  RPTAGS.utils.tags.exists       = tagExists;
   RPTAGS.utils.tags.eval         = evalTagString;
   RPTAGS.utils.tags.evalPlayer   = evalTagStringAsPlayer;
   RPTAGS.utils.tags.registerTag  = registerTag;

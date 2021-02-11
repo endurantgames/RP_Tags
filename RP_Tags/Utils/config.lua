@@ -71,8 +71,6 @@ function(self, event, ...)
     end;
   end; -- function
         
-  -- Functions available under RPTAGS.utils.config
-  --
   RPTAGS.utils.config.default = getDefault;
   RPTAGS.utils.config.get     = getConfig;
   RPTAGS.utils.config.reset   = resetConfig;

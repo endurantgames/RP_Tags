@@ -140,10 +140,10 @@ function(self, event, ...)
         if not s then return "" end;
         local reset = "|r";
   
-        s = s:gsub("%[%[%[",    "|cff" .. Config.get("COLOR_HILITE_3"));
-        s = s:gsub("%]%]%]",    reset);
-        s = s:gsub("%[%[",      "|cff" .. Config.get("COLOR_HILITE_2"));
-        s = s:gsub("%]%]",      reset);
+        s = s:gsub("%[%[%[", "|cff" .. Config.get("COLOR_HILITE_3"));
+        s = s:gsub("%]%]%]", reset);
+        s = s:gsub("%[%[",   "|cff" .. Config.get("COLOR_HILITE_2"));
+        s = s:gsub("%]%]",   reset);
         -- if   forMarkdown 
         -- then s = tagReferences(s)
            -- s = s:gsub("(<a [^>]+>.-</a>)", "|cff00dd00%1|r");

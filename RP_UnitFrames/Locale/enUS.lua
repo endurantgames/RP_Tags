@@ -16,7 +16,8 @@ function(self, event, ...)
   local RPUF_ABBR                         = RP .. APP_COLOR_RPUF .. "UF" .. "|r";
   local ERROR_INLINE                      = "|cffdd0000Error!|r";
   local ERROR_STARTUP                     = APP_NAME .. "|cffff0000 Startup Error:|r\n\n";
-  local EDITOR                            = APP_NAME .. " Tag Editor";
+  local EDITOR                            = APP_NAME .. " Editor";
+  local NBSP                              = RPTAGS.CONST.NBSP;
 
   L["RPUF_NAME"                         ] = RPUF_NAME;
   L["RPUF_ABBR"                         ] = RPUF_ABBR;
@@ -41,9 +42,13 @@ function(self, event, ...)
   L["QUICK_SETTINGS"                    ] = "Quick Settings";
   -- --- keybindings
   L["KEYBIND_DISABLE_RPUF"              ] = "Toggle " .. RPUF_NAME;
+  L["KEYBIND_DISABLE_RPUF_TT"           ] = "Set a keybinding to toggle between " .. RPUF_NAME .. " being enabled and disabled.";
   L["KEYBIND_HIDE_IN_COMBAT"            ] = "Toggle Hide in Combat";
+  L["KEYBIND_HIDE_IN_COMBAT_TT"         ] = "Set a keybinding to toggle between " .. RPUF_NAME .. " hiding when combat starts and returning when it ends.";
   L["KEYBIND_LOCK_FRAMES"               ] = "Toggle Frame Lock";
+  L["KEYBIND_LOCK_FRAMES_TT"            ] = "Set a keybinding to toggle between " .. RPUF_NAME .. " frames being movable or not.";
   L["KEYBIND_TAG_EDITOR"                ] = "Open the " .. EDITOR;
+  L["KEYBIND_TAG_EDITOR_TT"             ] = "Set a keybinding to open the " .. EDITOR .. " to the last panel you edited.";
   -- --- tag editor
   L["TAG_EDITOR"                        ] = EDITOR;
   L["TAG_EDIT_CANCEL"                   ] = "Cancel";
@@ -64,18 +69,23 @@ function(self, event, ...)
   L["TAG_TEST_PASS"                     ] = "No errors found.";
   L["UNKNOWN_TAG_END"                   ] = "] |r";
   L["UNKNOWN_TAG_START"                 ] = "|cffff0000Tag Error: [";
-  L["USE_TAG_EDITOR"                    ] = "Tag Editor";
+  L["USE_TAG_EDITOR"                    ] = "Editor";
   L["OPT_COLORS_RPUF"                   ] = RPUF_NAME .. " Colors";   -- used
   L["OPT_FORMATS"                       ] = "Tag Formats";            -- used
-  L["OPT_EDITOR"                        ] = "Tag Editor";
+  L["OPT_EDITOR"                        ] = "Editor";
   L["OPT_FORMATS"                       ] = RP .. "Formats";
   L["OPT_KEYBINDINGS"                   ] = "Keybindings";
   L["OPT_FORMATS_I"                     ] = "These options control how RPTAGS displays certain tags.";
-  L["OPT_RPUF_LAYOUT"                   ] = RPUF_ABBR .." Layout";
+  L["OPT_RPUF_LAYOUT"                   ] = RPUF_NAME .." Layout";
   L["OPT_RPUF_LAYOUT_I"                 ] = "Use these options to set the dimensions of the various panels in rp:UnitFrames Some layouts may not display all panels. For example, the details panel is only shown in frames set to the Detailed layout.";
+  L["PANEL_RPUF_MAIN"                   ] = RPUF_NAME;
+  L["PANEL_RPUF_PANELS"                 ] = NBSP .. "Panels";
+  L["PANEL_RPUF_FRAMES"                 ] = NBSP .. "Frames";
+  L["PANEL_RPUF_EDITOR"                 ] = NBSP .. "Editor";
+  L["OPT_EDITOR_I"                      ] = "These options control how the " .. EDITOR .. " works.";
   L["OPT_RPUF_MAIN"                     ] = RPUF_NAME;
   L["OPT_RPUF_MAIN_I"                   ] = "These options control the basic functionality of rp:UnitFrames.";
-  L["OPT_RPUF_PANELS"                   ] = RPUF_ABBR .." Panels";
+  L["OPT_RPUF_PANELS"                   ] = RPUF_NAME .." - Panels";
   L["OPT_RPUF_PANELS_I"                 ] = "You can change the tags displayed in rp:UnitFrames panels, as well as the tooltips shown when you move your mouse over that panel.";
   L["OPT_TITLE_RPUF_LAYOUT"             ] = RPUF_NAME .." Layout";
   L["OPT_TITLE_RPUF_MAIN"               ] = RPUF_NAME .." General Settings";
@@ -99,30 +109,106 @@ function(self, event, ...)
   L["TRP3_CONFIG_OBSOLETE"              ] = "Use the RPTAGS configuration system";
   L["TRP3_CONFIG_OBSOLETE_TT"           ] = "RPTAGS is now configured using its own configuration system, accessible via the normal WoW addons options.";
   L["UNLOCKING_FRAMES"                  ] = RPUF_NAME .. " are now unlocked and can be moved."; -- should be NOTIFY_
-  L["CONFIG_COLOR_RPUF"                 ] = "Background Color";
-  L["CONFIG_COLOR_RPUF_TEXT"            ] = "Text Color";
-  L["CONFIG_COLOR_RPUF_TEXT_TT"         ] = "Choose the default font color for RPUF.";
-  L["CONFIG_COLOR_RPUF_TOOLTIP"         ] = "Tooltip Text Color";
-  L["CONFIG_COLOR_RPUF_TOOLTIP_TT"      ] = "Choose the default font color for RPUF tooltips.";
-  L["CONFIG_COLOR_RPUF_TT"              ] = "Choose a background color for RPUF.";
-  L["CONFIG_DETAILHEIGHT"               ] = "Details Panel Height";
-  L["CONFIG_DETAILHEIGHT_TT"            ] = "Choose how tall you want the details panel to be.";
-  L["CONFIG_DETAILPANEL"                ] = "Details Panel";
-  L["CONFIG_DETAILPANEL_TT"             ] = "Set the tags for the 'details' panel.";
+
+  -- panel config
+  local panel = {};
+  panel.CONFIG_COLOR_RPUF                  = "Background Color";
+  panel.CONFIG_COLOR_RPUF_TEXT             = "Text Color";
+  panel.CONFIG_COLOR_RPUF_TEXT_TT          = "Choose the default font color.";
+  panel.CONFIG_COLOR_RPUF_TOOLTIP          = "Tooltip Text Color";
+  panel.CONFIG_COLOR_RPUF_TOOLTIP_TT       = "Choose the default font color for tooltips.";
+  panel.CONFIG_COLOR_RPUF_TT               = "Choose a background color.";
+  panel.CONFIG_DETAILHEIGHT                = "Details Panel Height";
+  panel.CONFIG_DETAILHEIGHT_TT             = "Choose how tall you want the details panel to be.";
+  panel.CONFIG_STATUSHEIGHT                = "Height";
+  panel.CONFIG_STATUSHEIGHT_TT             = "Set the height of the 'status' panel.";
+  panel.CONFIG_STATUS_ALIGN                = "Alignment";
+  panel.CONFIG_STATUS_ALIGN_TT             = "Choose how you want the text on the status bar to be aligned.";
+  panel.CONFIG_STATUS_TEXTURE              = "Appearance";
+  panel.CONFIG_STATUS_TEXTURE_TT           = "Choose how you want the status bar to appear.";
+  panel.CONFIG_GAPSIZE                     = "Layout Spacing";
+  panel.CONFIG_GAPSIZE_TT                  = "Choose how much extra space you want left around the elements of the unitframes.";
+  panel.CONFIG_ICONWIDTH                   = "Icon Width";
+  panel.CONFIG_ICONWIDTH_TT                = "Choose how wide you want the icon bar to be.";
+  panel.CONFIG_INFOWIDTH                   = "Info Panel Width";
+  panel.CONFIG_INFOWIDTH_TT                = "Choose how wide you want the info panel to be.";
+  panel.CONFIG_PORTWIDTH                   = "Portrait Width";
+  panel.CONFIG_PORTWIDTH_TT                = "Choose how wide you want the portrait to be.";
+  panel.CONFIG_RPUFALPHA                   = "Background Transparency";
+  panel.CONFIG_RPUFALPHA_TT                = "Set the transparency of the background. 0 is completely invisible, while 100 is completely opaque.";
+  panel.CONFIG_RPUF_BACKDROP               = "Frame Border";
+  panel.CONFIG_RPUF_BACKDROP_TT            = "Choose what kind of border, if any, you want.";
+  panel.CONFIG_SHOW_FRAME            = "Enable";
+  panel.CONFIG_SHOW_FRAME_TT = "Choose whether to show or hide this frame.";
+  panel.CONFIG_LINK_FRAME = "Link to Shared Settings";
+  panel.CONFIG_LINK_FRAME_TT = "Choose whether to link this frame to the shared settings, or configure it separately.";
+
+  for k, v in pairs(panel)
+  do  L[k] = v;
+      for frame, _ in pairs(RPTAGS.CONST.FRAMES.NAMES)
+      do  local tt = k:match("_TT$");
+          local key = k:gsub("_TT$","") .. "_" .. frame .. (tt or "");
+          L[key] = v;
+      end;
+  end;
+  -- 
+  -- L["CONFIG_COLOR_RPUF"                 ] = "Background Color";
+  -- L["CONFIG_COLOR_RPUF_TEXT"            ] = "Text Color";
+  -- L["CONFIG_COLOR_RPUF_TEXT_TT"         ] = "Choose the default font color for RPUF.";
+  -- L["CONFIG_COLOR_RPUF_TOOLTIP"         ] = "Tooltip Text Color";
+  -- L["CONFIG_COLOR_RPUF_TOOLTIP_TT"      ] = "Choose the default font color for RPUF tooltips.";
+  -- L["CONFIG_COLOR_RPUF_TT"              ] = "Choose a background color for RPUF.";
+  -- L["CONFIG_DETAILHEIGHT"               ] = "Details Panel Height";
+  -- L["CONFIG_DETAILHEIGHT_TT"            ] = "Choose how tall you want the details panel to be.";
+  -- L["CONFIG_STATUSHEIGHT"               ] = "Height";
+  -- L["CONFIG_STATUSHEIGHT_TT"            ] = "Set the height of the 'status' panel.";
+  -- L["CONFIG_STATUS_ALIGN"               ] = "Alignment";
+  -- L["CONFIG_STATUS_ALIGN_TT"            ] = "Choose how you want the text on the status bar to be aligned.";
+  -- L["CONFIG_STATUS_TEXTURE"             ] = "Appearance";
+  -- L["CONFIG_STATUS_TEXTURE_TT"          ] = "Choose how you want the status bar to appear.";
+  -- L["CONFIG_GAPSIZE"                    ] = "Layout Spacing";
+  -- L["CONFIG_GAPSIZE_TT"                 ] = "Choose how much extra space you want left around the elements of the unitframes.";
+  -- L["CONFIG_ICONWIDTH"                  ] = "Icon Width";
+  -- L["CONFIG_ICONWIDTH_TT"               ] = "Choose how wide you want the icon bar to be.";
+  -- L["CONFIG_INFOWIDTH"                  ] = "Info Panel Width";
+  -- L["CONFIG_INFOWIDTH_TT"               ] = "Choose how wide you want the info panel to be.";
+  -- L["CONFIG_PORTWIDTH"                  ] = "Portrait Width";
+  -- L["CONFIG_PORTWIDTH_TT"               ] = "Choose how wide you want the portrait to be.";
+  -- L["CONFIG_RPUFALPHA"                  ] = "Background Transparency";
+  -- L["CONFIG_RPUFALPHA_TT"               ] = "Set the transparency of the background. 0 is completely invisible, while 100 is completely opaque.";
+  -- L["CONFIG_RPUF_BACKDROP"              ] = "Frame Border";
+  -- L["CONFIG_RPUF_BACKDROP_TT"           ] = "Choose what kind of border, if any, you want for RPUF.";
+
+  -- ---------------------------------------------------------------------
+  -- scales
+  L["CONFIG_FOCUSFRAME_SCALE"           ] = "Focus Frame Scale";
+  L["CONFIG_FOCUSFRAME_SCALE_TT"        ] = "Adjust the relative scale of the RPUF focus frame so it takes up more or less space on your screen.";
+  L["CONFIG_PLAYERFRAME_SCALE"          ] = "Player Frame Scale";
+  L["CONFIG_PLAYERFRAME_SCALE_TT"       ] = "Adjust the relative scale of the RPUF player frame so it takes up more or less space on your screen.";
+  L["CONFIG_TARGETFRAME_SCALE"          ] = "Target Frame Scale";
+  L["CONFIG_TARGETFRAME_SCALE_TT"       ] = "Adjust the relative scale of the RPUF target frame so it takes up more or less space on your screen.";
+  L["CONFIG_TARGETTARGETFRAME_SCALE"    ] = "TargetTarget Frame Scale";
+  L["CONFIG_TARGETTARGETFRAME_SCALE_TT" ] = "Adjust the relative scale of the RPUF target-of-target frame so it takes up more or less space on your screen.";
+  -- layouts
+  L["CONFIG_TARGETLAYOUT"               ] = "Target Frame Layout";
+  L["CONFIG_TARGETLAYOUT_TT"            ] = "Choose the layout for the target unit frame.";
+  L["CONFIG_TARGETTARGETLAYOUT"         ] = "Target-of-Target Frame Layout";
+  L["CONFIG_TARGETTARGETLAYOUT_TT"      ] = "Choose the layout for the target-of-target unit frame.";
+  L["CONFIG_FOCUSLAYOUT"                ] = "Focus Frame Layout";
+  L["CONFIG_FOCUSLAYOUT_TT"             ] = "Choose the layout for your focus unit frame.";
+  L["CONFIG_PLAYERLAYOUT"               ] = "Player Frame Layout";
+  L["CONFIG_PLAYERLAYOUT_TT"            ] = "Choose the layout for the player (that's you) unit frame.";
+
+  -- visibility
+  -- 
   L["CONFIG_DETAIL_TOOLTIP"             ] = "Details Panel Tooltip";
   L["CONFIG_DETAIL_TOOLTIP_TT"          ] = "Set the tags for the 'details' panel tooltip.";
+  L["CONFIG_DETAILPANEL"                ] = "Details Panel";
+  L["CONFIG_DETAILPANEL_TT"             ] = "Set the tags for the 'details' panel.";
   L["CONFIG_DISABLE_BLIZZARD"           ] = "Disable Blizzard Unit Frames";
   L["CONFIG_DISABLE_BLIZZARD_TT"        ] = "You can disable Blizzard's unit frames. Don't worry, you can get them back by unchecking this button! |cffdd0000Warning:|r Changing this option will load the game.";
   L["CONFIG_DISABLE_RPUF"               ] = "Disable RPUF";
   L["CONFIG_DISABLE_RPUF_TT"            ] = "You can disable RPUF without disabling all of RPTAGS. One reason you might want to do this would be if you are running [[Elvui                                                                               ]      ] and don't need to use RPUF to display RPTAGS.";
-  L["CONFIG_FOCUSFRAME_SCALE"           ] = "Focus Frame Scale";
-  L["CONFIG_FOCUSFRAME_SCALE_TT"        ] = "Adjust the relative scale of the RPUF focus frame so it takes up more or less space on your screen.";
-  L["CONFIG_FOCUSLAYOUT"                ] = "Focus Frame Layout";
-  L["CONFIG_FOCUSLAYOUT_TT"             ] = "Choose the layout for your focus unit frame.";
-  L["CONFIG_GAPSIZE"                    ] = "Layout Spacing";
-  L["CONFIG_GAPSIZE_TT"                 ] = "Choose how much extra space you want left around the elements of the unitframes.";
-  L["CONFIG_ICONWIDTH"                  ] = "Icon Width";
-  L["CONFIG_ICONWIDTH_TT"               ] = "Choose how wide you want the icon bar to be.";
   L["CONFIG_ICON_1"                     ] = "Icon Slot 1";
   L["CONFIG_ICON_1_TOOLTIP"             ] = "Icon Slot 1 Tooltip";
   L["CONFIG_ICON_1_TOOLTIP_TT"          ] = "Set the tags for the first icon slot tooltip.";
@@ -149,8 +235,6 @@ function(self, event, ...)
   L["CONFIG_ICON_6_TT"                  ] = "Set the icon for the sixth icon slot. You should use icon tags.";
   L["CONFIG_INFOPANEL"                  ] = "Info Panel";
   L["CONFIG_INFOPANEL_TT"               ] = "Set the tags for the 'info' panel.";
-  L["CONFIG_INFOWIDTH"                  ] = "Info Panel Width";
-  L["CONFIG_INFOWIDTH_TT"               ] = "Choose how wide you want the info panel to be.";
   L["CONFIG_INFO_TOOLTIP"               ] = "Info Panel Tooltip";
   L["CONFIG_INFO_TOOLTIP_TT"            ] = "Set the tags for the 'info' panel tooltip.";
   L["CONFIG_LOCK_FRAMES"                ] = "Lock Frames";
@@ -159,24 +243,14 @@ function(self, event, ...)
   L["CONFIG_NAMEPANEL_TT"               ] = "Set the tags for the 'name' panel. You don't have to use name tags.";
   L["CONFIG_NAME_TOOLTIP"               ] = "Name Panel Tooltip";
   L["CONFIG_NAME_TOOLTIP_TT"            ] = "Set the tags for the 'name' panel tooltip.";
-  L["CONFIG_PLAYERFRAME_SCALE"          ] = "Player Frame Scale";
-  L["CONFIG_PLAYERFRAME_SCALE_TT"       ] = "Adjust the relative scale of the RPUF player frame so it takes up more or less space on your screen.";
-  L["CONFIG_PLAYERLAYOUT"               ] = "Player Frame Layout";
-  L["CONFIG_PLAYERLAYOUT_TT"            ] = "Choose the layout for the player (that's you) unit frame.";
   L["CONFIG_PORTRAIT"                   ] = "Portrait";
   L["CONFIG_PORTRAIT_TT"                ] = "Set the tags for the portrait.";
   L["CONFIG_PORTRAIT_TOOLTIP"           ] = "Portrait Tooltip";
   L["CONFIG_PORTRAIT_TOOLTIP_TT"        ] = "Set the tags for the portrait tooltip.";
-  L["CONFIG_PORTWIDTH"                  ] = "Portrait Width";
-  L["CONFIG_PORTWIDTH_TT"               ] = "Choose how wide you want the portrait to be.";
   L["CONFIG_RESET_FRAME_LOCATIONS"      ] = "Reset Frame Locations";
   L["CONFIG_RESET_FRAME_LOCATIONS_TT"   ] = "Set all frames back to their default locations.";
   L["CONFIG_RESET_THESE_VALUES"         ] = "Reset These Values";
   L["CONFIG_RESET_THESE_VALUES_TT"      ] = "Set the displayed values back to their default values.";
-  L["CONFIG_RPUFALPHA"                  ] = "Background Transparency";
-  L["CONFIG_RPUFALPHA_TT"               ] = "Set the transparency of the background. 0 is completely invisible, while 100 is completely opaque.";
-  L["CONFIG_RPUF_BACKDROP"              ] = "Frame Border";
-  L["CONFIG_RPUF_BACKDROP_TT"           ] = "Choose what kind of border, if any, you want for RPUF.";
   L["CONFIG_RPUF_HIDE_COMBAT"           ] = "Hide in Combat";
   L["CONFIG_RPUF_HIDE_COMBAT_TT"        ] = "Check this to hide RPUF when you are in combat.";
   L["CONFIG_RPUF_HIDE_DEAD"             ] = "Hide when Dead";
@@ -189,22 +263,10 @@ function(self, event, ...)
   L["CONFIG_RPUF_HIDE_RAID_TT"          ] = "Check this to hide RPUF when you are in a raid.";
   L["CONFIG_RPUF_HIDE_VEHICLE"          ] = "Hide in Vehicle";
   L["CONFIG_RPUF_HIDE_VEHICLE_TT"       ] = "Check this to hide RPUF when you are in a vehicle.";
-  L["CONFIG_STATUSHEIGHT"               ] = "Height";
-  L["CONFIG_STATUSHEIGHT_TT"            ] = "Set the height of the 'status' panel.";
   L["CONFIG_STATUSPANEL"                ] = "Status Panel";
   L["CONFIG_STATUSPANEL_TT"             ] = "Set the tags for the 'status' panel. You don't have to use status tags.";
-  L["CONFIG_STATUS_ALIGN"               ] = "Alignment";
-  L["CONFIG_STATUS_ALIGN_TT"            ] = "Choose how you want the text on the status bar to be aligned.";
-  L["CONFIG_STATUS_TEXTURE"             ] = "Appearance";
-  L["CONFIG_STATUS_TEXTURE_TT"          ] = "Choose how you want the status bar to appear.";
   L["CONFIG_STATUS_TOOLTIP"             ] = "Status Panel Tooltip";
   L["CONFIG_STATUS_TOOLTIP_TT"          ] = "Set the tags for the 'status' panel tooltip.";
-  L["CONFIG_TARGETFRAME_SCALE"          ] = "Target Frame Scale";
-  L["CONFIG_TARGETFRAME_SCALE_TT"       ] = "Adjust the relative scale of the RPUF target frame so it takes up more or less space on your screen.";
-  L["CONFIG_TARGETLAYOUT"               ] = "Target Frame Layout";
-  L["CONFIG_TARGETLAYOUT_TT"            ] = "Choose the layout for the target unit frame.";
-  L["CONFIG_TARGETTARGETFRAME_SCALE"    ] = "TargetTarget Frame Scale";
-  L["CONFIG_TARGETTARGETFRAME_SCALE_TT" ] = "Adjust the relative scale of the RPUF target-of-target frame so it takes up more or less space on your screen.";
   L["CONFIG_UNLOCK_FRAMES"              ] = "Unlock Frames";
     -- --- editor settings
   L["CONFIG_EDITOR_FONT"                ] = "Editor Font";

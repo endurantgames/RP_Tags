@@ -11,13 +11,12 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 
 -- local oUF    = RPTAGS.oUF;
 
-Module:WaitUntil("UTILS_FRAMES",
+Module:WaitUntil("after MODULE_E",
 function(self, event, ...)
 
-  local CONST               = RPTAGS.CONST;
-  local Utils               = RPTAGS.utils;
-  local Config              = Utils.config;
-  local Frames              = RPTAGS.cache.UnitFrames;
+  local CONST   = RPTAGS.CONST;
+  local Utils   = RPTAGS.utils;
+  local Config  = Utils.config;
 
   local function setPanelContentOnFrame(frame, element, value, field)
     frame:Tag(frame[element][field or "text"], fixTagErrors(value)); 
@@ -25,7 +24,7 @@ function(self, event, ...)
   end; -- function
 
   local function setPanelContentOnAllFrames(element, value, field) 
-    for  frameName, frame in pairs(Frames)
+    for  frameName, frame in pairs(RPTAGS.cache.UnitFrames)
     do   setElementTagString(frameName, element, value, field) 
     end; 
   end;
@@ -42,7 +41,7 @@ function(self, event, ...)
   end; 
 
   local function setAllPanelContentOnAllFrames()
-    for frameName, frame in pairs(Frames)
+    for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
     do  refreshFrame(frameName) 
     end; 
   end;

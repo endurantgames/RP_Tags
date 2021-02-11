@@ -12,7 +12,7 @@ local addOnName, addOn = ...
 local RPTAGS     = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("before DATA_OPTIONS",
+Module:WaitUntil("DATA_OPTIONS",
 function(self, event, ...)
   local build_keybind = RPTAGS.utils.options.keybind;
   local addOptions    = RPTAGS.utils.modules.addOptions;

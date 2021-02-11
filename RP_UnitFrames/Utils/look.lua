@@ -11,12 +11,11 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 
 -- local oUF    = RPTAGS.oUF;
 
-Module:WaitUntil("UTILS_FRAMES",
+Module:WaitUntil("after MODULE_E",
 function(self, event, ...)
 
   local CONST = RPTAGS.CONST;
   local PANEL_LIST = CONST.FRAMES.PANELS;
-  local Frames     = RPTAGS.cache.UnitFrames;
 
   local function setStatusTexture(frame)
     if not frame.StatusBarPanel then return nil end;
@@ -27,7 +26,7 @@ function(self, event, ...)
   end; -- function
 
   local function setAllStatusTextures() 
-    for frameName, frame in pairs(Frames)
+    for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
     do  setStatusBarTexture(frame) 
     end; 
   end;
@@ -39,7 +38,7 @@ function(self, event, ...)
   end;
 
   local function setAllStatusBarAligns() 
-    for frameName, frame in pairs(Frames) 
+    for frameName, frame in pairs(RPTAGS.cache.UnitFrames) 
     do  setStatusBarAlignment(frame) 
     end; 
   end;
@@ -47,7 +46,7 @@ function(self, event, ...)
   local function setAllBackdrops()
     local alpha, color, backdrop = Config.get("RPUFALPHA"), Config.get("COLOR_RPUF"), Config.get("RPUF_BACKDROP")
     local bgRed, bgGreen, bgBlue = RPTAGS.utils.color.hexaToNumber(color);
-    for frameName, frame in ipairs(Frames)
+    for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
     do frame:SetBackdrop(CONST.BACKDROP[backdrop])
        frame:SetBackdropColor(bgRed / 255, bgGreen / 255, bgBlue / 255, alpha/100);
        frame.PortraitBackground:SetVertexColor(bgRed / 255, bgGreen / 255, bgBlue / 255, alpha / 100);
@@ -74,20 +73,19 @@ function(self, event, ...)
   end;
 
   local function setAllTextColors(request) 
-    for frameName, frame in pairs(Frames)
+    for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
     do  setTextColors(frame, request) end; 
   end;
 
-  local function getPanelHorizontalAlignment(panelName, layout);
+  local function getPanelHorizontalAlignment(panelName, layout)
     return 
         (   panelName == "StatusBarPanel" 
-        and RPTAGS.CONST.ALIGN[Config.get("STATUS_ALIGN"].H )
+        and RPTAGS.CONST.ALIGN[Config.get("STATUS_ALIGN")].H )
       or ( ( panelName == "NamePanel" or panel == "InfoPanel")
            and
            ( layout == "PAPERDOLL" or layout == "THUMBNAIL" )
            and
            "CENTER" )
-         )
       or "LEFT";
   end
 

@@ -11,7 +11,7 @@ local addOnName, addOn = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("ADDON_LOAD",
+Module:WaitUntil("MODULE_F",
 function(self, event, ...)
 
   RP_UnitFramesDB.editor_config = RP_UnitFramesDB.editor_config or {};
@@ -209,7 +209,7 @@ function(self, event, ...)
    
       local ResultsTitle = AceGUI:Create("LMD30_Description");
             ResultsTitle:SetText("# " .. loc("TAG_EDIT_RESULTS"));
-            ResultsTitle:SetTextColor(0.7, 0.7, 0.7);
+            -- ResultsTitle:SetTextColor("h1", 0.7, 0.7, 0.7);
             ResultsTitle:SetFullWidth(true);
             ResultsTitle.editor = self;
   
@@ -232,14 +232,21 @@ function(self, event, ...)
       StatusBar:SetLayout("Flow");
       StatusBar:SetFullWidth(true);
       StatusBar.editor = self;
-      local buttons = {};
-  
-      table.insert(buttons, AceGUI:Create("Button"):SetText("Config")  );
-      table.insert(buttons, AceGUI:Create("Button"):SetText("Check")   );
-      table.insert(buttons, AceGUI:Create("Button"):SetText("Revert")  );
-      table.insert(buttons, AceGUI:Create("Button"):SetText("Default") );
-      table.insert(buttons, AceGUI:Create("Button"):SetText("Save")    );
-      table.insert(buttons, AceGUI:Create("Button"):SetText("Cancel")  );
+      local buttons = 
+      { { "Config", function(self) print("pushed button!") end },
+        { "Check", function(self) print("pushed button!") end },
+        { "Revert", function(self) print("pushed button!") end },
+        { "Default", function(self) print("pushed button!") end },
+        { "Save", function(self) print("pushed button!") end },
+        { "Cancel", function(self) print("pushed button!") end },
+      };
+
+      -- table.insert(buttons, AceGUI:Create("Button"):SetText("Config")  );
+      -- table.insert(buttons, AceGUI:Create("Button"):SetText("Check")   );
+      -- table.insert(buttons, AceGUI:Create("Button"):SetText("Revert")  );
+      -- table.insert(buttons, AceGUI:Create("Button"):SetText("Default") );
+      -- table.insert(buttons, AceGUI:Create("Button"):SetText("Save")    );
+      -- table.insert(buttons, AceGUI:Create("Button"):SetText("Cancel")  );
   
       -- local CheckButton = AceGUI:Create("Button");
       --       CheckButton:SetText("Check");
@@ -253,13 +260,16 @@ function(self, event, ...)
       --       CancelButton:SetText("Cancel");
       --       table.insert(buttons, SaveButton);
 
-      for i, b in ipairs(buttons)
-      do  StatusBar:AddChild( button );
+      for _, buttonData in ipairs(buttons)
+      do  local button = AceGUI:Create("Button");
+          button:SetText(buttonData[1]);
+          button:SetCallback("OnClick", buttonData[2]);
           button.editor = self;
           button:SetRelativeWidth( 1 / #buttons );
+          StatusBar:AddChild(button);
       end;
 
-      self:AddChild(StatusButtons)
+      self:AddChild(StatusBar)
     end;
 
     function Editor.FindTagEnds(self, text, cursor)
@@ -365,8 +375,8 @@ function(self, event, ...)
       color = color or RGB_GRAY;
 
       self.results:SetText(text);
-      self.resultTitle:SetText("# " .. title);
-      self.resultsTitle:SetTextColor(color[1], color[2], color[3]);
+      self.resultsTitle:SetText("# " .. title);
+      -- self.resultsTitle:SetTextColor("h1", color[1], color[2], color[3]);
 
       return self;
     end;

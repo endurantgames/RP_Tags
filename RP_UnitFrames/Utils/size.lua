@@ -10,7 +10,7 @@ local addOnName, addOn = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("UTILS_FRAMES",
+Module:WaitUntil("MODULE_E",
 function(self, event, ...)
 
   local CONST               = RPTAGS.CONST;
@@ -21,7 +21,6 @@ function(self, event, ...)
   local TARGET_FRAMENAME    = CONST.FRAMES.NAMES.PLAYER;
   local FOCUS_FRAMENAME     = CONST.FRAMES.NAMES.FOCUS;
   local MOUSEOVER_FRAMENAME = CONST.FRAMES.NAMES.MOUSEOVER;
-  local Frames              = RPTAGS.cache.UnitFrames;
 
   -- frame layout functions ---------------------------------------------------------------------------------------------------------------------------------
   local function hgap(n)    return Config.get("GAPSIZE") * (n or 1);                 end ;
@@ -279,7 +278,7 @@ function(self, event, ...)
   end;
 
   local function setAllFrameScales() 
-    for frameName, frame in pairs(Frames)
+    for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
     do  setFrameScale(frame)
     end;
   end;
@@ -314,7 +313,7 @@ function(self, event, ...)
   end; -- function
 
   local function setAllFrameSizes()
-    for frameName, frame in pairs(Frames)
+    for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
     do setFrameSize(frame) 
     end; 
   end;

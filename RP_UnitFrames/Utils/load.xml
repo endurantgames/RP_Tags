@@ -3,6 +3,7 @@
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 
     <Script file="content.lua"    />
+    <Script file="editor.lua"     />
     <Script file="layout.lua"     />
     <Script file="look.lua"       />
     <Script file="move.lua"       />

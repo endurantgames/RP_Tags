@@ -11,7 +11,7 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 
 -- local oUF    = RPTAGS.oUF;
 
-Module:WaitUntil("UTILS_FRAMES",
+Module:WaitUntil("after MODULE_E",
 function(self, event, ...)
 
   local CONST       = RPTAGS.CONST;
@@ -19,10 +19,9 @@ function(self, event, ...)
   local notify      = Utils.text.notify;
   local Config      = Utils.config;
   local PANELS      = RPTAGS.CONST.FRAMES.PANELS;
-  local Frames      = RPTAGS.cache.UnitFrames;
 
   local function lockAllFrames(init) 
-    for frameName, frame in pairs(Frames)
+    for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
     do  if Config.get("LOCK_FRAMES") then frame.DragFrame:Hide() else frame.DragFrame:Show() end;
     end; -- do
     if     not init and Config.get("LOCK_FRAMES") 
@@ -34,7 +33,7 @@ function(self, event, ...)
 
   local function resetAllLocations()
     local function lookup(unit) return _G[unit] end;
-    for frameName, frame in pairs(Frames)
+    for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
     do local layout = frameLayout(frame);
        local w, h   = frameDimensions(layout);
        local IP = CONST.RPUF.INITIAL_POSITION[frame.unit];

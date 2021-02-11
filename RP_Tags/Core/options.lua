@@ -12,31 +12,31 @@ local RPTAGS          = RPTAGS;
 RPTAGS.queue:WaitUntil("CORE_OPTIONS",
 function(self, event, ...)
   
-  local ACR       = LibStub("AceConfigRegistry-3.0");
-  local ACD = LibStub("AceConfigDialog-3.0");
-  
-  local loc             = RPTAGS.utils.locale.loc;
-  local addOnName       = RPTAGS.addOnName;
-  local APP_NAME        = loc("APP_NAME");
-  
+  local ACR          = LibStub("AceConfigRegistry-3.0");
+  local ACD          = LibStub("AceConfigDialog-3.0");
+  local loc          = RPTAGS.utils.locale.loc;
+  -- local addOnName    = RPTAGS.addOnName;
+  local APP_NAME     = loc("APP_NAME");
   local optionsFrame = {};
+  local panels       = {};
 
-  local panels = {};
+  local optionsTable =
+  { type = "group",
+    childGroups = "tree",
+    args = RPTAGS.cache.optionsSections,
+  };
 
-  ACR:RegisterOptionsTable(
-        APP_NAME, 
-        RPTAGS.cache.optionsTable, 
-        false);
-
+  ACR:RegisterOptionsTable(APP_NAME, optionsTable, false);
   panels.general = ACD:AddToBlizOptions(APP_NAME, APP_NAME, nil , "general");
  
-  for _, section in ipairs(RPTAGS.cache.optionsSections)
-  do panels[section] = ACD:AddToBlizOptions(
-                         APP_NAME,
-                         loc("OPT_" .. section:upper()), 
-                         panels.general.name,
-                         section
-                      );
+  for _, section in ipairs(RPTAGS.cache.optionsOrder)
+  do  panels[section] = 
+        ACD:AddToBlizOptions( 
+          APP_NAME,
+          loc("PANEL_" .. section:upper()), 
+          panels.general.name, 
+          section
+        );
   end;
 
   RPTAGS.cache.panels = panels;

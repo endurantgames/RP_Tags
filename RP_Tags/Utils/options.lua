@@ -20,18 +20,18 @@ function(self, event, ...)
   local hi                 = Utils.text.hilite;
   local APP_NAME           = loc("APP_NAME");
   local refreshAll         = Utils.tags.refreshAll;
-  local weights            = RPTAGS.utils.format.kg;
-  local heights            = RPTAGS.utils.format.cm;
-  local sizebuffs          = RPTAGS.utils.format.sizebuff;
-  local profilesizes       = RPTAGS.utils.format.sizewords;
-  local unsup              = RPTAGS.utils.format.unsup;
-  local notify             = RPTAGS.utils.text.notify;
+  local weights            = Utils.format.kg;
+  local heights            = Utils.format.cm;
+  local sizebuffs          = Utils.format.sizebuff;
+  local profilesizes       = Utils.format.sizewords;
+  local unsup              = Utils.format.unsup;
+  local notify             = Utils.text.notify;
   local AceConfigDialog    = LibStub("AceConfigDialog-3.0");
   local AceGUI             = LibStub("AceGUI-3.0");
   local LibSharedMedia     = LibStub("LibSharedMedia-3.0");
-  local split              = RPTAGS.utils.text.split;
+  local split              = Utils.text.split;
 
-  local menus =
+  local MENUS =
   { UNITS_HEIGHT          =
     { CM                  =  heights(168, "CM"),
       CM_FT_IN            =  heights(168, "CM_FT_IN"),
@@ -110,12 +110,11 @@ function(self, event, ...)
     },
   } ;
   
-  
   local function source_order()
         RPTAGS.cache.orderCount = (RPTAGS.cache.orderCount or 0) + 1;
         return RPTAGS.cache.orderCount;
   end;
-  
+
   local function build_markdown(text, hidden, disabled)
 
       local w =
@@ -170,12 +169,21 @@ function(self, event, ...)
        return widget;
   end;
   
-  local function build_spacer()     return { name = "", order = source_order(), width = 0.05,   type = "description", fontSize = "medium", }; end;
+  local function build_spacer(size)     
+        return 
+          { name = "", 
+            order = source_order(), 
+            width = 0.05 * (size or 1),   
+            type = "description", 
+            fontSize = "medium", 
+          }; 
+        end;
 
   local function build_blank_line() return { name = "", order = source_order(), width = "full", type = "description", fontSize = "medium", }; end;
 
   local function build_checkbox(str, hidden, disabled)
         local w    = build_common("toggle", "CONFIG_", str, hidden, disabled, true, true);
+        w.width = 1.5;
         return w;
   end;
   
@@ -190,9 +198,9 @@ function(self, event, ...)
         return w;
   end;  
 
-  local function build_dropdown(str, hidden, disabled)
+  local function build_dropdown(str, hidden, disabled, values)
         local w    = build_common("select", "CONFIG_", str, hidden, disabled, true, true);
-        w.values   = menus[str:upper():gsub("%s+","_")]
+        w.values   = values or MENUS[str:upper():gsub("%s+","_")]
         return w;
   end;
   
@@ -316,7 +324,7 @@ function(self, event, ...)
   end; -- beep
   
   local function build_keybind(str, hidden, disabled)
-        local str = "KEYBIND_" .. str:upper():gsub("%s+", "");
+        local str = "KEYBIND_" .. str:upper():gsub("%s+", "_");
         local w = 
         { name = loc(str),
           type = "group",
@@ -581,6 +589,13 @@ function(self, event, ...)
   local function listOfAllTags()
     return {};
   end;
+
+  local function build_plugin_mountpoint(str)
+    RPTAGS.cache.Plugins = RPTAGS.cache.Plugins or {};
+    RPTAGS.cache.Plugins[str] = RPTAGS.cache.Plugins[str] or {};
+    return RPTAGS.cache.Plugins[str];
+  end;
+    
 --   local function openDialog(dest)
 --         local protocol, path = dest:match("^(opt)://(.+)$");
 --         path = RPTAGS.utils.text.split(path, "/");
@@ -631,12 +646,15 @@ function(self, event, ...)
   ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "h3"  ] =  "<h2>";
   ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/h3"  ] = "</h2>";
 
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Normal"].Spacing = 4;
+
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.red   = 1;
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.green = 1;
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.blue  = 1;
 
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].FontFile =
-    RPTAGS.CONST.FONT.FIXED;
+    LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, RPTAGS.CONST.FONT.FIXED) 
+    or LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT);
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].red   = 0.000;
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].green = 1.000;
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].blue  = 1.000;
@@ -726,6 +744,7 @@ function(self, event, ...)
   RPTAGS.utils.options.slider            = build_slider;
   RPTAGS.utils.options.spacer            = build_spacer;
   RPTAGS.utils.options.textbox           = build_textbox;
+  RPTAGS.utils.options.plugins           = build_plugin_mountpoint;
   RPTAGS.utils.options.question_mark     = build_question_mark;
   RPTAGS.utils.options.keybind           = build_keybind;
   RPTAGS.utils.options.textbox_wide      = build_textbox_wide;

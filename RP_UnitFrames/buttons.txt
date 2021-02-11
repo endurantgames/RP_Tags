@@ -1,1 +1,0 @@
-"rp:name|rp:color|rp:eyes|rp:eyecolor|rp:class|rp:icon|rp:height|rp:gender|rp:race|rp:fulltitle|rp:age|rp:body|rp:status|rp:statuscolor|rp:gendercolor"

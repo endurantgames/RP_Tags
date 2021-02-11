@@ -5,12 +5,18 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("before DATA_OPTIONS", -- module options must load before RPTAGS options
 function(self, event, ...)
 
-  local Config       = RPTAGS.utils.config;
-  local loc          = RPTAGS.utils.locale.loc;
-  local addOptions   = RPTAGS.utils.modules.addOptions
-  local source_order = RPTAGS.utils.options.order
-  local Common       = RPTAGS.utils.options.common
-  local Pushbutton   = RPTAGS.utils.options.pushbutton
+  local Utils        = RPTAGS.utils;
+  local Config       = Utils.config;
+  local Get          = Config.get;
+  local Set          = Config.set;
+  local loc          = Utils.locale.loc;
+  local Options      = Utils.options;
+  local source_order = Options.source_order
+  local Common       = Options.common;
+  local Pushbutton   = Options.pushbutton;
+  local Dropdown     = Options.dropdown;
+  local Checkbox     = Options.checkbox;
+  local Spacer       = Options.spacer;
 
   local function requiresRPUF() return Config.get("DISABLE_RPUF"); end;
 
@@ -46,9 +52,115 @@ function(self, event, ...)
     return w;
   end;
 
+  local function build_frame_panel(str, info)
+    info             = info or {};
+    str              = str:upper():gsub("%s+", "_");
+
+    local menu     = {};
+    menu.backdrop  =
+    { BLIZZTOOLTIP = loc("BACKDROP_BLIZZTOOLTIP" ),
+      THIN_LINE    = loc("BACKDROP_ORIGINAL"     ),
+      THICK_LINE   = loc("BACKDROP_THICK_LINE"   ),
+      ORIGINAL     = loc("BACKDROP_THIN_LINE"    ), };
+
+    menu.texture   =
+    { BAR          = loc("BAR"                   ),
+      SKILLS       = loc("SKILLS"                ),
+      BLANK        = loc("BLANK"                 ),
+      SHADED       = loc("SHADED"                ),
+      SOLID        = loc("SOLID"                 ),
+      RAID         = loc("RAID"                  ), };
+
+    menu.align     =
+    { LEFT         = loc("LEFT"                  ),
+      CENTER       = loc("CENTER"                ),
+      RIGHT        = loc("RIGHT"                 ), };
+
+    menu.small     =
+    { COMPACT      = loc("RPUF_COMPACT"          ),
+      ABRIDGED     = loc("RPUF_ABRIDGED"         ),
+      THUMBNAIL    = loc("RPUF_THUMBNAIL"        ), };
+
+    menu.large     =
+    { COMPACT      = loc("RPUF_COMPACT"          ),
+      ABRIDGED     = loc("RPUF_ABRIDGED"         ),
+      THUMBNAIL    = loc("RPUF_THUMBNAIL"        ),
+      PAPERDOLL    = loc("RPUF_PAPERDOLL"        ),
+      FULL         = loc("RPUF_FULL"             ), };
+
+    local f          = {};
+    f.alpha          = "RPUFALPHA_"         .. str      ;
+    f.backdrop       = "RPUF_BACKDROP_"     .. str      ;
+    f.detailHeight   = "DETAILHEIGHT_"      .. str      ;
+    f.gapSize        = "GAPSIZE_"           .. str      ;
+    f.iconWidth      = "ICONWIDTH_"         .. str      ;
+    f.infoWidth      = "INFOWIDTH_"         .. str      ;
+    f.layout         = str                  .. "LAYOUT" ;
+    f.link           = "LINK_FRAME_"        .. str      ;
+    f.portWidth      = "PORTWIDTH_"         .. str      ;
+    f.show           = "SHOW_FRAME_"        .. str      ;
+    f.sAlign         = "STATUS_ALIGN_"      .. str      ;
+    f.sHeight        = "STATUSHEIGHT_"      .. str      ;
+    f.sTexture       = "STATUS_TEXTURE_"    .. str      ;
+
+
+    local w          =
+    { name           = str .. " Frame",
+      order          = source_order(),
+      type           = "group",
+      args           =
+      { show         = Checkbox(f.show,   nil,                                   requiresRPUF),
+        link         = Checkbox(f.link,   function() return not Get(f.show) end, requiresRPUF),
+        layout       = Dropdown(f.layout, function() return not Get(f.show) end, requiresRPUF, 
+                         info.small and menu.small or menu.large),
+        spacer       = Spacer(2),
+        scale        = build_frame_scaler(str, function() return not Get(f.show) end, requiresRPUF),
+        look         =
+        { type       = "group",
+          inline     = true,
+          name       = "Frame Appearance",
+          order      = source_order(),
+          hidden     = function() return Get(f.link) or not Get(f.show) end,
+          args       =
+          { backdrop = Dropdown(f.backdrop, nil, requiresRPUF, menu.backdrop ), spb = Spacer(),
+            alpha    = build_dimensions_slider(f.alpha, 0, 1, 0.05),             spa = Spacer(),
+          },
+        },
+        dimensions   =
+        { type       = "group",
+          inline     = true,
+          name       = "Panel Dimensions",
+          order      = source_order(),
+          hidden     = function() return Get(f.link) or not Get(f.show) end,
+          args       =
+          { gap      = build_dimensions_slider(f.gapSize,       0,  20,  1), spg = Spacer(),
+            icon     = build_dimensions_slider(f.iconWidth,    10,  75,  1), spi = Spacer(),
+            port     = build_dimensions_slider(f.portWidth,    25, 200,  5), spp = Spacer(),
+            info     = build_dimensions_slider(f.infoWidth,   100, 400, 10), spn = Spacer(),
+            detail   = build_dimensions_slider(f.detailHeight, 20, 250,  5), spd = Spacer(),
+          },
+        },
+        statusBar    =
+        { type       = "group",
+          inline     = true,
+          name       = "Status Bar Appearance",
+          order      = source_order(),
+          hidden     = function() return Get(f.link) or not Get(f.show) end,
+          args       =
+          { align    = Dropdown(  f.sAlign,    nil, requiresRPUF, menu.align   ), spa = Spacer(),
+            texture  = Dropdown(  f.sTexture,  nil, requiresRPUF, menu.texture ), spt = Spacer(),
+            height   = build_dimensions_slider(f.sHeight,   15, 140, 5),                         sph = Spacer(),
+          },
+        },
+      },
+    };
+    return w;
+
+  end;
   RPTAGS.utils.options.frame_scaler      = build_frame_scaler;
   RPTAGS.utils.options.dimensions_slider = build_dimensions_slider;
   RPTAGS.utils.options.tagpanel          = build_tagpanel;
   RPTAGS.utils.options.requiresRPUF      = requiresRPUF;
+  RPTAGS.utils.options.frame_panel       = build_frame_panel;
 
 end);

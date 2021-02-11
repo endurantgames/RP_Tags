@@ -2,12 +2,13 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 
-    <Include file="Lib\load.xml"    />
-    <Script  file="module.lua"      />
+    <Include file="Lib\load.xml"       />
+    <Script  file="module.lua"         />
 
-    <Include file="Locale\load.xml" />
-    <Include file="Utils\load.xml"  />
-    <Include file="Data\load.xml"   />
-    <Include file="Core\load.xml"   />
+    <Include file="Resources\load.xml" />
+    <Include file="Locale\load.xml"    />
+    <Include file="Utils\load.xml"     />
+    <Include file="Data\load.xml"      />
+    <Include file="Core\load.xml"      />
 
 </Ui>

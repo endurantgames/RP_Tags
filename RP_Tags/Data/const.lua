@@ -344,7 +344,7 @@ C.ICONS = {
 }; -- icons
   
 C.FONT = 
-{ FIXED = "Interface\\AddOns\\RP_Tags\\resources\\Fonts\\Source_Code_Pro\\SourceCodePro-Regular.ttf", 
+{ FIXED = "SourceCodePro (Regular)",
 };
 
 C.NBSP = "|TInterface\\Store\\ServicesAtlas:0::0:0:1024:1024:1023:1024:1023:1024|t";
@@ -376,9 +376,9 @@ C.CONFIG =
       COLOR_EQUALISH    = C.COLOR.LIGHT_GREY,
       COLOR_FEMALE      = C.COLOR.PINK,
       COLOR_GREATERTHAN = C.COLOR.LIGHT_BLUE,
-      COLOR_HILIGHT_1   = C.COLOR.CYAN,
-      COLOR_HILIGHT_2   = C.COLOR.YELLOW,
-      COLOR_HILIGHT_3   = C.COLOR.ORANGE,
+      COLOR_HILITE_1    = C.COLOR.CYAN,
+      COLOR_HILITE_2    = C.COLOR.YELLOW,
+      COLOR_HILITE_3    = C.COLOR.ORANGE,
       COLOR_IC          = C.COLOR.GREEN,
       COLOR_LESSTHAN    = C.COLOR.YELLOW,
       COLOR_MALE        = C.COLOR.LIGHT_BLUE,
