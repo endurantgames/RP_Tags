@@ -2,7 +2,7 @@ local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("MODULE_G",
+Module:WaitUntil("before MODULE_G",
 function(self, event, ...)
 
   local loc               = RPTAGS.utils.locale.loc;

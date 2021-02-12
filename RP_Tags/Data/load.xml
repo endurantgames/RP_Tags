@@ -3,7 +3,6 @@
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 	
     <Script file="const.lua"    />
-    <Script file="optionstable.lua" />
     <Script file="tags.lua"     />
 
 </Ui>

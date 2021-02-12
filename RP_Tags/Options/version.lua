@@ -29,6 +29,8 @@ function(self, event, ...)
     local rpqType = addOn.rpqType and loc("RPQ_TYPE_" .. addOn.rpqType:upper()) or "";
     local desc    = addOn.desc or "";
 
+    if rpqType:match("Module") then name = RPTAGS.CONST.NBSP .. name; end;
+
     local links = {};
     for i, func in pairs({ "open", "options", "help"})
     do  if hasFunc(addOn, func)
@@ -51,7 +53,7 @@ function(self, event, ...)
     { type           = "description",
       fontSize       = "small",
       order          = source_order(),
-      width          = 1.40,
+      width          = 1.35,
       name           = name,
       dialogControl = "LMD30_Description",
       -- name        = displayName,

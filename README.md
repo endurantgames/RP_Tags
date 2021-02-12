@@ -237,15 +237,23 @@ translations into other languages, you can.
 
 (Primarily for my own use)
 
-  - [x] Get configuration/help working
+  - [ ] Core
+    - [x] Get configuration/help working
+    - [x] Change versions to 9.0.2
+    - [x] Keybinds
+    - [x] Something I forgot
+    - [x] Make sure all the libraries are current
+    - [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
+    - [ ] Figure out why some things aren't turning to HTML in AMDC
+    - [ ] Config profiles with Ace3
+    - [ ] `:xs`, `:s`, etc
+  - [ ] Modules
+    - [ ] XRP support
+    - [ ] See if RPT can be generalized for any oUF addon
+    - [ ] See if RPT can be generalized for any MSP addon
+    - [ ] Update for new gender settings in trp3
   - [ ] Get RP:UF working
-  - [ ] XRP support
-  - [ ] Config profiles with Ace3
-  - [ ] `:xs`, `:s`, etc
-  - [ ] Update for new gender settings in trp3
-  - [x] Something I forgot
-  - [x] Make sure all the libraries are current
-  - [ ] See if RPT can be generalized for any oUF addon
-  - [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
+    - [x] Tag live previews
+    - [ ] RP:UF editor
   - [ ] Miscellaneous bug fixes
 

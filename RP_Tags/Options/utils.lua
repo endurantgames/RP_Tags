@@ -138,7 +138,7 @@ function(self, event, ...)
                text = w }
            };
       elseif type(text) == "string"
-      then w.name = hilite(text, true);
+      then w.name = text -- hilite(text, true);
       end;
 
       return w
