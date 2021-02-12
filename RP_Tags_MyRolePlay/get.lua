@@ -8,9 +8,9 @@
 --
 --     https://creativecommons.org/licenses/by/4.0/
 
-local addOnName, addOn = ...
-local RPTAGS     = RPTAGS;
-local Module = RPTAGS.queue:GetModule(addOnName);
+local addOnName, ns = ...
+local RPTAGS        = RPTAGS;
+local Module        = RPTAGS.queue:GetModule(addOnName);
 
 Module:WaitUntil("UTILS_GET",
 function(self, event, ...)

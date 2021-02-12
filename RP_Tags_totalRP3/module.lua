@@ -8,12 +8,11 @@
 --
 --     https://creativecommons.org/licenses/by/4.0/
 
-local RPTAGS = RPTAGS;
+local RPTAGS        = RPTAGS;
+local addOnName, ns = ...;
+local Module        = RPTAGS.queue:NewModule(addOnName, "rpClient");
+local TRP3_API      = TRP3_API;
 
-local addOnName, addOn = ...;
-local Module = RPTAGS.queue:NewModule(addOnName, "rpClient");
-local TRP3_API     = TRP3_API;
- 
 TRP3_API.module.registerModule(
   { -- let trp3 know we exist
     ["name"]        = GetAddOnMetadata("RP_Tags_totalRP3", "Title"),

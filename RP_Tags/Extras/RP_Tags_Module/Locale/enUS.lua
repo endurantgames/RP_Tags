@@ -5,9 +5,9 @@
 -- This work is licensed under the Creative Commons Attribution 4.0 International
 -- (CC BY 4.0) license. 
 
-local RPTAGS = RPTAGS;
-local addOnName, addOn = ...;
-local Module = RPTAGS.queue:GetModule(addOnName);
+local RPTAGS        = RPTAGS;
+local addOnName, ns = ...;
+local Module        = RPTAGS.queue:GetModule(addOnName);
 
 -- This is how you add to the localization.
 --

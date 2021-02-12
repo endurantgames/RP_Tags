@@ -9,120 +9,115 @@
 --
 --     https://creativecommons.org/licenses/by/4.0/
 --
-local addOnName, addOn = ...
-local RPTAGS = RPTAGS;
-local Module = RPTAGS.queue:NewModule(addOnName, "unitFrames")
+local addOnName, ns = ...
+local RPTAGS        = RPTAGS;
+local Module        = RPTAGS.queue:NewModule(addOnName, "unitFrames")
 
 Module:WaitUntil("ADDON_INIT",
 function(self, event, ...)
   RPTAGS.cache = RPTAGS.cache or {};
   RPTAGS.cache.workAround = RPTAGS.cache.workAround or {};
-  -- RPTAGS.cache.workAround["ElvUI's oUF is old."] = (ElvUF and ElvUF.version == "devel")
-  -- RPTAGS.cache.workAround["ElvUI loads too much tag info."] = true;
 end);
 
 Module:WaitUntil("ADDON_LOAD",
 function(self, event, ...)
-  
-    local E, _, _, P, _, _  = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 
-    local RPT       = E:NewModule('rp:tags', 'AceHook-3.0');
-    local EP        = LibStub("LibElvUIPlugin-1.0")
-    -- local UF        = E:GetModule('UnitFrames');
-    --
-    RPT.version     = RPTAGS.utils.locale.loc("APP_VERSION");
-    RPT.versionMinE = 10.49
-    RPT.title       = RPTAGS.utils.locale.loc("APP_NAME");
-    P['RPT']        = { ['enable'] = false, }
-      
-    function RPT:Initialize() 
-      EP:RegisterPlugin(
-        RPTAGS.addOnName, 
-        RPT.InsertOptions) 
-      -- if   RPTAGS.cache.workAround["ElvUI loads too much tag info."]
-      -- then E.Options.args.tagGroup.args.Miscellaneous = nil;
-      -- end;
-    end;
+  local E, _, _, P, _, _  = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 
-    E:RegisterModule(RPT:GetName())
+  local RPT       = E:NewModule('rp:tags', 'AceHook-3.0');
+  local EP        = LibStub("LibElvUIPlugin-1.0")
+  -- local UF        = E:GetModule('UnitFrames');
+  --
+  RPT.version     = RPTAGS.utils.locale.loc("APP_VERSION");
+  RPT.versionMinE = 10.49
+  RPT.title       = RPTAGS.utils.locale.loc("APP_NAME");
+  P['RPT']        = { ['enable'] = false, }
+    
+  function RPT:Initialize() 
+    EP:RegisterPlugin(
+      RPTAGS.addOnName, 
+      RPT.InsertOptions) 
+  end;
+
+  E:RegisterModule(RPT:GetName())
 end);
 
 Module:WaitUntil("UTILS_TAGS",
 function(self, event, ...)
 
-    local MAP = 
-    { GROUP = 
-      { COLORS = "Colors",
-        GENDER = "Names",
-        SERVER = "Realm",
-        TARGET = "Target",
-      },
-      TAG = 
-      { ["rp:name"           ] = "Names",
-        ["rp:firstname"      ] = "Names",
-        ["rp:lastname"       ] = "Names",
-        ["rp:name-known"     ] = "Names",
-        ["rp:nick"           ] = "Names",
-        ["rp:nick-quoted"    ] = "Names",
-        ["rp:title"          ] = "Names",
-        ["rp:fulltitle"      ] = "Names",
-        ["rp:pvpicon"        ] = "PvP",
-        ["rp:pvpicon-square" ] = "PvP",
-        ["rp:xp-icon"        ] = "Level",
-        ["rp:rookie-icon"    ] = "Level",
-        ["rp:volunteer-icon" ] = "Level",
-        ["rp:status"         ] = "Status",
-        ["rp:ic"             ] = "Status",
-        ["rp:ooc"            ] = "Status",
-        ["rp:npc"            ] = "Classification",
-        ["rp:open"           ] = "Status",
-        ["rp:storyteller"    ] = "Status",
-        ["rp:curr"           ] = "Status",
-        ["rp:info"           ] = "Status",
-        ["rp:experience"     ] = "Level",
-        ["rp:xp"             ] = "Level",
-        ["rp:rookie"         ] = "Level",
-        ["rp:volunteer"      ] = "Level",
-        ["rp:family"         ] = "Guild",
-        ["rp:house"          ] = "Guild",
-        ["rp:guild"          ] = "Guild",
-        ["rp:guild-rank"     ] = "Guild",
-        ["rp:guild-status"   ] = "Guild",
-        ["rp:tribe"          ] = "Guild",
-      }, -- beep
-    };
+  local MAP = 
+  { GROUP = 
+    { COLORS = "Colors",
+      GENDER = "Names",
+      SERVER = "Realm",
+      TARGET = "Target",
+    },
+    TAG = 
+    { ["rp:name"           ] = "Names",
+      ["rp:firstname"      ] = "Names",
+      ["rp:lastname"       ] = "Names",
+      ["rp:name-known"     ] = "Names",
+      ["rp:nick"           ] = "Names",
+      ["rp:nick-quoted"    ] = "Names",
+      ["rp:title"          ] = "Names",
+      ["rp:fulltitle"      ] = "Names",
+      ["rp:pvpicon"        ] = "PvP",
+      ["rp:pvpicon-square" ] = "PvP",
+      ["rp:xp-icon"        ] = "Level",
+      ["rp:rookie-icon"    ] = "Level",
+      ["rp:volunteer-icon" ] = "Level",
+      ["rp:status"         ] = "Status",
+      ["rp:ic"             ] = "Status",
+      ["rp:ooc"            ] = "Status",
+      ["rp:npc"            ] = "Classification",
+      ["rp:open"           ] = "Status",
+      ["rp:storyteller"    ] = "Status",
+      ["rp:curr"           ] = "Status",
+      ["rp:info"           ] = "Status",
+      ["rp:experience"     ] = "Level",
+      ["rp:xp"             ] = "Level",
+      ["rp:rookie"         ] = "Level",
+      ["rp:volunteer"      ] = "Level",
+      ["rp:family"         ] = "Guild",
+      ["rp:house"          ] = "Guild",
+      ["rp:guild"          ] = "Guild",
+      ["rp:guild-rank"     ] = "Guild",
+      ["rp:guild-status"   ] = "Guild",
+      ["rp:tribe"          ] = "Guild",
+    }, -- beep
+  };
 
-    local E, _, _, _, _, _  = unpack(_G["ElvUI"]); 
-    -- local UF                = E:GetModule('UnitFrames');
+  local E, _, _, _, _, _  = unpack(_G["ElvUI"]); 
+  -- local UF                = E:GetModule('UnitFrames');
 
-    -- registers one tag, an event to wait for, and a method to invoke when found --------------------------
-    local function registerTag(tag, tagMethod, extraEvents)
-      local events = RPTAGS.CONST.MAIN_EVENT .. (extraEvents and (" " .. extraEvents) or "");
+  -- registers one tag, an event to wait for, and a method to invoke when found --------------------------
+  local function registerTag(tag, tagMethod, extraEvents)
+    local events = RPTAGS.CONST.MAIN_EVENT .. (extraEvents and (" " .. extraEvents) or "");
 
-      if not _G["ElvUF"].Tags.Events[tag] -- only make the tag if there isn't one by that name already
-      then   _G["ElvUF"].Tags.Events[tag] = RPTAGS.CONST.MAIN_EVENT .. (extraEvents or "");
-             _G["ElvUF"].Tags.Methods[tag] = tagMethod;
-      else 
-      end;
-
-      return tag, tagMethod, extraEvents;
-    end; -- function
-    
-    local function addTag(tag, group)
-       if   tag and tag.name and group
-       then local tagDesc = tag.desc;
-            if RPTAGS.CONST.UNSUP[tag.name] 
-            then tagDesc = "|cff" .. RPTAGS.utils.config.get("COLOR_UNKNOWN") .. tagDesc .. "|r" 
-            end;
-            E:AddTagInfo(tag.name, MAP.TAG[tag.name] or MAP.GROUP[group.key] or group.title, tagDesc);
-       end;
-       return tag, group;
+    if not _G["ElvUF"].Tags.Events[tag] -- only make the tag if there isn't one by that name already
+    then   _G["ElvUF"].Tags.Events[tag] = RPTAGS.CONST.MAIN_EVENT .. (extraEvents or "");
+           _G["ElvUF"].Tags.Methods[tag] = tagMethod;
+    else 
     end;
 
-    RPTAGS.utils.modules.extend({ 
-        ["tags.registerTag"] = registerTag,
-        ["tags.addTag"]      = addTag,
-    });
+    return tag, tagMethod, extraEvents;
+  end; -- function
+  
+  local function addTag(tag, group)
+     if   tag and tag.name and group
+     then local tagDesc = tag.desc;
+          if RPTAGS.CONST.UNSUP[tag.name] 
+          then tagDesc = "|cff" .. RPTAGS.utils.config.get("COLOR_UNKNOWN") .. tagDesc .. "|r" 
+          end;
+          E:AddTagInfo(tag.name, MAP.TAG[tag.name] or MAP.GROUP[group.key] or group.title, tagDesc);
+     end;
+     return tag, group;
+  end;
+
+  RPTAGS.utils.modules.extend({ 
+      ["tags.registerTag"] = registerTag,
+      ["tags.addTag"]      = addTag,
+  });
 
 end);
 

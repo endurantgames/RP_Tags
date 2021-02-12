@@ -8,15 +8,16 @@
 --
 --     https://creativecommons.org/licenses/by/4.0/
 
-local addOnName, addOn = ...
-local RPTAGS     = RPTAGS;
-local Module = RPTAGS.queue:GetModule(addOnName);
+local addOnName, ns = ...
+local RPTAGS        = RPTAGS;
+local Module        = RPTAGS.queue:GetModule(addOnName);
 
 Module:WaitUntil("UTILS_PARSE",
 function(self, event, ...)
+  local pattern = "|T[^\n]+\\([^|:]+).-[\n]*#([^\n]+)[\n]*(.-)[\n]*%-%-%-[\n]*";
   local function parseMrpGlanceString(data) -- yoinked from mrp's code.
     local glances = {};
-    for icon, title, text in string.gmatch(data, "|T[^\n]+\\([^|:]+).-[\n]*#([^\n]+)[\n]*(.-)[\n]*%-%-%-[\n]*") 
+    for icon, title, text in string.gmatch(data, pattern)
     do table.insert(glances, { icon = icon, title = title, text = text});
     end
     return glances;

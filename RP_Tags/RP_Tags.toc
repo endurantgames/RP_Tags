@@ -6,7 +6,7 @@
 ## OptionalDeps: totalRP3, MyRolePlay, ElvUI
 ## URL: http://spindrift.games/rptags
 ## SavedVariables: RP_TagsDB
-## X-oUF: oUF_RP_Tags
+## X-oUF: RPTAGS
 ## X-RPQVersion: 1.004
 ## X-RPQModuleID: rptags
 ## X-RPQModuleType: core

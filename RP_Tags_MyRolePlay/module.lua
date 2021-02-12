@@ -8,9 +8,9 @@
 --
 --     https://creativecommons.org/licenses/by/4.0/
 
-local addOnName, addOn = ...;
-local RPTAGS     = RPTAGS;
-local Module = RPTAGS.queue:NewModule(addOnName, "rpClient");
+local addOnName, ns = ...;
+local RPTAGS        = RPTAGS;
+local Module        = RPTAGS.queue:NewModule(addOnName, "rpClient");
 
 Module:WaitUntil("ADDON_LOAD",
 function(self, event, ...)
@@ -23,9 +23,26 @@ function(self, event, ...)
    end
 );
 
-Module:WaitUntil("before DATA OPTIONS",
+Module:WaitUntil("MODULE_C",
 function(self, event, ...)
-  RPTAGS.utils.modules.registerFunction("MyRolePlay", "options",
-    function() InterfaceOptionsFrame_OpenToCategory("MyRolePlay") end);
+  local registerFunction = RPTAGS.utils.modules.registerFunction;
+
+  local function mapMrpSlash(mrpParam)
+    return function(a) SlashCmdList["MYROLEPLAY"](mrpParam .. " " .. (a or "")); end;
+  end;
+
+  registerFunction("MyRolePlay", "open",       mapMrpSlash(""          ));
+  registerFunction("MyRolePlay", "options",    mapMrpSlash("options"   ));
+  registerFunction("MyRolePlay", "config",     mapMrpSlash("options"   ));
+  registerFunction("MyRolePlay", "version",    mapMrpSlash("version"   ));
+  registerFunction("MyRolePlay", "help",       mapMrpSlash("help"      ));
+  registerFunction("MyRolePlay", "on",         mapMrpSlash("enable"    ));
+  registerFunction("MyRolePlay", "off",        mapMrpSlash("disable"   ));
+  registerFunction("MyRolePlay", "showplayer", mapMrpSlash("show"      ));
+  registerFunction("MyRolePlay", "setcurr",    mapMrpSlash("currently" ));
+  registerFunction("MyRolePlay", "setic",      mapMrpSlash("ic"        ));
+  registerFunction("MyRolePlay", "setic",      mapMrpSlash("ooc"       ));
+  registerFunction("MyRolePlay", "about",      mapMrpSlash("version"   ));
+
 end);
 

@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+    <Script file="about.lua"   />
+    <Script file="colors.lua"  />
+    <Script file="general.lua" />
+    <Script file="help.lua"    />
+    <Script file="recipe.lua"  />
+    <Script file="taghelp.lua" />
+    <Script file="utils.lua"   />
+    <Script file="version.lua" />
+
+</Ui>

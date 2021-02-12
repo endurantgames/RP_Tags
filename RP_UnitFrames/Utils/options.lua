@@ -14,9 +14,13 @@ function(self, event, ...)
   local source_order = Options.source_order
   local Common       = Options.common;
   local Pushbutton   = Options.pushbutton;
+  local Header       = Options.header;
+  local Instruct     = Options.instruct;
+  local Textbox      = Options.textbox;
   local Dropdown     = Options.dropdown;
   local Checkbox     = Options.checkbox;
   local Spacer       = Options.spacer;
+  local evalTagString = Utils.tags.eval;
 
   local function requiresRPUF() return Config.get("DISABLE_RPUF"); end;
 
@@ -40,13 +44,85 @@ function(self, event, ...)
   end;
 
   local function build_tagpanel(str, ttstr, hidden, disabled)
-    local str = str:upper():gsub("%s", "_");
+    str = str:upper():gsub("%s+", "_");
+    ttstr = ttstr:upper():gsub("%s+", "_");
     local w    = 
     { type = "group",
-      name     = loc("CONFIG_" .. str);
+      name     = loc("CONFIG_" .. str),
+      order = source_order(),
       args     = 
-      { panel   = Pushbutton(str,   function() openEditor(str)   end, hidden, requiresRPUF),
-        tooltip = Pushbutton(ttstr, function() openEditor(ttstr) end, hidden, requiresRPUF),
+      { header =
+        { type = "header",
+          width = "full",
+          name = "# " .. loc("CONFIG_" .. str),
+          dialogControl = "LMD30_Description",
+          order = source_order(),
+        },
+        instruct = 
+          { type = "description",
+            width = "full",
+            name = loc("CONFIG_" .. str .. "_TT"),
+            order = source_order(),
+          },
+        current = 
+          { type = "input",
+            width = "full",
+            name = loc("CONFIG_" .. str),
+            get = function(self) return Get(str) end,
+            set = function(self, value) Set(str, value) end,
+            order = source_order(),
+          },
+        tagPreview = 
+          { type = "group",
+            order = source_order(),
+            name = "Live Preview",
+            inline = true,
+            args = 
+            { preview = 
+              { type = "description",
+                order = source_order(),
+                name = function(self) return evalTagString(Get(str), "player", "player") end,
+                fontSize = function(self) return str:match("ICON") and "large" or "medium" end,
+              },
+            },
+          },
+        -- subhed2 = 
+        --   { type = "header",
+        --     width = "full",
+        --     name = "Current Values:",
+        --     order = source_order(),
+        --   },
+        currentTooltip = 
+          { type = "input",
+            width = "full",
+            name = loc("CONFIG_" .. ttstr),
+            get = function(self) return Get(ttstr) end,
+            set = function(self, value) Set(ttstr, value) end,
+            order = source_order(),
+          },
+        tooltipPreview = 
+          { type = "group",
+            order = source_order(),
+            name = "Live Preview",
+            inline = true,
+            args = 
+            { preview = 
+              { type = "description",
+                order = source_order(),
+                name = function(self) return evalTagString(Get(ttstr), "player", "player") end,
+                fontSize = "medium",
+              },
+            },
+          },
+        subhed4 = 
+          { type = "header",
+            name = "## Open in Tag Editor:",
+            width = "full",
+            dialogControl = "LMD30_Description",
+            order = source_order(),
+          },
+        editPanel   = Pushbutton(str,   function() openEditor(str)   end, hidden, requiresRPUF),
+        editTooltip = Pushbutton(ttstr, function() openEditor(ttstr) end, hidden, requiresRPUF),
       };
     };
     return w;

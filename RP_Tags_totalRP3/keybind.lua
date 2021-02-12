@@ -7,9 +7,9 @@
 --
 --     https://creativecommons.org/licenses/by/4.0/
 
-local RPTAGS = RPTAGS;
-local addOnName, addOn = ...;
-local Module = RPTAGS.queue:GetModule(addOnName);
+local RPTAGS        = RPTAGS;
+local addOnName, ns = ...;
+local Module        = RPTAGS.queue:GetModule(addOnName);
 
 Module:WaitUntil("before DATA_OPTIONS",
 function(self, event, ...)

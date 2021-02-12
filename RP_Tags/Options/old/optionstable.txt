@@ -1,0 +1,5 @@
+
+  RPTAGS.cache.optionsOrder         = { "colors", "help", "about" };
+  RPTAGS.cache.optionsSections      = optionsSections;
+  RPTAGS.cache.optionsModulesInsert = 2;
+

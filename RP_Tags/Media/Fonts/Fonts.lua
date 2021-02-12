@@ -1,12 +1,13 @@
 local RPTAGS = RPTAGS;
 local addOnName, ns = ...;
-local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("MODULE_C",
+RPTAGS.queue:WaitUntil("MODULE_C",
 function(self, event, ...)
   local LSM=LibStub("LibSharedMedia-3.0");
-  local baseFontDir = "Interface\\AddOns\\" .. addOnName .. 
-                      (GetAddOnMetadata(addOnName, "X-FontDir") or "\\Media\\Fonts\\");
+  local baseFontDir = "Interface\\AddOns\\"
+                      .. (GetAddOnMetadata(addOnName, "X-FontDir") 
+                      or (addOnName ..  "\\Media\\Fonts") .. "\\");
+
 
   local family = { 
     SCP = baseFontDir .. "Source_Code_Pro\\SourceCodePro-",
@@ -47,7 +48,9 @@ function(self, event, ...)
  };
 
   for fontCode, font in pairs(fontList)
-  do  if font.Load == 1 then LSM:Register(LSM.MediaType.FONT, font.Name, family[font.Fam] .. font.File); end;
+  do  if   font.Load == 1 
+      then LSM:Register(LSM.MediaType.FONT, font.Name, family[font.Fam] .. font.File); 
+      end;
   end;
 
-end;
+end);

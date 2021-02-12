@@ -181,6 +181,13 @@ function(self, event, ...)
 
   local function build_blank_line() return { name = "", order = source_order(), width = "full", type = "description", fontSize = "medium", }; end;
 
+  local function build_label(str, hidden, disabled, width)
+    local w = build_common("description", "", str, hidden, disabled);
+    w.name = str;
+    w.width = width or 1
+    return w;
+  end;
+
   local function build_checkbox(str, hidden, disabled)
         local w    = build_common("toggle", "CONFIG_", str, hidden, disabled, true, true);
         w.width = 1.5;
@@ -205,37 +212,39 @@ function(self, event, ...)
   end;
   
   local function build_color_picker(str, hidden, disabled)
-        str = "COLOR_" .. string.upper(str):gsub("%s","_");
-        local w =
-        { name = loc("CONFIG_" .. str),
-          order = source_order(),
-          width = "full",
-          type = "group" ,
-            inline = true,
-        };
+    str = "COLOR_" .. string.upper(str):gsub("%s","_");
+    local w =
+    { name = loc("CONFIG_" .. str),
+      order = source_order(),
+      width = "full",
+      type = "group" ,
+      inline = true,
+    };
 
-        local c    = build_common("color", "UI_", "BLANK", hidden, disabled);
-        c.hasAlpha = false;
-        c.get      = function(info, value) 
-                       local  hexString = Config.get(str);
-                       if     type(hexString) == "number" then hexString = "000000"; end;
-                       local  r, g, b, a = RPTAGS.utils.color.colorToDecimals(hexString);
-                       return r, g, b, a;
-                     end;
-        c.set      = function(info, r, g, b, a) 
-                       local value = RPTAGS.utils.color.decimalsToColor(r, g, b);
-                       Config.set(str, value);
-                     end;
-        c.width = 0.25;
-        c.desc = loc("CONFIG_" .. str .. "_TT");
+    local c    = build_common("color", "UI_", "BLANK", hidden, disabled);
+    c.hasAlpha = false;
+    c.get      = 
+      function(info, value) 
+        local  hexString = Config.get(str);
+        if     type(hexString) == "number" then hexString = "000000"; end;
+        local  r, g, b, a = RPTAGS.utils.color.colorToDecimals(hexString);
+        return r, g, b, a;
+      end;
+    c.set      = 
+      function(info, r, g, b, a) 
+        local value = RPTAGS.utils.color.decimalsToColor(r, g, b);
+        Config.set(str, value);
+      end;
+    c.width = 0.25;
+    c.desc = loc("CONFIG_" .. str .. "_TT");
 
-        local s = build_spacer();
+    local s = build_spacer();
 
-        local l = build_markdown(loc("CONFIG_" .. str .. "_TT"));
+    local l = build_markdown(loc("CONFIG_" .. str .. "_TT"));
 
-        w.args = { color = c, spacer = s, label = l };
+    w.args = { color = c, spacer = s, label = l };
 
-        return w;
+    return w;
   end;
   
   local function build_slider(str, min, max, step, width, hidden, disabled, get, set)
@@ -368,12 +377,19 @@ function(self, event, ...)
               rpqType = "|cff808080" .. rpqType:gsub("|cff%x%x%x%x%x%x",""):gsub("|r","") .. "|r";
          end;
         
+         local displayName;
+         if addOn.func and addOn.func.open and type(addOn.func.open) == "function"
+         then displayName = "[" .. name .. "](addon://" .. addOn.name .. "?open)";
+         else displayName = name;
+         end;
+
          args[addOn.name .. "Name"] =
          { type           = "description",
            fontSize       = "small",
            order          = source_order(),
            width          = 1.5,
-           name           = name,
+           dialogControl = "LMD30_Description",
+           name           = displayName,
          };
 
          args[addOn.name .. "Version"]     =
@@ -381,6 +397,7 @@ function(self, event, ...)
            order          = source_order(),
            width          = 0.5,
            fontSize       = "small",
+           dialogControl = "LMD30_Description",
            name           = version,
          };
 
@@ -389,6 +406,7 @@ function(self, event, ...)
            order          = source_order(),
            width          = 1,
            fontSize       = "small",
+           dialogControl = "LMD30_Description",
            name           = rpqType,
          };
        end;
@@ -591,136 +609,12 @@ function(self, event, ...)
   end;
 
   local function build_plugin_mountpoint(str)
-    RPTAGS.cache.Plugins = RPTAGS.cache.Plugins or {};
-    RPTAGS.cache.Plugins[str] = RPTAGS.cache.Plugins[str] or {};
     return RPTAGS.cache.Plugins[str];
   end;
     
---   local function openDialog(dest)
---         local protocol, path = dest:match("^(opt)://(.+)$");
---         path = RPTAGS.utils.text.split(path, "/");
---         local panel = path[1];
---         if RPTAGS.cache.panels[panel] and protocol == "opt"
---         else notify(loc("SLASH_COMMAND_LIST"))
---         end;
---         -- AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
---         -- AceConfigDialog:Open(loc("APP_NAME"))
---         -- AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
---   end;
-
-  local function linkHandler(dest, link, text, amdwProtocol)
-    link = link or dest;
-    local protocol, path = link:match("^(%a+)://(.+)$");
-    path = split(path, "/");
-    local path1 = path[1];
-    if     (protocol == "opt"
-        or protocol == "setting")
-        and RPTAGS.cache.panels[path1]
-    then   InterfaceOptionsFrame:Show()
-           InterfaceOptionsFrame_OpenToCategory(RPTAGS.cache.panels[path1])
-           AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
-    elseif protocol == "help"
-    then   InterfaceOptionsFrame:Show()
-           InterfaceOptionsFrame_OpenToCategory("help");
-           AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
-    elseif protocol == "tag" and RPTAGS.cache.help.tagIndex[path1]
-    then   linkHandler(RPTAGS.cache.help.tagIndex[path1])
-    elseif protocol == "urldb" and RPTAGS.CONST.URLS[path1] and amdwProtocol
-    then   link = loc(RPTAGS.CONST.URLS[path1].url);
-           text = loc(RPTAGS.CONST.URLS[path1].name);
-           amdwProtocol:ShowPopup(dest, link, text);
-    else   print("oops", dest, link, text);
-    end;
-  end;
-  
-  local function linkHandlerCustomClick(amdwProtocol, dest, link, text) 
-    return linkHandler(dest, link, text, amdwProtocol) 
-  end;
-
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "pre"] =  "<h3>|cff00ffff";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/pre"] = "|r</h3>";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "code"] =  "<h3>|cff00ffff";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/code"] = "|r</h3>";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "code"] =  "<h3>|cff00ffff";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/code"] = "|r</h3>";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "h3"  ] =  "<h2>";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/h3"  ] = "</h2>";
-
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Normal"].Spacing = 4;
-
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.red   = 1;
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.green = 1;
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.blue  = 1;
-
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].FontFile =
-    LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, RPTAGS.CONST.FONT.FIXED) 
-    or LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT);
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].red   = 0.000;
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].green = 1.000;
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].blue  = 1.000;
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].Spacing = 6;
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].JustifyH = "CENTER";
-
-  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.default.Popup =
-    { Text = loc("LINK_DEFAULT_TEXT"),
-      PrefixText = loc("APP_NAME") .. "\n\n",
-      ButtonText = loc("UI_GOT_IT"), 
-    };
-
-  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.http.Popup =
-    { Text = loc("LINK_HTTP_TEXT"),
-      PrefixText = loc("APP_NAME") .. "\n\n",
-      ButtonText = loc("UI_GOT_IT"), 
-    };
-
-  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.https.Popup =
-    { Text = loc("LINK_HTTPS_TEXT"),
-      PrefixText = loc("APP_NAME") .. "\n\n",
-      ButtonText = loc("UI_GOT_IT"), 
-    };
-
-  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.mailto.Popup =
-    { Text = loc("LINK_MAILTO_TEXT"),
-      PrefixText = loc("APP_NAME") .. "\n\n",
-      ButtonText = loc("UI_GOT_IT"), 
-    };
-
-  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.opt =
-    { Cursor = "Interface\\CURSOR\\QuestTurnIn.PNG",
-      CustomClick = linkHandlerCustomClick,
-    };
-    
-  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.help =
-    { Cursor = "Interface\\CURSOR\\QuestRepeatable.PNG",
-      CustomClick = linkHandlerCustomClick,
-    };
-    
-  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.urldb =
-    -- { Cursor = "Interface\\CURSOR\\MapPinCursor.PNG",
-    { Cursor = "Interface\\CURSOR\\QuestRepeatable.PNG",
-      CustomClick = linkHandlerCustomClick,
-      Popup = 
-      { Text = loc("LINK_URLDB_TEXT"),
-        PrefixText = loc("APP_NAME") .. "\n\n",
-        ButtonText = loc("UI_GOT_IT"), 
-      },
-    };
-
-  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.setting =
-    { Cursor = "Interface\\CURSOR\\Interact.PNG",
-      CustomClick = linkHandlerCustomClick,
-    };
-    
-  ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.tag =
-    { Cursor = "Interface\\CURSOR\\Interact.PNG",
-      CustomClick = linkHandlerCustomClick, 
-    };
-
   RPTAGS.utils.options                   = RPTAGS.utils.options or {};
   RPTAGS.utils.options.panel             = RPTAGS.utils.options.panel or {};
-
   RPTAGS.utils.options.source_order      = source_order;
-  RPTAGS.utils.options.open              = linkHandler;
 
   RPTAGS.utils.options.blank_line        = build_blank_line;
   RPTAGS.utils.options.checkbox          = build_checkbox
@@ -729,6 +623,7 @@ function(self, event, ...)
   RPTAGS.utils.options.dropdown          = build_dropdown
   RPTAGS.utils.options.header            = build_header
   RPTAGS.utils.options.instruct          = build_instruct
+  RPTAGS.utils.options.label             = build_label
   RPTAGS.utils.options.markdown          = build_markdown
   RPTAGS.utils.options.multi_reset       = build_multi_reset
   RPTAGS.utils.options.panel.taghelp     = build_panel_taghelp

@@ -85,9 +85,10 @@ function(self, event, ...)
     { -- panel             = Header("editor", nil, reqRPUF ),
       instruct          = Instruct("editor", nil, reqRPUF ),
       useCustomFont     = Checkbox("editor custom font", nil, reqRPUF, true, true),
-      customFont        = Font("config editor font", nil, reqRPUF and Get("EDITOR_CUSTOM_FONT")),
+      customFont        = Font("config editor font", nil, function(self) print(reqRPUF()) return not reqRPUF() and not Get("EDITOR_CUSTOM_FONT") end),
       useButtonBar      = Checkbox("editor button bar", nil, reqRPUF),
-      chooseButtons     = Pushbutton("editor buttons", nil, reqRPUF, 
+      chooseButtons     = Pushbutton("editor buttons", nil, nil, 
+                           function(self) return not Get("DISABLE_RPUF") and not Get("EDITOR_BUTTON_BAR") end, 
                             function(self)
                               Set("EDITOR_BUTTONS",
                                 collectionBrowser(

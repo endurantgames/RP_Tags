@@ -73,10 +73,22 @@ function(self, event, ...)
            -- time to build our tags!
            for _, tname in ipairs(tagNames)
            do  registerTag(tname, tagMethod, tag.extraEvents)
-               if tag.label
-               then  local label = split(tag.label, "|") 
-                     local prefix, suffix = label[1] or "", label[2] or ""; 
-                     registerTag(prefix .. "$>" .. tname .. "-label<$" .. suffix, tagMethod, tagExtraEvents);
+               if   tag.label
+               then local label = split(tag.label, "|") 
+                    local prefix, suffix = label[1] or "", label[2] or ""; 
+                    -- registerTag(prefix .. "$>" .. tname .. "-label<$" .. 
+                    --   suffix, tagMethod, tagExtraEvents);
+                    registerTag(
+                      tname .. "-label",
+                      function(...)
+                        local result = tagMethod(...);
+                        if   result and result ~= ""
+                        then return prefix .. ": " .. result;
+                        else return result;
+                        end
+                      end,
+                      tag.extraEvents
+                    );
                end;
                RPTAGS.cache.help.tagIndex[tag.name] = "opt://help/tags/" .. group.key;
            end;
@@ -92,6 +104,10 @@ function(self, event, ...)
   local function refreshAll(  ... ) return ... end;
    
   local function evalTagString(tagstr, unit, realUnit, use_oUF) -- adapted from oUF/elements/tags.lua
+    if not tagstr then return "" end;
+    local oUF = use_oUF or RPTAGS.oUF;
+
+    local methods = oUF.Tags.Methods;
 
     local TAG_PATTERN = '%[..-%]+'
     local funcResults = {};
@@ -126,7 +142,6 @@ function(self, event, ...)
   
     local format, numTags = tagstr:gsub('%%', '%%%%'):gsub(TAG_PATTERN, '%%s')
     local args = {}
-    local methods = use_oUF.Tags.Methods or _G[GetAddOnMetadata(addOnName, "X-oUF")].Tags.Methods;
   
     for bracket in tagstr:gmatch(TAG_PATTERN) 
     do  local tagFunc;

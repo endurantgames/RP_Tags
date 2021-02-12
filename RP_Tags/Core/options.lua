@@ -19,22 +19,29 @@ function(self, event, ...)
   local APP_NAME     = loc("APP_NAME");
   local optionsFrame = {};
   local panels       = {};
+  local order        = RPTAGS.cache.options.optionsOrder;
 
   local optionsTable =
   { type = "group",
     childGroups = "tree",
-    args = RPTAGS.cache.optionsSections,
+    args = {};
   };
+  
+  for i, panelName in ipairs(order)
+  do optionsTable.args[panelName] = RPTAGS.options[panelName];
+  end;
 
   ACR:RegisterOptionsTable(APP_NAME, optionsTable, false);
-  panels.general = ACD:AddToBlizOptions(APP_NAME, APP_NAME, nil , "general");
+  
+  local mainPanel = table.remove(order, 1);
+  panels[mainPanel] = ACD:AddToBlizOptions(APP_NAME, APP_NAME, nil , mainPanel);
  
-  for _, section in ipairs(RPTAGS.cache.optionsOrder)
+  for _, section in ipairs(order)
   do  panels[section] = 
         ACD:AddToBlizOptions( 
           APP_NAME,
           loc("PANEL_" .. section:upper()), 
-          panels.general.name, 
+          panels[mainPanel].name, 
           section
         );
   end;

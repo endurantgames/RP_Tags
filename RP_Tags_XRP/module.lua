@@ -9,6 +9,7 @@
 --     https://creativecommons.org/licenses/by/4.0/
 
 local RPTAGS = RPTAGS;
-RPTAGS.queue:NewModule("XRP", "rpClient");
+local addOnName, ns = ...;
+RPTAGS.queue:NewModule(addOnName, "rpClient");
 
 -- this doesn't do anything! Except it load and such if you have XRP.

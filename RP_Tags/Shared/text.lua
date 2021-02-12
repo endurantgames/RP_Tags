@@ -14,24 +14,21 @@
 -- List of utils at the end
 
 local RPTAGS     = RPTAGS;
+local addOnName, ns = ...;
+
 RPTAGS.queue:WaitUntil("UTILS_TEXT",
 function(self, event, ...)
   
-  RPTAGS.utils = RPTAGS.utils or {};
+  RPTAGS.utils      = RPTAGS.utils or {};
   RPTAGS.utils.text = RPTAGS.utils.text or {};
-  RPTAGS.cache = RPTAGS.cache or {};
-  
-  local Utils  = RPTAGS.utils;
-  local Cache = RPTAGS.cache;
-  
-  local loc     = Utils.locale.loc;
-  local Config  = Utils.config;
-  
+  RPTAGS.cache      = RPTAGS.cache or {};
+  local Utils       = RPTAGS.utils;
+  local Cache       = RPTAGS.cache;
+  local loc         = Utils.locale.loc;
+  local Config      = Utils.config;
+
         -- function to split a string based on a pattern
   local function split(str, pat)
-        return { strsplit(pat, str) }
-  end;
-  local function old_split(str, pat)
         local t          = {};
         local fpat       = "(.-)" .. pat;
         local last_end   = 1;
@@ -73,14 +70,6 @@ function(self, event, ...)
         return str:gsub("(%a)([%w_']*)", tchelper)
   end;
   
-  local function tagReferences(str)
-        local md = "";
-        for ref, tag in str:gmatch("^(.-%[(rp:.-)%])")
-        do  md = md .. ref .. "(tag://" .. tag .. ")";
-        end
-        return md ~= "" and md or str
-  end;
-
   function sliceUp(tableOfStrings)
     local dups = {};
     local uniq = {};
@@ -136,7 +125,7 @@ function(self, event, ...)
   -- ---------------------------------------------------------------------------------------------------------------------
   
         -- changes multiple [[[these]]] into hilited text
-  local function hiliteTags(s, forMarkdown)
+  local function hiliteTags(s)
         if not s then return "" end;
         local reset = "|r";
   
@@ -144,23 +133,13 @@ function(self, event, ...)
         s = s:gsub("%]%]%]", reset);
         s = s:gsub("%[%[",   "|cff" .. Config.get("COLOR_HILITE_2"));
         s = s:gsub("%]%]",   reset);
-        -- if   forMarkdown 
-        -- then s = tagReferences(s)
-           -- s = s:gsub("(<a [^>]+>.-</a>)", "|cff00dd00%1|r");
-           --      s = s:gsub("\n\n", "\n<br />\n");
-           --      s = s:gsub("&nbsp;", RPTAGS.CONST.NBSP);
-           --      s = s:gsub("%[(.-)%]", "[<a href='rptag:%1'>" .. RPTAGS.CONST.APP_COLOR .. "%1|r</a>]")
-           -- else s = s:gsub("%[", "[" .. "|cff" .. Config.get("COLOR_HILITE_1"));
-            --     s = s:gsub("%]",        reset .. "]");
-        -- end;
-          
         s = s:gsub("RPTAGS",    loc("APP_NAME"));
         return s;
   end  
   
   -- ---------------------------------------------------------------------------------------------------
   -- 
-  -- Function encrypts and decrypts using ROT13
+  -- Function "encrypts" and "decrypts" using ROT13
   -- source: https://gist.github.com/obikag/7035680
   --
   local function rot13(str)
@@ -173,26 +152,9 @@ function(self, event, ...)
     return estr
   end 
   -- ---------------------------------------------------------------------------------------------------
-  local function addOnList()
-    local active_addons = { "# Active Addons ", };
-    local disabled_addons = { "# Disabled Addons", };
-    local num = GetNumAddOns();
-    for i = 1, num, 1
-    do  local name, _, _, enabled = GetAddOnInfo(i)
-        local version = GetAddOnMetadata(name, "X-Curse-Packaged-Version") or GetAddOnMetadata(name, "Version") or ""
-        name = name:gsub("|cff%x%x%x%x%x%x",""):gsub("|r",""):gsub("_","\\_");
-        if   enabled 
-        then table.insert(active_addons, "<p>|cff00dd00" .. name .. "|r (" .. version .. ")</p>")
-        else table.insert(disabled_addons, "<p>|cff808080" .. name .. " (" .. version .. ")|r</p>")
-        end;
-    end;
-    return table.concat(active_addons, "\n") .. "\n\n" .. table.concat(disabled_addons, "\n");
-  end;
-  
+  --
   local function vText()
     local v = { };
-    -- for _, i in ipairs(Cache.state.rpClients)  do table.insert(v, loc("ADDON_" .. i:upper())) end;
-    -- for _, i in ipairs(Cache.state.unitFrames) do table.insert(v, loc("ADDON_" .. i:upper())) end;
     return "v" .. RPTAGS.CONST.VERSION -- ..  "-" ..table.concat(v, "-"):gsub("[ :,]","");
   end;
   
@@ -200,22 +162,8 @@ function(self, event, ...)
     return string.format(loc("FMT_APP_LOAD"), vText(), "/" .. split(loc("APP_SLASH"), "|")[1]);
   end;
   
-  local function changesText() return "v" .. RPTAGS.CONST.VERSION .. " " .. loc("CHANGES") .. ": " .. loc("APP_CHANGES") end;
-  
   local function notify(message) print(hiliteTags("[RPTAGS] " .. message)); end;
   local function notifyFmt(format, ...) notify(string.format(format, ...)) end;
-  
-  local function notSupported()       return "|cff" .. Config.get("COLOR_UNKNOWN") .. Config.get("UNSUP_TAG") .. "|r" end;
-  local function dontChangeTheColor() return "" end;
-  local function iconNotSupported()   if Config.get("UNSUP_TAG") == "" then return "" else return "|TRAIDFRAME\\ReadyCheck-NotReady:0|t" end; end;
-
-  local function parseVersion(str)
-        local v1, v2, v3, greek, v4 = str:match("^(%d+)(%.?%d*)(%.?%d*)-?(%a*)(%d*)");
-        local versionNumber = (v1 or 0) * 1 +
-                              (v2 or 0) * 0.001 + 
-                              (v3 or 0) * 0.000001;
-        return versionNumber;
-  end;
   
   -- Utilities available under RPTAGS.utils.text
   --
@@ -233,11 +181,6 @@ function(self, event, ...)
   RPTAGS.utils.text.v            = vText;
   RPTAGS.utils.text.addons       = addOnList;
   RPTAGS.utils.text.changes      = changesText;
-  RPTAGS.utils.text.unsup        = notSupported;
-  RPTAGS.utils.text.unsupcolor   = dontChangeTheColor;
-  RPTAGS.utils.text.unsupicon    = iconNotSupported;
   RPTAGS.utils.text.notifyFmt    = notifyFmt;
-  RPTAGS.utils.text.tagRefs      = tagReferences;
-  RPTAGS.utils.text.parseVersion = parseVersion;
 
 end);

@@ -5,7 +5,7 @@
 -- This work is licensed under the Creative Commons Attribution 4.0 International
 -- (CC BY 4.0) license. 
 
-local moduleName, _ = ...
+local moduleName, ns = ...
 local  Module = RPTAGS.queue:NewModule(moduleName)
 
 -- Callback functions don't need to return a value, although if they return a value it should
