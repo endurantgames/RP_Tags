@@ -25,7 +25,7 @@ function(self, event, ...)
   ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "h3"  ] =  "<h2>";
   ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/h3"  ] = "</h2>";
 
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Normal"].Spacing = 4;
+  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Normal"].Spacing = 2;
 
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.red   = 1;
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.green = 1;

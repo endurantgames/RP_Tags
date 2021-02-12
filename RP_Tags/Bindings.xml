@@ -1,11 +1,11 @@
 <Bindings>
 
     <Binding name="RPTAGS_OPTIONS" header="RPTAGS" category="BINDING_HEADER_RPTAGS">
-        RPTAGS.utils.keybinds.run("RPTAGS_OPTIONS");
+        RPTAGS.utils.keybind.run("RPTAGS_OPTIONS");
     </Binding>
 
     <Binding name="RPTAGS_HELP" category="BINDING_HEADER_RPTAGS">
-        RPTAGS.utils.keybinds.run("RPTAGS_HELP");
+        RPTAGS.utils.keybind.run("RPTAGS_HELP");
     </Binding>
 
 </Bindings>

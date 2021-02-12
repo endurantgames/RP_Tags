@@ -22,7 +22,6 @@ function(self, event, ...)
   local Pushbutton         = optUtils.pushbutton
   local Recipe             = optUtils.recipe
   local Spacer             = optUtils.spacer
-  local Plugins            = optUtils.plugins
 
   -- ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -62,7 +61,6 @@ function(self, event, ...)
         },
       },
     },
-    plugins             = Plugins("help"),
   };
   
   RPTAGS.options.help = helpSystem;

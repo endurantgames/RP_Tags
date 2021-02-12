@@ -46,8 +46,7 @@ function(self, event, ...)
     
   end;
 
-  RPTAGS.options = RPTAGS.options or {};
-  RPTAGS.options.recipe = build_recipe;
+  RPTAGS.utils.options.recipe = build_recipe;
  
 -- RPQ -----------------------------------------------------------------------------------------------------------------------------------------------
 end);

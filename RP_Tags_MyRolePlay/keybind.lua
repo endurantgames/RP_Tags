@@ -12,12 +12,12 @@ local addOnName, ns = ...
 local RPTAGS        = RPTAGS;
 local Module        = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("DATA_OPTIONS",
+Module:WaitUntil("MODULE_G",
 function(self, event, ...)
   local build_keybind = RPTAGS.utils.options.keybind;
   local addOptions    = RPTAGS.utils.modules.addOptions;
 
-  addOptions(addOnName, "keybind",
+  addOptions(addOnName, "general.keybind",
     { ic_ooc = build_keybind("ic_ooc"),
       mouseover_open = build_keybind("mouseover_open") }
     );

@@ -4,6 +4,7 @@
 	
     <Script file="colors.lua"       />
     <Script file="config.lua"       />
+    <Script file="keybind.lua"      />
     <Script file="libmarkdown.lua"  />
     <Script file="linkhandler.lua"  />
     <Script file="locale.lua"       />

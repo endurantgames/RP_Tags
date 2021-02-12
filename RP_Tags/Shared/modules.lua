@@ -17,20 +17,43 @@ RPTAGS.queue:WaitUntil("UTILS_MODULES",
 function(self, event, ...)
 
   RPTAGS.cache.Plugins = RPTAGS.cache.Plugins or {};
-  local pluginsCache = RPTAGS.cache.Plugins;
 
   local function addOptions(addOnName, location, options)
-    if   addOnName and location and options
-    then pluginsCache[location] = pluginsCache[location] or {};
-         pluginsCache[location][addOnName] = CopyTable(options);
+    local pluginsCache = RPTAGS.cache.Plugins;
+    pluginsCache[location]            = pluginsCache[location] or {};
+    pluginsCache[location][addOnName] = CopyTable(options);
+  end;
+
+  local function applyOptionsPlugins(optionsTable, pluginsCache)
+    local function walk(otable, path)
+      local curr;
+      if type(path) == "string"
+      then curr, path = path, nil;
+      else curr = table.remove(path, 1);
+      end;
+      if not (otable and otable.args and otable.args[curr]) then return nil
+      elseif not path or #path == 0
+      then   return otable.args[curr]
+      else   return walk(otable.args[curr], path)
+      end;
     end;
+
+    pluginsCache = pluginsCache or RPTAGS.cache.Plugins;
+    for location, plugins in pairs(pluginsCache)
+    do local mountPoint = walk(optionsTable, { strsplit("%.", location) }) ;
+        if mountPoint then mountPoint.plugins = plugins; 
+        end;
+    end;
+
+    return optionsTable;
   end;
 
   local function addOptionsPanel(panel, optionsTable)
     local order = RPTAGS.cache.options.optionsOrder;
     local insertPoint = RPTAGS.cache.options.optionsModulesInsert;
-    table.insert(order, insertPoint, addOnName);
-    RPTAGS.options[addOnName] = optionsTable;
+    table.insert(order, insertPoint, panel);
+    RPTAGS.options[panel] = optionsTable;
+    RPTAGS.cache.options.optionsModulesInsert = insertPoint + 1;
   end;
 
   local function getAddOnData(str)
@@ -64,7 +87,7 @@ function(self, event, ...)
 
   local function runAddOnFunction(addOn, funcName, ...)
     local func = getAddOnFunction(addOn, funcName)
-    if func then return func(...) end;
+    if func then func(...) return true end;
   end;
      
   local function extendUtility(oldFuncList)
@@ -105,5 +128,6 @@ function(self, event, ...)
   RPTAGS.utils.modules.addOptionsPanel  = addOptionsPanel;
   RPTAGS.utils.modules.addSlashAlias    = addSlashAlias;
   RPTAGS.utils.modules.getAddOn         = getAddOnData;
+  RPTAGS.utils.modules.plugOptions      = applyOptionsPlugins;
 end);
 

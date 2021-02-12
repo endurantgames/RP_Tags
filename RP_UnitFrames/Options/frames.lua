@@ -2,7 +2,7 @@ local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("after DATA_OPTIONS",
+Module:WaitUntil("MODULE_G",
 function(self, event, ...)
 
   local loc               = RPTAGS.utils.locale.loc;
@@ -60,71 +60,6 @@ function(self, event, ...)
     THUMBNAIL    = loc("RPUF_THUMBNAIL"        ),
     PAPERDOLL    = loc("RPUF_PAPERDOLL"        ),
     FULL         = loc("RPUF_FULL"             ), };
-
-  addOptions(addOnName, "colors",
-  { rpufColors =
-    { type                    = "group",
-      childGroups             = "inline",
-      name                    = loc("OPT_COLORS_RPUF"),
-      order                   = source_order(),
-      args                    =
-      { headerRPUF            = Header("colors rpuf", nil, reqRPUF ),
-        colorRPUF             = Color_Picker("rpuf", nil, reqRPUF ),
-        colorRPUFText         = Color_Picker("rpuf text", nil, reqRPUF ),
-        colorRPUFTooltip      = Color_Picker("rpuf tooltip", nil, reqRPUF ),
-        -- reset              = Reset( { "color rpuf", "color rpuf text", "color rpuf tooltip" } , nil, reqRPUF ),
-      },
-    },
-  });
-
-  addOptionsPanel("RPUF_Editor",
-  { name                = loc("OPT_EDITOR"),
-    order               = source_order(),
-    type                = "group",
-    args                = 
-    { -- panel             = Header("editor", nil, reqRPUF ),
-      instruct          = Instruct("editor", nil, reqRPUF ),
-      useCustomFont     = Checkbox("editor custom font", nil, reqRPUF, true, true),
-      customFont        = Font("config editor font", nil, function(self) print(reqRPUF()) return not reqRPUF() and not Get("EDITOR_CUSTOM_FONT") end),
-      useButtonBar      = Checkbox("editor button bar", nil, reqRPUF),
-      chooseButtons     = Pushbutton("editor buttons", nil, nil, 
-                           function(self) return not Get("DISABLE_RPUF") and not Get("EDITOR_BUTTON_BAR") end, 
-                            function(self)
-                              Set("EDITOR_BUTTONS",
-                                collectionBrowser(
-                                  { current  = split(Get("EDITOR_BUTTONS"), "|"),
-                                    all      = listOfAllTags(),
-                                    defaults = split(Default("EDITOR_BUTTONS"), "|"), 
-                                    nameFunc = function(str) return loc("TAG_" .. str .. "_NAME") end,
-                                    descFunc = function(str) return loc("TAG_" .. str .. "_DESC") end,
-                                  } -- params to collectionBrowser
-                                )   -- collectionBrowser function call
-                              ) -- Set function call
-                            end -- "on pushed" function
-                          ), -- Pushbutton function call
-    }, -- tagEditor.args
-  });-- beep
-
-  addOptionsPanel("RPUF_Panels",
-  { name                = loc("OPT_RPUF_PANELS"),
-    order               = source_order(),
-    type                = "group",
-    args                =
-    { -- panel             = Header("rpuf panels", nil, reqRPUF ),
-      instruct          = Instruct("rpuf panels", nil, reqRPUF ),
-      namePanel         = TagPanel("namepanel",   "name tooltip"),
-      infoPanel         = TagPanel("infopanel",   "info tooltip"),
-      statusPanel       = TagPanel("statuspanel", "status tooltip"),
-      detailPanel       = TagPanel("detailpanel", "detail tooltip"),
-      portraitPanel     = TagPanel("portrait",    "portrait tooltip"),
-      iconAPanel        = TagPanel("icon 1", "icon 1 tooltip"),
-      iconBPanel        = TagPanel("icon 2", "icon 2 tooltip"),
-      iconCPanel        = TagPanel("icon 3", "icon 3 tooltip"),
-      iconDPanel        = TagPanel("icon 4", "icon 4 tooltip"),
-      iconEPanel        = TagPanel("icon 5", "icon 5 tooltip"),
-      iconFPanel        = TagPanel("icon 6", "icon 6 tooltip"),
-    },
-  }); 
 
   addOptionsPanel("RPUF_Frames",
   { name                = loc("PANEL_RPUF_FRAMES"),
@@ -199,32 +134,4 @@ function(self, event, ...)
     },
   });
 
-  addOptionsPanel("RPUF_Main",
-  { name              = loc("RPUF_NAME"),
-    order             = source_order(),
-    childGroups       = "tab",
-    type              = "group",
-    args              =
-    { -- panel        = Header("rpuf main", nil, reqRPUF ),
-      instruct        = Instruct("rpuf main",                            nil , reqRPUF ),
-      disableRPUF     = Checkbox("disable rpuf"                                             ),
-      disableBlizzard = Checkbox("disable blizzard",                     nil , reqRPUF ),
-      hideCombat      = Checkbox("rpuf hide combat",                     nil , reqRPUF ),
-      hidePetBattle   = Checkbox("rpuf hide petbattle",                  nil , reqRPUF ),
-      hideVehicle     = Checkbox("rpuf hide vehicle",                    nil , reqRPUF ),
-      hideParty       = Checkbox("rpuf hide party",                      nil , reqRPUF ),
-      hideRaid        = Checkbox("rpuf hide raid",                       nil , reqRPUF ),
-      hideDead        = Checkbox("rpuf hide dead",                       nil , reqRPUF ),
-      lockFrames      = Checkbox("lock frames",                          nil , reqRPUF ),
-      resetFrames     = Pushbutton("reset frame locations", resetFrames, nil , reqRPUF ),
-    },
-  });
-
-  addOptions(addOnName, "keybind",
-  { disableRPUF  = Keybind("disable rpuf"),
-    hideInCombat = Keybind("hide in combat"),
-    lockFrames   = Keybind("lock frames"),
-    tagEditor    = Keybind("tag editor"),
-  });
-  
 end);

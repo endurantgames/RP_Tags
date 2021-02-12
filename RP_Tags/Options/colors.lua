@@ -19,7 +19,6 @@ function(self, event, ...)
   local Multi_Reset        = RPTAGS.utils.options.multi_reset
   local Reset              = RPTAGS.utils.options.reset
   local Spacer             = RPTAGS.utils.options.spacer
-  local Plugins            = RPTAGS.utils.options.plugins
 
   -- ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -43,7 +42,6 @@ function(self, event, ...)
           colorNPC         = Color_Picker("npc"),
           -- reset         = Multi_Reset( { "color_ic", "color_npc", "color_ooc" } ),
         },
-        plugins                = Plugins("colors.status"),
       },
       gender               =
       { type               = "group",
@@ -63,7 +61,6 @@ function(self, event, ...)
             },
           -- reset         = Multi_Reset( { "color_male", "color_female", "color_neuter", "color_they" } ),
         },
-        plugins                = Plugins("colors.gender"),
       },
       comparison           =
       { type               = "group",
@@ -76,7 +73,6 @@ function(self, event, ...)
           colorGreaterThan = Color_Picker("greaterthan"),
           -- reset         = Multi_Reset( { "color_lessthan", "color equalish", "color greaterthan" } ),
         },
-        plugins                = Plugins("colors.comparison"),
       },
       hilite               =
       { type               = "group",
@@ -89,7 +85,6 @@ function(self, event, ...)
           colorHilite3     = Color_Picker("hilite 3"),
           -- reset         = Multi_Reset( { "color hilite 1", "color hilite 2", "color hilite 3" } ),
         },
-        plugins                = Plugins("colors.hilite"),
       },
       default              =
       { type               = "group",
@@ -98,10 +93,8 @@ function(self, event, ...)
         args               =
         { unknown          = Color_Picker("unknown"),
         },
-        plugins                = Plugins("colors.default"),
       },
     },
-    plugins                = Plugins("colors"),
   };
 
   RPTAGS.options.colors = colorsOptions;

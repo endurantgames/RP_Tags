@@ -9,5 +9,6 @@
     <Include file="Data\load.xml"      />
     <Include file="Locale\load.xml"    />
     <Include file="Media\load.xml"     />
+    <Include file="Options\load.xml"   />
     <Include file="Utils\load.xml"     />
 </Ui>

@@ -26,7 +26,6 @@ function(self, event, ...)
   local Textbox            = RPTAGS.utils.options.textbox
   local Textbox_Wide       = RPTAGS.utils.options.textbox_wide
   local Keybind            = RPTAGS.utils.options.keybind
-  local Plugins            = RPTAGS.utils.options.plugins
 
   -- ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -50,7 +49,6 @@ function(self, event, ...)
           parseAge         = Checkbox("parse age"),
           adultGenders     = Checkbox("adult genders", nil, function() return not Config.get("PARSE_GENDER") end),
         },
-        plugins      = Plugins("parse"),
       },
       notes                =
       { type               = "group",
@@ -63,7 +61,6 @@ function(self, event, ...)
           note2            = Textbox_Wide("note 2 string"),
           note3            = Textbox_Wide("note 3 string"),
         },
-        plugins      = Plugins("notes"),
       },
       formats              =
       { type               = "group",
@@ -94,7 +91,6 @@ function(self, event, ...)
           unsupTag         = Dropdown("unsup tag"),
           uts              = Spacer(),
         },
-        plugins      = Plugins("formats"),
       },
       keybind              =
       { name               = loc("OPT_KEYBINDINGS"),
@@ -106,10 +102,8 @@ function(self, event, ...)
           options          = Keybind("options"),
           help             = Keybind("help"),
         },
-        plugins            = Plugins("keybind"),
       },
     },
-    plugins             = Plugins("general"),
   };
 
   RPTAGS.options.general = generalOptions;

@@ -26,7 +26,6 @@ function(self, event, ...)
     local panelCache         = Cache.panels;
     local taghelpCache       = Cache.help.tagIndex;
 
-    print("panelCache =", panelCache);
     link = link or dest;
     local  protocol, path = link:match("^(%a+)://(.+)$");
     path = split(path, "/");
@@ -49,7 +48,7 @@ function(self, event, ...)
            amdwProtocol:ShowPopup(dest, link, text);
     elseif protocol == "addon"
     then   local addOn, func = link:match("//(.-)%?(.+)$");
-           if not runFunction(getAddOn(addOn), func)
+           if   not runFunction(getAddOn(addOn), func)
            then notify("Unable to open this link: " .. link);
            end;
     else   notify("Unable to open this link: " .. link);

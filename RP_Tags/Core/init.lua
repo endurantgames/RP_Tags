@@ -29,5 +29,5 @@ RPTAGS.queue:WaitUntil("INIT_OPTIONS",
     RPTAGS.cache.options = RPTAGS.cache.options or {};
     RPTAGS.cache.options.optionsOrder = { "general", "colors", "help", "about" };
     RPTAGS.cache.options.optionsPanels = {};
-    RPTAGS.cache.options.optionsModulesInsert = 2;
+    RPTAGS.cache.options.optionsModulesInsert = 3;
   end);

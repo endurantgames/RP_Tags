@@ -4,6 +4,9 @@
 -- This work is licensed under the Creative Commons Attribution 4.0 International
 -- (CC BY 4.0) license. 
 
+local RPTAGS = RPTAGS;
+local addOnName, ns = ...;
+
 RPTAGS.queue:WaitUntil("OPTIONS_ABOUT",
 function(self, event, ...)
 -- RPQ -----------------------------------------------------------------------------------------------------------------------------
@@ -17,7 +20,6 @@ function(self, event, ...)
   local Instruct           = RPTAGS.utils.options.instruct
   local Markdown           = RPTAGS.utils.options.markdown
   local Spacer             = RPTAGS.utils.options.spacer
-  local Plugins            = RPTAGS.utils.options.plugins
 
   -- ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -27,12 +29,13 @@ function(self, event, ...)
     type                   = "group",
     childGroups            = "tab",
     args                   =
-    { header               = Markdown("## " .. loc("APP_NAME") .. " " .. loc("VERSION") .. " " ..  RPTAGS.metadata.Version),
+    { header               = Markdown("You are using " .. loc("APP_NAME") .. loc("VERSION") .. " " ..  
+                               GetAddOnMetadata(addOnName, "Version") ..
+                               " (" .. GetAddOnMetadata(addOnName, "X-VersionDate") ..  ")."),
       version              = RPTAGS.options.version,
       changes              = Markdown({ loc("OPT_CHANGES"), loc("CHANGES_MD") }),
       credits              = Markdown({ loc("OPT_CREDITS"), loc("CREDITS_MD") }),
       debuggingCommands    = Markdown({ loc( "OPT_DEBUGGING_CMDS" ), loc( "DEBUGGING_COMMANDS_MD" )  }),
-      plugins           = Plugins("about"),
     },
   };
 

@@ -2,7 +2,7 @@ local addOnName, addOn = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("before DATA_OPTIONS", -- module options must load before RPTAGS options
+Module:WaitUntil("before MODULE_G", -- module options must load before RPTAGS options
 function(self, event, ...)
 
   local Utils        = RPTAGS.utils;
