@@ -9,7 +9,7 @@ local addOnName, addOn = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("MODULE_F",
+Module:WaitUntil("MODULE_J",
 function(self, event, ...)
 
   local RP_TagsDB          = RP_TagsDB;

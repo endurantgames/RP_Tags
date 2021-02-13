@@ -91,16 +91,26 @@ function(self, event, ...)
   -- local UF                = E:GetModule('UnitFrames');
 
   -- registers one tag, an event to wait for, and a method to invoke when found --------------------------
-  local function registerTag(tag, tagMethod, extraEvents)
-    local events = RPTAGS.CONST.MAIN_EVENT .. (extraEvents and (" " .. extraEvents) or "");
+  local function registerTag(tagName, tagMethod, tagExtraEvents)
+    local useTag, useMethod;
 
-    if not _G["ElvUF"].Tags.Events[tag] -- only make the tag if there isn't one by that name already
-    then   _G["ElvUF"].Tags.Events[tag] = RPTAGS.CONST.MAIN_EVENT .. (extraEvents or "");
-           _G["ElvUF"].Tags.Methods[tag] = tagMethod;
+    local prefix, foundTag, suffix = tag:match("^(.+)$>(.+)<$(.+)$");
+
+    if foundTag;
+    then useTag = foundTag;
+         useMethod = function(...) return prefix .. (tagMethod(...) or "") .. suffix end;
+    else useTag = tagName;
+         useMethod = tagMethod;
+    end;
+
+    if not _G["ElvUF"].Tags.Events[useTag] -- only make the tag if there isn't one by that name already
+    then   _G["ElvUF"].Tags.Events[useTag] = RPTAGS.CONST.MAIN_EVENT .. 
+                                             (tagExtraEvents and (" " .. tagExtraEvents) or "");
+           _G["ElvUF"].Tags.Methods[useTag] = useMethod;
     else 
     end;
 
-    return tag, tagMethod, extraEvents;
+    return tagName, tagMethod, tagExtraEvents;
   end; -- function
   
   local function addTag(tag, group)

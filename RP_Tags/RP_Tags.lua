@@ -15,7 +15,7 @@ local Queue = RPQ:New(addOnName);
 
 local RPQ_EVENTS = 
 { "ADDON_INIT",        
-      "INIT_DATA",          "INIT_CACHE",     "INIT_LOCALE",                       -- arbitrary:
+      "INIT_DATA",          "INIT_CACHE",     "INIT_LOCALE",                    -- arbitrary:
           "CORE_STATE",     "DATA_CONST",                                          "MODULE_A",      
       "INIT_UTILS",         "UTILS_LOCALE",   "DATA_LOCALE",     "UTILS_MODULES",  "MODULE_B", 
           "UTILS_CONFIG",   "UTILS_TEXT",     "UTILS_COLOR",     "UTILS_KEYBIND",  "MODULE_C",      
