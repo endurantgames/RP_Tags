@@ -2,14 +2,20 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 	
-    <!-- first the default language (enUS) -->
-    <Script file="enUS.lua" />
+    <!-- first the default language (enUS)  -->
+    <Script          file="enUS.lua"         />
+    <Script file="Markdown_enUS.lua"         />
 
-    <!-- then other langauges -->
-    <!-- Script file="esMX.lua"  / -->
-    <!-- Script file="frFR.lua"  / -->
-    <!-- Script file="enGB.lua"  / -->
-    <!-- Script file="itIT.lua"  / -->
-    <!-- Script file="tlhQo.lua" / -->
+    <!-- then other languages               -->
+    <!-- Script          file="esMX.lua"  / -->
+    <!-- Script file="Markdown_esMX.lua"  / -->
+    <!-- Script          file="frFR.lua"  / -->
+    <!-- Script file="Markdown_frFR.lua"  / -->
+    <!-- Script          file="enGB.lua"  / -->
+    <!-- Script file="Markdown_enGB.lua"  / -->
+    <!-- Script          file="itIT.lua"  / -->
+    <!-- Script file="Markdown_itIT.lua"  / -->
+    <!-- Script          file="tlhQo.lua" / -->
+    <!-- Script file="Markdown_tlhQo.lua" / -->
 
 </Ui>

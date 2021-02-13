@@ -4,11 +4,12 @@
 
     <Script file="about.lua"   />
     <Script file="colors.lua"  />
+    <!-- Script file="debug.lua"   / -->
     <Script file="general.lua" />
     <Script file="help.lua"    />
     <Script file="recipe.lua"  />
     <Script file="taghelp.lua" />
     <Script file="utils.lua"   />
-    <Script file="version.lua" />
+    <!-- Script file="version.lua" / -->
 
 </Ui>
