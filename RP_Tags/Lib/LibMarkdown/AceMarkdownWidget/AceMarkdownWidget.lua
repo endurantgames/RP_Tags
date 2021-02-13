@@ -8,15 +8,15 @@
 
 local AceGUI         = LibStub("AceGUI-3.0");
 local widget_type    = "LMD30_Description";
-local widget_version = 3;
+local widget_version = 4;
 
 local LMD = LibStub("LibMarkdown-1.0");
 LMD = not LMD and error("[|cffff0000AceMarkdownWidget|r] Missing LibMarkdown-1.0");
 
 local gameFont = {};
-gameFont.FontFile, gameFont.FontSize, gameFont.FontFlags = GameFontNormal:GetFont();
-gameFont.red, gameFont.green, gameFont.blue = GameFontNormal:GetTextColor();
-gameFont.Spacing = GameFontNormal:GetSpacing();
+  gameFont.FontFile, gameFont.FontSize, gameFont.FontFlags = GameFontNormal:GetFont();
+  gameFont.red, gameFont.green, gameFont.blue = GameFontNormal:GetTextColor();
+  gameFont.Spacing = GameFontNormal:GetSpacing();
 
 local function CopyTable(t) local copy = {} for k, v in pairs(t) do copy[k] = v end return copy end;
 
@@ -282,6 +282,7 @@ local htmlStyleMethods =
 local htmlFrameHandlers = 
 { ["OnHyperlinkClick"] = 
     function(self, link, text, ...)
+      ResetCursor();
       if    self.widget:GetClickHandler()
       then  return self.widget:FireClickHandler(link, text, ...)
       else  local  protocolName, dest = link:match("^(%a+)://(.+)");
@@ -498,6 +499,15 @@ local widgetMethods =
       return self;
     end,
 
+  ["GetHtmlStyleByTag"] =
+    function(self, tag)
+      tag = tag or "p";
+      if   self.html[tag]
+      then return self:GetHtmlStyle(self.html[tag])
+      else return nil;
+      end;
+    end,
+
   ["ApplyConfiguration"] = 
     function(self, config)
 
@@ -561,11 +571,26 @@ local widgetMethods =
      then r, g, b = 1, 1, 1;
      end;
 
-     self:GetHtmlStyle("Normal"):SetTextColor(r, g, b);
-     self:ApplyHtmlStyle("p", "Normal");
-
+     self:ApplyHtmlStyle("p", self:GetHtmlStyleByTag():SetTextColor(r, g, b));
    end,
       
+ ["SetTextColor"] =
+   function(self, r, g, b, extra)
+     tag, r, g, b = extra and r or nil, 
+                    extra and g or r, 
+                    extra and b or g, 
+                    extra       or b;
+     -- if extra then tag, r, g, b = r, g, b, extra end;
+     if not (r and g and b) then r, g, b = 1, 1, 1; end;
+
+     style = self:GetHtmlStyleByTag(tag);
+
+     if   style
+     then self:ApplyHtmlStyle(tag, style:SetTextColor(r, g, b));
+     else self:ApplyHtmlStyle("p", self:GetHtmlStyleByTag():SetTextColor(r, g, b));
+     end;
+   end,
+
  ["OnAcquire"] = 
    function(self)
      self:ApplyConfiguration(_G["ACEMARKDOWNWIDGET_CONFIG"]);

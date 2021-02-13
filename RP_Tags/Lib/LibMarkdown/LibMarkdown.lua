@@ -1,7 +1,7 @@
 -- lua implementation of markdown originally from https://github.com/mpeterv/markdown
 
 local  MARKDOWN10 = "LibMarkdown-1.0";
-local  MARKDOWN10_MINOR = 7;
+local  MARKDOWN10_MINOR = 9;
 if not LibStub then error(MARKDOWN10 .. " requires LibStub."); end;
 local  LibMarkdown = LibStub:NewLibrary(MARKDOWN10, MARKDOWN10_MINOR);
 
@@ -50,7 +50,7 @@ LibMarkdown.config = {
   [ 'h3'              ] = '<h3>',
   ['/h3'              ] = '</h3><br />',
   [ 'p'               ] = '<p>',
-  ['/p'               ] = '</p><br />',
+  ['/p'               ] = '</p>',
   [ 'html'            ] = '<html>',
   ['/html'            ] = '</html>',
   [ 'body'            ] = '<body>',

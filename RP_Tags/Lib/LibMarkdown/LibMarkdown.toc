@@ -1,5 +1,5 @@
 ## Interface: 90002
-## Version: 1.0 beta 5
+## Version: 1.0 beta 9
 ## Title: LibMarkdown
 ## Author: Oraibi-MoonGuard
 ## Notes: Converts markdown to HTML for SimpleHTML frames
