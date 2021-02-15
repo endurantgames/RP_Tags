@@ -14,6 +14,7 @@
 
         <Include file="LibSharedMedia-3.0\lib.xml"                  />
         <Include file="AceGUI-3.0-SharedMediaWidgets\widget.xml"    />
+        <Include file="LibDropdown-1.0\lib.xml"                     />
 
         <Include file="LibMarkdown\LibMarkdown.xml"                 />
 </Ui>

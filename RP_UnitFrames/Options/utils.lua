@@ -21,6 +21,7 @@ function(self, event, ...)
   local Checkbox     = Options.checkbox;
   local Spacer       = Options.spacer;
   local evalTagString = Utils.tags.eval;
+  local openEditor   = Config.openEditor;
 
   local function requiresRPUF() return Config.get("DISABLE_RPUF"); end;
 

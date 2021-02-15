@@ -96,7 +96,7 @@ function(self, event, ...)
 
     local prefix, foundTag, suffix = tag:match("^(.+)$>(.+)<$(.+)$");
 
-    if foundTag;
+    if foundTag
     then useTag = foundTag;
          useMethod = function(...) return prefix .. (tagMethod(...) or "") .. suffix end;
     else useTag = tagName;
