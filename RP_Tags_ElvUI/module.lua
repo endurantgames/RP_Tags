@@ -94,7 +94,7 @@ function(self, event, ...)
   local function registerTag(tagName, tagMethod, tagExtraEvents)
     local useTag, useMethod;
 
-    local prefix, foundTag, suffix = tag:match("^(.+)$>(.+)<$(.+)$");
+    local prefix, foundTag, suffix = tagName:match("^(.+)$>(.+)<$(.+)$");
 
     if foundTag
     then useTag = foundTag;
