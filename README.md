@@ -255,6 +255,6 @@ translations into other languages, you can.
     - [ ] Update for new gender settings in trp3
   - [ ] Get RP:UF working
     - [x] Tag live previews
-    - [ ] RP:UF editor
+    - [x] RP:UF editor
   - [ ] Miscellaneous bug fixes
 
