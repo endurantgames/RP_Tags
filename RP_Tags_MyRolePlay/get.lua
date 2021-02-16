@@ -95,9 +95,7 @@ function(self, event, ...)
     local function getName(u)  local mrpName  = getText(u, "NA"); if mrpName  and mrpName:len()  > 0 then return mrpName  else return UnitName(u)  end; end;
     local function getClass(u) local mrpClass = getText(u, "RC"); if mrpClass and mrpClass:len() > 0 then return mrpClass else return UnitClass(u) end; end;
 
-
     local function getNameColor(u) return getColor(u, "NA") or "";           end;
-
      
     -- local mrpClass = getText(u, "RC"); if mrpClass then return mrpClass; else local gameClass = UnitClass(u); return gameClass; end; end;
     -- local mrpName = getText(u, "NA") if mrpName then return mrpName else local gameName = UnitName(u); return gameName; end;
@@ -211,17 +209,35 @@ function(self, event, ...)
       end;
     end;
 
-    local function getIcStatus(u)  local status = tonumber(getField(u, "FC")) or 0; if status >= 2 then return loc("IS_IC") else return ""; end; end;
-    local function getOocStatus(u) local status = tonumber(getField(u, "FC")) or 0; if status == 1 then return loc("IS_OOC") else return "" end; end;
+    local function getIcStatus(u)  
+      local status = tonumber(getField(u, "FC")) or 0; 
+      if   status >= 2 then return loc("IS_IC") 
+      else return ""; 
+      end; 
+    end;
+    local function getOocStatus(u) 
+      local status = tonumber(getField(u, "FC")) or 0; 
+      if   status == 1 
+      then return loc("IS_OOC") else return "" end; 
+    end;
 
     local function getStatusColor(u)
-      if not UnitIsPlayer(u) then return loc("COLOR_NPC") end;
+      if not UnitIsPlayer(u) 
+      then return Config.get("COLOR_NPC") 
+      end;
       local status = tonumber(getField(u, "FC")) or 0;
-      if     status == 1 then return "|cff" .. Config.get("COLOR_OOC") 
-      elseif status == 0 then return "|cff" .. Config.get("COLOR_UNKNOWN")
-      elseif status == 2 then return "|cff" .. Config.get("COLOR_IC")
-      elseif status == 3 then local r, g, b = splitRGB(Config.get("COLOR_IC"))  return joinRGB(85 + r * 2/3, 85 + g * 2/3, 85 + b * 2/3)
-      elseif status == 4 then local r, g, b = splitRGB(Config.get("COLOR_NPC")) return joinRGB(85 + r * 2/3, 85 + g * 2/3, 85 + b * 2/3) 
+      if     status == 1 
+      then   return "|cff" .. Config.get("COLOR_OOC") 
+      elseif status == 0 then 
+      return "|cff" .. Config.get("COLOR_UNKNOWN")
+      elseif status == 2 
+      then return "|cff" .. Config.get("COLOR_IC")
+      elseif status == 3 
+      then   local r, g, b = splitRGB(Config.get("COLOR_IC"))  
+             return joinRGB(85 + r * 2/3, 85 + g * 2/3, 85 + b * 2/3)
+      elseif status == 4 
+      then   local r, g, b = splitRGB(Config.get("COLOR_NPC")) 
+             return joinRGB(85 + r * 2/3, 85 + g * 2/3, 85 + b * 2/3) 
       else return "";
       end;
     end;
