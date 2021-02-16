@@ -36,13 +36,17 @@ function(self, event, ...)
   end -- function
   
         -- registers one tag, an event to wait for, and a method to invoke when found --------------------------
-  local function registerTag(tag, tagMethod, extraEvents)
+  local function registerTag(tagName, tagMethod, extraEvents)
     local events = RPTAGS.CONST.MAIN_EVENT .. (extraEvents and (" " .. extraEvents) or "");
 
-    if not RPTAGS.oUF.Tags.Events[tag] -- only make this tag if there isn't one by that name already
-    then   RPTAGS.oUF.Tags.Events[tag] = events;
-           RPTAGS.oUF.Tags.Methods[tag] = tagMethod;
+    if not RPTAGS.oUF.Tags.Events[tagName] and not tagName:match("%(.+%)$")
+        -- only make this tag if there isn't one by that name already;
+        -- also, there is no need to m ake size tags for RPUF
+    then   RPTAGS.oUF.Tags.Events[tagName] = events;
+           RPTAGS.oUF.Tags.Methods[tagName] = tagMethod;
     end;
+
+    return tagName, tagMethod, extraEvents;
   end; -- function
   
   RPTAGS.utils.modules.extend(

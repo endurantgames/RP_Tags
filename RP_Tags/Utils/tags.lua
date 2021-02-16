@@ -25,6 +25,8 @@ function(self, event, ...)
   
   local split = RPTAGS.utils.text.split;
   local sizeTrim = RPTAGS.utils.text.sizeTrim;
+  local Config = RPTAGS.utils.config;
+
   local function addAllTags()
     local source = RPTAGS.CONST.TAG_DATA;
     -- As per Data\tags.lua, the source consists of a list of tag groups
@@ -71,6 +73,13 @@ function(self, event, ...)
     local registerTag = RPTAGS.utils.tags.registerTag;
     local function sizeTrim(t, s) return t end; -- this is a dummy function for now
   
+    local sizes = 
+    { ["(xs)"] = Config.get("TAG_SIZE_XS"), 
+      ["(s)"] = Config.get("TAG_SIZE_S"),
+      ["(m)"] = Config.get("TAG_SIZE_M"),
+      ["(l)"] = Config.get("TAG_SIZE_L"),
+      ["(xl)"] = Config.get("TAG_SIZE_XL"),
+    }
     if     tag.external or group.external
     then   -- if it's an external source then skip
     elseif tag.title
@@ -93,6 +102,14 @@ function(self, event, ...)
            -- time to build our tags!
            for _, tname in ipairs(tagNames)
            do  registerTag(tname, tagMethod, tag.extraEvents)
+               if   tag.size
+               then for modtag, size in pairs(sizes)
+                    do   registerTag(tname .. modtag, 
+                           function(u, u2) return sizeTrim(tag.method(u, u2, size)) end,
+                           tagExtraEvents
+                         );
+                    end
+               end;
                if   tag.label
                then local label = split(tag.label, "|") 
                     local prefix, suffix = label[1] or "", label[2] or ""; 
