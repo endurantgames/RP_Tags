@@ -364,7 +364,7 @@ function(self, event, ...)
   L["CONFIG_SIZEBUFF_FMT"]               = "Size buffs";
   L["CONFIG_SIZEBUFF_FMT_TT"]            = "Select how you wish to display [rp:sizebuff]. Size buffs make character larger or smaller for at least several minutes.";
   L["CONFIG_TRP3"]                       = "To configure [rp:tags] processing, see TRP3's configuration screens.";
-  L["CONFIG_TAG_SIZE_XS"]                = "Very Small";
+  L["CONFIG_TAG_SIZE_XS"]                = "Extra Small";
   L["CONFIG_TAG_SIZE_S"]                 = "Small";
   L["CONFIG_TAG_SIZE_M"]                 = "Medium";
   L["CONFIG_TAG_SIZE_L"]                 = "Large";
