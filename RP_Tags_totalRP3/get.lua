@@ -25,6 +25,7 @@ Module:WaitUntil("UTILS_GET",
     -- utilities
     --
     local loc              = RPTAGS.utils.locale.loc;
+    local tagLabel         = RPTAGS.utils.locale.tagLabel;
     local split            = RPTAGS.utils.text.split;
     local tc               = RPTAGS.utils.text.titlecase;
     local Config           = RPTAGS.utils.config;
@@ -396,27 +397,55 @@ Module:WaitUntil("UTILS_GET",
 
       local  labels = {};
       if     style == "no"
-      then   if getField("misc/ST/1", u) == "5" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-ic"].label);      end;
-             if getField("misc/ST/2", u) == "2" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-injury"].label);  end;
-             if getField("misc/ST/3", u) == "2" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-death"].label);   end;
-             if getField("misc/ST/4", u) == "2" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-romance"].label); end;
+      then   if getField("misc/ST/1", u) == "5" 
+      then   table.insert(labels, tagLabel("rp:style-ic"));      
+      end;
+      if getField("misc/ST/2", u) == "2" 
+      then   table.insert(labels, tagLabel("rp:style-injury"));
+      end;
+      if getField("misc/ST/3", u) == "2" 
+      then table.insert(labels, tagLabel("rp:style-death"));   
+      end;
+      if getField("misc/ST/4", u) == "2" 
+      then table.insert(labels, tagLabel("rp:style-romance")); 
+      end;
       elseif style == "ask"
-      then   if getField("misc/ST/1", u) == "2" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-ic"].label);      end;
-             if getField("misc/ST/1", u) == "3" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-ic"].label);      end;
-             if getField("misc/ST/1", u) == "4" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-ic"].label);      end;
-             if getField("misc/ST/2", u) == "3" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-injury"].label);  end;
-             if getField("misc/ST/3", u) == "3" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-death"].label);   end;
-             if getField("misc/ST/4", u) == "3" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-romance"].label); end;
+      then   if getField("misc/ST/1", u) == "2" 
+             then table.insert(labels, tagLabel("rp:style-ic"));      
+             end;
+             if getField("misc/ST/1", u) == "3" 
+             then table.insert(labels, tagLabel("rp:style-ic"));      
+             end;
+             if getField("misc/ST/1", u) == "4" 
+             then table.insert(labels, tagLabel("rp:style-ic"));      
+             end;
+             if getField("misc/ST/2", u) == "3" 
+             then table.insert(labels, tagLabel("rp:style-injury"));  
+             end;
+             if getField("misc/ST/3", u) == "3" 
+             then table.insert(labels, tagLabel("rp:style-death"));   
+             end;
+             if getField("misc/ST/4", u) == "3" 
+             then table.insert(labels, tagLabel("rp:style-romance")); 
+             end;
       elseif style == "yes"
-      then   if getField("misc/ST/1", u) == "1" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-ic"].label);      end;
-             if getField("misc/ST/2", u) == "1" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-injury"].label);  end;
-             if getField("misc/ST/3", u) == "1" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-death"].label);   end;
-             if getField("misc/ST/4", u) == "1" then table.insert(labels, RPTAGS.cache.tagcache["rp:style-romance"].label); end;
+      then   if getField("misc/ST/1", u) == "1" 
+             then table.insert(labels, tagLabel("rp:style-ic"));      
+             end;
+             if getField("misc/ST/2", u) == "1" 
+             then table.insert(labels, tagLabel("rp:style-injury"));  
+             end;
+             if getField("misc/ST/3", u) == "1" 
+             then table.insert(labels, tagLabel("rp:style-death"));   
+             end;
+             if getField("misc/ST/4", u) == "1" 
+             then table.insert(labels, tagLabel("rp:style-romance")); 
+             end;
       end; -- if style
 
       if labels == {} then return "" else return table.concat(labels, ", ") end;
 
-    end; -- func
+    end; -- func -- beep
 
     local function getExperience(u, request)
       local xpField = getField("character/XP", u);

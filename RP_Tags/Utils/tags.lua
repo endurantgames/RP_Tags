@@ -1,4 +1,24 @@
 local RPTAGS = RPTAGS;
+
+
+RPTAGS.queue:WaitUntil("after UTILS_LOCALE",
+function(self, event, ...)
+
+  local locUtils = RPTAGS.utils.locale;
+  local loc = locUtils.loc;
+
+  local function getTagLabel(tag)
+    return loc("TAG_" .. tag .. "_LABEL");
+  end;
+
+  local function getTagDescription(tag)
+    return loc("TAG_" .. tag .. "_DESC");
+  end;
+
+  locUtils.tagLabel = getTagLabel;
+  locUtils.tagDesc = getTagDescription;
+end);
+
 RPTAGS.queue:WaitUntil("UTILS_TAGS",
 function(self, event, ...)
 -- RPQ ------------------------------------------------------------------------------------------------------------------------

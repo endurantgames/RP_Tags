@@ -246,12 +246,12 @@ translations into other languages, you can.
     - [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
     - [x] Figure out why some things aren't turning to HTML in AMDC
     - [ ] Config profiles with Ace3
-    - [ ] `:xs`, `:s`, etc
+    - [ ] `:xs`, `:s`, etc -- waiting on fix for ElvUI
   - [ ] Modules
     - [ ] Get labels working in ElvUI (work-around for old oUF)
     - [ ] XRP support
-    - [ ] See if RPT can be generalized for any oUF addon
-    - [ ] See if RPT can be generalized for any MSP addon
+    - [ ] (long term) See if RPT can be generalized for any oUF addon
+    - [ ] (long term) See if RPT can be generalized for any MSP addon
     - [ ] Update for new gender settings in trp3
   - [ ] Get RP:UF working
     - [x] Tag live previews
