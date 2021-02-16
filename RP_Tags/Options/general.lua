@@ -70,7 +70,6 @@ function(self, event, ...)
         args               =
         { header           = Header("formats", 2),
           instruct         = Instruct("formats"),
-          ellipses         = Wide(Checkbox("real ellipses")),
           disabledNote     =
             { type = "description",
               dialogControl = "LMD30_Description",
@@ -92,6 +91,26 @@ function(self, event, ...)
           pss              = Spacer(),
           unsupTag         = Dropdown("unsup tag"),
           uts              = Spacer(),
+        },
+      },
+      sizes                =
+      { name               = loc("OPT_TAG_SIZES"),
+        order              = source_order(),
+        type               = "group",
+        args               =
+        { header           = Header("tag sizes"),
+          instruct         = Instruct("tag sizes"),
+          extraSmall       = Wide(Slider("tag size xs"), 1.5),
+          s1               = Spacer(),
+          small            = Wide(Slider("tag size s" ), 1.5),
+          s2               = Spacer(),
+          medium           = Wide(Slider("tag size m" ), 1.5),
+          s3               = Spacer(),
+          large            = Wide(Slider("tag size l" ), 1.5),
+          s4               = Spacer(),
+          extraLarge       = Wide(Slider("tag size xl"), 1.5),
+          s5               = Spacer(),
+          ellipses         = Wide(Checkbox("real ellipses")),
         },
       },
       keybind              =
