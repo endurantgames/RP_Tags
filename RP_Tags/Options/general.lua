@@ -10,22 +10,23 @@ function(self, event, ...)
 --
   local Config             = RPTAGS.utils.config;
   local loc                = RPTAGS.utils.locale.loc
-  local source_order       = RPTAGS.utils.options.source_order
 
-  local Blank_Line         = RPTAGS.utils.options.blank_line
-  local Checkbox           = RPTAGS.utils.options.checkbox
-  local Dropdown           = RPTAGS.utils.options.dropdown
-  local Header             = RPTAGS.utils.options.header
-  local Instruct           = RPTAGS.utils.options.instruct
-  local Markdown           = RPTAGS.utils.options.markdown
-  local Multi_Reset        = RPTAGS.utils.options.multi_reset
-  local Pushbutton         = RPTAGS.utils.options.pushbutton
-  local Reset              = RPTAGS.utils.options.reset
-  local Slider             = RPTAGS.utils.options.slider
-  local Spacer             = RPTAGS.utils.options.spacer
-  local Textbox            = RPTAGS.utils.options.textbox
-  local Textbox_Wide       = RPTAGS.utils.options.textbox_wide
-  local Keybind            = RPTAGS.utils.options.keybind
+  local optUtils           = RPTAGS.utils.options;
+  local source_order       = optUtils.source_order
+  local Blank_Line         = optUtils.blank_line
+  local Checkbox           = optUtils.checkbox
+  local Dropdown           = optUtils.dropdown
+  local Header             = optUtils.header
+  local Instruct           = optUtils.instruct
+  local Markdown           = optUtils.markdown
+  local Multi_Reset        = optUtils.multi_reset
+  local Pushbutton         = optUtils.pushbutton
+  local Reset              = optUtils.reset
+  local Slider             = optUtils.slider
+  local Spacer             = optUtils.spacer
+  local Textbox            = optUtils.textbox
+  local Keybind            = optUtils.keybind
+  local Wide               = optUtils.set_width;
 
   -- ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -57,9 +58,9 @@ function(self, event, ...)
         args               =
         { header           = Header("notes", 2),
           instruct         = Instruct("notes"),
-          note1            = Textbox_Wide("note 1 string"),
-          note2            = Textbox_Wide("note 2 string"),
-          note3            = Textbox_Wide("note 3 string"),
+          note1            = Wide(Textbox("note 1 string")),
+          note2            = Wide(Textbox("note 2 string")),
+          note3            = Wide(Textbox("note 3 string")),
         },
       },
       formats              =
@@ -69,6 +70,7 @@ function(self, event, ...)
         args               =
         { header           = Header("formats", 2),
           instruct         = Instruct("formats"),
+          ellipses         = Wide(Checkbox("real ellipses")),
           disabledNote     =
             { type = "description",
               dialogControl = "LMD30_Description",

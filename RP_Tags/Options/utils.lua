@@ -197,6 +197,12 @@ function(self, event, ...)
         return w;
   end;
   
+  local function build_checkbox_full_width(str, hidden, disabled)
+        local w    = build_common("toggle", "CONFIG_", str, hidden, disabled, true, true);
+        w.width = "full";
+        return w;
+  end;
+
   local function build_textbox(str, hidden, disabled)
         local w    = build_common("input", "CONFIG_", str, hidden, disabled, true, true);
         return w;
@@ -401,6 +407,8 @@ function(self, event, ...)
     return w;
   end;
 
+  local function set_width(w, width) w.width = width or "full"; return w; end;
+
   local function collectionBrowser() return end;
 
   local function listOfAllTags() return {}; end;
@@ -417,6 +425,7 @@ function(self, event, ...)
 
   RPTAGS.utils.options.blank_line        = build_blank_line;
   RPTAGS.utils.options.checkbox          = build_checkbox
+  RPTAGS.utils.options.checkbox_full     = build_checkbox_full_width
   RPTAGS.utils.options.color_picker      = build_color_picker
   RPTAGS.utils.options.common            = build_common
   RPTAGS.utils.options.dropdown          = build_dropdown
@@ -441,6 +450,8 @@ function(self, event, ...)
   RPTAGS.utils.options.question_mark     = build_question_mark;
   RPTAGS.utils.options.keybind           = build_keybind;
   RPTAGS.utils.options.textbox_wide      = build_textbox_wide;
+
+  RPTAGS.utils.options.set_width         = set_width;
 
   RPTAGS.utils.options.collectionBrowser = collectionBrowser;
   RPTAGS.utils.options.listOfAllTags     = listOfAllTags;
