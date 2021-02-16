@@ -248,6 +248,7 @@ translations into other languages, you can.
     - [ ] Config profiles with Ace3
     - [ ] `:xs`, `:s`, etc -- waiting on fix for ElvUI
   - [ ] Modules
+    - [ ] Shortcuts for modules working again
     - [ ] Get labels working in ElvUI (work-around for old oUF)
     - [ ] XRP support
     - [ ] (long term) See if RPT can be generalized for any oUF addon
@@ -256,5 +257,8 @@ translations into other languages, you can.
   - [ ] Get RP:UF working
     - [x] Tag live previews
     - [x] RP:UF editor
+    - [ ] Tag editor buttons
+    - [ ] Unit frmes working
+    - [ ] Individualized settings per frame
   - [ ] Miscellaneous bug fixes
 
