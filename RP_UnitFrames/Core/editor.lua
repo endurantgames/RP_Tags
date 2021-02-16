@@ -95,7 +95,7 @@ function(self, event, ...)
         ColorButton:SetCallback("OnLeave", function() GameTooltip:FadeOut() end);
         ColorButton:SetCallback("OnClick",
           function(self)
-            self.editor.editBox:Insert(
+            Editor.editBox:Insert(
               RPTAGS.CONST.ICONS.WHITE_:gsub("{w}", 3):gsub("{r}", 255):gsub("{g}", 0):gsub("{b}", 255)
             );
           end);
@@ -117,7 +117,7 @@ function(self, event, ...)
             GameTooltip:Show();
           end);
         NoColorButton:SetCallback("OnLeave", function() GameTooltip:FadeOut() end);
-        NoColorButton:SetCallback("OnClick", function(self) self.editor.editBox:Insert("[nocolor]"); end);
+        NoColorButton:SetCallback("OnClick", function(self) Editor.editBox:Insert("[nocolor]"); end);
         toolBar:AddChild(NoColorButton);
 
   local function CreateButton(tag, label)
@@ -133,21 +133,21 @@ function(self, event, ...)
            function(self)
              GameTooltip:ClearLines();
              GameTooltip:SetOwner(Editor.frame, "ANCHOR_RIGHT");
-             GameTooltip:AddLine("[" .. Editor.tag .. "]", 0, 1, 1, false);
-             GameTooltip:AddLine( "Insert the tag for " .. loc("TAG_" .. Editor.tag .. "_DESC") .. ".", 1, 1, 1, true)
+             GameTooltip:AddLine("[" .. self.tag .. "]", 0, 1, 1, false);
+             GameTooltip:AddLine( "Insert the tag for " .. loc("TAG_" .. self.tag .. "_DESC") .. ".", 1, 1, 1, true)
              GameTooltip:Show();
            end);
          Button:SetCallback("OnLeave", function(Editor) GameTooltip:FadeOut() end);
          Button:SetCallback("OnClick", 
            function(self) 
-             local cursor = self.editor.editBox:GetCursorPosition();
-             local text   = self.editor.editBox:GetText();
+             local cursor = Editor.editBox:GetCursorPosition();
+             local text   = Editor.editBox:GetText();
              local inTag, prev_right, prev_left, next_right, next_left 
-                          = self.editor:FindTagEnds(text, cursor);
+                          = Editor:FindTagEnds(text, cursor);
              -- print("inTag", inTag, "prev_left", prev_left, "cursor", cursor, "next_right", next_right);
-             if inTag then self.editor.editBox:SetCursorPosition(next_right); end;
-             self.editor.editBox:Insert("[" .. self.tag .. "]");
-             self.editor.editBox:SetFocus();
+             if inTag then Editor.editBox:SetCursorPosition(next_right); end;
+             Editor.editBox:Insert("[" .. self.tag .. "]");
+             Editor.editBox:SetFocus();
            end);
          toolBar:AddChild(Button);
   end;
@@ -184,7 +184,7 @@ function(self, event, ...)
           function(self, key)
             local  cursor = self:GetCursorPosition();
             local  text = self:GetText();
-            local  inTag, prev_right, prev_left, next_right, next_left = self.editor:FindTagEnds(text, cursor);
+            local  inTag, prev_right, prev_left, next_right, next_left = Editor:FindTagEnds(text, cursor);
             if     key == "BACKSPACE" and not inTag and prev_right and prev_left and prev_right == cursor - 1
             then   self:HighlightText(prev_left, cursor);
             elseif key == "DELETE" and not inTag and next_left and next_right and next_left == cursor + 1

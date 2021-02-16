@@ -42,15 +42,22 @@ function(self, event, ...)
       return w;
     end;
   
+    local function getGroupHelp(group)
+      return "## " ..  group.title .. loc("TAGS") .. 
+             "\n\n" .. group.help .. "\n\n";
+    end;
+
     local function build_tag_group_help(group)
       local   args = {};
+
       args.groupHelp = 
       { type = "description",
-        name = "## " .. group.title .. " " .. loc("TAGS") .. "\n\n" .. group.help,
+        name = getGroupHelp(group),
         order = source_order(),
         width = "full",
         dialogControl = "LMD30_Description",
       };
+
       for i,  tag in pairs(group.tags)
       do  if     tag.title 
           then   args[tag.title] = build_subtitle_help(tag, group)
@@ -70,11 +77,47 @@ function(self, event, ...)
       return w;
     end;
   
-    local args = {}
+    local function build_group_link(group)
+      local w =
+      { type = "description",
+        order = source_order(),
+        dialogControl = "LMD30_Description",
+        name = "[" .. group.title .. " Tags]" ..
+               "(opt://help/tags/" .. group.key .. ")",
+        fontSize = "medium",
+      };
+      return w;
+    end;
+
+    function build_group_text(group)
+      local w =
+      { type = "description",
+        order = source_order(),
+        dialogControl = "LMD30_Description",
+        name = group.help,
+        fontSize = "small",
+      };
+      return w;
+    end;
+
+    local groupListText = loc("TAG_REFERENCE_MD") .. "\n\n";
+    local args =  
+    { header = 
+      { type = "description",
+        name = loc("TAG_REFERENCE_MD"),
+        dialogControl = "LMD30_Description",
+        order = source_order(),
+      },
+    };
+
     for _, group in pairs(tagData)
     do  args[group.key] = build_tag_group_help(group)
+        args[group.key .. "_Link"] = build_group_link(group)
+        args[group.key .. "_Text"] = build_group_text(group)
     end;
   
+    args.groupList = groupList;
+
     local w =
     { type = "group",
       name = loc("OPT_TAG_REFERENCE"),

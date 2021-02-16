@@ -412,4 +412,71 @@ function(self, event, ...)
   CONFIG.EDITOR_BUTTONS      = "rp:name|rp:color|rp:eyes|rp:eyecolor|rp:class|rp:icon|rp:height|rp:gender|rp:race|rp:fulltitle|rp:age|rp:body|rp:status|rp:statuscolor|rp:gendercolor";
   CONFIG.EDITOR_BUTTON_BAR   = true;
  
+  RPTAGS.CONST.RPUF.EDITOR_MAX_BUTTONS = 11;
+
+  CONFIG.EDITOR_NUM_BUTTONS = 7;
+  CONFIG.EDITOR_BUTTON_RPNAME          = true;
+  CONFIG.EDITOR_BUTTON_RPFIRSTNAME     = false;
+  CONFIG.EDITOR_BUTTON_RPLASTNAME      = false;
+  CONFIG.EDITOR_BUTTON_RPNICK          = false;
+  CONFIG.EDITOR_BUTTON_RPTITLE         = false;
+  CONFIG.EDITOR_BUTTON_RPFULLTITLE     = true;
+  CONFIG.EDITOR_BUTTON_RPCLASS         = true;
+  CONFIG.EDITOR_BUTTON_RPRACE          = true;
+  CONFIG.EDITOR_BUTTON_RPGENDER        = false;
+  CONFIG.EDITOR_BUTTON_RPPRONOUNS      = false;
+  CONFIG.EDITOR_BUTTON_RPAGE           = false;
+  CONFIG.EDITOR_BUTTON_RPWEIGHT        = false;
+  CONFIG.EDITOR_BUTTON_RPHEIGHT        = false;
+  CONFIG.EDITOR_BUTTON_RPSTATUS        = false;
+  CONFIG.EDITOR_BUTTON_RPIC            = false;
+  CONFIG.EDITOR_BUTTON_RPOOC           = false;
+  CONFIG.EDITOR_BUTTON_RPNPC           = false;
+  CONFIG.EDITOR_BUTTON_RPCURR          = false;
+  CONFIG.EDITOR_BUTTON_RPINFO          = false;
+  CONFIG.EDITOR_BUTTON_RPCOLOR         = true;
+  CONFIG.EDITOR_BUTTON_RPEYECOLOR      = false;
+  CONFIG.EDITOR_BUTTON_RPGENDERCOLOR   = false;
+  CONFIG.EDITOR_BUTTON_RPRELATIONCOLOR = false;
+  CONFIG.EDITOR_BUTTON_RPSTATUSCOLOR   = false;
+  CONFIG.EDITOR_BUTTON_RPAGECOLOR      = false;
+  CONFIG.EDITOR_BUTTON_RPHEIGHTCOLOR   = false;
+  CONFIG.EDITOR_BUTTON_RPWEIGHTCOLOR   = false;
+  CONFIG.EDITOR_BUTTON_RPICON          = true;
+  CONFIG.EDITOR_BUTTON_RPGENDERICON    = false;
+  CONFIG.EDITOR_BUTTON_RPRACEICON      = false;
+  CONFIG.EDITOR_BUTTON_RPSTATUSICON    = false;
+  CONFIG.EDITOR_BUTTON_RPGLANCE1ICON   = false;
+  CONFIG.EDITOR_BUTTON_RPGLANCE2ICON   = false;
+  CONFIG.EDITOR_BUTTON_RPGLANCE3ICON   = false;
+  CONFIG.EDITOR_BUTTON_RPGLANCE4ICON   = false;
+  CONFIG.EDITOR_BUTTON_RPGLANCE5ICON   = false;
+  CONFIG.EDITOR_BUTTON_RPGLANCEICONS   = false;
+  CONFIG.EDITOR_BUTTON_RPALIGNMENT     = false;
+  CONFIG.EDITOR_BUTTON_RPBIRTHPLACE    = false;
+  CONFIG.EDITOR_BUTTON_RPFAMILY        = false;
+  CONFIG.EDITOR_BUTTON_RPGUILD         = false;
+  CONFIG.EDITOR_BUTTON_RPMOTTO         = false;
+  CONFIG.EDITOR_BUTTON_RPRSTATUS       = false;
+  CONFIG.EDITOR_BUTTON_RPSEXUALITY     = false;
+  CONFIG.EDITOR_BUTTON_RPHOME          = false;
+  CONFIG.EDITOR_BUTTON_P               = false;
+  CONFIG.EDITOR_BUTTON_BR              = true;
+
+  RPTAGS.CONST.RPUF.EDITOR_BUTTON_LIST = 
+  { "rp:name", "rp:firstname", "rp:lastname", "rp:nick",
+    "rp:title", "rp:fulltitle", "rp:class", "rp:race",
+    "rp:gender", "rp:pronouns", "rp:age", "rp:height",
+    "rp:weight",
+    "rp:status", "rp:ic", "rp:ooc", "rp:npc", "rp:curr", "rp:info",
+    "rp:color", "rp:eyecolor", "rp:gendercolor", "rp:relationcolor",
+    "rp:statuscolor", "rp:agecolor", "rp:heightcolor", 
+    "rp:weightcolor",
+    "rp:icon", "rp:gendericon", "rp:statusicon", "rp:raceicon",
+    "rp:glance-1-icon", "rp:glance-2-icon", "rp:glance-3-icon",
+    "rp:glance-4-icon", "rp:glance-5-icon", "rp:glance-icons",
+    "rp:alignment", "rp:birthplace", "rp:family", "rp:guild",
+    "rp:motto", "rp:rstatus", "rp:home", "rp:sexuality",
+    "p", "br",
+  };
 end);

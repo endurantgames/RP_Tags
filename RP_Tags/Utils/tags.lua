@@ -7,16 +7,42 @@ function(self, event, ...)
   local locUtils = RPTAGS.utils.locale;
   local loc = locUtils.loc;
 
-  local function getTagLabel(tag)
-    return loc("TAG_" .. tag .. "_LABEL");
-  end;
-
   local function getTagDescription(tag)
     return loc("TAG_" .. tag .. "_DESC");
   end;
 
-  locUtils.tagLabel = getTagLabel;
-  locUtils.tagDesc = getTagDescription;
+  local function chooseDescInstead(tag)
+    local hash = 
+    { ["rp:npc"] = true,
+      ["rp:ooc"] = true,
+      ["rp:ic"]  = true,
+    };
+
+    return tag:match("icon") 
+        or tag:match("color") 
+        or tag:match("^rp:%a$") 
+        or hash[tag]
+        or not tag:match("rp:")
+  end;
+
+  local function getTagLabel(tag)
+    if chooseDescInstead(tag)
+    then return getTagDescription(tag)
+    else return loc("TAG_" .. tag .. "_LABEL")
+    end;
+  end;
+
+  local function getTagLabelColon()
+    if chooseDescInstead(tag)
+    then return ""
+    else return loc("TAG_" .. tag .. "_LABEL") .. ": "
+    end;
+  end;
+
+  locUtils.tagLabel      = getTagLabel;
+  locUtils.tagDesc       = getTagDescription;
+  locUtils.tagLabelColon = getTagLabelColon;
+
 end);
 
 RPTAGS.queue:WaitUntil("UTILS_TAGS",

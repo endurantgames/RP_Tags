@@ -9,21 +9,92 @@ function(self, event, ...)
   local Config       = Utils.config;
   local Get          = Config.get;
   local Set          = Config.set;
-  local loc          = Utils.locale.loc;
-  local Options      = Utils.options;
-  local source_order = Options.source_order
-  local Common       = Options.common;
-  local Pushbutton   = Options.pushbutton;
-  local Header       = Options.header;
-  local Instruct     = Options.instruct;
-  local Textbox      = Options.textbox;
-  local Dropdown     = Options.dropdown;
-  local Checkbox     = Options.checkbox;
-  local Spacer       = Options.spacer;
+  local Locale       = Utils.locale;
+  local loc          = Locale.loc;
+  local tagDesc      = Locale.tagDesc;
+  local tagLabel     = Locale.tagLabel;
+  local CONST        = RPTAGS.CONST;
+  local optUtils      = Utils.options;
+  local source_order = optUtils.source_order
+  local Blank_Line   = optUtils.blank_line
+  local Common       = optUtils.common;
+  local Pushbutton   = optUtils.pushbutton;
+  local Header       = optUtils.header;
+  local Instruct     = optUtils.instruct;
+  local Textbox      = optUtils.textbox;
+  local Dropdown     = optUtils.dropdown;
+  local Checkbox     = optUtils.checkbox;
+  local Spacer       = optUtils.spacer;
   local evalTagString = Utils.tags.eval;
   local openEditor   = Config.openEditor;
 
   local function requiresRPUF() return Config.get("DISABLE_RPUF"); end;
+
+  local function build_tag_editor_button(str)
+    local STR         = str:upper():gsub("[:%-]", "");
+    local setting     = "EDITOR_BUTTON_" .. STR;
+    local buttonCount = "EDITOR_NUM_BUTTONS";
+    local w           =
+    { type            = "toggle",
+      desc            = str,
+      name            = loc("TAG_" .. str .. "_DESC"),
+      order           = source_order(),
+      get             = function() return Get(setting) end,
+      disabled        = 
+        function() 
+        return (Get(buttonCount) >= CONST.RPUF.EDITOR_MAX_BUTTONS) 
+          and not Get(setting) 
+        end,
+      set             = 
+        function(self, value)
+          Set(setting, value);
+          Set(buttonCount, Get(buttonCount) + (value and 1 or -1));
+        end,
+    };
+
+    return w;
+  end;
+
+  local function build_editor_bar_mockup(str)
+    local w = 
+    { name = "Editor Button Bar",
+      type = "group",
+      order = source_order(),
+      inline = true,
+      args = 
+      { colorWheel =
+        { type = "execute",
+          name = RPTAGS.CONST.ICONS.COLORWHEEL,
+          desc = "Change text color",
+          order = source_order(),
+          width = 0.375,
+        },
+        noColor =
+        { type = "execute",
+          name = RPTAGS.CONST.ICONS.COLORWHEEL,
+          desc = "Reset Colors",
+          order = source_order(),
+          disabled = true,
+          width = 0.375,
+        },
+      },
+    };
+
+    for _, button in ipairs(CONST.RPUF.EDITOR_BUTTON_LIST)
+    do  w.args[button] =
+        { type = "execute",
+          name = tagLabel(button),
+          desc = tagDesc(button),
+          order = source_order(),
+          width = 0.75,
+          hidden = function() 
+            return not Get("EDITOR_BUTTON_" .. button:upper():gsub("[:%-]",""));
+          end,
+        }
+    end;
+
+    return w;
+  end;
 
   local function build_frame_scaler(str, hidden, disabled)
     local w    = Common("range", "CONFIG_", str .. "frame scale", hidden, disabled, true, true);
@@ -239,5 +310,7 @@ function(self, event, ...)
   RPTAGS.utils.options.tagpanel          = build_tagpanel;
   RPTAGS.utils.options.requiresRPUF      = requiresRPUF;
   RPTAGS.utils.options.frame_panel       = build_frame_panel;
+  RPTAGS.utils.options.editor_button     = build_tag_editor_button;
+  RPTAGS.utils.options.editor_bar_mockup = build_editor_bar_mockup;
 
 end);

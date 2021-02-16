@@ -79,6 +79,8 @@ function(self, event, ...)
   L["OPT_RPUF_LAYOUT"                   ] = RPUF_NAME .." Layout";
   L["OPT_RPUF_LAYOUT_I"                 ] = "Use these options to set the dimensions of the various panels in rp:UnitFrames Some layouts may not display all panels. For example, the details panel is only shown in frames set to the Detailed layout.";
   L["PANEL_RPUF_MAIN"                   ] = RPUF_NAME;
+  L["OPT_EDITOR_BUTTON_BAR"             ] = "Button Bar";
+  L["OPT_EDITOR_BUTTON_BAR_I"           ] = "Customize the tag editor by choosing which buttons you wish to have on the button bar. You can pick up to " .. RPTAGS.CONST.RPUF.EDITOR_MAX_BUTTONS .. " buttons.";
   L["PANEL_RPUF_PANELS"                 ] = NBSP .. "Panels";
   L["PANEL_RPUF_FRAMES"                 ] = NBSP .. "Frames";
   L["PANEL_RPUF_EDITOR"                 ] = NBSP .. "Editor";

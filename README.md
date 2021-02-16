@@ -247,6 +247,7 @@ translations into other languages, you can.
     - [x] Figure out why some things aren't turning to HTML in AMDC
     - [ ] Config profiles with Ace3
     - [ ] `:xs`, `:s`, etc -- waiting on fix for ElvUI
+    - [ ] Localization strings for options
   - [ ] Modules
     - [ ] Shortcuts for modules working again
     - [ ] Get labels working in ElvUI (work-around for old oUF)
@@ -256,9 +257,12 @@ translations into other languages, you can.
     - [ ] Update for new gender settings in trp3
   - [ ] Get RP:UF working
     - [x] Tag live previews
-    - [x] RP:UF editor
+    - [x] RP:UF editor layout
+    - [ ] Editor status bar buttons
     - [ ] Tag editor buttons
-    - [ ] Unit frmes working
+    - [ ] Unit frames fully working
     - [ ] Individualized settings per frame
+    - [ ] LibSharedMedia for frames
+    - [ ] Localization strings for editor
   - [ ] Miscellaneous bug fixes
 

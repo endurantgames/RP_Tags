@@ -29,7 +29,7 @@ function(self, event, ...)
   { name                   = loc("PANEL_HELP"),
     order                  = source_order(),
     type                   = "group",
-    childGroups            = "tab",
+    -- childGroups            = "tab",
     args                   =
     { intro                =
       { type               = "group",
@@ -45,6 +45,7 @@ function(self, event, ...)
       { name               = loc("OPT_RECIPES"),
         order              = source_order(),
         type               = "group",
+        childGroups        = "tab",
         args               =
         { header           = Header("recipes"),
           instruct         = Instruct("recipes"),
