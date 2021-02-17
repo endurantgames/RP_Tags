@@ -40,6 +40,11 @@ function(self, event, ...)
   L["EDIT_TOOLTIP"                      ] = "Edit Tooltip Tags";
   L["OPEN_RPTAGS_CONFIG"                ] = "Open " .. APP_NAME .. " Options";
   L["QUICK_SETTINGS"                    ] = "Quick Settings";
+  -- frames
+  L["PLAYERFRAME"                       ] = "Player Frame";
+  L["TARGETFRAME"                       ] = "Target Frame";
+  L["FOCUSFRAME"                        ] = "Focus Frame";
+  L["TARGETTARGETFRAME"                 ] = "Target-of-Target Frame"; 
   -- --- keybindings
   L["KEYBIND_DISABLE_RPUF"              ] = "Toggle " .. RPUF_NAME;
   L["KEYBIND_DISABLE_RPUF_TT"           ] = "Set a keybinding to toggle between " .. RPUF_NAME .. " being enabled and disabled.";

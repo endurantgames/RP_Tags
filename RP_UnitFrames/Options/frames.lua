@@ -5,33 +5,34 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("MODULE_G",
 function(self, event, ...)
 
-  local loc               = RPTAGS.utils.locale.loc;
-  local Get               = RPTAGS.utils.config.get;
-  local Set               = RPTAGS.utils.config.set;
-  local Default           = RPTAGS.utils.config.default;
-  local addOptions        = RPTAGS.utils.modules.addOptions;
-  local addOptionsPanel   = RPTAGS.utils.modules.addOptionsPanel;
-  local source_order      = RPTAGS.utils.options.source_order;
-  local Checkbox          = RPTAGS.utils.options.checkbox
-  local Color_Picker      = RPTAGS.utils.options.color_picker
-  local Common            = RPTAGS.utils.options.common
-  local Dropdown          = RPTAGS.utils.options.dropdown
-  local Header            = RPTAGS.utils.options.header
-  local Instruct          = RPTAGS.utils.options.instruct
-  local Keybind           = RPTAGS.utils.options.keybind
-  local Pushbutton        = RPTAGS.utils.options.pushbutton
-  local Spacer            = RPTAGS.utils.options.spacer
-  local Reset             = RPTAGS.utils.options.reset
-  local Frame_Scaler      = RPTAGS.utils.options.frame_scaler
-  local Dim_Slider = RPTAGS.utils.options.dimensions_slider;
-  local TagPanel          = RPTAGS.utils.options.tagpanel;
-  local reqRPUF           = RPTAGS.utils.options.requiresRPUF;
-  local collectionBrowser = RPTAGS.utils.options.collectionBrowser;
-  local Font              = RPTAGS.utils.options.font;
-  local split             = RPTAGS.utils.text.split;
-  local listOfAllTags     = RPTAGS.utils.options.listOfAllTags;
-  local ifConfig          = RPTAGS.utils.config.ifConfig;
-  local Frame_Panel       = RPTAGS.utils.options.frame_panel;
+  local Utils           = RPTAGS.utils;
+  local Config          = Utils.config;
+  local optUtils        = Utils.options;
+  local loc             = RPTAGS.utils.locale.loc;
+  local Get             = Config.get;
+  local Set             = Config.set;
+  local Default         = Config.default;
+  local addOptions      = Utils.modules.addOptions;
+  local addOptionsPanel = Utils.modules.addOptionsPanel;
+  local split           = RPTAGS.utils.text.split;
+  local source_order    = optUtils.source_order;
+  local Checkbox        = optUtils.checkbox
+  local Color_Picker    = optUtils.color_picker
+  local Common          = optUtils.common
+  local Dropdown        = optUtils.dropdown
+  local Header          = optUtils.header
+  local Instruct        = optUtils.instruct
+  local Keybind         = optUtils.keybind
+  local Pushbutton      = optUtils.pushbutton
+  local Spacer          = optUtils.spacer
+  local Reset           = optUtils.reset
+  local Frame_Scaler    = optUtils.frame_scaler
+  local Dim_Slider      = optUtils.dimensions_slider;
+  local TagPanel        = optUtils.tagpanel;
+  local reqRPUF         = optUtils.requiresRPUF;
+  local Font            = optUtils.font;
+  local Frame_Panel     = optUtils.frame_panel;
+  local Wide            = optUtils.set_width;
 
   local menu = {};
   menu.backdrop  =
@@ -61,31 +62,153 @@ function(self, event, ...)
     PAPERDOLL    = loc("RPUF_PAPERDOLL"        ),
     FULL         = loc("RPUF_FULL"             ), };
 
-  addOptionsPanel("RPUF_Frames",
-  { name                = loc("PANEL_RPUF_FRAMES"),
+  addOptionsPanel("RPUF_Main",
+  { name                = loc("RPUF_NAME"),
     order               = source_order(),
     type                = "group",
-    childGroups         = "tab",
+    -- childGroups         = "tab",
     args                =
-    { -- panel          = Header("rpuf layout", nil, reqRPUF ),
-      instruct          = Instruct("rpuf layout", nil, reqRPUF ),
+    { 
+      instruct        = Instruct("rpuf main",                            nil , reqRPUF ),
+      disableRPUF     = Checkbox("disable rpuf"                                             ),
+      disableBlizzard = Checkbox("disable blizzard",                     nil , reqRPUF ),
       shared            =
       { name            = "Shared Settings",
         order           = source_order(),
+        hidden          = function() return Get("DISABLE_RPUF") end,
         type            = "group",
         args            =
-        {
-          player        = Checkbox("LINK_FRAME_PLAYER", nil, 
-                            function() return Get("SHOW_FRAME_PLAYER")       and reqRPUF() end),
-          target        = Checkbox("LINK_FRAME_TARGET", nil, 
-                            function() return Get("SHOW_FRAME_TARGET")       and reqRPUF() end),
-          focus         = Checkbox("LINK_FRAME_FOCUS", nil, 
-                            function() return Get("SHOW_FRAME_FOCUS")        and reqRPUF() end),
-          targetTarget  = Checkbox("LINK_FRAME_TARGETTARGET", nil, 
-                            function() return Get("SHOW_FRAME_TARGETTARGET") and reqRPUF() end),
+        { instruct          = Instruct("rpuf layout", nil, reqRPUF ),
+          frameStatus =
+          { type = "group",
+            order = source_order(),
+            name = "Frames Status",
+            inline = true,
+            args =
+            { player =
+              { type = "description",
+                name = loc("PLAYERFRAME"),
+                width = 1,
+                fontSize = "medium",
+                order = source_order(),
+              },
+              playerSpacer = Spacer(),
+              playerShow =
+              { type = "toggle",
+                name = "Enabled",
+                get = function() return Get("SHOW_FRAME_PLAYER") end,
+                width = 0.5,
+                set = function(self, value) Set("SHOW_FRAME_PLAYER", value) end,
+                disabled = function() Get("DISABLE_RPUF") end,
+                order = source_order(),
+              },
+              playerLinked  = 
+              { type = "toggle",
+                name = "Linked",
+                get = function() return Get("LINK_FRAME_PLAYER") end,
+                width = 0.5,
+                set = function(self, value) Set("LINK_FRAME_PLAYER", value) end,
+                disabled = function() return Get("DISABLE_RPUF") or not Get("SHOW_FRAME_PLAYER") end,
+                order = source_order(),
+              },
+              target =
+              { type = "description",
+                width = 1,
+                fontSize = "medium",
+                name = loc("TARGETFRAME"),
+                order = source_order(),
+              },
+              targetSpacer = Spacer(),
+              targetShow =
+              { type = "toggle",
+                name = "Enabled",
+                get = function() return Get("SHOW_FRAME_TARGET") end,
+                width = 0.5,
+                set = function(self, value) Set("SHOW_FRAME_TARGET", value) end,
+                disabled = function() Get("DISABLE_RPUF") end,
+                order = source_order(),
+              },
+              targetLinked  = 
+              { type = "toggle",
+                name = "Linked",
+                get = function() return Get("LINK_FRAME_TARGET") end,
+                width = 0.5,
+                set = function(self, value) Set("LINK_FRAME_TARGET", value) end,
+                disabled = function() return Get("DISABLE_RPUF") or not Get("SHOW_FRAME_TARGET") end,
+                order = source_order(),
+              },
+              focus =
+              { type = "description",
+                name = loc("FOCUSFRAME"),
+                width = 1,
+                fontSize = "medium",
+                order = source_order(),
+              },
+              focusSpacer = Spacer(),
+              focusShow =
+              { type = "toggle",
+                name = "Enabled",
+                get = function() return Get("SHOW_FRAME_FOCUS") end,
+                set = function(self, value) Set("SHOW_FRAME_FOCUS", value) end,
+                width = 0.5,
+                disabled = function() Get("DISABLE_RPUF") end,
+                order = source_order(),
+              },
+              focusLinked   = 
+              { type = "toggle",
+                name = "Linked",
+                get = function() return Get("LINK_FRAME_FOCUS") end,
+                width = 0.5,
+                set = function(self, value) Set("LINK_FRAME_FOCUS", value) end,
+                disabled = function() return Get("DISABLE_RPUF") or not Get("SHOW_FRAME_FOCUS") end,
+                order = source_order(),
+              },
+              targetTarget = 
+              { type = "description",
+                name = loc("TARGETTARGETFRAME"),
+                width = 1,
+                fontSize = "medium",
+                order = source_order(),
+              },
+              targetTargetSpacer = Spacer(),
+              targetTargetShow =
+              { type = "toggle",
+                name = "Enabled",
+                get = function() return Get("SHOW_FRAME_TARGETTARGET") end,
+                set = function(self, value) Set("SHOW_FRAME_TARGETTARGET", value) end,
+                disabled = function() Get("DISABLE_RPUF") end,
+                width = 0.5,
+                order = source_order(),
+              },
+              targetTargetLinked        = 
+              { type = "toggle",
+                name = "Linked",
+                get = function() return Get("LINK_FRAME_TARGETTARGET") end,
+                set = function(self, value) Set("LINK_FRAME_TARGETTARGET", value) end,
+                disabled = function() return Get("DISABLE_RPUF") or not Get("SHOW_FRAME_TARGETTARGET") end,
+                order = source_order(),
+                width = 0.5,
+              }, -- beep
+            },
+          },
+          visibility    =
+          { type        = "group",
+            inline = true,
+            name = "Visibility",
+            order = source_order(),
+            args =
+            { 
+              hideCombat      = Wide(Checkbox("rpuf hide combat",                     nil , reqRPUF ), 1),
+              hidePetBattle   = Wide(Checkbox("rpuf hide petbattle",                  nil , reqRPUF ), 1),
+              hideVehicle     = Wide(Checkbox("rpuf hide vehicle",                    nil , reqRPUF ), 1),
+              hideParty       = Wide(Checkbox("rpuf hide party",                      nil , reqRPUF ), 1),
+              hideRaid        = Wide(Checkbox("rpuf hide raid",                       nil , reqRPUF ), 1),
+              hideDead        = Wide(Checkbox("rpuf hide dead",                       nil , reqRPUF ), 1),
+            },
+          },
           look          =  
           { type        = "group",
-            inline      = true,
+            -- inline      = true,
             name        = "Frame Appearance",
             order       = source_order(),
             args        =
@@ -95,11 +218,25 @@ function(self, event, ...)
               spi       = Spacer(),
               alpha     = Dim_Slider("RPUFALPHA", 0, 1, 0.05),
               spa       = Spacer(),
+              statusBar        =
+              { type        = "group",
+                inline      = true,
+                name        = "Status Bar Appearance",
+                order       = source_order(),
+                args        =
+                { align     = Dropdown("STATUS_ALIGN",  nil, reqRPUF, menu.align),
+                  spa       = Spacer(),
+                  height    = Dim_Slider("STATUSHEIGHT", 15, 140, 5),
+                  sph       = Spacer(),
+                  texture   = Dropdown("STATUS_TEXTURE", nil, reqRPUF, menu.texture ),
+                  spt       = Spacer(),
+                },
+              }, 
             },
           },
           sizes         =
           { type        = "group",
-            inline      = true,
+            -- inline      = true,
             name        = "Panel Dimensions",
             order       = source_order(),
             args        =
@@ -111,18 +248,15 @@ function(self, event, ...)
 
             },
           },
-          status        =
-          { type        = "group",
-            inline      = true,
-            name        = "Status Bar Appearance",
-            order       = source_order(),
-            args        =
-            { align     = Dropdown("STATUS_ALIGN",  nil, reqRPUF, menu.align),
-              spa       = Spacer(),
-              height    = Dim_Slider("STATUSHEIGHT", 15, 140, 5),
-              sph       = Spacer(),
-              texture   = Dropdown("STATUS_TEXTURE", nil, reqRPUF, menu.texture ),
-              spt       = Spacer(),
+          position =
+          { type = "group",
+            inline = true,
+            name = "Positioning",
+            order = source_order(),
+            args = 
+            {
+              lockFrames      = Checkbox("lock frames",                          nil , reqRPUF ),
+              resetFrames     = Pushbutton("reset frame locations", resetFrames, nil , reqRPUF ),
             },
           },
         },

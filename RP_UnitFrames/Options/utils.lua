@@ -21,6 +21,7 @@ function(self, event, ...)
   local Pushbutton   = optUtils.pushbutton;
   local Header       = optUtils.header;
   local Instruct     = optUtils.instruct;
+  local Wide         = optUtils.set_width;
   local Textbox      = optUtils.textbox;
   local Dropdown     = optUtils.dropdown;
   local Checkbox     = optUtils.checkbox;
@@ -253,30 +254,70 @@ function(self, event, ...)
 
 
     local w          =
-    { name           = str .. " Frame",
+    { name           = loc(str .. "FRAME"),
       order          = source_order(),
       type           = "group",
+      hidden         = function() return Get("DISABLE_RPUF") end,
       args           =
-      { show         = Checkbox(f.show,   nil,                                   requiresRPUF),
-        link         = Checkbox(f.link,   function() return not Get(f.show) end, requiresRPUF),
+      { show         = Wide(Checkbox(f.show,   nil, requiresRPUF), 1),
+        link         = Wide(Checkbox(f.link,   function() return not Get(f.show) end, requiresRPUF), 1),
         layout       = Dropdown(f.layout, function() return not Get(f.show) end, requiresRPUF, 
                          info.small and menu.small or menu.large),
         spacer       = Spacer(2),
         scale        = build_frame_scaler(str, function() return not Get(f.show) end, requiresRPUF),
+        visibility =
+        { type = "group",
+          inline = true,
+          name = "Visibility",
+          order = source_order(),
+          hidden = function() return Get("LINK_FRAME_" .. str) end,
+          disabled = requiresRPUF,
+          args =
+          { hideCombat      = Wide(Checkbox("rpuf hide combat",    nil , reqRPUF ), 1),
+            hidePetBattle   = Wide(Checkbox("rpuf hide petbattle", nil , reqRPUF ), 1),
+            hideVehicle     = Wide(Checkbox("rpuf hide vehicle",   nil , reqRPUF ), 1),
+            hideParty       = Wide(Checkbox("rpuf hide party",     nil , reqRPUF ), 1),
+            hideRaid        = Wide(Checkbox("rpuf hide raid",      nil , reqRPUF ), 1),
+            hideDead        = Wide(Checkbox("rpuf hide dead",      nil , reqRPUF ), 1),
+          },
+        },
+        positioning =
+        { type = "group",
+          name = "Positioning",
+          order = source_order(),
+          inline = true,
+          hidden = function() return not Get("SHOW_FRAME_" .. str) or Get("DISABLE_RPUF") end,
+          args =
+          { lockFrames      = Wide(Checkbox("lock frames", nil , reqRPUF ), 1),
+            resetFrames     = Pushbutton("reset frame locations", resetFrames, nil , reqRPUF ),
+          },
+        },
         look         =
         { type       = "group",
-          inline     = true,
+          -- inline     = true,
           name       = "Frame Appearance",
           order      = source_order(),
           hidden     = function() return Get(f.link) or not Get(f.show) end,
           args       =
           { backdrop = Dropdown(f.backdrop, nil, requiresRPUF, menu.backdrop ), spb = Spacer(),
             alpha    = build_dimensions_slider(f.alpha, 0, 1, 0.05),             spa = Spacer(),
+            statusBar    =
+            { type       = "group",
+              inline     = true,
+              name       = "Status Bar Appearance",
+              order      = source_order(),
+              hidden     = function() return Get(f.link) or not Get(f.show) end,
+              args       =
+              { align    = Dropdown(  f.sAlign,    nil, requiresRPUF, menu.align   ), spa = Spacer(),
+                texture  = Dropdown(  f.sTexture,  nil, requiresRPUF, menu.texture ), spt = Spacer(),
+                height   = build_dimensions_slider(f.sHeight,   15, 140, 5),                         sph = Spacer(),
+              },
+            },
           },
         },
         dimensions   =
         { type       = "group",
-          inline     = true,
+          -- inline     = true,
           name       = "Panel Dimensions",
           order      = source_order(),
           hidden     = function() return Get(f.link) or not Get(f.show) end,
@@ -286,18 +327,6 @@ function(self, event, ...)
             port     = build_dimensions_slider(f.portWidth,    25, 200,  5), spp = Spacer(),
             info     = build_dimensions_slider(f.infoWidth,   100, 400, 10), spn = Spacer(),
             detail   = build_dimensions_slider(f.detailHeight, 20, 250,  5), spd = Spacer(),
-          },
-        },
-        statusBar    =
-        { type       = "group",
-          inline     = true,
-          name       = "Status Bar Appearance",
-          order      = source_order(),
-          hidden     = function() return Get(f.link) or not Get(f.show) end,
-          args       =
-          { align    = Dropdown(  f.sAlign,    nil, requiresRPUF, menu.align   ), spa = Spacer(),
-            texture  = Dropdown(  f.sTexture,  nil, requiresRPUF, menu.texture ), spt = Spacer(),
-            height   = build_dimensions_slider(f.sHeight,   15, 140, 5),                         sph = Spacer(),
           },
         },
       },
