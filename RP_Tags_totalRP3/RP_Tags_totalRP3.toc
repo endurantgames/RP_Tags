@@ -1,5 +1,5 @@
 ## Interface: 90002
-## Version: 9.0.2 beta 3
+## Version: 9.0.2 beta 4
 ## Title: |cffdd33aarp|r|cffffffffTags|r RP Module: Total RP 3
 ## Author: Oraibi-MoonGuard
 ## Notes: |cffdd33aarp|r|cffffffffTags|r rpTags integration module for Total RP 3

@@ -1,5 +1,5 @@
 ## Interface: 90002
-## Version: 9.0.2 beta 3
+## Version: 9.0.2 beta 4
 ## Title: |cffdd33aarp|r|cffffffffTags|r (dev)
 ## Author: Oraibi-MoonGuard
 ## Notes: Custom unit frames with fields from roleplaying profiles
@@ -10,6 +10,6 @@
 ## X-RPQVersion: 1.004
 ## X-RPQModuleID: rptags
 ## X-RPQModuleType: core
-## X-VersionDate: 2021-02-12
+## X-VersionDate: 2021-02-16
 
 load.xml
