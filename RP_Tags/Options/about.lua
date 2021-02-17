@@ -22,6 +22,7 @@ function(self, event, ...)
   local Instruct     = optUtils.instruct
   local Markdown     = optUtils.markdown
   local Spacer       = optUtils.spacer
+  local db           = RP_TagsDB
 
   local debugMessage = "To load debugging information, erase this message and replace it with only one of the following, no blank lines or leading spaces:\n\n    |cffff0000debug|r |cffffff00libs|r\n    |cffff0000debug|r |cffffff00addons|r\n    |cffff0000debug|r |cffffff00config|r\n\nYou can enter more than one, separated by spaces, but this is |cffff0000NOT|r recommended as it may cause your WoW client to lag indefinitely.";
 
@@ -195,7 +196,7 @@ function(self, event, ...)
                walk(RPTAGS.cache.addOns, 1);
           elseif sec:match("^config")
           then addH("Config", 0); 
-               walk(RP_TagsDB, 1); 
+               walk(db, 1); 
           else addH("Unknown Parameter", 0);
                addP("debug", sec);
           end;
@@ -289,7 +290,7 @@ function(self, event, ...)
     childGroups            = "tab",
     args                   =
     { header = AboutHeader,
-      verison = Version,
+      version = Version,
       changes = Changes,
       credits = Credits,
       debug = Debug,

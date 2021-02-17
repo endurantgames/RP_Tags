@@ -204,7 +204,7 @@ The new changes since the previous version of RP\_Tags.
 
     /rptags version
 
-The version number of RP\_Tags and associated modules and other addons.
+The version numbers of RP\_Tags and associated modules and other addons.
 
 ## Configuration
 

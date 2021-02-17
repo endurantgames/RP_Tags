@@ -197,23 +197,11 @@ function(self, event, ...)
         return w;
   end;
   
-  local function build_checkbox_full_width(str, hidden, disabled)
-        local w    = build_common("toggle", "CONFIG_", str, hidden, disabled, true, true);
-        w.width = "full";
-        return w;
-  end;
-
   local function build_textbox(str, hidden, disabled)
         local w    = build_common("input", "CONFIG_", str, hidden, disabled, true, true);
         return w;
   end;  
   
-  local function build_textbox_wide(str, hidden, disabled)
-        local w    = build_common("input", "CONFIG_", str, hidden, disabled, true, true);
-        w.width = "full";
-        return w;
-  end;  
-
   local function build_dropdown(str, hidden, disabled, values)
         local w    = build_common("select", "CONFIG_", str, hidden, disabled, true, true);
         w.values   = values or MENUS[str:upper():gsub("%s+","_")]
@@ -293,7 +281,7 @@ function(self, event, ...)
         return w;
   end
   
-  local function build_multi_reset(list, hidden, disabled)
+  local function build_reset(list, hidden, disabled)
         local w = build_pushbutton(
           "reset these values", 
           function() 
@@ -305,24 +293,6 @@ function(self, event, ...)
         return w;
   end;
   
-  local function build_reset(str, hidden, disabled)
-        local w = build_pushbutton(
-          "reset",
-          function() Config.reset(str:upper():gsub("%s+","_")) end,
-          hidden, disabled
-        );
-        w.width = 1 / 2;
-        return w
-  end;
-
-  local function build_question_mark(str, hidden, disabled)
-        local w = build_common("execute", "question_", "mark", hidden, disabled);
-        w.func = function() end;
-        w.desc = str;
-        w.width = 0.10;
-        return w;
-  end;
-
   local function build_header(str, level, hidden, disabled)
         local w = build_markdown(
                     string.rep("#", level or 1) .. 
@@ -409,52 +379,37 @@ function(self, event, ...)
 
   local function set_width(w, width) w.width = width or "full"; return w; end;
 
-  local function collectionBrowser() return end;
-
-  local function listOfAllTags() return {}; end;
-
   local function build_plugin_mountpoint(str)
     RPTAGS.cache.Plugins = RPTAGS.cache.Plugins or {};
     RPTAGS.cache.Plugins[str] = RPTAGS.cache.Plugins[str] or {};
     return RPTAGS.cache.Plugins[str];
   end;
     
-  RPTAGS.utils.options                   = RPTAGS.utils.options or {};
-  RPTAGS.utils.options.panel             = RPTAGS.utils.options.panel or {};
-  RPTAGS.utils.options.source_order      = source_order;
+  RPTAGS.utils.options  = RPTAGS.utils.options or {};
+  optUtils              = RPTAGS.utils.options;
+  optUtils.source_order = source_order;
+  optUtils.common       = build_common
+  optUtils.set_width    = set_width;
 
-  RPTAGS.utils.options.blank_line        = build_blank_line;
-  RPTAGS.utils.options.checkbox          = build_checkbox
-  RPTAGS.utils.options.checkbox_full     = build_checkbox_full_width
-  RPTAGS.utils.options.color_picker      = build_color_picker
-  RPTAGS.utils.options.common            = build_common
-  RPTAGS.utils.options.dropdown          = build_dropdown
-  RPTAGS.utils.options.header            = build_header
-  RPTAGS.utils.options.instruct          = build_instruct
-  RPTAGS.utils.options.label             = build_label
-  RPTAGS.utils.options.markdown          = build_markdown
-  RPTAGS.utils.options.multi_reset       = build_multi_reset
-  RPTAGS.utils.options.panel.taghelp     = build_panel_taghelp
-  RPTAGS.utils.options.panel.version     = build_panel_version
-  RPTAGS.utils.options.font              = build_lsm_font;
-  RPTAGS.utils.options.background        = build_lsm_background;
-  RPTAGS.utils.options.border            = build_lsm_border;
-  RPTAGS.utils.options.statusbar         = build_lsm_statusbar;
-  RPTAGS.utils.options.sound             = build_lsm_sound;
-  RPTAGS.utils.options.pushbutton        = build_pushbutton;
-  RPTAGS.utils.options.recipe            = build_recipe;
-  RPTAGS.utils.options.reset             = build_reset
-  RPTAGS.utils.options.slider            = build_slider;
-  RPTAGS.utils.options.spacer            = build_spacer;
-  RPTAGS.utils.options.textbox           = build_textbox;
-  RPTAGS.utils.options.question_mark     = build_question_mark;
-  RPTAGS.utils.options.keybind           = build_keybind;
-  RPTAGS.utils.options.textbox_wide      = build_textbox_wide;
+  optUtils.background   = build_lsm_background;
+  optUtils.blank_line   = build_blank_line;
+  optUtils.border       = build_lsm_border;
+  optUtils.checkbox     = build_checkbox
+  optUtils.color_picker = build_color_picker
+  optUtils.dropdown     = build_dropdown
+  optUtils.font         = build_lsm_font;
+  optUtils.header       = build_header
+  optUtils.instruct     = build_instruct
+  optUtils.keybind      = build_keybind;
+  optUtils.label        = build_label
+  optUtils.markdown     = build_markdown
+  optUtils.pushbutton   = build_pushbutton;
+  optUtils.reset        = build_reset
+  optUtils.slider       = build_slider;
+  optUtils.sound        = build_lsm_sound;
+  optUtils.spacer       = build_spacer;
+  optUtils.statusbar    = build_lsm_statusbar;
+  optUtils.textbox      = build_textbox;
 
-  RPTAGS.utils.options.set_width         = set_width;
-
-  RPTAGS.utils.options.collectionBrowser = collectionBrowser;
-  RPTAGS.utils.options.listOfAllTags     = listOfAllTags;
- 
 -- RPQ -----------------------------------------------------------------------------------------------------------------------------------------------
 end);
