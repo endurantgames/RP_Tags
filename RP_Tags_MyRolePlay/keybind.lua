@@ -11,6 +11,7 @@
 local addOnName, ns = ...
 local RPTAGS        = RPTAGS;
 local Module        = RPTAGS.queue:GetModule(addOnName);
+local Target = GetAddOnMetadata(addOnName, "X-RPQModuleTarget");
 
 Module:WaitUntil("MODULE_G",
 function(self, event, ...)
@@ -25,33 +26,29 @@ end);
 
 Module:WaitUntil("CORE_KEYBIND",
 function(self, event, ...)
-  local RPTAGS     = RPTAGS;
+  local registerKeybind = RPTAGS.utils.keybind.register;
+  local linkHandler = RPTAGS.utils.links.handler;
+  local run = RPTAGS.utils.modules.runFunction;
   
-  local notify = RPTAGS.utils.text.notify;
-  local Config = RPTAGS.utils.config;
-  local loc    = RPTAGS.utils.locale.loc;
-  
-  local function keybind_IC_OOC()
+  registerKeybind("IC_OOC", 
+    function()
       if msp.my.FC == "1" -- ooc
-         then mrp.Commands.ic()
-         else mrp.Commands.ooc()
+         then linkHandler("addon://MyRolePlay?setic")
+         else linkHandler("addon://MyRolePlay?setooc")
       end;
-  end;
+    end
+  );
   
-  local function keybind_mouseoverOpen()
-    if not UnitExists('mouseover') or not UnitIsPlayer('mouseover') then return nil end;
-    local unitID = RPTAGS.get.core.unitID('mouseover');
-         if not unitID then return nil end;
-         SlashCmdList.MYROLEPLAY("show " .. unitID);
-    end;
+  registerKeybind("MOUSEOVER_OPEN",
+    function()
+      if   not UnitExists('mouseover') 
+        or not UnitIsPlayer('mouseover') 
+      then return nil 
+      end;
+      local unitID = RPTAGS.utils.get.core.unitID('mouseover');
+      if not unitID then return nil end;
+      run(Target, "showplayer", unitID);
+    end
+  );
            
-  RPTAGS.utils.keybinds = RPTAGS.utils.keybinds or {};
-
-  RPTAGS.utils.keybinds.ic_ooc        = keybind_IC_OOC;
-  RPTAGS.utils.keybinds.mouseoverOpen = keybind_mouseoverOpen;
-  
-    -- keybindings
-  BINDING_HEADER_RPTAGS              = RPTAGS.utils.locale.loc("APP_NAME");
-  BINDING_NAME_RPTAGS_IC_OOC         = RPTAGS.utils.locale.loc("KEYBIND_IC_OOC");
-  BINDING_NAME_RPTAGS_MOUSEOVER_OPEN = RPTAGS.utils.locale.loc("KEYBIND_MOUSEOVER_OPEN");
 end);

@@ -41,7 +41,7 @@ function(self, event, ...)
   registerFunction("MyRolePlay", "showplayer", mapMrpSlash("show"      ));
   registerFunction("MyRolePlay", "setcurr",    mapMrpSlash("currently" ));
   registerFunction("MyRolePlay", "setic",      mapMrpSlash("ic"        ));
-  registerFunction("MyRolePlay", "setic",      mapMrpSlash("ooc"       ));
+  registerFunction("MyRolePlay", "setooc",     mapMrpSlash("ooc"       ));
   registerFunction("MyRolePlay", "about",      mapMrpSlash("version"   ));
 
 end);

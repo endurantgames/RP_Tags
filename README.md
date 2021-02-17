@@ -225,32 +225,38 @@ translations into other languages, you can.
 
 (Primarily for my own use)
 
-  - [ ] Core
-    - [x] Get configuration/help working
-    - [x] Change versions to 9.0.2
-    - [x] Keybinds
-    - [x] Something I forgot
-    - [x] Make sure all the libraries are current
-    - [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
-    - [x] Figure out why some things aren't turning to HTML in AMDC
-    - [ ] Config profiles with Ace3
-    - [ ] `:xs`, `:s`, etc -- waiting on fix for ElvUI
-    - [ ] Localization strings for options
-  - [ ] Modules
-    - [ ] Shortcuts for modules working again
-    - [ ] Get labels working in ElvUI (work-around for old oUF)
-    - [ ] XRP support
-    - [ ] (long term) See if RPT can be generalized for any oUF addon
-    - [ ] (long term) See if RPT can be generalized for any MSP addon
-    - [ ] Update for new gender settings in trp3
-  - [ ] Get RP:UF working
-    - [x] Tag live previews
-    - [x] RP:UF editor layout
-    - [ ] Editor status bar buttons
-    - [x] Tag editor buttons
-    - [ ] Unit frames fully working
-    - [ ] Individualized settings per frame
-    - [ ] LibSharedMedia for frames
-    - [ ] Localization strings for editor
-  - [ ] Miscellaneous bug fixes
+- [ ] Core
+ -    [x] Get configuration/help working
+ -    [x] Change versions to 9.0.2
+ -    [x] Keybinds
+ -    [x] Something I forgot
+ -    [x] Make sure all the libraries are current
+ -    [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
+ -    [x] Figure out why some things aren't turning to HTML in AMDC
+ -    [ ] Config profiles with Ace3
+ -    [ ] `:xs`, `:s`, etc -- waiting on fix for ElvUI
+ -    [ ] Localization strings for options
+-  [ ] Modules
+ -     [ ] MyRoleplay
+  -        [x] Keybinds working
+ -     [ ] ElvUI
+  -        [ ] Get labels working in ElvUI (work-around for old oUF)
+ -     [ ] TRP3
+  -        [ ] Update for new gender settings in trp3
+  -        [ ] Keybinds working
+ -     [ ] XRP
+  -        [ ] XRP support
+  -    [ ] RP:UnitFrames 
+   -       [x] Tag live previews
+   -       [x] RP:UF editor layout
+   -       [x] Tag editor buttons
+   -       [ ] Keybinds working
+   -       [ ] Editor status bar buttons
+   -       [ ] Unit frames fully working
+   -       [ ] Individualized settings per frame
+   -       [ ] LibSharedMedia for frames
+   -       [ ] Localization strings for editor
+   -   [ ] (long term) See if RPT can be generalized for any oUF addon
+   -   [ ] (long term) See if RPT can be generalized for any MSP addon
+ - [ ] Miscellaneous bug fixes
 
