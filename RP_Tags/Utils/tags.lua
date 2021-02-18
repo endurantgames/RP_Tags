@@ -96,16 +96,10 @@ function(self, event, ...)
     RPTAGS.cache.help = RPTAGS.cache.help or {};
     RPTAGS.cache.help.tagIndex = RPTAGS.cache.help.tagIndex or {};
   
-    local registerTag = RPTAGS.utils.tags.registerTag;
-    local function sizeTrim(t, s) return t end; -- this is a dummy function for now
-  
-    local sizes = 
-    { ["(xs)"] = Config.get("TAG_SIZE_XS"), 
-      ["(s)"] = Config.get("TAG_SIZE_S"),
-      ["(m)"] = Config.get("TAG_SIZE_M"),
-      ["(l)"] = Config.get("TAG_SIZE_L"),
-      ["(xl)"] = Config.get("TAG_SIZE_XL"),
-    }
+    local registerTag                = RPTAGS.utils.tags.registerTag;
+    local registerTagAndSizeVariants = RPTAGS.utils.tags.sizeVariants;
+    local registerLabel              = RPTAGS.utils.tags.registerLabel;
+
     if     tag.external or group.external
     then   -- if it's an external source then skip
     elseif tag.title
@@ -113,58 +107,36 @@ function(self, event, ...)
     else   -- first we make the core tag
            local tagMethod, tagNames, prefix, suffix = tag.method, { tag.name }, "", "";
   
-           if RPTAGS.CONST.UNSUP[tag.name] then tagMethod = RPTAGS.utils.text[RPTAGS.CONST.UNSUP[tag.name]]; end;
+           if   RPTAGS.CONST.UNSUP[tag.name] 
+           then tagMethod = RPTAGS.utils.text[RPTAGS.CONST.UNSUP[tag.name]]; 
+           end;
   
-           if tag.alias then for _, aka in ipairs(tag.alias) do table.insert(tagNames, aka) end; end;
-  
-           -- finally, does it have size variants?
-           if tag.size == true
-           then tagMethod = 
-                  function(u, u2, c, ...) 
-                    return sizeTrim(tag.method(u, u2, ...), c, tag.name) 
-                  end;
+           if   tag.alias 
+           then for _, aka in ipairs(tag.alias) do  table.insert(tagNames, aka) end; 
            end;
   
            -- time to build our tags!
            for _, tname in ipairs(tagNames)
-           do  registerTag(tname, tagMethod, tag.extraEvents)
-               if   tag.size
-               then for modtag, size in pairs(sizes)
-                    do   registerTag(tname .. modtag, 
-                           function(u, u2) return sizeTrim(tag.method(u, u2, size)) end,
-                           tagExtraEvents
-                         );
-                    end
+           do  if   tag.size -- do we have size variants?
+               then registerTagAndSizeVariants(tname, tagMethod, tag.extraEvents);
+               else registerTag( tname, tagMethod, tag.extraEvents);
                end;
                if   tag.label
-               then local label = split(tag.label, "|") 
-                    local prefix, suffix = label[1] or "", label[2] or ""; 
-                    -- registerTag(prefix .. "$>" .. tname .. "-label<$" .. 
-                    --   suffix, tagMethod, tagExtraEvents);
-                    registerTag(
-                      tname .. "-label",
-                      function(...)
-                        local result = tagMethod(...);
-                        if   result and result ~= ""
-                        then return prefix .. ": " .. result;
-                        else return result;
-                        end
-                      end,
-                      tag.extraEvents
-                    );
+               then RPTAGS.utils.tags.registerLabel(tname, tagMethod, tag.extraEvents, tag.label);
                end;
                RPTAGS.cache.help.tagIndex[tag.name] = "opt://help/tags/" .. group.key;
            end;
-
       end;
     return tag, group; -- pass these values through in case a module needs it
     -- and that tag is done!
   end;
   
   -- this will be extended by UF-specific functions
-  local function registerTag( ... ) return ... end;
-  local function refreshFrame(... ) return ... end;
-  local function refreshAll(  ... ) return ... end;
+  local function registerTag(             ... ) return ... end;
+  local function refreshFrame(            ... ) return ... end;
+  local function refreshAll(              ... ) return ... end;
+  local function registerTagSizeVariants( ... ) return ... end;
+  local function registerTagLabel(        ... ) return ... end;
    
   local function evalTagString(tagstr, unit, realUnit, use_oUF) -- adapted from oUF/elements/tags.lua
     if not tagstr then return "" end;
@@ -305,6 +277,8 @@ function(self, event, ...)
   RPTAGS.utils.tags.eval         = evalTagString;
   RPTAGS.utils.tags.evalPlayer   = evalTagStringAsPlayer;
   RPTAGS.utils.tags.registerTag  = registerTag;
+  RPTAGS.utils.tags.sizeVariants = registerTagSizeVariants;
+  RPTAGS.utils.tags.registerLabel = registerTagLabel;
   RPTAGS.utils.tags.addTag       = addTag;
   RPTAGS.utils.tags.addTagGroup  = addTagGroup;
   RPTAGS.utils.tags.addAllTags   = addAllTags;

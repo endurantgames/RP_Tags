@@ -94,34 +94,38 @@ function(self, event, ...)
   end;
 
   local function textTruncate(text, maxLength)
-        local ellipse = Config("REAL_ELLIPSES")  and "…" or "..." ;
-        if text:len() > maxLength 
-           then text = text:sub(1, maxLength) .. ellipse 
-           end; -- if
-        return text 
+    text = text or "";
+    local ellipse = Config.get("REAL_ELLIPSES") and "…" or "..." ;
+    if text:len() > maxLength 
+       then text = text:sub(1, maxLength) .. ellipse 
+       end; -- if
+    return text 
   end;
 
   local function sizeTrim(text, size)
-    size = size or "0";
-    size = size:gsub("%s",""):lower();
-    local uniq = RPTAGS.cache.sizeCodes;
-    if   not uniq
-    then local keys =
-         { loc("SIZE_CODE_XS"),
-           loc("SIZE_CODE_S"),
-           loc("SIZE_CODE_M"),
-           loc("SIZE_CODE_L"),
-           loc("SIZE_CODE_XL"),
-         };
-        uniq, _ = sliceUp(keys)
-        RPTAGS.cache.sizeCodes = uniq;
+    local hash =
+    { xs              = Config.get("TAG_SIZE_XS" ),
+      extrasmall      = Config.get("TAG_SIZE_XS" ),
+      ["extra-small"] = Config.get("TAG_SIZE_XS" ),
+      s               = Config.get("TAG_SIZE_S"  ),
+      small           = Config.get("TAG_SIZE_S"  ),
+      m               = Config.get("TAG_SIZE_M"  ),
+      medium          = Config.get("TAG_SIZE_M"  ),
+      l               = Config.get("TAG_SIZE_L"  ),
+      large           = Config.get("TAG_SIZE_L"  ),
+      xl              = Config.get("TAG_SIZE_XL" ),
+      extralarge      = Config.get("TAG_SIZE_XL" ),
+      ["extra-large"] = Config.get("TAG_SIZE_XL" ),
+    };
+
+    size = tonumber(hash[size] or size or 0); 
+
+    if   size == 0 
+    then return text 
+    else return textTruncate(text, size) 
     end;
-    size = uniq[size] and Config.get("TAG_SIZE_" .. uniq[size])
-        or tonumber(size);
-
-    return size > 0 and textTruncate(text, size) or text;
-
   end;
+
   -- ---------------------------------------------------------------------------------------------------------------------
   
         -- changes multiple [[[these]]] into hilited text

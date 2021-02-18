@@ -226,37 +226,48 @@ translations into other languages, you can.
 (Primarily for my own use)
 
 - [ ] Core
- -    [x] Get configuration/help working
- -    [x] Change versions to 9.0.2
- -    [x] Keybinds
- -    [x] Something I forgot
- -    [x] Make sure all the libraries are current
- -    [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
- -    [x] Figure out why some things aren't turning to HTML in AMDC
- -    [ ] Config profiles with Ace3
- -    [ ] `:xs`, `:s`, etc -- waiting on fix for ElvUI
- -    [ ] Localization strings for options
--  [ ] Modules
- -     [ ] MyRoleplay
-  -        [x] Keybinds working
- -     [ ] ElvUI
-  -        [ ] Get labels working in ElvUI (work-around for old oUF)
- -     [ ] TRP3
-  -        [ ] Update for new gender settings in trp3
-  -        [ ] Keybinds working
- -     [ ] XRP
-  -        [ ] XRP support
-  -    [ ] RP:UnitFrames 
-   -       [x] Tag live previews
-   -       [x] RP:UF editor layout
-   -       [x] Tag editor buttons
-   -       [ ] Keybinds working
-   -       [ ] Editor status bar buttons
-   -       [ ] Unit frames fully working
-   -       [ ] Individualized settings per frame
-   -       [ ] LibSharedMedia for frames
-   -       [ ] Localization strings for editor
-   -   [ ] (long term) See if RPT can be generalized for any oUF addon
-   -   [ ] (long term) See if RPT can be generalized for any MSP addon
- - [ ] Miscellaneous bug fixes
+  - [x] Get configuration/help working
+  - [x] Change versions to 9.0.2
+  - [x] Keybinds
+  - [x] Something I forgot
+  - [x] Make sure all the libraries are current
+  - [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
+  - [x] Figure out why some things aren't turning to HTML in AMDC
+  - [ ] Localization strings for options
+- [ ] Modules
+  - [ ] MyRoleplay
+    - [x] Keybinds working
+    - [x] Index addon functions
+    - [ ] Confirm which tags should be `unsup` for MRP
+  - [ ] TRP3
+    - [ ] Index addon functions
+    - [ ] Keybinds working
+  - [ ] ElvUI
+    - [x] Get labels working in ElvUI (work-around for old oUF)
+    - [x] Get size modifiers working in ElvUI (work-around for old oUF) 
+    - [ ] Index addon functions
+    - [ ] Don't "add" oUF/ElvUI tags to listing
+  - [ ] RP:UnitFrames 
+    - [x] Tag live previews
+    - [x] RP:UF editor layout
+    - [x] Tag editor buttons
+    - [x] Options for per-frame settings
+    - [x] Get labels working in RPUF
+    - [x] Get size modifiers working in RPUF
+    - [ ] Index addon functions
+    - [ ] Keybinds working
+    - [ ] Editor status bar (lower) buttons
+    - [ ] Unit frames fully working
+    - [ ] Individualized settings per frame
+    - [ ] LibSharedMedia for frames
+    - [ ] Localization strings for editor
+- [ ] Long-Term
+  - [ ] Core
+    - [ ] Config profiles with Ace3?
+  - [ ] Modules
+    - [ ] See if RPT can be generalized for any oUF addon
+    - [ ] See if RPT can be generalized for any MSP addon
+    - [ ] Update for new gender settings in trp3
+    - [ ] XRP support?
+- [ ] Miscellaneous bug fixes
 

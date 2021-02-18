@@ -29,7 +29,7 @@ function(self, event, ...)
   -- local UF        = E:GetModule('UnitFrames');
   --
   RPT.version     = RPTAGS.utils.locale.loc("APP_VERSION");
-  RPT.versionMinE = 10.49
+  RPT.versionMinE = 12.2
   RPT.title       = RPTAGS.utils.locale.loc("APP_NAME");
   P['RPT']        = { ['enable'] = false, }
     
@@ -92,41 +92,71 @@ function(self, event, ...)
 
   -- registers one tag, an event to wait for, and a method to invoke when found --------------------------
   local function registerTag(tagName, tagMethod, tagExtraEvents)
-    local useTag, useMethod;
 
-    local prefix, foundTag, suffix = tagName:match("^(.+)$>(.+)<$(.+)$");
+    local Events  = _G["ElvUF"].Tags.Events;
+    local Methods = _G["ElvUF"].Tags.Methods;
 
-    if foundTag
-    then useTag = foundTag;
-         useMethod = function(...) return prefix .. (tagMethod(...) or "") .. suffix end;
-    else useTag = tagName;
-         useMethod = tagMethod;
-    end;
-
-    if not _G["ElvUF"].Tags.Events[useTag] -- only make the tag if there isn't one by that name already
-    then   _G["ElvUF"].Tags.Events[useTag] = RPTAGS.CONST.MAIN_EVENT .. 
-                                             (tagExtraEvents and (" " .. tagExtraEvents) or "");
-           _G["ElvUF"].Tags.Methods[useTag] = useMethod;
-    else 
+    if not Events[tagName] -- only make the tag if there isn't one by that name already
+    then   Events[tagName] = 
+             RPTAGS.CONST.MAIN_EVENT .. 
+             (tagExtraEvents and (" " .. tagExtraEvents) or "");
+           Methods[tagName] = tagMethod;
     end;
 
     return tagName, tagMethod, tagExtraEvents;
   end; -- function
   
   local function addTag(tag, group)
-     if   tag and tag.name and group
-     then local tagDesc = tag.desc;
-          if RPTAGS.CONST.UNSUP[tag.name] 
-          then tagDesc = "|cff" .. RPTAGS.utils.config.get("COLOR_UNKNOWN") .. tagDesc .. "|r" 
-          end;
-          E:AddTagInfo(tag.name, MAP.TAG[tag.name] or MAP.GROUP[group.key] or group.title, tagDesc);
-     end;
-     return tag, group;
+   
+    if   tag and tag.name and group
+    then local tagDesc = tag.desc;
+         if RPTAGS.CONST.UNSUP[tag.name] 
+         then tagDesc = "|cff" .. RPTAGS.utils.config.get("COLOR_UNKNOWN") .. tagDesc .. "|r" 
+         end;
+         E:AddTagInfo(tag.name, MAP.TAG[tag.name] or MAP.GROUP[group.key] or group.title, tagDesc);
+    end;
+    return tag, group;
   end;
 
-  RPTAGS.utils.modules.extend({ 
-      ["tags.registerTag"] = registerTag,
-      ["tags.addTag"]      = addTag,
+  local function registerTagSizeVariants(tagName, tagMethod, tagExtraEvents)
+    local sizeTrim = RPTAGS.utils.text.sizeTrim;
+    local sizes = { "xs", "s", "m", "l", "xl",
+                    "extrasmall", "small", "medium", "large",
+                    "extralarge", "extra-small", "extra-large" };
+    for _, size in ipairs(sizes)
+    do  RPTAGS.utils.tags.registerTag(
+          tagName .. "(" .. size .. ")",
+          function(...) return sizeTrim(tagMethod( ... ), size) end,
+          tagExtraEvents
+        );
+    end;
+    RPTAGS.utils.tags.registerTag(tagName, tagMethod, tagExtraEvents);
+    return tagName, tagMethod, tagExtraEvents;
+  end;
+
+  local function registerTagLabel(tagName, tagMethod, tagExtraEvents, label)
+    local split = RPTAGS.utils.text.split;
+    local lab = split(label, "|");
+    local prefix, suffix = lab[1] or "", lab[2] or "";
+    RPTAGS.utils.tags.registerTag(
+      tagName .. "-label",
+      function(...)
+        local result = tagMethod( ... );
+        if result and result ~= ""
+        then return prefix .. ": " .. result .. suffix;
+        else return result
+        end;
+      end,
+      tagExtraEvents
+    );
+    return tagName, tagMethod, tagExtraEvents, label;
+  end;
+
+  RPTAGS.utils.modules.extend(
+  { ["tags.registerTag"  ] = registerTag,
+    ["tags.addTag"       ] = addTag,
+    ["tags.sizeVariants" ] = registerTagSizeVariants,
+    ["tags.registerLabel"] = registerTagLabel,
   });
 
 end);

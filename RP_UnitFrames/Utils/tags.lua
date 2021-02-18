@@ -41,18 +41,40 @@ function(self, event, ...)
 
     if not RPTAGS.oUF.Tags.Events[tagName] and not tagName:match("%(.+%)$")
         -- only make this tag if there isn't one by that name already;
-        -- also, there is no need to m ake size tags for RPUF
     then   RPTAGS.oUF.Tags.Events[tagName] = events;
            RPTAGS.oUF.Tags.Methods[tagName] = tagMethod;
     end;
 
     return tagName, tagMethod, extraEvents;
   end; -- function
+
+  local function registerTagSizeVariants(tagName, tagMethod, tagExtraEvents)
+    local sizeTrim = RPTAGS.utils.text.sizeTrim;
+    RPTAGS.utils.tags.registerTag(
+      tagName,
+      function(u1, u2, size) return sizeTrim(tagMethod( u1, u2), size) end,
+      tagExtraEvents
+    );
+    return tagName, tagMethod, tagExtraEvents;
+  end;
   
+  local function registerTagLabel(tagName, tagMethod, tagExtraEvents, label)
+    local split = RPTAGS.utils.text.split;
+    local lab = split(label, "|");
+    local prefix, suffix = lab[1] or "", lab[2] or "";
+    RPTAGS.utils.tags.registerTag( 
+      prefix .. "$>" .. tagName .. "-label<$" .. suffix,
+      tagMethod, 
+      tagExtraEvents
+    );
+    return tagName, tagMethod, tagExtraEvents, label;
+  end;
+
   RPTAGS.utils.modules.extend(
-    { ["tags.registerTag"] = registerTag, 
-    }
-  );
+  { [ "tags.registerTag"   ] = registerTag, 
+    [ "tags.registerLabel" ] = registerTagLabel,
+    [ "tags.sizeVariants"  ] = registerTagSizeVariants,
+  });
 
   RPTAGS.utils.tags.fix             = fixTagErrors;
   RPTAGS.utils.tags.test            = testTags;
