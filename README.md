@@ -239,13 +239,13 @@ translations into other languages, you can.
     - [x] Keybinds working
     - [x] Index addon functions
     - [ ] Confirm which tags should be `unsup` for MRP
-  - [ ] TRP3
-    - [ ] Index addon functions
-    - [ ] Keybinds working
+  - [x] TRP3
+    - [x] Index addon functions
+    - [x] Keybinds working
   - [ ] ElvUI
     - [x] Get labels working in ElvUI (work-around for old oUF)
     - [x] Get size modifiers working in ElvUI (work-around for old oUF) 
-    - [ ] Index addon functions
+    - [x] Index addon functions
     - [ ] Don't "add" oUF/ElvUI tags to listing
   - [ ] RP:UnitFrames 
     - [x] Tag live previews
@@ -254,7 +254,7 @@ translations into other languages, you can.
     - [x] Options for per-frame settings
     - [x] Get labels working in RPUF
     - [x] Get size modifiers working in RPUF
-    - [ ] Index addon functions
+    - [x] Index addon functions
     - [ ] Keybinds working
     - [ ] Editor status bar (lower) buttons
     - [ ] Unit frames fully working
