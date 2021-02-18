@@ -22,9 +22,13 @@ function(self, event, ...)
   L["RPUF_NAME"                         ] = RPUF_NAME;
   L["RPUF_ABBR"                         ] = RPUF_ABBR;
   -- --- slash commands
-  L["SLASH_RPUF"                        ] = "rpuf|rpuf|unitframes|uf|r";
-  L["SLASH_LAYOUT"                      ] = "layout|frames|l";
-  L["SLASH_TAGS"                        ] = "panels|p";
+  L["SLASH_FRAMES"                      ] = "frames|rpuf|unitframes|uf";
+  L["SLASH_PLAYER"                      ] = "playerframe";
+  L["SLASH_TARGET"                      ] = "targetframe";
+  L["SLASH_FOCUS"                       ] = "focusframe";
+  L["SLASH_TARGETTARGET"                ] = "targettargetframe";
+  L["SLASH_PANELS"                      ] = "panels";
+  L["SLASH_EDITOR"                      ] = "editor|tageditor";
   L["ADDON_RPUF"                        ] = "rp:UF";
   L["ADDON_RPUF"                        ] = RPUF_NAME;
   -- --- context menus

@@ -19,6 +19,28 @@ function(self, event, ...)
   -- /RPQ ----------------------------------------------------------------------------------------------------------------------------------
 end);
 
+RPTAGS.queue:WaitUntil("MODULE_C",
+function(self, event, ...)
+  local registerFunction = RPTAGS.utils.modules.registerFunction;
+
+  local function openUIPanel(panel)
+    return 
+      function()
+        RPTAGS.utils.links.handler(RPTAGS.CONST.UIPANELS[panel]);
+      end;
+  end;
+
+  registerFunction(RPTAGS.addOnName, "options", openUIPanel("options" ));
+  registerFunction(RPTAGS.addOnName, "version", openUIPanel("version" ));
+  registerFunction(RPTAGS.addOnName, "help",    openUIPanel("help"    ));
+  registerFunction(RPTAGS.addOnName, "about",   openUIPanel("about"   ));
+end);
+
+RPTAGS.queue:WaitUntil("CORE_KEYBIND",
+function(self, event, ...)
+  _G["BINDING_HEADER_RPTAGS"] = RPTAGS.utils.locale.loc("APP_NAME");
+end);
+  
 RPTAGS.queue:WaitUntil("INIT_DATA",    function(self, event, ...) RPTAGS.CONST         = RPTAGS.CONST         or {} end);
 RPTAGS.queue:WaitUntil("INIT_CACHE",   function(self, event, ...) RPTAGS.cache         = RPTAGS.cache         or {} end);
 RPTAGS.queue:WaitUntil("INIT_LOCALE",  function(self, event, ...) RPTAGS.locale        = RPTAGS.locale        or {} end);

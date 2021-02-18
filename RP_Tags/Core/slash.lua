@@ -31,7 +31,11 @@ function(self, event, ...)
   Cache.slash.slashCmd  = slashes[1];
   
   local keys = {}; 
-  for k, _ in pairs(CONST.UIPANELS) do tinsert(keys, loc("SLASH_" .. k:upper())) end;
+  for k, _ in pairs(CONST.UIPANELS) 
+  do  if   not k:match("_")
+      then tinsert(keys, loc("SLASH_" .. k:upper())) 
+      end;
+  end;
   Cache.slash.uniq, Cache.slash.ambig = sliceUp(keys);
 
   SlashCmdList["RPTAGS"] =

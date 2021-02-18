@@ -15,17 +15,17 @@ local Queue = RPQ:New(addOnName);
 
 local RPQ_EVENTS = 
 { "ADDON_INIT",        
-      "INIT_DATA",          "INIT_CACHE",     "INIT_LOCALE",                    -- arbitrary:
-          "CORE_STATE",     "DATA_CONST",                                          "MODULE_A",      
-      "INIT_UTILS",         "UTILS_LOCALE",   "DATA_LOCALE",     "UTILS_MODULES",  "MODULE_B", 
-          "UTILS_CONFIG",   "UTILS_TEXT",     "UTILS_COLOR",     "UTILS_KEYBIND",  "MODULE_C",      
-          "UTILS_FORMATS",  "UTILS_PARSE",    "UTILS_GET",       "UTILS_FRAMES",   "MODULE_D", 
-          "UTILS_TAGS",     "DATA_TAGS",                                           "MODULE_E",     
-      "INIT_OPTIONS",       "UTILS_OPTIONS",                                       "MODULE_F",
-         "OPTIONS_GENERAL", "OPTIONS_COLORS", "OPTIONS_HELP",    "OPTIONS_ABOUT",  "MODULE_G",      
-         "CORE_OPTIONS",                                                           "MODULE_H",
-      "UTILS_HELP",         "CORE_HELP",                                           "MODULE_I",      
-          "CORE_SLASH",     "CORE_KEYBIND",                                        "MODULE_J",     
+    "INIT_DATA",        "INIT_CACHE",     "INIT_LOCALE",                 -- arbitrary:
+      "CORE_STATE",     "DATA_CONST",                                       "MODULE_A",      
+    "INIT_UTILS",       "UTILS_LOCALE",   "DATA_LOCALE",  "UTILS_MODULES",  "MODULE_B", 
+      "UTILS_CONFIG",   "UTILS_TEXT",     "UTILS_COLOR",  "UTILS_KEYBIND",  "MODULE_C",      
+      "UTILS_FORMATS",  "UTILS_PARSE",    "UTILS_GET",    "UTILS_FRAMES",   "MODULE_D", 
+      "UTILS_TAGS",     "DATA_TAGS",                                        "MODULE_E",     
+    "INIT_OPTIONS",     "UTILS_OPTIONS",                                    "MODULE_F",
+     "OPTIONS_GENERAL", "OPTIONS_COLORS", "OPTIONS_HELP", "OPTIONS_ABOUT",  "MODULE_G",      
+     "CORE_OPTIONS",                                                        "MODULE_H",
+    "UTILS_HELP",       "CORE_HELP",                                        "MODULE_I",      
+      "CORE_SLASH",     "CORE_KEYBIND",                                     "MODULE_J",     
   "ADDON_LOAD",        
 };
 

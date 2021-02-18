@@ -33,7 +33,6 @@ function(self, event, ...)
 
   registerFunction("MyRolePlay", "open",       mapMrpSlash(""          ));
   registerFunction("MyRolePlay", "options",    mapMrpSlash("options"   ));
-  registerFunction("MyRolePlay", "config",     mapMrpSlash("options"   ));
   registerFunction("MyRolePlay", "version",    mapMrpSlash("version"   ));
   registerFunction("MyRolePlay", "help",       mapMrpSlash("help"      ));
   registerFunction("MyRolePlay", "on",         mapMrpSlash("enable"    ));

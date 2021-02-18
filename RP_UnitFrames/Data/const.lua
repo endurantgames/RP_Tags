@@ -479,4 +479,30 @@ function(self, event, ...)
     "rp:motto", "rp:rstatus", "rp:home", "rp:sexuality",
     "p", "br",
   };
+
+  RPTAGS.CONST.UIPANELS.frames            = "opt://RPUF_Main";
+  RPTAGS.CONST.UIPANELS.frames_shared     = "opt://RPUF_Main/shared";
+  RPTAGS.CONST.UIPANELS.frames_visibility = "opt://RPUF_Main/visibilty";
+  RPTAGS.CONST.UIPANELS.frames_look       = "opt://RPUF_Main/look";
+  RPTAGS.CONST.UIPANELS.frames_sizes      = "opt://RPUF_Main/sizes";
+  RPTAGS.CONST.UIPANELS.frames_position   = "opt://RPUF_Main/position";
+  RPTAGS.CONST.UIPANELS.player            = "opt://RPUF_Main/playerFrame";
+  RPTAGS.CONST.UIPANELS.target            = "opt://RPUF_Main/targetFrame";
+  RPTAGS.CONST.UIPANELS.focus             = "opt://RPUF_Main/focusFrame";
+  RPTAGS.CONST.UIPANELS.targetTarget      = "opt://RPUF_Main/targetTargetFrame";
+  RPTAGS.CONST.UIPANELS.panels            = "opt://RPUF_Panels";
+  RPTAGS.CONST.UIPANELS.panel_name        = "opt://RPUF_Panels/namePanel";
+  RPTAGS.CONST.UIPANELS.panel_info        = "opt://RPUF_Panels/infoPanel";
+  RPTAGS.CONST.UIPANELS.panel_status      = "opt://RPUF_Panels/statusPanel";
+  RPTAGS.CONST.UIPANELS.panel_detail      = "opt://RPUF_Panels/detailPanel";
+  RPTAGS.CONST.UIPANELS.panel_portrait    = "opt://RPUF_Panels/portraitPanel";
+  RPTAGS.CONST.UIPANELS.panel_icon1       = "opt://RPUF_Panels/iconAPanel";
+  RPTAGS.CONST.UIPANELS.panel_icon2       = "opt://RPUF_Panels/iconBPanel";
+  RPTAGS.CONST.UIPANELS.panel_icon3       = "opt://RPUF_Panels/iconCPanel";
+  RPTAGS.CONST.UIPANELS.panel_icon4       = "opt://RPUF_Panels/iconDPanel";
+  RPTAGS.CONST.UIPANELS.panel_icon5       = "opt://RPUF_Panels/iconEPanel";
+  RPTAGS.CONST.UIPANELS.panel_icon6       = "opt://RPUF_Panels/iconFPanel";
+  RPTAGS.CONST.UIPANELS.editor            = "opt://RPUF_Editor";
+  RPTAGS.CONST.UIPANELS.editor_buttons    = "opt://RPUF_Editor/buttonBar";
+
 end);

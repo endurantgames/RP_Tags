@@ -39,7 +39,7 @@ function(self, event, ...)
     { instruct             = Instruct("general"),
       loginMessage         = Checkbox("login message"),
       linebreaks           = Checkbox("linebreaks"),
-      parsing              =
+      parse                =
       { type               = "group",
         order              = source_order(),
         name               = loc("OPT_PARSE"),

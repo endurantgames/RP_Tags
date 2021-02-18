@@ -15,14 +15,46 @@ local TRP3_API      = TRP3_API;
 
 TRP3_API.module.registerModule(
   { -- let trp3 know we exist
-    ["name"]        = GetAddOnMetadata("RP_Tags_totalRP3", "Title"),
-    ["description"] = GetAddOnMetadata("RP_Tags_totalRP3", "Notes"),
-    ["version"]     = GetAddOnMetadata("RP_Tags_totalRP3", "Version"),
-    ["id"]          = "RP_Tags_totalRP3",
+    ["name"]        = GetAddOnMetadata(addOnName, "Title"),
+    ["description"] = GetAddOnMetadata(addOnName, "Notes"),
+    ["version"]     = GetAddOnMetadata(addOnName, "Version"),
+    ["id"]          = addOnName,
     ["autoEnable"]  = true 
   }
 );
 
+Module:WaitUntil("MODULE_C",
+function(self, event, ...)
+  local registerFunction = RPTAGS.utils.modules.registerFunction;
+
+  local function mapTrp3Slash(trp3Param)
+    return function(a) SlashCmdList["TOTALRP3"](trp3Param .. " " .. (a or "")); end;
+  end;
+
+  local function openTrp3Menu(trp3Menu)
+    return 
+      function() 
+        SlashCmdList["TOTALRP3"]("switch main");
+        TRP3_API.navigation.menu.selectMenu(trp3Menu);
+      end;
+  end;
+
+  registerFunction("totalRP3", "open",       mapTrp3Slash("switch main"       ));
+  registerFunction("totalRP3", "help",       mapTrp3Slash( "help"             ));
+  registerFunction("totalRP3", "showtarget", mapTrp3Slash("show target"       ));
+  registerFunction("totalRP3", "showplayer", mapTrp3Slash("open"              ));
+  registerFunction("totalRP3", "setic",      mapTrp3Slash("status ic"         ));
+  registerFunction("totalRP3", "setooc",     mapTrp3Slash("status ooc"        ));
+  registerFunction("totalRP3", "ic_ooc",     mapTrp3Slash("status toggle"     ));
+  -- registerFunction("totalRP3", "version", mapTrp3Slash(                    ));
+  -- registerFunction("totalRP3", "on",      mapTrp3Slash(                    ));
+  -- registerFunction("totalRP3", "off",     mapTrp3Slash(                    ));
+  -- registerFunction("totalRP3", "setcurr", mapTrp3Slash(                    ));
+  registerFunction("totalRP3", "about",      openTrp3Menu("main_00_dashboard" ));
+  registerFunction("totalRP3", "changes",    openTrp3Menu("main_00_dashboard" ));
+  registerFunction("totalRP3", "options",    openTrp3Menu("main_90_config"    ));
+
+end);
 Module:WaitUntil("ADDON_LOAD",
 function(self, event)
 

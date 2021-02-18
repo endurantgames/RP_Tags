@@ -416,30 +416,35 @@ C.CONFIG =
     }, -- DEFAULTS
   } -- config
 
-C.UIPANELS_1 =
-{ about    = "opt://about",
-  changes  = "opt://about",
-  colors   = "opt://colors",
-  credits  = "opt://about",
-  help     = "opt://help",
-  keybind  = "opt://general",
-  options  = "opt://general",
-  tags     = "opt://help",
-  version  = "opt://about",
-}
-  
 C.UIPANELS = 
-{ about    = "opt://about",
-  changes  = "opt://about/changes",
-  colors   = "opt://colors",
-  credits  = "opt://about/credits",
-  help     = "opt://help",
-  keybind  = "opt://general/keybind",
-  options  = "opt://general",
-  tags     = "opt://help/tags",
-  version  = "opt://about/version",
-  open     = true,
-  commands = true,
+{ 
+  options           = "opt://general",
+  parse             = "opt://general/parse",
+  notes             = "opt://general/notes",
+  formats           = "opt://general/formats",
+  sizes             = "opt://general/sizes",
+  keybind           = "opt://general/keybind",
+
+  colors            = "opt://colors",
+  colors_status     = "opt://colors/status",
+  colors_gender     = "opt://colors/gender",
+  colors_comparison = "opt://colors/comparison",
+  colors_hilite     = "opt://colors/hilite",
+  colors_default    = "opt://colors/default",
+
+  help              = "opt://help/intro",
+  tags              = "opt://help/tags",
+  recipes           = "opt://help/recipes",
+  tagmods           = "opt://help/tagModifiers",
+
+  about             = "opt://about",
+  changes           = "opt://about/changes",
+  credits           = "opt://about/credits",
+  version           = "opt://about/version",
+  debug             = "opt://about/debut",
+
+  open              = true,
+  commands          = true,
 };
 
 C.CURSOR =

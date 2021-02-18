@@ -50,16 +50,27 @@ function(self, event, ...)
   -- --- slash commands
   L["APP_SLASH"]          = "rptags|rptag|rpt";
   
+  
+  L["SLASH_OPTIONS"]      = "options|configuration|settings";
+  L["SLASH_PARSE"]        = "parse";
+  L["SLASH_NOTES"]        = "notes";
+  L["SLASH_FORMATS"]      = "formats";
+  L["SLASH_SIZES"]        = "sizes";
+  L["SLASH_KEYBIND"]      = "keybind|keybindings|keys|bindings";
+
+  L["SLASH_COLORS"]       = "colors";
+
+  L["SLASH_HELP"]         = "help";
+  L["SLASH_TAGS"]         = "tags";
+  L["SLASH_RECIPES"]      = "recipes";
+  L["SLASH_TAGMODS"]      = "tagmodifiers|tagmods";
+
   L["SLASH_ABOUT"]        = "about";
   L["SLASH_CHANGES"]      = "changes";
-  L["SLASH_COLORS"]       = "colors";
   L["SLASH_CREDITS"]      = "credits";
-  L["SLASH_HELP"]         = "help";
-  
-  L["SLASH_KEYBIND"]      = "keybind|keybindings|keys|bindings";
-  L["SLASH_OPTIONS"]      = "options|configuration|settings";
-  L["SLASH_TAGS"]         = "tags";
   L["SLASH_VERSION"]      = "version";
+  L["SLASH_DEBUG"]        = "debugging";
+
   L["SLASH_COMMANDS"]     = "commands|cmds|list";
   L["SLASH_OPEN"]         = "open";
   

@@ -161,6 +161,19 @@ function(self, event, ...)
 
 end);
 
+Module:WaitUntil("MODULE_C",
+function(self, event, ...)
+  local registerFunction = RPTAGS.utils.modules.registerFunction;
+  local E, _, _, _, _ = unpack(_G["ElvUI"]);
+
+  registerFunction("ElvUI", "options",    function() E:ToggleOptionsUI()  end);
+  registerFunction("ElvUI", "version",    function() E:ShowStatusReport() end);
+  registerFunction("ElvUI", "about",      function() E:ShowStatusReport() end);
+  registerFunction("ElvUI", "help",       function() E:EHelp()            end);
+  registerFunction("ElvUI", "moveframes", function() E:ToggleMoveMode()   end);
+
+end);
+
 Module:WaitUntil("before DATA OPTIONS",
 function(self, event, ...)
   RPTAGS.utils.modules.registerFunction("ElvUI", "options",
