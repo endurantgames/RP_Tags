@@ -223,9 +223,7 @@ translations into other languages, you can.
 
 ## To Do
 
-(Primarily for my own use)
-
-- [x] Core
+- [ ] Core
   - [x] Get configuration/help working
   - [x] Change versions to 9.0.2
   - [x] Keybinds
@@ -234,6 +232,8 @@ translations into other languages, you can.
   - [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
   - [x] Figure out why some things aren't turning to HTML in AMDC
   - [x] Localization strings for options
+  - [ ] Review help files
+    - [ ] Help file for labels and sizes
 - [ ] Modules
   - [ ] MyRoleplay
     - [x] Keybinds working
@@ -265,9 +265,9 @@ translations into other languages, you can.
   - [ ] Core
     - [ ] Config profiles with Ace3?
   - [ ] Modules
+    - [ ] XRP support
+    - [ ] Update for new gender settings in trp3
     - [ ] See if RPT can be generalized for any oUF addon
     - [ ] See if RPT can be generalized for any MSP addon
-    - [ ] Update for new gender settings in trp3
-    - [ ] XRP support?
 - [ ] Miscellaneous bug fixes
 

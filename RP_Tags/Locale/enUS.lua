@@ -449,6 +449,9 @@ function(self, event, ...)
   L["FMT_Q"]                = "%s?";
   L["FMT_AMBIGUOUS_RESULT"] = "Did you mean %s or %s?";
   L["FMT_UNKNOWN_SLASH"]    = "Unknown command [[%s]]. Type [[[%s commands]]] for help.";
+  L["FMT_KEYBIND_WARNING"] = = "This will erase the current binding for %s. Are you sure you want to do that?";
+  L["FMT_KEYBIND_SET"]      = "Keybinding [[%s]] set to [[[%s]]].";
+  L["FMT_KEYBIND_CLEARED"] = "Keybinding [[%s]] cleared.";
   
    -- parsing - ----------------------------------------------------------------------------------------------------------------------------------------------
   L["RACE_1"]     = "Human,Stormwind,Arath,Lordae";
