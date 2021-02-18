@@ -48,7 +48,9 @@ function(self, event, ...)
           parseHW          = Checkbox("parse hw"),
           parseGender      = Checkbox("parse gender"),
           parseAge         = Checkbox("parse age"),
-          adultGenders     = Checkbox("adult genders", nil, function() return not Config.get("PARSE_GENDER") end),
+          adultGenders     = Checkbox("adult genders", nil, 
+                               function() return not Config.get("PARSE_GENDER") end
+                             ),
         },
       },
       notes                =
@@ -73,8 +75,9 @@ function(self, event, ...)
           disabledNote     =
             { type = "description",
               dialogControl = "LMD30_Description",
-              name = "Height and weight formats are currently disabled, because you don't have [Parse Height and Weight](setting://general/parse) enabled.",
+              name = loc("DISABLED_HW_MD"),
               hidden = function() return Config.get("PARSE_HW") end,
+              fontSize = "small",
               order = source_order(),
             },
           unitsHeight      = Dropdown("units height", nil, function() return not Config.get("PARSE_HW") end),

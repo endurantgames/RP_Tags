@@ -1,14 +1,8 @@
-------------------------------------------------------------------------------
 -- RP Tags
 -- by Oraibi, Moon Guard (US) server
---
 -- ------------------------------------------------------------------------------
---
 -- This work is licensed under the Creative Commons Attribution 4.0 International
--- (CC BY 4.0) license. To view a copy of the license, visit
---
---     https://creativecommons.org/licenses/by/4.0/
---
+-- (CC BY 4.0) license. 
 local addOnName, ns = ...
 local RPTAGS        = RPTAGS;
 local Module        = RPTAGS.queue:NewModule(addOnName, "unitFrames")
@@ -84,7 +78,7 @@ function(self, event, ...)
       ["rp:guild-rank"     ] = "Guild",
       ["rp:guild-status"   ] = "Guild",
       ["rp:tribe"          ] = "Guild",
-    }, -- beep
+    }, 
   };
 
   local E, _, _, _, _, _  = unpack(_G["ElvUI"]); 
@@ -108,7 +102,7 @@ function(self, event, ...)
   
   local function addTag(tag, group)
    
-    if   tag and tag.name and group
+    if   tag and tag.name and not tag.external and group and not group.external
     then local tagDesc = tag.desc;
          if RPTAGS.CONST.UNSUP[tag.name] 
          then tagDesc = "|cff" .. RPTAGS.utils.config.get("COLOR_UNKNOWN") .. tagDesc .. "|r" 

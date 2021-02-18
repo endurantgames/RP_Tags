@@ -229,20 +229,20 @@ function(self, event, ...)
 
   local Debug =
   { type = "group",
-    name = "Debugging",
+    name = loc("OPT_DEBUGGING_CMDS"),
     order = source_order(),
     width = "full",
     args = 
     { header = 
       { type = "description",
-        name = "## Debugging",
+        name = "## " .. loc("OPT_DEBUGGING_CMDS"),
         dialogControl = "LMD30_Description",
         order = source_order(),
         width = "full",
       },
       details =
       { type = "input",
-        name = "Debugging Information",
+        name = loc("OPT_DEBUGGING_DETAILS"),
         width = "full",
         order = source_order(),
         get = function(self) return get_debug_info(RPTAGS.cache.debug) end,
@@ -289,11 +289,11 @@ function(self, event, ...)
     type                   = "group",
     childGroups            = "tab",
     args                   =
-    { header = AboutHeader,
+    { header  = AboutHeader,
       version = Version,
       changes = Changes,
       credits = Credits,
-      debug = Debug,
+      debug   = Debug,
     },
   };
 

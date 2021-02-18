@@ -28,9 +28,7 @@ function(self, event, ...)
     name                   = loc("PANEL_COLORS"),
     childGroups            = "tab",
     args                   =
-    { -- panel             = Header("colors"),
-      instruct             = Instruct("colors"),
-      -- reset             = Multi_Reset({ "color unknown"}),
+    { instruct             = Instruct("colors"),
       status               =
       { type               = "group",
         name               = loc("OPT_COLORS_STATUS"),
@@ -40,7 +38,6 @@ function(self, event, ...)
           colorIC          = Color_Picker("ic"),
           colorOOC         = Color_Picker("ooc"),
           colorNPC         = Color_Picker("npc"),
-          -- reset         = Multi_Reset( { "color_ic", "color_npc", "color_ooc" } ),
         },
       },
       gender               =
@@ -54,12 +51,12 @@ function(self, event, ...)
           colorNeuter      = Color_Picker("neuter"),
           colorThey        = Color_Picker("they", nil, function() return not Config.get("PARSE_GENDER") end),
           disabledNote     =
-            { type = "description",
-              dialogControl = "LMD30_Description",
-              name = "The color for non-binary gender is currently disabled, because you haven't enabled the option to [Parse Gender](setting://general/parse/PARSE_GENDER).",
-              order = source_order(),
-            },
-          -- reset         = Multi_Reset( { "color_male", "color_female", "color_neuter", "color_they" } ),
+          { type = "description",
+            dialogControl = "LMD30_Description",
+            fontSize = "small",
+            name = loc("DISABLED_NBCOLOR_MD"),
+            order = source_order(),
+          },
         },
       },
       comparison           =
@@ -71,7 +68,6 @@ function(self, event, ...)
           colorLessThan    = Color_Picker("lessthan"),
           colorEqualish    = Color_Picker("equalish"),
           colorGreaterThan = Color_Picker("greaterthan"),
-          -- reset         = Multi_Reset( { "color_lessthan", "color equalish", "color greaterthan" } ),
         },
       },
       hilite               =
@@ -83,7 +79,6 @@ function(self, event, ...)
           colorHilite1     = Color_Picker("hilite 1"),
           colorHilite2     = Color_Picker("hilite 2"),
           colorHilite3     = Color_Picker("hilite 3"),
-          -- reset         = Multi_Reset( { "color hilite 1", "color hilite 2", "color hilite 3" } ),
         },
       },
       default              =

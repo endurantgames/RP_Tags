@@ -52,6 +52,15 @@ If you need more assistance, you can peruse the rest of these help topics or ask
 The easiest way to learn is to just start editing tags and experimenting. Have fun!
 ]===];
 
+  L["DISABLED_NBCOLOR_MD"] =
+[===[
+The color for non-binary gender is currently disabled, because you haven't
+enabled the option to [Parse Gender](setting://genderal/parse).
+]===];
+  L["DISABLED_HW_MD"] =
+[===[
+Height and weight formats are currently disabled, because you don't have [Parse Height and Weight](setting://general/parse) enabled.
+]===];
   L["OPTIONS_MD"] = 
 [===[
 # Options

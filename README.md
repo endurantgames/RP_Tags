@@ -225,7 +225,7 @@ translations into other languages, you can.
 
 (Primarily for my own use)
 
-- [ ] Core
+- [x] Core
   - [x] Get configuration/help working
   - [x] Change versions to 9.0.2
   - [x] Keybinds
@@ -233,7 +233,7 @@ translations into other languages, you can.
   - [x] Make sure all the libraries are current
   - [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
   - [x] Figure out why some things aren't turning to HTML in AMDC
-  - [ ] Localization strings for options
+  - [x] Localization strings for options
 - [ ] Modules
   - [ ] MyRoleplay
     - [x] Keybinds working
@@ -242,11 +242,11 @@ translations into other languages, you can.
   - [x] TRP3
     - [x] Index addon functions
     - [x] Keybinds working
-  - [ ] ElvUI
+  - [x] ElvUI
     - [x] Get labels working in ElvUI (work-around for old oUF)
     - [x] Get size modifiers working in ElvUI (work-around for old oUF) 
     - [x] Index addon functions
-    - [ ] Don't "add" oUF/ElvUI tags to listing
+    - [x] Don't "add" oUF/ElvUI tags to listing
   - [ ] RP:UnitFrames 
     - [x] Tag live previews
     - [x] RP:UF editor layout

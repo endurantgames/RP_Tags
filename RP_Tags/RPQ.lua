@@ -198,7 +198,7 @@ function RPQ.New(self, addOnName)
             end;
 
             return newQueuedCallback;
-        end; --  beep
+        end; 
 
         self["_rpq_eventList"][eventName] = newEvent;
         table.insert(self["_rpq_defaultOrder"], newEvent);
@@ -324,7 +324,7 @@ function RPQ.New(self, addOnName)
         function newModule.ForEachEvent(     self, ... ) return self["_rpq_addOn"]:ForEachEvent(     ... ) end;
         function newModule.OnError(          self, ... ) return self["_rpq_addOn"]:OnError(          ... ) end;
 
-        self["_rpq_moduleList"][moduleName] = newModule; -- beep
+        self["_rpq_moduleList"][moduleName] = newModule; 
 
         return newModule;
     end; 
@@ -340,19 +340,6 @@ function RPQ.New(self, addOnName)
         self.AutoFireFunction = func;
         return self;
     end;
-
-    -- if   self["_rpq_autoFire"]
-    -- then newAddOn.StartupFrame = CreateFrame("Frame");
-         -- newAddOn.StartupFrame:RegisterEvent("ADDON_LOADED");
-         -- newAddOn.StartupFrame["_rpq_addOn"] = newAddOn;
-         -- newAddOn.StartupFrame["_rpq_addOnName"] = addOnName;
-         -- newAddOn.StartupFrame:SetScript("OnEvent",
-             -- function(self, event, addOnLoaded)
-                 -- if    addOnLoaded == self["_rpq_addOnName"]
-                 -- then  self["_rpq_addOn"]:FireAll();
-                 -- end;
-             -- end);
-    -- end;
 
     self["_rpq_addOnList"][addOnName] = newAddOn; 
     return newAddOn;

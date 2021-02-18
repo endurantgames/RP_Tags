@@ -188,7 +188,7 @@ function(self, event, ...)
                 disabled = function() return Get("DISABLE_RPUF") or not Get("SHOW_FRAME_TARGETTARGET") end,
                 order = source_order(),
                 width = 0.5,
-              }, -- beep
+              }, 
             },
           },
           visibility    =

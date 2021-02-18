@@ -13,6 +13,7 @@ function(self, event, ...)
 
   local loc                = RPTAGS.utils.locale.loc;
   local notify             = RPTAGS.utils.text.notify
+  local fmt                = string.format;
   RPTAGS.cache.keybind     = RPTAGS.cache.keybind or {};
   RPTAGS.cache.keybind.run = RPTAGS.cache.keybind.run or {};
   RPTAGS.utils.keybind     = RPTAGS.utils.keybind or {};
@@ -68,16 +69,14 @@ function(self, event, ...)
     local existingBind = GetBindingByKey(key);
     if    existingBind  and existingBind ~= "RPTAGS_" .. keybind
     then  local bindName = _G["BINDING_NAME_" .. existingBind] or existingBind;
-          StaticPopupDialogs[POPUP].text = 
-            "This will erase the binding for " .. existingBind .. 
-            ". Are you sure you want to do that?";
+          StaticPopupDialogs[POPUP].text = fmt(loc("FMT_KEYBIND_WARNING"), existingBind);
           RPTAGS.cache.keybind.key     = key;
           RPTAGS.cache.keybind.binding = "RPTAGS_" .. keybind;
           RPTAGS.cache.keybind.name    = loc("KEYBIND_" .. keybind);
           StaticPopup_Show(POPUP);
     else  SetBinding(key, "RPTAGS_" .. keybind, GetCurrentBindingSet());
           SaveBindings(GetCurrentBindingSet());
-          notify("Keybinding [[" .. key .. "]] set to [[[" ..  loc("KEYBIND_" .. keybind) .. "]]].");
+          notify(fmt(loc("FMT_KEYBIND_SET"), key, keybind));
           AceConfigRegistry:NotifyChange(loc("APP_NAME"));
     end;
   end;
@@ -87,7 +86,7 @@ function(self, event, ...)
     SetBinding(key, nil, GetCurrentBindingSet());
     SaveBindings(GetCurrentBindingSet());
     AceConfigRegistry:NotifyChange(loc("APP_NAME"));
-    notify("Keybinding [[" .. key .. "]] cleared.");
+    notify(fmt(loc("FMT_KEYBIND_CLEARED"), key));
   end;
 
   RPTAGS.utils.keybind.get      = getKeyBindKey;

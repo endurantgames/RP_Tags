@@ -46,10 +46,6 @@ function(self, event, ...)
   registerFunction("totalRP3", "setic",      mapTrp3Slash("status ic"         ));
   registerFunction("totalRP3", "setooc",     mapTrp3Slash("status ooc"        ));
   registerFunction("totalRP3", "ic_ooc",     mapTrp3Slash("status toggle"     ));
-  -- registerFunction("totalRP3", "version", mapTrp3Slash(                    ));
-  -- registerFunction("totalRP3", "on",      mapTrp3Slash(                    ));
-  -- registerFunction("totalRP3", "off",     mapTrp3Slash(                    ));
-  -- registerFunction("totalRP3", "setcurr", mapTrp3Slash(                    ));
   registerFunction("totalRP3", "about",      openTrp3Menu("main_00_dashboard" ));
   registerFunction("totalRP3", "changes",    openTrp3Menu("main_00_dashboard" ));
   registerFunction("totalRP3", "options",    openTrp3Menu("main_90_config"    ));

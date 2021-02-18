@@ -307,7 +307,7 @@ function(self, event, ...)
         w.fontSize = "medium";
         w.dialogControl = "LMD30_Description";
         return w;
-  end; -- beep
+  end; 
   
   local function build_keybind(str, hidden, disabled)
         local str = str:upper():gsub("%s+", "_");

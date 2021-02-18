@@ -445,7 +445,7 @@ Module:WaitUntil("UTILS_GET",
 
       if labels == {} then return "" else return table.concat(labels, ", ") end;
 
-    end; -- func -- beep
+    end;
 
     local function getExperience(u, request)
       local xpField = getField("character/XP", u);

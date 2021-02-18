@@ -222,6 +222,8 @@ function(self, event, ...)
   L["OPT_CHANGES"]           = "Changes";
   L["OPT_CREDITS"]           = "Credits";
   L["OPT_ADDONS"]            = "Addons";
+  L["OPT_DEBUGGING_DETAILS"] = "Debugging Details";
+
   -- 
   L["RP_REFERENCE"]          = RP.."Reference";
   L["SETTINGS"]              = "settings";
