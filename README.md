@@ -253,8 +253,8 @@ translations into other languages, you can.
     - [x] Tag editor buttons
     - [x] Options for per-frame settings
     - [x] Get labels working in RPUF
-    - [x] Get size modifiers working in RPUF
     - [x] Index addon functions
+    - [ ] Get size modifiers working in RPUF
     - [ ] Keybinds working
     - [ ] Editor status bar (lower) buttons
     - [ ] Unit frames fully working
