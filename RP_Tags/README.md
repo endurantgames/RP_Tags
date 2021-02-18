@@ -156,39 +156,27 @@ can access by typing `/rptags` (or just `/rpt` if you want).
 ### Modifier Tags
 
 There are two types of modifier tags -- labels and sizes. 
-A modifier is applied after the main tag, with a color (`:`)
-between them. Like this:
+A label modifier is applied after the main tag, with a dash (-)
+after it, like this:
 
-    [rp:title:label] [rp:title:xs]
+    [rp:title:label] 
 
-> Title: Stormwind Fashion Icon Storm
+> Title: Stormwind Fashion Icon
 
-You can even mix the two if you want, but if you do, the `:label`
-modifier has to come first:
+A size modifier is also applied after a tag, in parentheses.
 
-    [rp:title:label:xs]
+| Size Modifier    | Default Size   |
+| :--------------: | -------------: |
+| `(xs)`           | 5 characters   |
+| `(s)`            | 10 characters  |
+| `(m)`            | 15 characters  |
+| `(l)`            | 20 characters  |
+| `(xl)`           | 50 characters  |
+| `(8)`\*          | 8 characters   |
+| `(42)`\*         | 42 characters  |
+| --               | no limit       |
 
-> Title: Storm
-
-These two sequences don't actually do the same thing. The first one
-puts a label in front of the unit's title, then the titled, 
-followed again by their title -- but only the first 5 characters --
-`:xs` stands for "extra small."
-
-While the combined tag displays a label before the unit's title,
-and then 5 their title itself -- but again, only 5 characters.
-
-| Modifiers                   |   Abbreviations  |  Size          |
-| :-------------------------- | :--------------: | -------------: |
-| `:extrasmall`, `:veryshort` | `:xs`, `:vs`     | 5 characters   |
-| `:small`, `:short`          | `:s`             | 10 characters  |
-| `:medium`                   | `:m`             | 15 characters  |
-| `:large`, `:long`           | `:l`             | 20 characters  |
-| `:extralarge`, `:verylong`  | `:xl`, `:vl`     | 50 characters  |
-| `:extraextralarge`          | `:xxl`           | 100 characters |
-|                             | `:2x`, `:2xl`    | 150 characters |
-|                             | `:3x, `:3xl`     | 250 characters |
-| --                          | --               | no limit       |
+Numeric size modifiers are not supported in ElvUI.
 
 ## /Slash Commands
 
@@ -216,7 +204,7 @@ The new changes since the previous version of RP\_Tags.
 
     /rptags version
 
-The version number of RP\_Tags and associated modules and other addons.
+The version numbers of RP\_Tags and associated modules and other addons.
 
 ## Configuration
 
@@ -232,20 +220,4 @@ you're already using.
 
 The addon is currently only available in English, but if you want help with
 translations into other languages, you can.
-
-## To Do
-
-(Primarily for my own use)
-
-  - ~~Get configuration/help working~~
-  - Get RP:UF working
-  - XRP support
-  - Config profiles with Ace3
-  - `:xs`, `:s`, etc
-  - Update for new gender settings in trp3
-  - Something I forgot
-  - ~~Make sure all the libraries are current~~
-  - See if RPT can be generalized for any oUF addon
-  - More work on AMDC
-  - Miscellaneous bug fixes
 
