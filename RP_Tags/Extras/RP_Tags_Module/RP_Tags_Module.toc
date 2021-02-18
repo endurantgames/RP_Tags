@@ -22,10 +22,10 @@
 #  RP_Tags recognizes the following module types:
 # 
 #  * rpClient   (totalRP3, XRP, MyRolePlay, etc)
-#  * UnitFrames (ElvUI, RP_UnitFrames, etc)
-#  * core       (RP_Tags, RP_Friends, etc)             Don't use this, though.
+#  * UnitFrames (ElvUI, RP_UnitFrames,      etc)
+#  * core       (RP_Tags, RP_Friends,       etc)  Don't use this, though.
 #  
-#  See the module.lua file and RP_Tags\RPQ.lua for more information RPQ.
+#  See the module.lua file and RP_Tags\RPQ.lua for more information on RPQ.
 # 
 ## X-RPQVersion: 1
 ## X-RPQModuleId: some
