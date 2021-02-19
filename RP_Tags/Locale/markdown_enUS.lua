@@ -147,6 +147,16 @@ The length corresponding to each keyword can be changed by you
 in [Tag Size Options](setting://general/sizes).
 ]===];
 
+L["DEBUGGING_MESSAGE_MD"] =
+[===[
+To load debugging information, erase this message and replace it with only one of the following, no blank lines or leading spaces:
+
+   |cffff0000debug|r |cffffff00libs|r
+   |cffff0000debug|r |cffffff00addons|r    
+   |cffff0000debug|r |cffffff00config|r
+   
+You can enter more than one, separated by spaces, but this is |cffff0000NOT|r recommended as it may cause your WoW client to lag indefinitely.
+]===];
 L["DEBUGGING_COMMANDS_MD"] = 
 [===[
 # Debugging Commands
@@ -179,136 +189,158 @@ L["CHANGES_MD"] =
 
 # Changes
 
+## 9.0.2.1 
+
+Major updates including:
+
+- Updated for WoW 9.0.2
+- Version numbers now aligned with WoW's version numbers
+- Many behind-the-scenes changes
+- Added tag sizing `(xs)`, `(large)`, '(8)` etc
+- Modules now load separately via WoW's addon dependencies system
+- Updated [Help](opt://help)
+- Revamped [About](opt://about)
+- Redid [Options](opt://general)
+- Restored USE_REAL_ELLIPSES
+- Bug fixes
+
+### RP\_Tags\_ElvUI
+
+- Tags are now categorized correctly in ElvUI, with the problem that the Miscellaneous category is broken.
+
+### RP_UnitFrames
+
+- Frames can now be configured separately or linked to the [shared settings](opt://RPUF_Main)
+- Editor improvements
+- LibSharedMedia support on frames
+- Live Previews for tag strings
+- Restored TargetTarget frame
+
 ## 0.960
 
-Updated for WoW 8.2.
-Fixed bug.
+- Updated for WoW 8.2.
+- Fixed bug.
 
 ## 0.952
 
-Fixed several bugs
+- Fixed several bugs
 
 ## 0.951
 
-Added keybindings for RPTAGS help, RPTAGS options.
-Added keybinding for [[Open Mouseover Profile]] in both MRP and TRP3.
-Fixed a bug preventing the importation of RPTAGS options previously saved in Total RP 3's config system.
+- Added keybindings for RPTAGS help, RPTAGS options.
+- Added keybinding for [[Open Mouseover Profile]] in both MRP and TRP3.
+- Fixed a bug preventing the importation of RPTAGS options previously saved in Total RP 3's config system.
 
 ## 0.950
 
-Fixed some bugs since the previous verison;
-Re-added the reference menu in Options
-Something else that slips my mind.
+- Fixed some bugs since the previous verison;
+- Re-added the reference menu in Options
+- Something else that slips my mind.
 
 ## 0.940 beta 10
 
-Bug fixes;
-Added more granular control over hiding rp:UnitFrames;
-Styling of rp:UnitFrames status bar.
+- Bug fixes;
+- Added more granular control over hiding rp:UnitFrames;
+- Styling of rp:UnitFrames status bar.
 
 ## 0.940 beta 8
 
-Bug fixes for MyRolePlay support, 
-removed TargetTarget frame, 
-added [rp:target] tags.
+- Bug fixes for MyRolePlay support, 
+- removed TargetTarget frame, 
+- added [rp:target] tags.
 
 ## 0.940 beta 6
 
-Improved support for running alongside mrp, including glances.
+- Improved support for running alongside mrp, including glances.
 
 ## 0.940 beta 2
 
 Some relatively major changes since the last major release:
 
-New options system integrated with the WoW Interface -> AddOns menu. 
-Improved context menu on rp:UnitFrames. 
-Toggle rp:UnitFrames off and on without having to restart WoW. 
-Individual scaling for rp:UnitFrames. 
-Key bindings to toggle rp:UF, lock/unlock frames, hide in combat, open the tag editor, and go IC/OOC with supported clients. 
-Limited -- very limited -- support for using rp:tags with MyRolePlay. (Integration not completed so you should consider that an alpha.) 
-Minor bug fixes.
-
+- New options system integrated with the WoW Interface -> AddOns menu. 
+- Improved context menu on rp:UnitFrames. 
+- Toggle rp:UnitFrames off and on without having to restart WoW. 
+- Individual scaling for rp:UnitFrames. 
+- Key bindings to toggle rp:UF, lock/unlock frames, hide in combat, open the tag editor, and go IC/OOC with supported clients. 
+- Limited -- very limited -- support for using rp:tags with MyRolePlay. (Integration not completed so you should consider that an alpha.) 
+- Minor bug fixes.
+ 
 ## 0.937
 
-Bug fixes. So many bug fixes. askdjfalshglaksdjfkasjfkadfh
+- Bug fixes. So many bug fixes. askdjfalshglaksdjfkasjfkadfh
 
 ## 0.936
 
-Fixed a bug. Don't use 0.935.
-
+- Fixed a bug. Don't use 0.935.
+ 
 ## 0.934
 
-Changed how rp:UnitFrames handle unknown tags. Instead of just crashing, it will now mark unknown tags with internal [err] [/err] tags displayed in
-red text in rp:UnitFrames.
-Minor fix to the tag editor: if an error is detected, the editbox will now highlight (select) the first unknown tag.
-Removed non-functioning line-wrapping code intended for ElvUI use.
-Made trp3 an "optional" dependency in preparation for mrp integration.
-
+- Changed how rp:UnitFrames handle unknown tags. Instead of just crashing, it will now mark unknown tags with internal [err] [/err] tags displayed in
+- red text in rp:UnitFrames.
+- Minor fix to the tag editor: if an error is detected, the editbox will now highlight (select) the first unknown tag.
+- Removed non-functioning line-wrapping code intended for ElvUI use.
+- Made trp3 an "optional" dependency in preparation for mrp integration.
 
 ## 0.933
 
 Fixed:
 
-[rp:guild] tags, they weren't working right before.
+- [rp:guild] tags, they weren't working right before.
 
 Added:
 
-Option to hide rp:UnitFrames in combat, accessible via context menu or trp3 config screens. Also hides in vehicles, pet battles, when dead. 
-[rp:guildstatuscolor], uses your "IC"/"OOC"/"NPC"/"Unknown" colors based on whether the unit's guild membership is IC or not. 
-[rp:actor] (or [rp:actress], same tag), defaults to [rp:faceclaim] or [rp:voiceclaim] if actor isn't set. 
-[rp:bodyclaim], works like [rp:faceclaim] and [rp:voiceclaim]. 
-
+- Option to hide rp:UnitFrames in combat, accessible via context menu or trp3 config screens. Also hides in vehicles, pet battles, when dead. 
+- [rp:guildstatuscolor], uses your "IC"/"OOC"/"NPC"/"Unknown" colors based on whether the unit's guild membership is IC or not. 
+- [rp:actor] (or [rp:actress], same tag), defaults to [rp:faceclaim] or [rp:voiceclaim] if actor isn't set. 
+- [rp:bodyclaim], works like [rp:faceclaim] and [rp:voiceclaim]. 
 
 ## 0.932
 
 Changed the way you move rp:UnitFrames around on the screen. (Including clamping to them to screen so you can't accidentally drag them away.)
 
- Use the context menu or the trp3 config screen to unlock frames. A drag tab appears. 
-Drag the drag tab around to the desired location. 
-Click the lock to lock all frames in place, or click the reset button to restore frames to their default locations. 
-The latter will re-attach focus and targettarget to player and target frames respectively.
-
+- Use the context menu or the trp3 config screen to unlock frames. A drag tab appears. 
+- Drag the drag tab around to the desired location. 
+- Click the lock to lock all frames in place, or click the reset button to restore frames to their default locations. 
+- The latter will re-attach focus and targettarget to player and target frames respectively.
+ 
 ## 0.931
 
 Most of the improvements are to rp:UnitFrames.
 
-Added configurable tooltips that can take rp:tags for the various parts of a unit frame.
-Added two new layouts, Portrait (which is loosely modeled after WoW's "paperdoll" window) and Thumbnail.
-Added context menus accessible via right-click for direct editing of panel and tooltip tags, plus changing the layout.
-Added rp:nick-quoted tag.
-Various bug fixes.
-
+- Added configurable tooltips that can take rp:tags for the various parts of a unit frame.
+- Added two new layouts, Portrait (which is loosely modeled after WoW's "paperdoll" window) and Thumbnail.
+- Added context menus accessible via right-click for direct editing of panel and tooltip tags, plus changing the layout.
+- Added rp:nick-quoted tag.
+- Various bug fixes.
+ 
 ## 0.925
 
 Adds the ability to run rp:UnitFrames alongside ElvUI unit frames. This is known as "parallel mode".
 
 rp:tags now runs in three modes:
 
-"standalone", using rp:UF to display tags; 
-"elvui", using ElvUI to display tags; 
-"parallel", with both rp:UF and ElvUI displaying tags
-
+- "standalone", using rp:UF to display tags; 
+- "elvui", using ElvUI to display tags; 
+- "parallel", with both rp:UF and ElvUI displaying tags
+ 
 ## 0.920
 
-Improvements to the tag editor.
-
-New tags include [rp:style], [rp:client], [rp:server], [rp:friendcolor], [rp:guildcolor], [rp:partycolor], [rp:guild], and more.
-
-You can now change the colors of the rp:UF frames.
-
-Some other random cool stuff.
+- Improvements to the tag editor.
+- New tags include [rp:style], [rp:client], [rp:server], [rp:friendcolor], [rp:guildcolor], [rp:partycolor], [rp:guild], and more.
+- You can now change the colors of the rp:UF frames.
+- Some other random cool stuff.
 
 ## 0.901
 
-Added standalone mode that operates without requiring ElvUI. 
-Added reference for tags in configuration settings for totalRP3. 
-Added several miscellaneous tags such as [rp:relation], [rp:relationcolor], and [rp:relationicon]. 
-Updated [rp:rstatus] to work with trp3's new relation status field. 
-Minor bug fixes.
-
+- Added standalone mode that operates without requiring ElvUI. 
+- Added reference for tags in configuration settings for totalRP3. 
+- Added several miscellaneous tags such as [rp:relation], [rp:relationcolor], and [rp:relationicon]. 
+- Updated [rp:rstatus] to work with trp3's new relation status field. 
+- Minor bug fixes.
+ 
 ## 0.850
 
-Updated for 8.1, changed a little about how wrapping and field size for glances work.
+- Updated for 8.1, changed a little about how wrapping and field size for glances work.
 
 ## Older Versions
 

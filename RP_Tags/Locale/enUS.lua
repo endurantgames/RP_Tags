@@ -104,6 +104,8 @@ function(self, event, ...)
   
   L["RPQ_HEADER_NAME"]             = "|cffdddd00"         .. "AddOn Name"         .. "|r";
   L["RPQ_HEADER_VERSION"]          = "|cffdddd00"         .. "Version"            .. "|r";
+  L["RPQ_HEADER_LINKS"] =  "|cffdddd00" .. "Links" .. "|r";
+  
   L["RPQ_FOLLOWUP"] = "AddOns listed in " .. "|cff808080" .. "grey" .. "|r" .. " are installed but not enabled.";
   
   -- --- names of addons
@@ -164,11 +166,16 @@ function(self, event, ...)
   L["UI_BLANK"]               = "";
   L["UI_BLANK_TT"]            = "";
   L["MORE_TAGS"]              = "More ...";
+  L["UI_MORE_INFORMATION"]    = "More Information";
   L["UI_RESET"]               = "Reset";
   L["RESET"]                  = "Reset";
   L["UI_SELECT"]              = "Select";
   L["UI_SELECT_TT"]           = "Select this text.";
+  L["UI_LIVE_PREVIEW"]        = "Live Preview";
   L["TOGGLE"]                 = "Toggle and Reload";
+  L["TAGHELP_TT"]          = "Select and copy the tag to paste it into a unitframe panel.";
+  L["TAGHELP_SIZER_TT"]    = "Select the maximum size you want for the tag, or blank to allow any size.";
+  L["TAGHELP_LABELER_TT"]       = "Check to attach a label to the tag.";
   -- --- help
   L["HELP_DEFAULT"]           = "Introduction";
   -- --- keybindings
@@ -464,6 +471,7 @@ function(self, event, ...)
   L["FMT_KEYBIND_WARNING"]  = "This will erase the current binding for %s. Are you sure you want to do that?";
   L["FMT_KEYBIND_SET"]      = "Keybinding [[%s]] set to [[[%s]]].";
   L["FMT_KEYBIND_CLEARED"]  = "Keybinding [[%s]] cleared.";
+  L["FMT_ABOUT_HEADER"]     = "You are using %s version %s (%s).";
   
    -- parsing - ----------------------------------------------------------------------------------------------------------------------------------------------
   L["RACE_1"]     = "Human,Stormwind,Arath,Lordae";

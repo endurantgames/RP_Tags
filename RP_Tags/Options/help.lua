@@ -44,7 +44,7 @@ function(self, event, ...)
     local units = loc("TABLE_THE_UNITS");
     return Data_Table(
     loc("TABLE_COMMON_TAGS"),
-    { { loc("TABLE_TAG"),        loc("TABLE_DESC"),         "More Information"        },
+    { { loc("TABLE_TAG"),        loc("TABLE_DESC"),      loc("UI_MORE_INFORMATION")   },
       { "`[rp:name]`",   units.. loc("TAG_rp:name_DESC"  ), "[help](tag://rp:name)"   },
       { "`[rp:class]`",  units.. loc("TAG_rp:class_DESC" ), "[help](tag://rp:class)"  },
       { "`[rp:race]`",   units.. loc("TAG_rp:race_DESC"  ), "[help](tag://rp:race)"   },

@@ -23,17 +23,6 @@ function(self, event, ...)
     
     local unsupported        = RPTAGS.CONST.UNSUP;
 
-    -- local function build_tag_help(tag)
-      -- local w =
-      -- { name = tag.desc,
-        -- order = source_order(),
-        -- type = "input",
-        -- width = 0.66,
-        -- disabled = unsupported[tagName],
-        -- get = function() return "[" .. tag.name .. "]" end,
-      -- };
-      -- return w
-    -- end;
     local function build_tag_help(tag)
       RPTAGS.cache.tagHelp[tag.name] = { label = false, size = "", };
       local tagBox, tagSizer, tagLabeler;
@@ -43,7 +32,7 @@ function(self, event, ...)
         width = 2,
         order = source_order(),
         disabled = unsupported[tag.name],
-        desc = "Select and copy the tag to paste into a panel.",
+        desc = loc("TAGHELP_TT"),
         get = function() 
                 local cache = RPTAGS.cache.tagHelp[tag.name];
                 return "[" .. 
@@ -59,7 +48,7 @@ function(self, event, ...)
            { type = "select",
              name = "Size",
              width = "half",
-             desc = "Select the maximum size of the tag, or a blank to allow any size.",
+             desc = loc("TAGHELP_SIZER_TT"),
              order = source_order(),
              disabled = unsupported[tag.name],
              values = { ["(xs)"] = loc("SIZE_XS"),
@@ -81,7 +70,7 @@ function(self, event, ...)
            { type = "toggle",
              name = "Label",
              width = "half",
-             desc = "Check to add a label onto the tag.",
+             desc = loc("TAGHELP_LABELER_TT"),
              order = source_order(),
              disabled = unsupported[tag.name],
              get = function() return RPTAGS.cache.tagHelp[tag.name].label end,
@@ -145,18 +134,8 @@ function(self, event, ...)
     local args = {};
     RPTAGS.cache.tagHelp = {};
 
-    -- local groupList = { loc("TAG_REFERENCE_MD") };
-
     for _, group in ipairs(tagData)
     do  args[group.key] = build_tag_group_help(group)
-        -- table.insert(groupList, 
-          -- string.format(
-            -- loc("FMT_GROUPLIST_MD"), 
-            -- group.title, 
-            -- group.key,
-            -- group.help
-          -- )
-        -- );
     end;
 
     return 

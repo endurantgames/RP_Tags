@@ -66,7 +66,6 @@ function(self, event, ...)
   { name                = loc("RPUF_NAME"),
     order               = source_order(),
     type                = "group",
-    -- childGroups         = "tab",
     args                =
     { 
       instruct        = Instruct("rpuf main",                            nil , reqRPUF ),

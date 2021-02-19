@@ -24,14 +24,17 @@ function(self, event, ...)
   local Spacer       = optUtils.spacer
   local db           = RP_TagsDB
 
-  local debugMessage = "To load debugging information, erase this message and replace it with only one of the following, no blank lines or leading spaces:\n\n    |cffff0000debug|r |cffffff00libs|r\n    |cffff0000debug|r |cffffff00addons|r\n    |cffff0000debug|r |cffffff00config|r\n\nYou can enter more than one, separated by spaces, but this is |cffff0000NOT|r recommended as it may cause your WoW client to lag indefinitely.";
+  local debugMessage = loc("DEBUGGING_MESSAGE_MD");
 
   RPTAGS.cache.debug = debugMessage;
 
   local AboutHeader = Markdown(
-         "You are using " .. loc("APP_NAME") .. loc("VERSION") .. " " ..  
-         GetAddOnMetadata(addOnName, "Version") ..
-         " (" .. GetAddOnMetadata(addOnName, "X-VersionDate") ..  ").");
+         string.format(
+           loc("FMT_ABOUT_HEADER"),
+           loc("APP_NAME"),
+           loc("VERSION"),
+           GetAddOnMetadata(addOnName, "X-VersionDate")));
+
   AboutHeader.fontSize = "medium";
   AboutHeader.width = "full";
 
@@ -68,7 +71,6 @@ function(self, event, ...)
       width          = 1.35,
       name           = name,
       dialogControl = "LMD30_Description",
-      -- name        = displayName,
     };
 
     args[addOn.name .. "Version"]     =
@@ -103,6 +105,7 @@ function(self, event, ...)
    { name = "TableHeader", 
      title = loc("RPQ_HEADER_NAME"),
      version = loc("RPQ_HEADER_VERSION"),
+     links = { loc("RPQ_HEADER_LINKS") } ,
      rpqType = "header",
      enabled = true,
    }
@@ -216,10 +219,9 @@ function(self, event, ...)
     args =
     { panel = 
       { type = "description",
-        -- name = loc("CHANGES_MD"),
-        name = "# Markdown! \n## Lots of markdown!\n\ntext\n### Markdown!",
+        name = loc("CHANGES_MD"),
         order = source_order(),
-        width = 2.5,
+        width = "full", 
         dialogControl = "LMD30_Description",
       },
     },
@@ -252,37 +254,7 @@ function(self, event, ...)
       },
     },
   };
-
             
-  -- local function build_recipe(str)
-      -- RPTAGS.cache.recipes = RPTAGS.cache.recipes or {};
-      -- local str = "RECIPE_" .. str:gsub("%s+","_"):upper();
-      -- local desc = Markdown(
-                     -- "### " .. loc(str .. "_TITLE") .. "\n\n"
-                     -- .. loc(str .. "_TT")
-                   -- );
-      -- local box = 
-            -- { type = "input",
-              -- order = source_order(),
-              -- name = "",
-              -- get = function(self) return loc(str) end,
-              -- width = 1.5,
-              -- desc = loc(str .. "_TT"),
-            -- };
-                    -- 
-      -- local w =
-      -- { type = "group",
-        -- name = loc(str .. "_TITLE"),
-        -- order = source_order(),
-        -- args =
-        -- { desc = desc,
-          -- box = box,
-        -- }
-      -- };
-      -- return w;
-    -- 
-  -- end;
-
   local aboutScreen        =
   { name                   = loc("PANEL_ABOUT"),
     order                  = source_order(),

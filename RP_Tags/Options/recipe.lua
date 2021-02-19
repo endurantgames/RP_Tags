@@ -36,7 +36,7 @@ function(self, event, ...)
 
       local preview =
             { type = "group",
-              name = "Live Preview",
+              name = loc("UI_LIVE_PREVIEW"),
               order = source_order(),
               inline = true,
               args = 
