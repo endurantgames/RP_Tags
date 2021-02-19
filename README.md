@@ -223,17 +223,14 @@ translations into other languages, you can.
 
 ## To Do
 
-- [x] Core
-  - [x] Get configuration/help working
-  - [x] Change versions to 9.0.2
-  - [x] Keybinds
-  - [x] Something I forgot
-  - [x] Make sure all the libraries are current
-  - [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
-  - [x] Figure out why some things aren't turning to HTML in AMDC
-  - [x] Localization strings for options
-  - [x] Review help files
-    - [x] Help file for labels and sizes
+- [x] Change versions to 9.0.2
+- [x] Make sure all the libraries are current
+- [x] Get configuration/help working
+- [x] Keybinds
+- [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
+- [x] Localization strings for options
+- [x] Review help files
+  - [x] Help file for labels and sizes
 - [ ] Modules
   - [ ] MyRoleplay
     - [x] Keybinds working
@@ -247,22 +244,26 @@ translations into other languages, you can.
     - [x] Get size modifiers working in ElvUI (work-around for old oUF) 
     - [x] Index addon functions
     - [x] Don't "add" oUF/ElvUI tags to listing
-  - [ ] RP:UnitFrames 
+- [ ] RP:UnitFrames 
+  - [x] Index addon functions
+  - [ ] Keybinds working
+  - [ ] Localization strings for options
+  - [ ] Review and update help files
+  - [ ] Frames
+    - [x] Options for per-frame settings
+    - [ ] Individualized settings per frame
+    - [ ] Unit frames fully working
+    - [ ] LibSharedMedia for frames
+  - [ ] Tags
+    - [x] Get labels working in RPUF
+    - [ ] Get size modifiers working in RPUF
+  - [ ] Editor
     - [x] Tag live previews
     - [x] RP:UF editor layout
     - [x] Tag editor buttons
-    - [x] Options for per-frame settings
-    - [x] Get labels working in RPUF
-    - [x] Index addon functions
-    - [ ] Get size modifiers working in RPUF
-    - [ ] Keybinds working
+    - [ ] Color picker for editor
     - [ ] Editor status bar (lower) buttons
-    - [ ] Unit frames fully working
-    - [ ] Individualized settings per frame
-    - [ ] LibSharedMedia for frames
     - [ ] Localization strings for editor
-    - [ ] Localization strings for options
-    - [ ] Review and update help files
 - [ ] Long-Term
   - [ ] Core
     - [ ] Config profiles with Ace3?
@@ -271,5 +272,3 @@ translations into other languages, you can.
     - [ ] Update for new gender settings in trp3
     - [ ] See if RPT can be generalized for any oUF addon
     - [ ] See if RPT can be generalized for any MSP addon
-- [ ] Miscellaneous bug fixes
-
