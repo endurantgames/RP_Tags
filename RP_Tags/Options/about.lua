@@ -47,7 +47,7 @@ function(self, event, ...)
 
     local name    = addOn.title or addOn.name;
     local version = addOn.version and 
-                    addOn.version:gsub(" ?alpha ?", "|cffff0000a|r"):gsub(" ?beta ?", "|cffffff00b|r") or "";
+                    addOn.version:gsub(" ?alpha ?(.+)", "|cffff0000a%1|r"):gsub(" ?beta ?(.*)", "|cffffff00b%1|r") or "";
     local rpqType = addOn.rpqType and loc("RPQ_TYPE_" .. addOn.rpqType:upper()) or "";
     local desc    = addOn.desc or "";
 

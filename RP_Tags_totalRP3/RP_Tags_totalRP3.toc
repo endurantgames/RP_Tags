@@ -1,5 +1,5 @@
 ## Interface: 90002
-## Version: 9.0.2 beta 6
+## Version: 9.0.2.1 alpha 1
 ## Title: rp|cffdd33aaTags|r RP Module: Total RP 3
 ## Author: Oraibi-MoonGuard
 ## Notes: rp|cffdd33aaTags|r integration module for Total RP 3

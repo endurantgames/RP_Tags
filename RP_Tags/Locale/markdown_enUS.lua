@@ -189,7 +189,11 @@ L["CHANGES_MD"] =
 
 # Changes
 
-## 9.0.2.1 
+## |cffff0000Important Note:|r RP\_UnitFrames support is *not* enabled
+  
+This alpha version of RP\_Tags will only run with ElvUI at the present.
+
+## 9.0.2.1 alpha 1
 
 Major updates including:
 
@@ -202,11 +206,14 @@ Major updates including:
 - Revamped [About](opt://about)
 - Redid [Options](opt://general)
 - Restored USE_REAL_ELLIPSES
-- Bug fixes
+- Libraries updated
+- Other bug fixes
 
 ### RP\_Tags\_ElvUI
 
 - Tags are now categorized correctly in ElvUI, with the problem that the Miscellaneous category is broken.
+
+## Coming Soon:
 
 ### RP_UnitFrames
 
