@@ -223,7 +223,7 @@ translations into other languages, you can.
 
 ## To Do
 
-- [ ] Core
+- [x] Core
   - [x] Get configuration/help working
   - [x] Change versions to 9.0.2
   - [x] Keybinds
@@ -232,7 +232,7 @@ translations into other languages, you can.
   - [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
   - [x] Figure out why some things aren't turning to HTML in AMDC
   - [x] Localization strings for options
-  - [ ] Review help files
+  - [x] Review help files
     - [x] Help file for labels and sizes
 - [ ] Modules
   - [ ] MyRoleplay
@@ -261,6 +261,8 @@ translations into other languages, you can.
     - [ ] Individualized settings per frame
     - [ ] LibSharedMedia for frames
     - [ ] Localization strings for editor
+    - [ ] Localization strings for options
+    - [ ] Review and update help files
 - [ ] Long-Term
   - [ ] Core
     - [ ] Config profiles with Ace3?
