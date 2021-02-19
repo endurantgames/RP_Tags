@@ -111,6 +111,11 @@ function(self, event, ...)
   
       ["|TInterface\\RAIDFRAME\\ReadyCheck-NotReady:0|t"] = "|TInterface\\RAIDFRAME\\ReadyCheck-NotReady:0|t",
     },
+    NOTIFY_METHOD =
+    { ["chat"] = loc("CONFIG_NOTIFY_METHOD_CHAT"),
+      ["toast"] = loc("CONFIG_NOTIFY_METHOD_TOAST"),
+      ["both"] = loc("CONFIG_NOTIFY_METHOD_BOTH"),
+    }
   } ;
   
   local function source_order()
@@ -201,7 +206,6 @@ function(self, event, ...)
 
   local function build_checkbox(str, hidden, disabled)
         local w    = build_common("toggle", "CONFIG_", str, hidden, disabled, true, true);
-        w.width = 1.5;
         return w;
   end;
   

@@ -422,6 +422,8 @@ C.CONFIG =
       TAG_SIZE_M        = 15,
       TAG_SIZE_L        = 20,
       TAG_SIZE_XL       = 50,
+      NOTIFY_METHOD     = "chat",
+      SETTINGS_CHANGE   = false,
 
     }, -- DEFAULTS
   } -- config

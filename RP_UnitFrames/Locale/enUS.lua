@@ -18,6 +18,7 @@ function(self, event, ...)
   local ERROR_STARTUP                     = APP_NAME .. "|cffff0000 Startup Error:|r\n\n";
   local EDITOR                            = APP_NAME .. " Editor";
   local NBSP                              = RPTAGS.CONST.NBSP;
+  local BUTTON                            = " Button";
 
   L["RPUF_NAME"                         ] = RPUF_NAME;
   L["RPUF_ABBR"                         ] = RPUF_ABBR;
@@ -323,6 +324,11 @@ function(self, event, ...)
   L["BLANK"                             ] = "Blank";
   L["PORTRAIT_2D"                       ] = "2D Portrait";
   L["PORTRAIT_3D"                       ] = "3D Model";
+
+  for _, tag in ipairs(RPTAGS.CONST.RPUF.EDITOR_BUTTON_LIST)
+  do  L["CONFIG_EDITOR_BUTTON_" .. tag:upper():gsub("[:%-]","")]
+        = EDITOR .. BUTTON .. tag;
+  end;
 
   L["INTRO_RPUF_MD"] = 
   [==========================================================================[

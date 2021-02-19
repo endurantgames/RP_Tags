@@ -28,13 +28,13 @@ function(self, event, ...)
   local Spacer       = optUtils.spacer;
   local evalTagString = Utils.tags.eval;
   local openEditor   = Config.openEditor;
+  local Editor       = RPTAGS.Editor;
 
   local function requiresRPUF() return Config.get("DISABLE_RPUF"); end;
 
   local function build_tag_editor_button(str)
     local STR         = str:upper():gsub("[:%-]", "");
     local setting     = "EDITOR_BUTTON_" .. STR;
-    local buttonCount = "EDITOR_NUM_BUTTONS";
     local w           =
     { type            = "toggle",
       desc            = str,
@@ -43,13 +43,13 @@ function(self, event, ...)
       get             = function() return Get(setting) end,
       disabled        = 
         function() 
-        return (Get(buttonCount) >= CONST.RPUF.EDITOR_MAX_BUTTONS) 
-          and not Get(setting) 
+          return (Editor:CountToolBar() >= CONST.RPUF.EDITOR_MAX_BUTTONS)
+             and not Get(setting) 
         end,
       set             = 
         function(self, value)
           Set(setting, value);
-          Set(buttonCount, Get(buttonCount) + (value and 1 or -1));
+          Editor:UpdateLayout();
         end,
     };
 

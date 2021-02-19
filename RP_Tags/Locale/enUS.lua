@@ -183,6 +183,8 @@ function(self, event, ...)
   L["PANEL_GENERAL"]           = "General Options";
   L["PANEL_ABOUT"]             = "About";
   L["PANEL_HELP"]              = "Help";
+  L["OPT_NOTIFY"]              = "Notifications";
+  L["OPT_NOTIFY_I"]              = "These options let you choose when and how to receive notifications from " .. APP_NAME .. ".";
   L["OPT_COLORS_COMPARISON"] = "Comparison Colors";      -- used
   L["OPT_COLORS_DEFAULT"]    = "Default Colors";         -- used
   L["OPT_COLORS_GENDER"]     = "Gender Colors";          -- used
@@ -370,6 +372,13 @@ function(self, event, ...)
   L["CONFIG_NOTE_2_STRING_TT"]           = "If you have set a note on the unit and a line in the note contains this word, then [rp:note-2] will display that line. Keywords must be at least 3 characters long and can contain Lua patterns.";
   L["CONFIG_NOTE_3_STRING"]              = "Third Note Keyword";
   L["CONFIG_NOTE_3_STRING_TT"]           = "If you have set a note on the unit and a line in the note contains this word, then [rp:note-3] will display that line. Keywords must be at least 3 characters long and can contain Lua patterns.";
+  L["CONFIG_NOTIFY_METHOD"] = "Notifications";
+  L["CONFIG_NOTIFY_METHOD_TT"] = "Choose how you wish to receive notifications from " .. APP_NAME .. ".";
+  L["CONFIG_NOTIFY_METHOD_CHAT"] = "In the Chat Window";
+  L["CONFIG_NOTIFY_METHOD_TOAST"] = "As a Toast";
+  L["CONFIG_NOTIFY_METHOD_BOTH"] = "Both Chat Window and Toast";
+  L["CONFIG_SETTINGS_CHANGE"] = "Settings Changed";
+  L["CONFIG_SETTINGS_CHANGE_TT"] = "Receive a confirmation when your settings for " .. APP_NAME .. " change value.";
   L["CONFIG_PARSE_AGE"]                  = "Parse Age";
   L["CONFIG_PARSE_AGE_TT"]               = "Normally, [rp:age] is only calculated when it's a number alone, which means the number of years. Check this box to have RPTAGS try to interpret age fields that have text such as '120 years' or '20 centuries'.";
   L["CONFIG_PARSE_GENDER"]               = "Parse Gender";

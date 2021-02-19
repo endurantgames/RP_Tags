@@ -220,7 +220,8 @@ function(self, event, ...)
      "Icon_3Panel", 
    },
   };
-  RPTAGS.CONST.ICONS.COLORWHEEL   = "|TInterface\\OptionsFrame\\ColorblindSettings:0::0:0:256:256:0:148:0:148|t";
+  -- RPTAGS.CONST.ICONS.COLORWHEEL   = "|TInterface\\OptionsFrame\\ColorblindSettings:0::0:0:256:256:0:148:0:148|t";
+  RPTAGS.CONST.ICONS.COLORWHEEL   = "|A:colorblind-colorwheel:0:0|a";
   RPTAGS.CONST.ICONS.WHITE_       = "|TInterface\\BUTTONS\\WHITE8X8.PNG:0:{w}:" .. "0:0:" .. "8:8:" ..
                                     "0:8:0:8:" .. "{r}:{g}:{b}|t";
   RPTAGS.CONST.ICONS.MORE         = "Calendar\\MoreArrow";
@@ -412,7 +413,7 @@ function(self, event, ...)
   CONFIG.EDITOR_BUTTONS      = "rp:name|rp:color|rp:eyes|rp:eyecolor|rp:class|rp:icon|rp:height|rp:gender|rp:race|rp:fulltitle|rp:age|rp:body|rp:status|rp:statuscolor|rp:gendercolor";
   CONFIG.EDITOR_BUTTON_BAR   = true;
  
-  RPTAGS.CONST.RPUF.EDITOR_MAX_BUTTONS = 11;
+  RPTAGS.CONST.RPUF.EDITOR_MAX_BUTTONS = 15;
 
   CONFIG.EDITOR_NUM_BUTTONS = 7;
   CONFIG.EDITOR_BUTTON_RPNAME          = true;

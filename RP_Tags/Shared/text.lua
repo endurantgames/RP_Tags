@@ -17,6 +17,7 @@ function(self, event, ...)
   local Cache       = RPTAGS.cache;
   local loc         = Utils.locale.loc;
   local Config      = Utils.config;
+  local LibToast    = LibStub("LibToast-1.0");
 
         -- function to split a string based on a pattern
   local function split(str, pat)
@@ -157,7 +158,22 @@ function(self, event, ...)
     return string.format(loc("FMT_APP_LOAD"), vText(), "/" .. split(loc("APP_SLASH"), "|")[1]);
   end;
   
-  local function notify(message) print(hiliteTags("[RPTAGS] " .. message)); end;
+  LibToast:Register("RP_Tags_notify",
+    function(toast, ...)
+      toast:SetTitle(loc("APP_NAME"));
+      toast:SetText(...);
+    end);
+
+  local function notify(message) 
+    if Config.get("NOTIFY_METHOD") == "both" or Config.get("NOTIFY_METHOD") == "chat"
+    then print(hiliteTags("[RPTAGS] " .. message)); 
+    end;
+
+    if Config.get("NOTIFY_METHOD") == "both" or Config.get("NOTIFY_METHOD") == "toast"
+    then LibToast:Spawn("RP_Tags_notify", hiliteTags(message))
+    end;
+  end;
+
   local function notifyFmt(format, ...) notify(string.format(format, ...)) end;
   
   -- Utilities available under RPTAGS.utils.text

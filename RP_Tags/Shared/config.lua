@@ -41,9 +41,28 @@ function(self, event, ...)
     end;
   end;  
   
-  local function setConfig(key, value) if not key then return nil; end;
+  local function setConfig(key, value, quiet) if not key then return nil; end;
+    local loc = RPTAGS.utils.locale.loc;
+    local notify = RPTAGS.utils.text.notify;
+    local notifyFmt = RPTAGS.utils.text.notifyFmt;
+
     if   keyIsValid(key)
     then RP_TagsDB.settings[key].value = value;
+         if Config.get("SETTINGS_CHANGE") and not quiet
+         then 
+              if     type(value) == "boolean"
+              then   value = value and loc("TRUE") or loc("FALSE");
+              elseif type(value) == "nil"
+              then   value = loc("NIL")
+              elseif type(value) == "table"
+              then   value = loc("TABLE")
+              elseif type(value) == "function"
+              then   value = loc("FUNCTION")
+              elseif type(value) == "string" and key:match("COLOR") and value:match("^%x%x%x%x%x%x$")
+              then   value = "|cff" .. value .. "#" .. value .. "|r"
+              end;
+              notifyFmt(loc("FMT_SETTINGS_CHANGE"), loc("CONFIG_" .. key), value);
+         end;
          return value;
     else return nil;
     end; -- if;
@@ -51,8 +70,8 @@ function(self, event, ...)
   
   local function resetConfig(key) if not key then return nil; end; 
     if   keyIsValid(key)
-    then RP_TagsDB.settings[key].value = RP_TagsDB.settings[key].default;
-         return RP_TagsDB.settings[key].default;
+    then local value = RP_TagsDB.settings[key].default;
+         return setConfig(key, value);
     else return nil;
     end; --if
   end; -- function

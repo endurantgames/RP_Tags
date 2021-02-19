@@ -37,8 +37,18 @@ function(self, event, ...)
     childGroups            = "tab",
     args                   =
     { instruct             = Instruct("general"),
-      loginMessage         = Checkbox("login message"),
-      linebreaks           = Checkbox("linebreaks"),
+      notify               =
+      { type = "group",
+        order = source_order(),
+        name = loc("OPT_NOTIFY"),
+        args =
+        { instruct = Instruct("notify"),
+          notifyMethod     = Dropdown("notify method"),
+          blank            = Blank_Line(),
+          loginMessage     = Checkbox("login message"),
+          settingsChange   = Checkbox("settings change"),
+        },
+      },
       parse                =
       { type               = "group",
         order              = source_order(),
@@ -49,8 +59,8 @@ function(self, event, ...)
           parseGender      = Checkbox("parse gender"),
           parseAge         = Checkbox("parse age"),
           adultGenders     = Checkbox("adult genders", nil, 
-                               function() return not Config.get("PARSE_GENDER") end
-                             ),
+                               function() return not Config.get("PARSE_GENDER") end),
+          linebreaks       = Checkbox("linebreaks"),
         },
       },
       notes                =
