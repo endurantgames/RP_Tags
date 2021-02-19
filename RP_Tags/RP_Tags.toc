@@ -1,6 +1,6 @@
 ## Interface: 90002
-## Version: 9.0.2 beta 5
-## Title: |cffdd33aarp|r|cffffffffTags|r (dev)
+## Version: 9.0.2 beta 6
+## Title: rp|cffdd33aaTags|r
 ## Author: Oraibi-MoonGuard
 ## Notes: Custom unit frames with fields from roleplaying profiles
 ## OptionalDeps: totalRP3, MyRolePlay, ElvUI
@@ -10,6 +10,6 @@
 ## X-RPQVersion: 1.004
 ## X-RPQModuleID: rptags
 ## X-RPQModuleType: core
-## X-VersionDate: 2021-02-16
+## X-VersionDate: 2021-02-18
 
 load.xml

@@ -32,7 +32,7 @@ function(self, event, ...)
          string.format(
            loc("FMT_ABOUT_HEADER"),
            loc("APP_NAME"),
-           loc("VERSION"),
+           GetAddOnMetadata(addOnName, "Version"),
            GetAddOnMetadata(addOnName, "X-VersionDate")));
 
   AboutHeader.fontSize = "medium";
@@ -46,7 +46,8 @@ function(self, event, ...)
     end;
 
     local name    = addOn.title or addOn.name;
-    local version = addOn.version and addOn.version:gsub(" alpha ", "a"):gsub(" beta ", "b") or "";
+    local version = addOn.version and 
+                    addOn.version:gsub(" ?alpha ?", "|cffff0000a|r"):gsub(" ?beta ?", "|cffffff00b|r") or "";
     local rpqType = addOn.rpqType and loc("RPQ_TYPE_" .. addOn.rpqType:upper()) or "";
     local desc    = addOn.desc or "";
 

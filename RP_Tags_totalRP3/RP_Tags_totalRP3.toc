@@ -1,8 +1,8 @@
 ## Interface: 90002
-## Version: 9.0.2 beta 5
-## Title: |cffdd33aarp|r|cffffffffTags|r RP Module: Total RP 3
+## Version: 9.0.2 beta 6
+## Title: rp|cffdd33aaTags|r RP Module: Total RP 3
 ## Author: Oraibi-MoonGuard
-## Notes: |cffdd33aarp|r|cffffffffTags|r rpTags integration module for Total RP 3
+## Notes: rp|cffdd33aaTags|r integration module for Total RP 3
 ## RequiredDeps: RP_Tags, totalRP3
 ## URL: http://spindrift.games/rptags
 ## X-RPQVersion: 1

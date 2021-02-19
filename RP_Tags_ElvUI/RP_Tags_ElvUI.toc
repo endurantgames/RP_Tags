@@ -1,8 +1,8 @@
 ## Interface: 90002
-## Version: 9.0.2 beta 5
-## Title: |cffdd33aarp|r|cffffffffTags|r UF Module: |cff1784d1ElvUI|r
+## Version: 9.0.2 beta 6
+## Title: rp|cffdd33aaTags|r UF Module: |cff1784d1ElvUI|r
 ## Author: Oraibi-MoonGuard
-## Notes: |cffdd33aarp|r|cffffffffTags|r integration module for |cff1784d1ElvUI|r
+## Notes: rp|cffdd33aaTags|r integration module for |cff1784d1ElvUI|r
 ## RequiredDeps: RP_Tags, ElvUI
 ## URL: http://spindrift.games/rptags
 ## X-RPQModuleId: elvui

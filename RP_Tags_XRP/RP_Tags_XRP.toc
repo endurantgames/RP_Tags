@@ -1,8 +1,8 @@
 ## Interface: 90002
-## Version: 9.0.2 beta 5
-## Title: |cffdd33aarp|r|cffffffffTags|r RP Module: XRP
+## Version: 9.0.2 beta 6
+## Title: rp|cffdd33aaTags|r RP Module: XRP
 ## Author: Oraibi-MoonGuard
-## Notes: |cffdd33aarp|r|cffffffffTags|r integration module for xrp
+## Notes: rp|cffdd33aarpTags|r integration module for xrp
 ## RequiredDeps: RP_Tags, XRP
 ## DefaultState: disabled
 ## URL: http://spindrift.games/rptags
