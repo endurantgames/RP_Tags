@@ -1,9 +1,9 @@
 ## Interface: 90002
-## Version: 2.000
+## Version: 9.0.2.1
 #
 #  Pick one:
-## Title: |cffdd33aarp|r|cffffffffTags|r UF Module: SomeAddOn
-## Title: |cffdd33aarp|r|cffffffffTags|r RP Module: SomeAddOn
+## Title: rp|cffdd33aaTags|r UF Module: SomeAddOn
+## Title: rp|cffdd33aaTags|r RP Module: SomeAddOn
 #
 ## Author: YourName-YourHomeServer
 ## Notes: |cffdd33aarp|r|cffffffffTags|r integration module for SomeAddOn

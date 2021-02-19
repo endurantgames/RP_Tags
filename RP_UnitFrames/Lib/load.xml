@@ -3,7 +3,5 @@
 	xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 	
         <Include file="oUF\oUF.xml"                              />
-        <Include file="LibSharedMedia-3.0\lib.xml"               />
-        <Include file="AceGUI-3.0-SharedMediaWidgets\widget.xml" />
 
 </Ui>

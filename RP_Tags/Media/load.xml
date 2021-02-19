@@ -2,6 +2,4 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 
-    <Script file="Fonts\Fonts.lua"      />
-
 </Ui>
