@@ -124,7 +124,7 @@ function(self, event, ...)
       { order = source_order(),
         type = "description",
         dialogControl = "LMD30_Description",
-        width = 2,
+        width = "full",
       };
 
       if type(text) == "table"
@@ -182,7 +182,15 @@ function(self, event, ...)
           }; 
         end;
 
-  local function build_blank_line() return { name = "", order = source_order(), width = "full", type = "description", fontSize = "medium", }; end;
+  local function build_blank_line(fontSize) 
+    return 
+      { name = "", 
+        order = source_order(), 
+        width = "full", 
+        type = "description", 
+        fontSize = fontSize or "medium", 
+      }; 
+  end;
 
   local function build_label(str, hidden, disabled, width)
     local w = build_common("description", "", str, hidden, disabled);
@@ -378,11 +386,41 @@ function(self, event, ...)
   end;
 
   local function set_width(w, width) w.width = width or "full"; return w; end;
+  local function set_fontSize(w, fontSize) w.fontSize = fontSize or "small"; return w; end;
 
   local function build_plugin_mountpoint(str)
     RPTAGS.cache.Plugins = RPTAGS.cache.Plugins or {};
     RPTAGS.cache.Plugins[str] = RPTAGS.cache.Plugins[str] or {};
     return RPTAGS.cache.Plugins[str];
+  end;
+
+  local function build_data_table(str, data, config)
+    local w = 
+    { type   = "group",
+      inline = true,
+      name   = str,
+      width  = "full",
+      order  = source_order(),
+      args   = {},
+    };
+    config = config or {};
+    config.width = config.width or {};
+    for l, line in ipairs(data)
+    do  for i, item in ipairs(line)
+        do  local cellName = string.format("TableCell_%d_%d", l, i);
+            w.args[cellName] =
+            { type = "description",
+              width = config.width[i] or 1,
+              name = (l == 1) and ("*" .. item .. "*") or item or "",
+              order = source_order(),
+              fontSize = config.fontSize or "small",
+              dialogControl = "LMD30_Description",
+            };
+            if config.spacer then w.args[cellName .. "_Spacer"] = build_spacer(); end;
+        end;
+        if config.blank_line then w.args["BlankLine" .. l] = build_blank_line("small"); end;
+    end;
+    return w;
   end;
     
   RPTAGS.utils.options  = RPTAGS.utils.options or {};
@@ -390,6 +428,7 @@ function(self, event, ...)
   optUtils.source_order = source_order;
   optUtils.common       = build_common
   optUtils.set_width    = set_width;
+  optUtils.set_fontSize = set_fontSize;
 
   optUtils.background   = build_lsm_background;
   optUtils.blank_line   = build_blank_line;
@@ -410,6 +449,7 @@ function(self, event, ...)
   optUtils.spacer       = build_spacer;
   optUtils.statusbar    = build_lsm_statusbar;
   optUtils.textbox      = build_textbox;
+  optUtils.data_table   = build_data_table;
 
 -- RPQ -----------------------------------------------------------------------------------------------------------------------------------------------
 end);

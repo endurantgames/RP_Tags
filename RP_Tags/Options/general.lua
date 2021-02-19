@@ -103,6 +103,8 @@ function(self, event, ...)
         args               =
         { header           = Header("tag sizes"),
           instruct         = Instruct("tag sizes"),
+          ellipses         = Wide(Checkbox("real ellipses")),
+          blank            = Blank_Line(),
           extraSmall       = Wide(Slider("tag size xs"), 1.5),
           s1               = Spacer(),
           small            = Wide(Slider("tag size s" ), 1.5),
@@ -112,8 +114,6 @@ function(self, event, ...)
           large            = Wide(Slider("tag size l" ), 1.5),
           s4               = Spacer(),
           extraLarge       = Wide(Slider("tag size xl"), 1.5),
-          s5               = Spacer(),
-          ellipses         = Wide(Checkbox("real ellipses")),
         },
       },
       keybind              =

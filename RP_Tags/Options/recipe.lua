@@ -16,6 +16,7 @@ function(self, event, ...)
   local loc                = Utils.locale.loc;
   local build_markdown     = Utils.options.markdown;
   local source_order       = Utils.options.source_order
+  local eval               = Utils.tags.eval;
 
   local function build_recipe(str)
       RPTAGS.cache.recipes = RPTAGS.cache.recipes or {};
@@ -29,8 +30,22 @@ function(self, event, ...)
               order = source_order(),
               name = "",
               get = function(self) return loc(str) end,
-              width = 1.5,
+              width = "full",
               desc = loc(str .. "_TT"),
+            };
+
+      local preview =
+            { type = "group",
+              name = "Live Preview",
+              order = source_order(),
+              inline = true,
+              args = 
+              { preview = 
+                { type = "description",
+                  order = source_order(),
+                  name = function() return eval(loc(str), "player", "player") end,
+                },
+              },
             };
                     
       local w =
@@ -40,6 +55,7 @@ function(self, event, ...)
         args =
         { desc = desc,
           box = box,
+          preview = preview,
         }
       };
       return w;

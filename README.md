@@ -233,7 +233,7 @@ translations into other languages, you can.
   - [x] Figure out why some things aren't turning to HTML in AMDC
   - [x] Localization strings for options
   - [ ] Review help files
-    - [ ] Help file for labels and sizes
+    - [x] Help file for labels and sizes
 - [ ] Modules
   - [ ] MyRoleplay
     - [x] Keybinds working

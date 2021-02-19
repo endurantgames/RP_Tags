@@ -15,30 +15,31 @@ function(self, event, ...)
   local Utils       = RPTAGS.utils;
   local linkHandler = Utils.links.handlerCustomClick;
   local loc         = Utils.locale.loc;
+  local nbsp        = RPTAGS.CONST.NBSP;
 
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "pre"] =  "<h3>|cff00ffff";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/pre"] = "|r</h3>";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "code"] =  "<h3>|cff00ffff";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/code"] = "|r</h3>";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "code"] =  "<h3>|cff00ffff";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/code"] = "|r</h3>";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[ "h3"  ] =  "<h2>";
-  ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig["/h3"  ] = "</h2>";
+  local htmlCodes   =
+  { ["blockquote"]  = "<br /><p>" .. nbsp .. "|cffff00ff",
+    ["/blockquote"] = "|r</p><br />",
+    ["pre"]         = "<br /><p>" .. nbsp .. "|cff00ffff",
+    ["/pre"]     = "|r</p><br />",
+    ["h2"]          = "<br /><h2>",
+    ["h3"]          = "<br /><h3>",
+    ["ul"]           = "<br />",
+    ["/ul"]          = "<br />",
+    ["li"]           = "<p>" .. nbsp,
+    ["/li"]          = "</p>",
+    ["list_marker"] = "|TInterface\\COMMON\\Indicator-Yellow.PNG:0|t",
+  };
+
+  for k, v in pairs(htmlCodes)
+  do ACEMARKDOWNWIDGET_CONFIG.LibMarkdownConfig[k] = v;
+  end;
 
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Normal"].Spacing = 2;
 
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.red   = 1;
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.green = 1;
   ACEMARKDOWNWIDGET_CONFIG.HtmlStyles.Normal.blue  = 1;
-
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].FontFile =
-    LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, RPTAGS.CONST.FONT.FIXED) 
-    or LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT);
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].red   = 0.000;
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].green = 1.000;
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].blue  = 1.000;
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].Spacing = 6;
-  ACEMARKDOWNWIDGET_CONFIG.HtmlStyles["Heading 3"].JustifyH = "CENTER";
 
   ACEMARKDOWNWIDGET_CONFIG.LinkProtocols.default.Popup =
     { Text = loc("LINK_DEFAULT_TEXT"),

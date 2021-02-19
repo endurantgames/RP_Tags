@@ -229,6 +229,18 @@ function(self, event, ...)
   L["SETTINGS"]              = "settings";
   L["SET_LAYOUT"]            = "Set ";
   
+  -- table headers
+  --
+  L["TABLE_TAG_SIZES"] = "Size Modifiers";
+  L["TABLE_MODIFIER"] = "Modifier";
+  L["TABLE_SHORT_FORM"] = "Short Form";
+  L["TABLE_MAX_SIZE"] = "Maximum Size";
+  L["TABLE_CHARACTERS"] = " characters";
+  L["TABLE_COMMON_TAGS"] = "Commonly Used Tags";
+  L["TABLE_TAG"] = "Tag";
+  L["TABLE_DESC"] = "Description";
+  L["TABLE_THE_UNITS"] = "The unit's ";
+
   -- --- recipes
   -- [==========================================================================[
   -- # Recipes
@@ -449,9 +461,9 @@ function(self, event, ...)
   L["FMT_Q"]                = "%s?";
   L["FMT_AMBIGUOUS_RESULT"] = "Did you mean %s or %s?";
   L["FMT_UNKNOWN_SLASH"]    = "Unknown command [[%s]]. Type [[[%s commands]]] for help.";
-  L["FMT_KEYBIND_WARNING"] = = "This will erase the current binding for %s. Are you sure you want to do that?";
+  L["FMT_KEYBIND_WARNING"]  = "This will erase the current binding for %s. Are you sure you want to do that?";
   L["FMT_KEYBIND_SET"]      = "Keybinding [[%s]] set to [[[%s]]].";
-  L["FMT_KEYBIND_CLEARED"] = "Keybinding [[%s]] cleared.";
+  L["FMT_KEYBIND_CLEARED"]  = "Keybinding [[%s]] cleared.";
   
    -- parsing - ----------------------------------------------------------------------------------------------------------------------------------------------
   L["RACE_1"]     = "Human,Stormwind,Arath,Lordae";

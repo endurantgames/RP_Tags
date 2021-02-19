@@ -19,36 +19,52 @@ local _t = Icon._t;
 [===[
 # Introduction
 
-RPTAGS is an addon that lets you create special panels, called unit frames, to display roleplaying information of your
-choice, drawn from roleplaying addons such as [MyRolePlay](urldb://mrp), [Total RP 3](urldb://trp3), or [XRP](urldb://xrp).
+RPTAGS is an addon that lets you create special panels, called unit frames, 
+to display roleplaying information of your
+choice, drawn from roleplaying addons such as [MyRolePlay](urldb://mrp), 
+[Total RP 3](urldb://trp3), or [XRP](urldb://xrp).
 
-In addition, you can use any tags from RPTAGS in [ElvUI](urldb://elvui), although ElvUI is not required for RPTAGS.
+In addition, you can use any tags from RPTAGS in [ElvUI](urldb://elvui), 
+although ElvUI is not required for RPTAGS.
 
 ## What's a Unit Frame?
 
-A unit frame is a window on your screen that appears when a certain type of unit exists in the
-game. For example, the Target Unit Frame is shown when you target someone.
+A unit frame is a window on your screen that appears when a certain 
+type of unit exists in the game. For example, the Target Unit Frame is 
+shown when you target someone.
 
-RPTAGS works with three types of unit frame: Player, Target, and Focus. When we talk about showing
-a unit's info, that means that your RP info is displayed in the player frame, your target's in the target frame,
+RPTAGS works with three types of unit frame: Player, Target, and Focus. 
+When we talk about showing a unit's info, that means that your RP info 
+is displayed in the player frame, your target's in the target frame,
 and your focus, if any, in the focus frame.
 
 ## What's a Tag?
 
-A tag, in this context, refers to a string of text that you asisgn to locations on the unit frames known
+A tag, in this context, refers to a string of text that you asisgn 
+to locations on the unit frames known
 as panels. Tags look like this:
 
-[rp:tagname]
+    [rp:tagname]
 
-There are nearly 200 RPTAGS you can use, as well as several dozen provided by oUF, the framework addon upon
+There are nearly 200 RPTAGS you can use, as well as several dozen 
+provided by oUF, the framework addon upon
 which RPTAGS is built. Some of the most useful tags include:
+]===];
 
-[rp:name], [rp:race], [rp:class], [rp:icon], [rp:color], [rp:status], [rp:curr]
+  L["FMT_GROUPLIST_MD"] =
+[===[
+## [%s](opt://help/tags/%s)
 
+%s
+]===];
+
+  L["INTRO_2_MD"] =
+[===[
 ## Further Help
 
-If you need more assistance, you can peruse the rest of these help topics or ask for assistance on the
-[RPTAGS discord](urldb://discord) or ask [Oraibi on twitter](urldb://twitter).
+If you need more assistance, you can peruse the rest of these help 
+topics or ask for assistance on the [RPTAGS discord](urldb://discord) 
+or ask [Oraibi on twitter](urldb://twitter).
 The easiest way to learn is to just start editing tags and experimenting. Have fun!
 ]===];
 
@@ -75,55 +91,60 @@ to notes that you've set on a unit.
 If you want to restore the settings on a particular page to their default values, use the "Defaults" button in the lower left corner of the Interface window.
 ]===];
 
-  L["BINDINGS_MD"] = 
-[===[
-# Key Bindings
-
-RPTAGS offers a number of keybinds to allow you to control the addon with a single keypress.
-
-Key bindings are accessible through the standard [WoW Key Bindings Menu](opt://keybind), on the AddOns sub-menu.
-]===];
-
   L["TAG_MODIFIERS_MD"] = 
 [===[
-There are two types of modifier tags -- labels and sizes. 
+# Tag Modifiers
+There are two types of tag modifiers that change how a tag is displayed: [[labels]] and [[size modifiers]].
 
-A modifier is applied after the main tag, with a color (`:`)
-between them. Like this:
+## Labels
 
- [rp:title:label] [rp:title:xs]
+A label modifier can be applied to most tags that display information. You create a label
+tag by adding `-label` to the end of the tag. For example:
 
-> Title: Stormwind Fashion Icon Storm
+    [rp:fulltitle-label]
 
-You can even mix the two if you want, but if you do, the `:label`
-modifier has to come first:
+This will display a label before the unit's title:
 
- [rp:title:label:xs]
+> Title: Stormwind Fashion Icon
 
-> Title: Storm
+If a given unit doesn't have the listed field, nothing will be displayed. If you want to display
+a label anyway, simply create your own label in text:
 
-These two sequences don't actually do the same thing. The first one
-puts a label in front of the unit's title, then the titled, 
-followed again by their title -- but only the first 5 characters --
-`:xs` stands for "extra small."
+    Title: [rp:fulltitle]
 
-While the combined tag displays a label before the unit's title,
-and then 5 their title itself -- but again, only 5 characters.
+That will display even if the unit has no full title set:
 
- - `:extrasmall`, `:veryshort` (`:xs`, `:vs`):  5 characters
- - `:small`, `:short`          (`:s`):  10 characters 
- - `:medium`                   (`:m`):  15 characters
- - `:large`, `:long`           (`:l`):  20 characters
- - `:extralarge`, `:verylong`  (`:xl`, `:vl`):  50 characters
-^
+> Title: 
 
-You can change the number of characters in [options](opt://general/sizes).
+Icon tags and color tags never display labels.
 
-Test: [keybindings](opt://general/keybind)
+## Size Modifiers
 
-Test2: [about](opt://help/recipes)
+A size modifier is also applied after a tag, and consists of a size in parentheses.
 
-Test3: [email oraibi](mailto:oraibi@gmail.com)
+    [rp:fulltitle(8)]
+
+The size given is the number of characters that will be displayed:
+
+> Stormwin
+
+You can use characters, or you can use keywords. The valid size keywords are:
+]===];
+
+L["TAG_MODIFIERS_2_MD"] = 
+[===[
+For example:
+
+    [rp:fulltitle(medium)]
+
+> Stormwind Fashi
+
+    [rp:fulltitle(xs)]
+
+> Storm
+
+The length corresponding to each keyword can be changed by you 
+in [Tag Size Options](setting://general/sizes).
 ]===];
 
 L["DEBUGGING_COMMANDS_MD"] = 

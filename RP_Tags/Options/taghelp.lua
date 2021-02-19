@@ -13,23 +13,85 @@ function(self, event, ...)
   local Utils              = RPTAGS.utils;
   local loc                = Utils.locale.loc;
   local source_order       = Utils.options.source_order;
-  local build_spacer       = Utils.options.spacer;
+  local Spacer             = Utils.options.spacer;
   local tagData            = RPTAGS.CONST.TAG_DATA;
+  local Blank_Line         = Utils.options.blank_line;
+  local Data_Table         = Utils.options.data_table;
+  local eval               = Utils.tags.eval;
 
   local function build_panel_taghelp()
     
     local unsupported        = RPTAGS.CONST.UNSUP;
 
+    -- local function build_tag_help(tag)
+      -- local w =
+      -- { name = tag.desc,
+        -- order = source_order(),
+        -- type = "input",
+        -- width = 0.66,
+        -- disabled = unsupported[tagName],
+        -- get = function() return "[" .. tag.name .. "]" end,
+      -- };
+      -- return w
+    -- end;
     local function build_tag_help(tag)
-      local w =
-      { name = tag.desc,
+      RPTAGS.cache.tagHelp[tag.name] = { label = false, size = "", };
+      local tagBox, tagSizer, tagLabeler;
+      tagBox = 
+      { type = "input",
+        name = tag.desc,
+        width = 2,
         order = source_order(),
-        type = "input",
-        width = 0.66,
-        disabled = unsupported[tagName],
-        get = function() return "[" .. tag.name .. "]" end,
+        disabled = unsupported[tag.name],
+        desc = "Select and copy the tag to paste into a panel.",
+        get = function() 
+                local cache = RPTAGS.cache.tagHelp[tag.name];
+                return "[" .. 
+                       tag.name .. 
+                       (tag.label and (cache.label and "-label" or "") or "") ..
+                       (tag.size and cache.size or "") ..
+                       "]"
+              end,
       };
-      return w
+
+      if tag.size
+      then tagSizer =
+           { type = "select",
+             name = "Size",
+             width = "half",
+             desc = "Select the maximum size of the tag, or a blank to allow any size.",
+             order = source_order(),
+             disabled = unsupported[tag.name],
+             values = { ["(xs)"] = loc("SIZE_XS"),
+                        ["(s)" ] = loc("SIZE_SMALL"),
+                        ["(m)" ] = loc("SIZE_MEDIUM"),
+                        ["(l)" ] = loc("SIZE_LARGE"),
+                        ["(xl)"] = loc("SIZE_XL"),
+                        [""    ] = "",
+                      },
+             sorting = { "", "(xs)", "(s)", "(m)", "(l)", "(xl)" };
+             get = function() return RPTAGS.cache.tagHelp[tag.name].size end,
+             set = function(self, value) RPTAGS.cache.tagHelp[tag.name].size = value end,
+           };
+          tagBox.width = tagBox.width - 0.5;
+      end;
+
+      if tag.label
+      then tagLabeler =
+           { type = "toggle",
+             name = "Label",
+             width = "half",
+             desc = "Check to add a label onto the tag.",
+             order = source_order(),
+             disabled = unsupported[tag.name],
+             get = function() return RPTAGS.cache.tagHelp[tag.name].label end,
+             set = function(self, value) RPTAGS.cache.tagHelp[tag.name].label = value end,
+           };
+         tagBox.width = tagBox.width - 0.5;
+      end;
+
+      return tagBox, tagLabeler, tagSizer;
+
     end;
   
     local function build_subtitle_help(tag)
@@ -43,7 +105,7 @@ function(self, event, ...)
     end;
   
     local function getGroupHelp(group)
-      return "## " ..  group.title .. loc("TAGS") .. 
+      return "# " ..  group.title .. " " .. loc("TAGS") .. 
              "\n\n" .. group.help .. "\n\n";
     end;
 
@@ -62,8 +124,11 @@ function(self, event, ...)
       do  if     tag.title 
           then   args[tag.title] = build_subtitle_help(tag, group)
           elseif tag.name and tag.desc
-          then   args[tag.name] = build_tag_help(tag, group)
-                 args["spacer_" .. i] = build_spacer();
+          then   local box, labeler, sizer = build_tag_help(tag, group)
+                 args[tag.name] = box;
+                 args[tag.name .. "Labeler"]   = labeler;
+                 args[tag.name .. "Sizer"]     = sizer;
+                 args[tag.name .. "BlankLine"] = Blank_Line();
           end;
       end;
 
@@ -77,60 +142,33 @@ function(self, event, ...)
       return w;
     end;
   
-    local function build_group_link(group)
-      local w =
-      { type = "description",
-        order = source_order(),
-        dialogControl = "LMD30_Description",
-        name = "[" .. group.title .. " Tags]" ..
-               "(opt://help/tags/" .. group.key .. ")",
-        fontSize = "medium",
-      };
-      return w;
-    end;
+    local args = {};
+    RPTAGS.cache.tagHelp = {};
 
-    function build_group_text(group)
-      local w =
-      { type = "description",
-        order = source_order(),
-        dialogControl = "LMD30_Description",
-        name = group.help,
-        fontSize = "small",
-      };
-      return w;
-    end;
+    -- local groupList = { loc("TAG_REFERENCE_MD") };
 
-    local groupListText = loc("TAG_REFERENCE_MD") .. "\n\n";
-    local args =  
-    { header = 
-      { type = "description",
-        name = loc("TAG_REFERENCE_MD"),
-        dialogControl = "LMD30_Description",
-        order = source_order(),
-      },
-    };
-
-    for _, group in pairs(tagData)
+    for _, group in ipairs(tagData)
     do  args[group.key] = build_tag_group_help(group)
-        args[group.key .. "_Link"] = build_group_link(group)
-        args[group.key .. "_Text"] = build_group_text(group)
+        -- table.insert(groupList, 
+          -- string.format(
+            -- loc("FMT_GROUPLIST_MD"), 
+            -- group.title, 
+            -- group.key,
+            -- group.help
+          -- )
+        -- );
     end;
-  
-    args.groupList = groupList;
 
-    local w =
+    return 
     { type = "group",
       name = loc("OPT_TAG_REFERENCE"),
-      -- childGroups = "select",
       order = source_order(),
       args = args,
     };
-  
-    return w;
-  
+
   end; -- 
 
-  RPTAGS.options = RPTAGS.options or {};
+  RPTAGS.options         = RPTAGS.options or {};
   RPTAGS.options.taghelp = build_panel_taghelp;
  
 -- RPQ -----------------------------------------------------------------------------------------------------------------------------------------------

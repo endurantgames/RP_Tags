@@ -268,6 +268,16 @@ C.ICONS = {
   XP_2        = "ICONS\\XP_ICON",
   XP_3        = "TARGETINGFRAME\\PortraitQuestBadge",
   
+  -- |Tpath:height
+  --   [:width
+  --     [:offsetX:offsetY:
+  --       [textureWidth:textureHeight:leftTexel:rightTexel:topTexel:bottomTexel
+  --         [:rVertexColor:gVertexColor:bVertexColor]
+  --       ] 
+  --     ] 
+  --   ]|t
+  -- 
+  -- 
   -- TexturePath:size1:size2:xoffset:yoffset:dimx:dimy:coordx1:coordx2:coordy1:coordy2
   --            :0    :     :0      :0      :128 :64  :64     :128    :0      :64",
   -- path       :0    :0    :0      :0      :64  :64  :0      :64     :0      :64     
@@ -282,6 +292,10 @@ C.ICONS = {
   PVP_ALLIANCE_SQUARE = "ICONS\\PVPCurrency-Honor-Alliance",
   PVP_HORDE_SQUARE = "ICONS\\PVPCurrency-Honor-Horde",
   PVP_HORDE = "PvPRankBadges\\PvPRankHorde",
+  UI_DOT_RED = "COMMON\\Indicator-Red",
+  UI_DOT_YELLOW = "COMMON\\Indicator-Yellow",
+  UI_DOT_GREEN = "COMMON\\Indicator-Green",
+  UI_DOT_GRAY = "COMMON\\Indicator-Gray",
   
   HORDE     = "GROUPFRAME\\UI-Group-PVP-Horde",
   ALLIANCE  = "GROUPFRAME\\UI-Group-PVP-Alliance",
