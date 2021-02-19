@@ -235,7 +235,7 @@ translations into other languages, you can.
   - [ ] MyRoleplay
     - [x] Keybinds working
     - [x] Index addon functions
-    - [ ] Confirm which tags should be `unsup` for MRP
+    - [ ] P2: Confirm which tags should be `unsup` for MRP
   - [x] TRP3
     - [x] Index addon functions
     - [x] Keybinds working
@@ -246,29 +246,27 @@ translations into other languages, you can.
     - [x] Don't "add" oUF/ElvUI tags to listing
 - [ ] RP:UnitFrames 
   - [x] Index addon functions
-  - [ ] Keybinds working
-  - [ ] Localization strings for options
-  - [ ] Review and update help files
+  - [ ] P2: Keybinds working
+  - [ ] P3: Localization strings for options
+  - [ ] P3: Review and update help files
   - [ ] Frames
+    - [ ] P1: Individualized settings per frame
     - [x] Options for per-frame settings
-    - [ ] Individualized settings per frame
-    - [ ] Unit frames fully working
-    - [ ] LibSharedMedia for frames
+    - [ ] P1: LibSharedMedia for frames
+    - [ ] P1: Unit frames fully working
   - [ ] Tags
     - [x] Get labels working in RPUF
-    - [ ] Get size modifiers working in RPUF
+    - [ ] P1: Get size modifiers working in RPUF
   - [ ] Editor
     - [x] Tag live previews
     - [x] RP:UF editor layout
     - [x] Tag editor buttons
     - [x] Color picker for editor
     - [x] Editor status bar (lower) buttons
-    - [ ] Localization strings for editor
+    - [ ] P3: Localization strings for editor
 - [ ] Long-Term
-  - [ ] Core
-    - [ ] Config profiles with Ace3?
-  - [ ] Modules
-    - [ ] XRP support
-    - [ ] Update for new gender settings in trp3
-    - [ ] See if RPT can be generalized for any oUF addon
-    - [ ] See if RPT can be generalized for any MSP addon
+  - [ ] Config profiles with Ace3?
+  - [ ] XRP support
+  - [ ] Update for new gender settings in trp3
+  - [ ] See if RPT can be generalized for any oUF addon
+  - [ ] See if RPT can be generalized for any MSP addon
