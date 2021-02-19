@@ -1,16 +1,10 @@
--- ------------------------------------------------------------------------------
 -- RP Tags
 -- by Oraibi, Moon Guard (US) server
---
 -- ------------------------------------------------------------------------------
---
 -- This work is licensed under the Creative Commons Attribution 4.0 International
--- (CC BY 4.0) license. To view a copy of the license, visit
---
---     https://creativecommons.org/licenses/by/4.0/
+-- (CC BY 4.0) license. 
 --
 -- Utils-Format: Utilities for formatting text or numeric values for display
---
 -- List of functions at the end
 
 local RPTAGS     = RPTAGS;
