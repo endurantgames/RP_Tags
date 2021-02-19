@@ -261,8 +261,8 @@ translations into other languages, you can.
     - [x] Tag live previews
     - [x] RP:UF editor layout
     - [x] Tag editor buttons
-    - [ ] Color picker for editor
-    - [ ] Editor status bar (lower) buttons
+    - [x] Color picker for editor
+    - [x] Editor status bar (lower) buttons
     - [ ] Localization strings for editor
 - [ ] Long-Term
   - [ ] Core
