@@ -4,7 +4,8 @@
 ## Author: Oraibi-MoonGuard
 ## Notes: rp|cffdd33aaTags|r integration module for |cff1784d1ElvUI|r
 ## RequiredDeps: RP_Tags, ElvUI
-## URL: http://spindrift.games/rptags
+## DefaultState: Enabled
+## X-URL: http://spindrift.games/rptags
 ## X-RPQModuleId: elvui
 ## X-RPQModuleType: unitFrames
 ## X-RPQVersion: 1

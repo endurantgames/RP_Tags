@@ -5,7 +5,7 @@
 -- This work is licensed under the Creative Commons Attribution 4.0 International
 -- (CC BY 4.0) license. 
 
-local addOnName, addOn = ...;
+local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:NewModule(addOnName, "rpClient");
 
@@ -56,4 +56,3 @@ function(self, event, ...)
 
 end);
 
-RPTAGS.oUF = addOn.oUF;   -- give RPTAGS access to our oUF

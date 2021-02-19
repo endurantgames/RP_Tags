@@ -5,8 +5,9 @@
 ## Notes: Custom roleplaying unit frames for rpTags
 ## RequiredDeps: RP_Tags
 ## SavedVariables: RP_UnitFramesDB
-## URL: http://spindrift.games/rptags
-## X-oUF: RP_UnitFrames_oUF
+## DefaultState: Enabled
+## X-URL: http://spindrift.games/rptags
+## X-oUF: RPTAGS
 ## X-RPQVersion: 1
 ## X-RPQModuleId: rpuf
 ## X-RPQModuleType: unitFrames
