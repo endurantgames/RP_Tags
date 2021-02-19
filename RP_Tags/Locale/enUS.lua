@@ -44,6 +44,11 @@ function(self, event, ...)
   L["APP_SLASH"]          = "rptags|rptag|rpt";
   
   
+  L["TRUE"]               = "true"; -- the word true
+  L["FALSE"]              = "false"; -- the word false
+  L["NIL"]                = "nil"; -- the word nil
+  L["TABLE"]              = "table"; -- the word table
+  L["FUNCTION"]           = "function"; -- the word function
   L["SLASH_OPTIONS"]      = "options|configuration|settings";
   L["SLASH_PARSE"]        = "parse";
   L["SLASH_NOTES"]        = "notes";
@@ -453,6 +458,7 @@ function(self, event, ...)
   L["FMT_SIZE_BUFF"]        = "%s [%+d%%]";
   L["FMT_SIZE_BUFF_SHORT"]  = "[%+d%%]";
   L["FMT_ST_LB"]            = "%d stone %d lb";
+  L["FMT_SETTINGS_CHANGE"]  = "[[%s]] set to [[[%s]]].";
   L["FMT_ST_LB_KG"]         = "%d stone %d lb (%d kg)";
   L["FMT_ST_LB_LB_KG"]      = "%d stone %d lb (%d lb, or %d kg)";
   L["FMT_SZ_BRC_LTR"]       = "[%s]";
