@@ -12,18 +12,23 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("after MODULE_J",
 function(self, event, ...)
 
-  local RP_TagsDB          = RP_TagsDB;
   local oUF                = _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- auto-added by oUF
   local CONST              = RPTAGS.CONST;
   local FRAME_NAMES        = CONST.FRAMES.NAMES;
 
+
+  function oUF:DisableBlizzard() end;
+
   oUF:Factory(
     function(self)
-      self:SetActiveStyle('RP_Tags')
-      self:Spawn("player", FRAME_NAMES.PLAYER);
-      self:Spawn("focus",  FRAME_NAMES.FOCUS);
-      self:Spawn("target", FRAME_NAMES.TARGET);
-      self:Spawn("targettarget", FRAME_NAMES.TARGETTARGET)
+      RPTAGS.cache.UnitFrames = RPTAGS.cache.UnitFrames or {};
+      self:SetActiveStyle('RP_UnitFrame')
+      for unit, frameName in pairs(CONST.FRAMES.NAMES)
+      do  local u = unit:lower();
+          self:Spawn(u, frameName);
+          RPTAGS.cache.UnitFrames[u] = _G[frameName];
+          RPTAGS.cache.UnitFrames[u]:Enable();
+      end;
     end);
   end
 );

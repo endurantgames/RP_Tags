@@ -2,14 +2,14 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 
-    <Script file="content.lua"    />
-    <Script file="editor.lua"     />
+    <Script file="factory.lua"    />
     <Script file="font.lua"       />
     <Script file="layout.lua"     />
+    <Script file="size.lua"       />
+    <Script file="style.lua"      />
+    <Script file="content.lua"    />
     <Script file="look.lua"       />
     <Script file="move.lua"       />
-    <Script file="size.lua"       />
-    <Script file="tags.lua"       />
     <Script file="visibility.lua" />
 
 </Ui>

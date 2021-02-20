@@ -265,21 +265,9 @@ function(self, event, ...)
     return width, height;
   end;
 
-
-  local function setFrameScale(frame)
-    local  frameName = frame:GetName();
-    _G[frame]:SetScale(
-         (frameName == PLAYER_FRAMENAME) and Config.get("PLAYERFRAME_SCALE")
-      or (frameName == TARGET_FRAMENAME) and Config.get("TARGETFRAME_SCALE")
-      or (frameName == FOCUS_FRAMENAME)  and Config.get("FOCUSFRAME_SCALE")
-      or (frameName == TARGETARGET_FRAMENAME)  and Config.get("TARGETARGETFRAME_SCALE")
-      or 1
-      );
-  end;
-
   local function setAllFrameScales() 
     for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
-    do  setFrameScale(frame)
+    do  frame:SetScale();
     end;
   end;
 
@@ -324,6 +312,5 @@ function(self, event, ...)
   RPTAGS.utils.frames.panels.size.getWidth  = getPanelWidth;
   RPTAGS.utils.frames.panels.size.set       = setPanelSize;
   RPTAGS.utils.frames.size.get              = getFrameSize;
-  RPTAGS.utils.frames.size.scale.set        = setFrameScale;
   RPTAGS.utils.frames.size.set              = setFrameSize;
 end);

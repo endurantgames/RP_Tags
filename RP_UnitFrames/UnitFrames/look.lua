@@ -12,7 +12,7 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("after MODULE_E",
 function(self, event, ...)
 
-  local CONST = RPTAGS.CONST;
+  local CONST      = RPTAGS.CONST;
   local PANEL_LIST = CONST.FRAMES.PANELS;
 
   local function setStatusTexture(frame)
@@ -56,30 +56,17 @@ function(self, event, ...)
     setAllStatusBarTextures()
   end; -- function
 
-  local function setTextColors(frame, request)
-    local fontStringList, r, g, b;
-    if    request == "tt" 
-    then  fontStringList = frame.tooltips;    
-          r, g, b = RPTAGS.utils.color.hexaToNumber(Config.get("COLOR_RPUF_TOOLTIP")); 
-          r, g, b = r/255, g/255, b/255;
-    else  fontStringList = frame.fontStrings; 
-          r, g, b = RPTAGS.utils.color.hexaToNumber(Config.get("COLOR_RPUF_TEXT"));    
-          r, g, b = r/255, g/255, b/255; end; 
-    if not fontStringList then return nil end;
-    for _, fs in ipairs(fontStringList) do fs:SetTextColor(r, g, b) end;
-    return true;
-  end;
-
   local function setAllTextColors(request) 
     for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
-    do  setTextColors(frame, request) end; 
+    do  frame:SetTextColor();
+    end;
   end;
 
   local function getPanelHorizontalAlignment(panelName, layout)
     return 
-        (   panelName == "StatusBarPanel" 
+        (   panelName == "statusBar"
         and RPTAGS.CONST.ALIGN[Config.get("STATUS_ALIGN")].H )
-      or ( ( panelName == "NamePanel" or panel == "InfoPanel")
+      or ( ( panelName == "name" or panel == "info")
            and
            ( layout == "PAPERDOLL" or layout == "THUMBNAIL" )
            and

@@ -24,15 +24,6 @@ function(self, event, ...)
   local panelWidth          = RPTAGS.utils.frames.panels.size.getWidth;
   local panelHeight         = RPTAGS.utils.frames.panels.size.getHeight;
 
-  local function getFrameLayout(frame)
-    local frameName = frame:GetName();
-    return ( frameName == PLAYER_FRAMENAME    and Config.get("PLAYERLAYOUT"    )  )
-        or ( frameName == TARGET_FRAMENAME    and Config.get("TARGETLAYOUT"    )  )
-        or ( frameName == FOCUS_FRAMENAME     and Config.get("FOCUSLAYOUT"     )  )
-        or ( frameName == MOUSEOVER_FRAMENAME and Config.get("MOUSEOVERLAYOUT" )  )
-        or "COMPACT";
-  end; -- function
-
   local function hgap(n) return Config.get("GAPSIZE") * (n or 1);      end;
   local function vgap(n) return Config.get("GAPSIZE") * (n or 1) * -1; end;
 
@@ -360,6 +351,5 @@ function(self, event, ...)
   RPTAGS.utils.frames.panels.layout.getLeft    = getPanelLeftPoint;
   RPTAGS.utils.frames.panels.layout.getTop     = getPanelTopPoint;
   RPTAGS.utils.frames.panels.layout.getPoint   = getPanelTopLeftPoint;
-  RPTAGS.utils.frames.layout.get               = getFrameLayout;
 
 end);
