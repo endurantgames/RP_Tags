@@ -263,6 +263,8 @@ translations into other languages, you can.
     - [x] Tag editor buttons
     - [x] Color picker for editor
     - [x] Editor status bar (lower) buttons
+    - [ ] P1: "More" button
+    - [ ] P2: Right-/modifier-clicks on toolbar
     - [ ] P3: Localization strings for editor
 - [ ] Long-Term
   - [ ] Config profiles with Ace3?
