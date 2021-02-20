@@ -9,8 +9,6 @@ local addOnName, addOn = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
--- local oUF    = RPTAGS.oUF;
-
 Module:WaitUntil("after MODULE_E", -- depends on size functions
 function(self, event, ...)
 
@@ -52,93 +50,93 @@ function(self, event, ...)
          if not panel
          then   left    =  border + hgap(1);
                 top     =  nborder + vgap(1);
-         elseif panel == 'PortraitPanel'
+         elseif panel == 'portrait'
          then   left    =  border
-                           + hgap(1) + panelWidth('Icon_1Panel', layout)
+                           + hgap(1) + panelWidth('icon1', layout)
                            + hgap(1);
                 top     =  nborder + vgap(1);
-         elseif panel == 'Icon_1Panel'
+         elseif panel == 'icon1'
          then   left    =  iconLeft;
                 top     =  nborder + vgap(1);
-         elseif panel == 'Icon_2Panel'
+         elseif panel == 'icon2'
          then   left    =  iconLeft;
                 top     =  nborder
-                           + vgap(1) - panelHeight('Icon_1Panel', layout)
+                           + vgap(1) - panelHeight('icon1', layout)
                            + vgap(1);
-         elseif panel == 'Icon_3Panel'
+         elseif panel == 'icon3'
          then   left    =  iconLeft;
                 top     =  nborder
-                           + vgap(1) - panelHeight('Icon_1Panel', layout)
-                           + vgap(1) - panelHeight('Icon_2Panel', layout)
+                           + vgap(1) - panelHeight('icon1', layout)
+                           + vgap(1) - panelHeight('icon2', layout)
                            + vgap(1);
-         elseif panel == 'Icon_4Panel'
+         elseif panel == 'icon4'
          then   left    =  iconLeft;
                 top     =  nborder
-                           + vgap(1) - panelHeight('Icon_1Panel', layout)
-                           + vgap(1) - panelHeight('Icon_2Panel', layout)
-                           + vgap(1) - panelHeight('Icon_3Panel', layout)
+                           + vgap(1) - panelHeight('icon1', layout)
+                           + vgap(1) - panelHeight('icon2', layout)
+                           + vgap(1) - panelHeight('icon3', layout)
                            + vgap(1);
-         elseif panel == 'Icon_5Panel'
+         elseif panel == 'icon5'
          then   left    =  iconLeft;
                 top     =  nborder
-                           + vgap(1) - panelHeight('Icon_1Panel', layout)
-                           + vgap(1) - panelHeight('Icon_2Panel', layout)
-                           + vgap(1) - panelHeight('Icon_3Panel', layout)
-                           + vgap(1) - panelHeight('Icon_4Panel', layout)
+                           + vgap(1) - panelHeight('icon1', layout)
+                           + vgap(1) - panelHeight('icon2', layout)
+                           + vgap(1) - panelHeight('icon3', layout)
+                           + vgap(1) - panelHeight('icon4', layout)
                            + vgap(1);
-         elseif panel == 'Icon_6Panel'
+         elseif panel == 'icon6'
          then   left    =  iconLeft;
                 top     =  nborder
-                           + vgap(1) - panelHeight('Icon_1Panel', layout)
-                           + vgap(1) - panelHeight('Icon_2Panel', layout)
-                           + vgap(1) - panelHeight('Icon_3Panel', layout)
-                           + vgap(1) - panelHeight('Icon_4Panel', layout)
-                           + vgap(1) - panelHeight('Icon_5Panel', layout)
+                           + vgap(1) - panelHeight('icon1', layout)
+                           + vgap(1) - panelHeight('icon2', layout)
+                           + vgap(1) - panelHeight('icon3', layout)
+                           + vgap(1) - panelHeight('icon4', layout)
+                           + vgap(1) - panelHeight('icon5', layout)
                            + vgap(1);
-         elseif panel == 'NamePanel'
+         elseif panel == 'name'
          then   left    =  border
-                           + hgap(1) + panelWidth('PortraitPanel', layout)
-                           + hgap(1) + panelWidth('Icon_1Panel', layout)
+                           + hgap(1) + panelWidth('portrait', layout)
+                           + hgap(1) + panelWidth('icon1', layout)
                            + hgap(1);
                 top     =  nborder
                            + vgap(1);
-         elseif panel == 'InfoPanel'
+         elseif panel == 'info'
          then   left    =  border
-                           + hgap(1) + panelWidth('PortraitPanel', layout)
-                           + hgap(1) + panelWidth('Icon_1Panel', layout)
+                           + hgap(1) + panelWidth('portrait', layout)
+                           + hgap(1) + panelWidth('icon1', layout)
                            + hgap(1);
                 top     =  nborder
-                           + vgap(1) - panelHeight('NamePanel', layout)
+                           + vgap(1) - panelHeight('name', layout)
                            + vgap(1);
-         elseif panel == 'DetailsPanel'
+         elseif panel == 'details'
          then   left    =  border
-                           + hgap(1) + panelWidth('Icon_1Panel', layout)
-                           + hgap(1) + panelWidth('PortraitPanel', layout)
+                           + hgap(1) + panelWidth('icon1', layout)
+                           + hgap(1) + panelWidth('portrait', layout)
                            + hgap(1);
                 top     =  nborder
-                           + vgap(1) - panelHeight('NamePanel', layout)
-                           + vgap(1) - panelHeight('InfoPanel', layout)
+                           + vgap(1) - panelHeight('name', layout)
+                           + vgap(1) - panelHeight('info', layout)
                            + vgap(1);
-         elseif panel == 'StatusBarPanel'
+         elseif panel == 'statusBar'
          then   left    =  border;
                 top     =  math.min(
                              -- formula #1
                              nborder
-                             + vgap(1) - panelHeight('Icon_1Panel', layout)
-                             + vgap(1) - panelHeight('Icon_2Panel', layout)
-                             + vgap(1) - panelHeight('Icon_3Panel', layout)
-                             + vgap(1) - panelHeight('Icon_4Panel', layout)
-                             + vgap(1) - panelHeight('Icon_5Panel', layout)
-                             + vgap(1) - panelHeight('Icon_6Panel', layout)
+                             + vgap(1) - panelHeight('icon1', layout)
+                             + vgap(1) - panelHeight('icon2', layout)
+                             + vgap(1) - panelHeight('icon3', layout)
+                             + vgap(1) - panelHeight('icon4', layout)
+                             + vgap(1) - panelHeight('icon5', layout)
+                             + vgap(1) - panelHeight('icon6', layout)
                              + vgap(1),
                              -- formula #2
                              nborder
-                             + vgap(1) - panelHeight('PortraitPanel', layout),
+                             + vgap(1) - panelHeight('portrait', layout),
                              -- formula #3
                              nborder
-                             + vgap(1) - panelHeight('NamePanel', layout)
-                             + vgap(1) - panelHeight('InfoPanel', layout)
-                             + vgap(1) - panelHeight('DetailsPanel', layout)
+                             + vgap(1) - panelHeight('name', layout)
+                             + vgap(1) - panelHeight('info', layout)
+                             + vgap(1) - panelHeight('details', layout)
                              + vgap(1));
          else   left  = border + hgap(1);
                 top   = nborder + vgap(1);
@@ -146,86 +144,86 @@ function(self, event, ...)
 
        elseif layout == "THUMBNAIL" -- ----------------------------------------------------------------------------------------------------------
        then if not panel               then left = border;            top = nborder;
-            elseif panel == 'PortraitPanel' then left = border;            top = nborder
-            elseif panel == 'NamePanel'     then left = border + hgap(1/3); 
+            elseif panel == 'portait' then left = border;            top = nborder
+            elseif panel == 'name'     then left = border + hgap(1/3); 
                                                    top  = math.min(
                                                             -- formula #1
-                                                            nborder - panelHeight('PortraitPanel', layout) + panelHeight('NamePanel', layout),
+                                                            nborder - panelHeight('portrait', layout) + panelHeight('name', layout),
                                                             -- formula #2
-                                                            nborder - panelHeight('Icon_1Panel', layout)
+                                                            nborder - panelHeight('icon1', layout)
                                                             );
-            elseif panel == 'Icon_1Panel'   then left = border; top = nborder;
+            elseif panel == 'icon1'   then left = border; top = nborder;
             else                              left = 5000;              top = 5000;
             end -- if panel
 
        elseif layout == "PAPERDOLL" -- ----------------------------------------------------------------------------------------------------------
        then local leftIconLeft  = border + hgap(1);
             local rightIconLeft = -- border
-                                  border + panelWidth('PortraitPanel', layout)
+                                  border + panelWidth('portrait', layout)
                                   - hgap(1)
-                                  - panelWidth('Icon_1Panel', layout);
+                                  - panelWidth('icon1', layout);
             if not panel
             then   left    = border + hgap(1);
                    top     = nborder + vgap(1);
-            elseif panel == 'NamePanel'
+            elseif panel == 'name'
             then   left    = border
                              + hgap(1);
                    top     = nborder + vgap(1);
-            elseif panel == 'InfoPanel'
+            elseif panel == 'info'
             then   left    = border
                              + hgap(1)
                    top     = nborder
-                             + vgap(1) - panelHeight('NamePanel', layout)
+                             + vgap(1) - panelHeight('name', layout)
                              + vgap(1);
-            elseif panel == 'PortraitPanel'
+            elseif panel == 'portrait'
             then   left    = border
-                             -- + hgap(1) + panelWidth('Icon_1Panel', layout)
+                             -- + hgap(1) + panelWidth('icon1', layout)
                              -- + hgap(1);
                    top     = nborder
-                             + vgap(1) - panelHeight('NamePanel', layout)
-                             + vgap(1) - panelHeight('InfoPanel', layout)
+                             + vgap(1) - panelHeight('name', layout)
+                             + vgap(1) - panelHeight('info', layout)
                              + vgap(1);
-            elseif panel == 'Icon_1Panel'
+            elseif panel == 'icon1'
             then   left    = leftIconLeft;
                    top     = nborder
-                             + vgap(1) - panelHeight('NamePanel', layout)
-                             + vgap(1) - panelHeight('InfoPanel', layout)
+                             + vgap(1) - panelHeight('name', layout)
+                             + vgap(1) - panelHeight('info', layout)
                              + vgap(2);
-            elseif panel == 'Icon_2Panel'
+            elseif panel == 'icon2'
             then   left    = leftIconLeft;
                    top     = nborder
-                             + vgap(1) - panelHeight('NamePanel', layout)
-                             + vgap(1) - panelHeight('InfoPanel', layout)
-                             + vgap(2) - panelHeight('Icon_1Panel', layout)
+                             + vgap(1) - panelHeight('name', layout)
+                             + vgap(1) - panelHeight('info', layout)
+                             + vgap(2) - panelHeight('icon1', layout)
                              + vgap(2);
-            elseif panel == 'Icon_3Panel'
+            elseif panel == 'icon3'
             then   left    = leftIconLeft;
                    top     = nborder
-                             + vgap(1) - panelHeight('NamePanel', layout)
-                             + vgap(1) - panelHeight('InfoPanel', layout)
-                             + vgap(2) - panelHeight('Icon_1Panel', layout)
-                             + vgap(2) - panelHeight('Icon_2Panel', layout)
+                             + vgap(1) - panelHeight('name', layout)
+                             + vgap(1) - panelHeight('info', layout)
+                             + vgap(2) - panelHeight('icon1', layout)
+                             + vgap(2) - panelHeight('icon2', layout)
                              + vgap(2);
-             elseif panel == 'Icon_4Panel'
+             elseif panel == 'icon4'
              then   left    = rightIconLeft;
                     top     = nborder
-                              + vgap(1) - panelHeight('NamePanel', layout)
-                              + vgap(1) - panelHeight('InfoPanel', layout)
+                              + vgap(1) - panelHeight('name', layout)
+                              + vgap(1) - panelHeight('info', layout)
                               + vgap(2);
-             elseif panel == 'Icon_5Panel'
+             elseif panel == 'icon5'
              then   left    = rightIconLeft;
                     top     = nborder
-                              + vgap(1) - panelHeight('NamePanel', layout)
-                              + vgap(1) - panelHeight('InfoPanel', layout)
-                              + vgap(2) - panelHeight('Icon_4Panel', layout)
+                              + vgap(1) - panelHeight('name', layout)
+                              + vgap(1) - panelHeight('info', layout)
+                              + vgap(2) - panelHeight('icon4', layout)
                               + vgap(2);
-             elseif panel == 'Icon_6Panel'
+             elseif panel == 'icon6'
              then   left    = rightIconLeft;
                     top     = nborder
-                              + vgap(1) - panelHeight('NamePanel', layout)
-                              + vgap(1) - panelHeight('InfoPanel', layout)
-                              + vgap(2) - panelHeight('Icon_4Panel', layout)
-                              + vgap(2) - panelHeight('Icon_5Panel', layout)
+                              + vgap(1) - panelHeight('name', layout)
+                              + vgap(1) - panelHeight('info', layout)
+                              + vgap(2) - panelHeight('icon4', layout)
+                              + vgap(2) - panelHeight('icon5', layout)
                               + vgap(2);
              else   left, top = 5000, 5000;
              end; -- if panel
@@ -233,79 +231,78 @@ function(self, event, ...)
        then local iconTop = math.min(
                               -- formula #1
                               nborder
-                              + vgap(1) - panelHeight('Icon_1Panel', layout)
-                              + vgap(1) - panelHeight('StatusBarPanel', "ABRIDGED")
+                              + vgap(1) - panelHeight('icon1', layout)
+                              + vgap(1) - panelHeight('statusBar', "ABRIDGED")
                               + vgap(1),
                               -- formula #2
                               nborder
-                              + vgap(1) - panelHeight('NamePanel', layout)
-                              + vgap(1) - panelHeight('InfoPanel', layout)
-                              + vgap(1) - panelHeight('StatusBarPanel', "ABRIDGED")
+                              + vgap(1) - panelHeight('name', layout)
+                              + vgap(1) - panelHeight('info', layout)
+                              + vgap(1) - panelHeight('statusBar', "ABRIDGED")
                               + vgap(1)
                             );
 
             if not panel
             then   left    =  border + hgap(1)
                    top     =  nborder + vgap(1);
-            elseif panel == 'NamePanel'
+            elseif panel == 'name'
             then   left    =  border
-                              + hgap(1) + panelWidth('Icon_1Panel', layout)
+                              + hgap(1) + panelWidth('icon1', layout)
                               + hgap(1)
                    top     =  nborder
                               + vgap(1);
-            elseif panel == 'InfoPanel'
+            elseif panel == 'info'
             then   left    =  border
-                              + hgap(1) + panelWidth('Icon_1Panel', layout)
+                              + hgap(1) + panelWidth('icon1', layout)
                               + hgap(1);
                    top     =  nborder
-                              + vgap(1) - panelHeight('NamePanel', layout)
+                              + vgap(1) - panelHeight('name', layout)
                               + vgap(1);
-            elseif panel == 'Icon_1Panel'
+            elseif panel == 'icon1'
             then   left    =  border + hgap(1);
                    top     =  nborder + vgap(1);
-            elseif panel == 'StatusBarPanel'
+            elseif panel == 'statusBar'
             then   left    =  border;
                    top     =  math.min(
                                 -- formula #1
                                 nborder
-                                + vgap(1) - panelHeight('Icon_1Panel', layout)
+                                + vgap(1) - panelHeight('icon1', layout)
                                 + vgap(1),
                                 -- formula #2
                                 nborder
-                                + vgap(1) - panelHeight('NamePanel' , layout)
-                                + vgap(1) - panelHeight('InfoPanel', layout)
+                                + vgap(1) - panelHeight('name' , layout)
+                                + vgap(1) - panelHeight('info', layout)
                                 + vgap(1)
                               );
-            elseif panel == 'Icon_2Panel'
+            elseif panel == 'icon2'
             then   left    =  border + hgap(1)
                    top     =  iconTop;
-            elseif panel == 'Icon_3Panel'
+            elseif panel == 'icon3'
             then   left    =  border
-                              + hgap(1) + panelHeight('Icon_2Panel', layout)
+                              + hgap(1) + panelHeight('icon2', layout)
                               + hgap(1);
                    top     =  iconTop;
-            elseif panel == 'Icon_4Panel'
+            elseif panel == 'icon4'
             then   left    =  border
-                              + hgap(1) + panelHeight('Icon_2Panel', layout)
-                              + hgap(1) + panelHeight('Icon_3Panel', layout)
+                              + hgap(1) + panelHeight('icon2', layout)
+                              + hgap(1) + panelHeight('icon3', layout)
                               + hgap(1);
                    top     =  iconTop;
-            elseif panel == 'Icon_5Panel'
+            elseif panel == 'icon5'
             then   left    =  border
-                              + hgap(1) + panelHeight('Icon_2Panel', layout)
-                              + hgap(1) + panelHeight('Icon_3Panel', layout)
-                              + hgap(1) + panelHeight('Icon_4Panel', layout)
+                              + hgap(1) + panelHeight('icon2', layout)
+                              + hgap(1) + panelHeight('icon3', layout)
+                              + hgap(1) + panelHeight('icon4', layout)
                               + hgap(1);
                    top     =  iconTop;
-            elseif panel == 'Icon_6Panel'
+            elseif panel == 'icon6'
             then   left    =  border
-                              + hgap(1) + panelHeight('Icon_2Panel', layout)
-                              + hgap(1) + panelHeight('Icon_3Panel', layout)
-                              + hgap(1) + panelHeight('Icon_4Panel', layout)
-                              + hgap(1) + panelHeight('Icon_5Panel', layout)
+                              + hgap(1) + panelHeight('icon2', layout)
+                              + hgap(1) + panelHeight('icon3', layout)
+                              + hgap(1) + panelHeight('icon4', layout)
+                              + hgap(1) + panelHeight('icon5', layout)
                               + hgap(1);
                    top     =  iconTop;
-            else   left, top = 5000, 5000;
             end; -- if panel
 
        elseif layout == "COMPACT" -- -----------------------------------------------------------------------------------------------------------
@@ -313,24 +310,22 @@ function(self, event, ...)
             if not panel
             then   left    =  border  + hgap(0.5);
                    top     =  nborder + vgap(0.5);
-            elseif panel == 'Icon_1Panel'
+            elseif panel == 'icon1'
             then   left    =  border  + hgap(0.5);
                    top     =  nborder + vgap(0.5);
-            elseif panel == 'NamePanel'
+            elseif panel == 'name'
             then   left    =  border
-                              + hgap(0.5) + panelWidth('Icon_1Panel', layout)
+                              + hgap(0.5) + panelWidth('icon1', layout)
                               + hgap(0.5);
                    top     =  nborder
                               + vgap(0.5);
-            elseif panel == 'InfoPanel'
+            elseif panel == 'info'
             then   left    =  border
-                              + hgap(0.5) + panelWidth('Icon_1Panel', layout)
+                              + hgap(0.5) + panelWidth('icon1', layout)
                               + hgap(0.5);
                    top     =  nborder
-                              + vgap(1) - panelHeight('NamePanel', layout);
-            else   left, top = 5000, 5000
+                              + vgap(1) - panelHeight('name', layout);
             end; -- if panel
-       else left, top = 5000, 5000
        end; -- if layout
 
     return top, left;
@@ -340,11 +335,28 @@ function(self, event, ...)
     local top, _ = getPanelTopLeftPoint(panel, layout) 
     return top;  
   end;
+
   local function getPanelLeftPoint(panel, layout) 
     local _, left = getPanelTopLeftPoint(panel, layout) 
     return left; 
   end;
 
+  local function getPanelVisibility(panel, layout)
+    local hash =
+    { COMPACT   = { name  = true, icon1 = true, info      = true                                                 } ,
+      THUMBNAIL = { name  = true, icon1 = true, portrait  = true                                                 } ,
+      PAPERDOLL = { name  = true, info  = true, portrait  = true,
+                    icon1 = true, icon2 = true, icon3     = true, icon4    = true, icon5    = true, icon6 = true } ,
+      ABRIDGED  = { name  = true, info  = true, statusBar = true, portrait = true,
+                    icon1 = true, icon2 = true, icon3     = true, icon4    = true, icon5    = true, icon6 = true } ,
+      FULL      = { name  = true, info  = true, statusBar = true, details  = true, portrait = true,
+                    icon1 = true, icon2 = true, icon3     = true, icon4    = true, icon5    = true, icon6 = true } ,
+    };
+
+    return hash[layout][panel];
+  end;
+
+  RPTAGS.utils.frames.panels.layout.getVis     = getPanelVisibility;
   RPTAGS.utils.frames.panels.layout.getLeft    = getPanelLeftPoint;
   RPTAGS.utils.frames.panels.layout.getTop     = getPanelTopPoint;
   RPTAGS.utils.frames.panels.layout.getPoint   = getPanelTopLeftPoint;

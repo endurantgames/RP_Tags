@@ -203,10 +203,9 @@ function(self, event, ...)
 
   RPTAGS.CONST.FRAMES = 
   { NAMES = 
-    { PLAYER    = "RP_UnitFrames_PlayerUnitFrame",
-      TARGET    = "RP_UnitFrames_TargetUnitFrame",
-      FOCUS     = "RP_UnitFrames_FocusUnitFrame",
-      MOUSEOVER = "RP_UnitFrames_MouseoverUnitFrame",
+    { PLAYER       = "RP_UnitFrames_PlayerUnitFrame",
+      TARGET       = "RP_UnitFrames_TargetUnitFrame",
+      FOCUS        = "RP_UnitFrames_FocusUnitFrame",
       TARGETTARGET = "RP_UnitFrames_TargetTargetUnitFrame",
     },
    PANELS = 

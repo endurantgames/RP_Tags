@@ -9,8 +9,6 @@ local addOnName, addOn = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
--- local oUF    = RPTAGS.oUF;
-
 Module:WaitUntil("after MODULE_E",
 function(self, event, ...)
 

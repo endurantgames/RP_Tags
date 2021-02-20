@@ -7,7 +7,7 @@
 ## SavedVariables: RP_UnitFramesDB
 ## DefaultState: Enabled
 ## X-URL: http://spindrift.games/rptags
-## X-oUF: RPTAGS
+## X-oUF: RP_UnitFrames_oUF
 ## X-RPQVersion: 1
 ## X-RPQModuleId: rpuf
 ## X-RPQModuleType: unitFrames

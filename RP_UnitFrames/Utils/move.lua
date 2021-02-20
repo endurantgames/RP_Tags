@@ -9,8 +9,6 @@ local addOnName, addOn = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
--- local oUF    = RPTAGS.oUF;
-
 Module:WaitUntil("after MODULE_E",
 function(self, event, ...)
 
@@ -43,7 +41,6 @@ function(self, event, ...)
        RP_TagsDB[frame.unit .. "UFlocation"] = nil;
     end; -- do
   end; -- function
-
 
   RPTAGS.utils.frames.move.reset     = resetLocation;
   RPTAGS.utils.frames.move.set       = setMovable;

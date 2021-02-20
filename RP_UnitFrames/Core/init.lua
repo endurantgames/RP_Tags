@@ -35,6 +35,7 @@ function(self, event, ...)
   frameUtils.size                   = frameUtils.size                   or {};
   frameUtils.size.scale             = frameUtils.size.scale             or {};
   frameUtils.visibility             = frameUtils.visibility             or {};
+  frameUtils.font                   = frameUtils.font                   or {};
 
   allFrameUtils.content             = allFrameUtils.content             or {};
   allFrameUtils.content.all         = allFrameUtils.content.all         or {};

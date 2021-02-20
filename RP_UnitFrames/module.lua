@@ -9,6 +9,8 @@ local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:NewModule(addOnName, "rpClient");
 
+RPTAGS.oUF = RPTAGS.oUF or _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- let RP_Tags use our oUF for previews
+
 _G["RP_UnitFramesDB"] = RP_UnitFramesDB or {};
 
 Module:WaitUntil("MODULE_C",

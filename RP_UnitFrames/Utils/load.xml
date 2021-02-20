@@ -4,6 +4,7 @@
 
     <Script file="content.lua"    />
     <Script file="editor.lua"     />
+    <Script file="font.lua"       />
     <Script file="layout.lua"     />
     <Script file="look.lua"       />
     <Script file="move.lua"       />

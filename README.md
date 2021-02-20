@@ -254,6 +254,7 @@ translations into other languages, you can.
     - [x] Options for per-frame settings
     - [ ] P1: LibSharedMedia for frames
     - [ ] P1: Unit frames fully working
+    - [ ] P1: Mouseovers
   - [ ] Tags
     - [x] Get labels working in RPUF
     - [ ] P1: Get size modifiers working in RPUF

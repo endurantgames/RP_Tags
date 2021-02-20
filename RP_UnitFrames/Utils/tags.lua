@@ -5,10 +5,9 @@
 -- This work is licensed under the Creative Commons Attribution 4.0 International
 -- (CC BY 4.0) license. 
 
-local addOnName, addOn = ...;
+local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
-local oUF    = RPTAGS.oUF;
 
 Module:WaitUntil("UTILS_TAGS",
 function(self, event, ...)
@@ -16,6 +15,7 @@ function(self, event, ...)
   local fontFrame = CreateFrame('frame');
   local font = fontFrame:CreateFontString(nil, 'OVERLAY', 'GameFontNormal');
   local FONTFILE, FONTSIZE, _ = font:GetFont();
+  local oUF    = _G[GetAddOnMetadata(addOnName, "X-oUF")];
 
   local function testTags(s)
     local err, good, bad = false, {}, {};
@@ -39,10 +39,10 @@ function(self, event, ...)
   local function registerTag(tagName, tagMethod, extraEvents)
     local events = RPTAGS.CONST.MAIN_EVENT .. (extraEvents and (" " .. extraEvents) or "");
 
-    if not RPTAGS.oUF.Tags.Events[tagName] and not tagName:match("%(.+%)$")
+    if not oUF.Tags.Events[tagName] and not tagName:match("%(.+%)$")
         -- only make this tag if there isn't one by that name already;
-    then   RPTAGS.oUF.Tags.Events[tagName] = events;
-           RPTAGS.oUF.Tags.Methods[tagName] = tagMethod;
+    then   oUF.Tags.Events[tagName] = events;
+           oUF.Tags.Methods[tagName] = tagMethod;
     end;
 
     return tagName, tagMethod, extraEvents;
