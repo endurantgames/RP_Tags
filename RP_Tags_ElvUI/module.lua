@@ -84,6 +84,8 @@ function(self, event, ...)
   local E, _, _, _, _, _  = unpack(_G["ElvUI"]); 
   -- local UF                = E:GetModule('UnitFrames');
 
+  if not RPTAGS.oUF then RPTAGS.oUF = ElvUF; end;
+
   -- registers one tag, an event to wait for, and a method to invoke when found --------------------------
   local function registerTag(tagName, tagMethod, tagExtraEvents)
 

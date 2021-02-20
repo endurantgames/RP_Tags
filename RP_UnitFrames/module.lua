@@ -9,7 +9,6 @@ local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:NewModule(addOnName, "rpClient");
 
-RPTAGS.oUF = RPTAGS.oUF or _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- let RP_Tags use our oUF for previews
 
 _G["RP_UnitFramesDB"] = RP_UnitFramesDB or {};
 
@@ -128,4 +127,10 @@ function(self, event, ...)
   RPTAGS.utils.tags.fix             = fixTagErrors;
   RPTAGS.utils.tags.test            = testTags;
 
+end);
+
+
+Module:WaitUntil("after CORE_STATE",
+function(self, event, ...)
+  RPTAGS.oUF = _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- let RP_Tags use our oUF for previews
 end);
