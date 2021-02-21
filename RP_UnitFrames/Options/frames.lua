@@ -33,6 +33,7 @@ function(self, event, ...)
   local Font            = optUtils.font;
   local Frame_Panel     = optUtils.frame_panel;
   local Wide            = optUtils.set_width;
+  local linkHandler     = Utils.links.handler;
 
   local menu = {};
   menu.backdrop  =
@@ -69,15 +70,15 @@ function(self, event, ...)
     args                =
     { 
       instruct        = Instruct("rpuf main",                            nil , reqRPUF ),
-      disableRPUF     = Checkbox("disable rpuf"                                             ),
-      disableBlizzard = Checkbox("disable blizzard",                     nil , reqRPUF ),
+      disableRPUF     = Wide(Checkbox("disable rpuf"                                             ), 1.5),
+      disableBlizzard = Wide(Checkbox("disable blizzard",                     nil , reqRPUF ), 1.5),
       shared            =
       { name            = "Shared Settings",
         order           = source_order(),
         hidden          = function() return Get("DISABLE_RPUF") end,
         type            = "group",
         args            =
-        { instruct          = Instruct("rpuf layout", nil, reqRPUF ),
+        { 
           frameStatus =
           { type = "group",
             order = source_order(),
@@ -203,6 +204,7 @@ function(self, event, ...)
               hideParty       = Wide(Checkbox("rpuf hide party",                      nil , reqRPUF ), 1),
               hideRaid        = Wide(Checkbox("rpuf hide raid",                       nil , reqRPUF ), 1),
               hideDead        = Wide(Checkbox("rpuf hide dead",                       nil , reqRPUF ), 1),
+              mouseover       = Wide(Checkbox("mouseover cursor"), "full"),
             },
           },
           look          =  
@@ -217,6 +219,12 @@ function(self, event, ...)
               spi       = Spacer(),
               alpha     = Dim_Slider("RPUFALPHA", 0, 1, 0.05),
               spa       = Spacer(),
+              colors    = 
+              { type = "execute",
+                name = "Colors",
+                func = function() linkHandler("opt://colors/rpuf") end,
+                order = source_order(),
+              },
               statusBar        =
               { type        = "group",
                 inline      = true,
@@ -239,7 +247,8 @@ function(self, event, ...)
             name        = "Panel Dimensions",
             order       = source_order(),
             args        =
-            { gap       = Dim_Slider("GAPSIZE",        0,  20,  1 ), spg = Spacer(), 
+            { instruct  = Instruct("rpuf layout", nil, reqRPUF ),
+              gap       = Dim_Slider("GAPSIZE",        0,  20,  1 ), spg = Spacer(), 
               icon      = Dim_Slider("ICONWIDTH",     10,  75,  1 ), spi = Spacer(), 
               port      = Dim_Slider("PORTWIDTH",     25, 200,  5 ), spp = Spacer(), 
               info      = Dim_Slider("INFOWIDTH",    100, 400, 10 ), spn = Spacer(), 

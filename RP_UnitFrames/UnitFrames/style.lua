@@ -20,6 +20,8 @@ function(self, event, ...)
   local frameUtils         = Utils.frames;
   local allFrameUtils      = Utils.frames.all;
   local FRAME_NAMES        = CONST.FRAMES.NAMES;
+  local eval               = Utils.tags.eval;
+  local split              = Utils.text.split;
 
   local getLeft            = frameUtils.panels.layout.getLeft;
   local getTop             = frameUtils.panels.layout.getTop;
@@ -39,52 +41,83 @@ function(self, event, ...)
   local openEditor         = Utils.config.openEditor;
 
   local panelList =
-  { name      = { setting       = "NAMEPANEL",   tooltip = "NAME_TOOLTIP"                      },
-    info      = { setting       = "INFOPANEL",   tooltip = "INFO_TOOLTIP"                      },
-    details   = { setting       = "DETAILPANEL", tooltip = "DETAIL_TOOLTIP"                    },
-    portrait  = { no_tag_string = true,          tooltip = "PORTRAIT_TOOLTIP", portrait = true },
-    icon1     = { setting       = "ICON_1",      tooltip = "ICON_1_TOOLTIP"                    },
-    icon2     = { setting       = "ICON_2",      tooltip = "ICON_2_TOOLTIP"                    },
-    icon3     = { setting       = "ICON_3",      tooltip = "ICON_3_TOOLTIP"                    },
-    icon4     = { setting       = "ICON_4",      tooltip = "ICON_4_TOOLTIP"                    },
-    icon5     = { setting       = "ICON_5",      tooltip = "ICON_5_TOOLTIP"                    },
-    icon6     = { setting       = "ICON_6",      tooltip = "ICON_6_TOOLTIP"                    },
-    statusbar = { setting       = "STATUSPANEL", tooltip = "STATUS_TOOLTIP",
-                  has_own_backdrop = true, 
-                  has_own_align = true,                               
-    },
+  { name      = { setting          = "NAMEPANEL",   tooltip = "NAME_TOOLTIP"      },
+    info      = { setting          = "INFOPANEL",   tooltip = "INFO_TOOLTIP"      },
+    details   = { setting          = "DETAILPANEL", tooltip = "DETAIL_TOOLTIP"    },
+    icon1     = { setting          = "ICON_1",      tooltip = "ICON_1_TOOLTIP"    },
+    icon2     = { setting          = "ICON_2",      tooltip = "ICON_2_TOOLTIP"    },
+    icon3     = { setting          = "ICON_3",      tooltip = "ICON_3_TOOLTIP"    },
+    icon4     = { setting          = "ICON_4",      tooltip = "ICON_4_TOOLTIP"    },
+    icon5     = { setting          = "ICON_5",      tooltip = "ICON_5_TOOLTIP"    },
+    icon6     = { setting          = "ICON_6",      tooltip = "ICON_6_TOOLTIP"    },
+    portrait  = { no_tag_string    = true,          tooltip = "PORTRAIT_TOOLTIP",
+                  portrait         = true                                         },
+    statusbar = { setting          = "STATUSPANEL", tooltip = "STATUS_TOOLTIP",
+                  has_own_backdrop = true,
+                  has_own_align    = true,                                        },
   };
+
+  function showContextMenu(self, event, ...) 
+    print("context menu for", self.name); 
+  end;
+
+  function showTooltip(self, event, ...) 
+    local tooltip = eval(Config.get(self.tooltip), self:GetUnit(), self:GetUnit());
+    local r, g, b = self.unitframe:GetTooltipColor();
+
+    if   self:Config("MOUSEOVER_CURSOR")
+    then SetCursor("Interface\\CURSOR\\Inspect.PNG");
+    end;
+
+    if tooltip and tooltip:len() > 0
+    then 
+         GameTooltip:ClearLines();
+         GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+         GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+         local lines = split(tooltip, "\n");
+         for i, line in ipairs(lines)
+         do GameTooltip:AddLine(line, r, g, b, true)
+         end;
+         GameTooltip:Show();
+    end;
+  end;
+
+  function hideTooltip(self, event, ...) 
+    GameTooltip:FadeOut();
+    ResetCursor();
+  end;
 
   -- rpuf "style" for oUF ----------------------------------------------------------------------------------------------------------------------------------
   local function RP_UnitFrame_Constructor(self, unit)
 
-    self.unit        = unit;
-    self.panels      = {};
-    self.toolTips    = {};
-    self.tagStrs     = {}
+    self.unit     = unit;
+    self.panels   = {};
+    self.toolTips = {};
+    self.tagStrs  = {}
 
     self.frameName = FRAME_NAMES[unit:upper()];
-    self.content = CreateFrame("Frame", self.frameName .. "Backdrop", UIParent, BackdropTemplateMixin and "BackdropTemplate");
+
+    self.backdrop = self:CreateTexture(nil, "BACKGROUND");
+    self.backdrop:SetAllPoints();
+    self.backdrop:SetColorTexture(0, 0, 0, 0.75);
 
     function self.Config(self, setting)
-      return Config.get(setting);
-      -- if Config.get("LINK_FRAME_" .. self.unit:upper())
-      -- then return Config.get(setting)
-      -- else return Config.get(setting .. "_" .. self.unit:upper())
-      -- end;
+      if Config.get("LINK_FRAME_" .. self.unit:upper())
+      then return Config.get(setting)
+      else return Config.get(setting .. "_" .. self.unit:upper())
+      end;
     end;
 
-    function self.GetName(self)   return self.frameName                              end;
-    function self.GetUnit(self)   return self.unit;                                  end;
-    function self.GetLayout(self) return Config.get( self.unit:upper() .. "LAYOUT"); end;
-    function self.GetPanel(self, panelName) return self.panels[panelName] end;
-    function self.GetPanels(self)        return self.panels            end;
-
+    function self.GetName(self)             return self.frameName                              end;
+    function self.GetUnit(self)             return self.unit;                                  end;
+    function self.GetLayout(self)           return Config.get( self.unit:upper() .. "LAYOUT"); end;
+    function self.GetPanel(self, panelName) return self.panels[panelName]                      end;
+    function self.GetPanels(self)           return self.panels                                 end;
 
     function self.SetDimensions(self) 
       local frameWidth, frameHeight = getFrameDimensions(self:GetLayout());
-      self.content:SetWidth(frameWidth);
-      self.content:SetHeight(frameHeight);
+      self:SetWidth(frameWidth);
+      self:SetHeight(frameHeight);
     end;
     
     function self.CreatePanel(self, panelName, opt)
@@ -92,73 +125,90 @@ function(self, event, ...)
       local panel
 
       if   opt["has_own_backdrop"]
-      then panel = CreateFrame("Frame", self.frameName .. panelName, self.content, 
+      then panel = CreateFrame("Frame", self.frameName .. panelName, self, 
                      BackdropTemplateMixin and "BackdropTemplate");
-      else panel = CreateFrame("Frame", self.frameName .. panelName, self.content);
+      else panel = CreateFrame("Frame", self.frameName .. panelName, self);
       end;
 
       panel.unitframe = self;
       panel.unit      = unit;
       panel.name      = panelName;
 
-      local setting  = opt.setting  or panelName:upper();
-      local tooltip  = opt.tooltip  or setting .. "_TOOLTIP";
+      local setting = opt.setting or panelName:upper();
+      local tooltip = opt.tooltip or setting .. "_TOOLTIP";
 
-      panel:SetAllPoints();
+      panel:SetPoint("TOPLEFT");
 
       if not opt["no_tag_string"]
       then 
-        panel.text = panel:CreateFontString(self.frameName .. panel.name .. "Tag" ..  "OVERLAY", "GameFontNormal");
+        panel.text = panel:CreateFontString(self.frameName .. panel.name .. "Tag", 
+          "OVERLAY", "GameFontNormal");
+        panel.setting = setting;
         panel.text:SetAllPoints();
-        self:Tag(panel.text, "");
+        panel.text:SetText(panel.name);
       end;
-
 
       if opt["portrait"]
       then panel.portrait = CreateFrame("PlayerModel", nil, panel);
            panel.portrait:SetAllPoints();
-           self.content.Portrait = Portrait;
+           self.Portrait = Portrait;
       end;
 
       if not opt["no_tooltip"]
-      then panel:SetScript( "OnEnter", showTooltip );
-           panel:SetScript( "OnLeave", hideTooltip );
+      then panel:SetScript("OnEnter", showTooltip );
+           panel:SetScript("OnLeave", hideTooltip );
            panel.tooltip = tooltip;
       end;
 
       if not opt["no_context_menu"]
-      then panel:SetScript( "OnMouseUp", showMenu);
+      then self:RegisterForClicks("RightButtonUp");
+           panel:SetScript( "OnMouseUp", showContextMenu);
            panel.contextMenu = true;
       end;
   
-      function panel.showContextMenu(self, event, ...) print("context menu for", self.name); end;
-      function panel.showTooltip(self, event, ...) print("tooltip for", self.name, "=", self.tooltip) end;
-      function panel.hideTooltip(self, event, ...) print("hide tooltip for", self.name); end;
-
-      function panel.GetLayout(self) return self.unitframe:GetLayout(); end;
+      function panel.GetUnit(self)     return self.unitframe:GetUnit()    end;
+      function panel.GetLayout(self)   return self.unitframe:GetLayout(); end;
+      function panel.Config(self, ...) return self.unitframe:Config(...)  end;
   
       function panel.Place(self)
         local layout   = self:GetLayout();
-        local left     = getLeft(     self.name, layout);
-        local top      = getRight(    self.name, layout);
-        local height   = getHeight(   self.name, layout);
-        local width    = getWidth(    self.name, layout);
+        local left     = getLeft(   self.name, layout);
+        local top      = getTop(    self.name, layout);
+        local height   = getHeight( self.name, layout);
+        local width    = getWidth(  self.name, layout);
 
-        self:ClearAllPoints();
-        self:SetPoint("TOPLEFT", self.unitframe.content, "TOPLEFT", left, top);
-        self:SetSize(width, height);
+        if top and left
+        then 
+             self:ClearAllPoints();
+             self:SetPoint("TOPLEFT", self.unitframe, "TOPLEFT", left, top);
+             self:SetSize(width, height);
+        end;
       end;
 
       function panel.SetJustify(self)
+        if not self.text then return end;
         self.text:SetJustifyH(getJustifyH(self.name, self:GetLayout()));
         self.text:SetJustifyV("TOP");
       end;
         
-      function panel.SetFont(self, fontFile, fontName) self.text:SetFont(fontFile, fontName); end;
-      function panel.SetTextColor(self, r, g, b) self.text:SetTextColor(r, g, b); end;
+      function panel.SetFont(self, fontFile, fontName) 
+        if not self.text then return end;
+        self.text:SetFont(fontFile, fontName); 
+      end;
 
-      function panel.SetTagString(self) self.unitframe:Tag(self.text, Config.get(self.setting)); end;
-      function panel.SetVis(self) self:SetShown( getVisible( self.name, self:GetLayout() )) end;
+      function panel.SetTextColor(self, r, g, b) 
+        if not self.text then return end;
+        self.text:SetTextColor(r, g, b); 
+      end;
+
+      function panel.SetTagString(self) 
+        if not self.text then return end;
+        self.unitframe:Tag(self.text, Config.get(self.setting)); 
+      end;
+
+      function panel.SetVis(self) 
+        self:SetShown( getVis( self.name, self:GetLayout() )) 
+      end;
        
       self.panels[panelName] = panel;
     end; -- create panel
@@ -171,7 +221,7 @@ function(self, event, ...)
     end;
 
     function self.SetTextColor(self)
-      local r, g, b = RPTAGS.utils.color.hexaToNumber(Config.get("COLOR_RPUF_TEXT"))
+      local r, g, b = toRGB(Config.get("COLOR_RPUF_TEXT"))
       for _, panel in pairs(self:GetPanels()) do panel:SetTextColor(r / 255, g / 255, b / 255) end;
     end;
       
@@ -185,14 +235,25 @@ function(self, event, ...)
       
     end;
 
-    function self.SetPoint(self, ...)
-      self.content:SetPoint(...)
+    function self.PlacePanels(self)  
+      for _, panel in pairs(self:GetPanels()) 
+      do panel:Place();        
+      end; 
+    end;
+    function self.SetPanelVis(self)  
+      for _, panel in pairs(self:GetPanels()) 
+      do panel:SetVis();       
+      end; 
+    end;
+    function self.SetTagStrings(self) 
+      for _, panel in pairs(self:GetPanels()) 
+      do  panel:SetTagString(); 
+      end; 
     end;
 
-    function self.PlacePanels(self)  for _, panel in pairs(self.panels) do panel:Place();        end; end;
-    function self.SetPanelVis(self)  for _, panel in pairs(self.panels) do panel:SetVis();       end; end;
-    function self.SetTagStrings(self) 
-      for _, panel in pairs(self.panels) do panel:SetTagString(); end; 
+    function self.GetTooltipColor(self)
+      local r, g, b = toRGB(Config.get("COLOR_RPUF_TOOLTIP"))
+      return r / 255, g / 255, b / 255;
     end;
 
     function self.GenerateVisibilityString(self)
@@ -208,7 +269,9 @@ function(self, event, ...)
         ["RPUF_HIDE_COMBAT"]    = "[combat] hide",
       };
 
-      for k, v in pairs(hash) do if self:Config(k) then table.insert(conditions, v) end; end;
+      for k, v in pairs(hash) 
+      do  if self:Config(k) then table.insert(conditions, v) end; 
+      end;
 
       table.insert(conditions, "[@" .. self.unit .. ",exists] show");
       table.insert(conditions, "hide");
@@ -217,21 +280,19 @@ function(self, event, ...)
     end;
 
     function self.SetVisibility(self)
-      UnregisterStateDriver(self.content, "visibility");
-      RegisterStateDriver(self.content, "visibility", self:GenerateVisibilityString());
+      UnregisterStateDriver(self, "visibility");
+      RegisterStateDriver(self, "visibility", self:GenerateVisibilityString());
     end;
 
-    function self.SetScale(self)
-      print("self.unit:upper()", self.unit:upper());
-      local scale_setting = self.unit:upper() .. "FRAME_SCALE";
-      print("scale_setting", scale_setting);
-      local scale = Config.get(scale_setting);
-      print("scale", scale);
-      self.content:SetScale( Config.get(self.unit:upper() .. "FRAME_SCALE"));
+    function self.Initialize(self)
+      if not self.initialized
+      then self:CreatePanels();
+           self.initialized = true;
+      end;
     end;
 
     function self.UpdateEverything(self)
-      self:SetScale();
+      self:Initialize();
       self:SetDimensions();
       self:PlacePanels();
       self:SetPanelVis();
@@ -240,10 +301,7 @@ function(self, event, ...)
       self:SetTagStrings();
       self:SetVisibility();
       self:SetPoint("CENTER", UIParent);
-
     end;
-
-    self:UpdateEverything();
 
   end; -- style definition
 

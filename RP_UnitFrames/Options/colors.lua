@@ -33,6 +33,28 @@ function(self, event, ...)
   local ifConfig          = RPTAGS.utils.config.ifConfig;
   local Frame_Panel       = RPTAGS.utils.options.frame_panel;
 
+  local function build_frame_colors(unit)
+    unit = unit:upper();
+    return 
+    { type = "group",
+      name = loc(unit .. "FRAME"),
+      inline = true,
+      order = source_order(),
+      hidden = 
+        function() 
+          return
+                Get("DISABLE_RPUF") or
+            not Get("SHOW_FRAME_" .. unit) or
+                Get("LINK_FRAME_" .. unit) 
+        end,
+      args =
+      { background = Color_Picker("RPUF_" .. unit),
+        text       = Color_Picker("RPUF_TEXT_" .. unit),
+        tooltip    = Color_Picker("RPUF_TOOLTIP_" .. unit),
+      }
+    };
+  end;
+
   local menu = {};
   menu.backdrop  =
   { BLIZZTOOLTIP = loc("BACKDROP_BLIZZTOOLTIP" ),
@@ -62,16 +84,21 @@ function(self, event, ...)
     FULL         = loc("RPUF_FULL"             ), };
 
   addOptions(addOnName, "colors",
-  { rpufColors =
+  { rpuf =
     { type                    = "group",
       childGroups             = "inline",
       name                    = loc("OPT_COLORS_RPUF"),
       order                   = source_order(),
+      hidden                  = reqRPUF,
       args                    =
-      { headerRPUF            = Header("colors rpuf", nil, reqRPUF ),
-        colorRPUF             = Color_Picker("rpuf", nil, reqRPUF ),
-        colorRPUFText         = Color_Picker("rpuf text", nil, reqRPUF ),
-        colorRPUFTooltip      = Color_Picker("rpuf tooltip", nil, reqRPUF ),
+      { header            = Header("colors rpuf"),
+        background        = Color_Picker("rpuf"),
+        text         = Color_Picker("rpuf text"),
+        tooltip      = Color_Picker("rpuf tooltip"),
+        player = build_frame_colors("player"),
+        target = build_frame_colors("target"),
+        focus = build_frame_colors("focus"),
+        targetTarget = build_frame_colors("targettarget"),
         -- reset              = Reset( { "color rpuf", "color rpuf text", "color rpuf tooltip" } , nil, reqRPUF ),
       },
     },

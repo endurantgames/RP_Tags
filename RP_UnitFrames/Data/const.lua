@@ -241,10 +241,6 @@ function(self, event, ...)
   CONFIG.DISABLE_RPUF        = false;
   CONFIG.DISABLE_BLIZZARD    = false;
   CONFIG.RPUF_WITH_ELVUI     = true;
-  CONFIG.SHOW_FRAME_TARGET   = true;
-  CONFIG.SHOW_FRAME_PLAYER   = true;
-  CONFIG.SHOW_FRAME_FOCUS    = true;
-  CONFIG.SHOW_FRAME_TARGETTARGET = false;
 
   -- linking frames
   CONFIG.LINK_FRAME_PLAYER = true;
@@ -252,69 +248,40 @@ function(self, event, ...)
   CONFIG.LINK_FRAME_FOCUS = true;
   CONFIG.LINK_FRAME_TARGETTARGET = true;
 
-  -- reset
-  CONFIG.RESET_FRAMES        = true;
-  CONFIG.RESET_TAGS          = true;
-  CONFIG.LOCK_FRAMES         = false;
+  local perFrame =
+  { COLOR_RPUF          = BLACK,
+    COLOR_RPUF_TEXT     = WHITE,
+    COLOR_RPUF_TOOLTIP  = YELLOW,
+    DETAILHEIGHT        = 100,
+    GAPSIZE             = 6,
+    ICONWIDTH           = 25,
+    INFOWIDTH           = 200,
+    LINK_FRAME          = true,
+    LOCK_FRAME          = true,
+    MOUSEOVER_CURSOR    = true,
+    PORTWIDTH           = 100,
+    RPUFALPHA           = 65,
+    RPUF_BACKDROP       = "BLIZZTOOLTIP",
+    RPUF_HIDE_COMBAT    = true,
+    RPUF_HIDE_DEAD      = false,
+    RPUF_HIDE_PARTY     = false,
+    RPUF_HIDE_PETBATTLE = true,
+    RPUF_HIDE_RAID      = true,
+    RPUF_HIDE_VEHICLE   = true,
+    SHOW_FRAME          = true,
+    STATUSHEIGHT        = 35,
+    STATUS_ALIGN        = "CENTER",
+    STATUS_TEXTURE      = "SHADED",
+  };
 
-  -- hiding
-  CONFIG.RPUF_HIDE_COMBAT    = true;
-  CONFIG.RPUF_HIDE_VEHICLE   = true;
-  CONFIG.RPUF_HIDE_PETBATTLE = true;
-  CONFIG.RPUF_HIDE_PARTY     = false;
-  CONFIG.RPUF_HIDE_DEAD      = false;
-  CONFIG.RPUF_HIDE_RAID      = true;
+  for k, v in pairs(perFrame)
+  do CONFIG[k] = v;
+     for frame, _ in pairs(RPTAGS.CONST.FRAMES.NAMES)
+     do  CONFIG[k .. "_" .. frame] = v
+     end;
+  end;
 
-  -- appearance
-  CONFIG.COLOR_RPUF          = BLACK;
-  CONFIG.COLOR_RPUF_TEXT     = WHITE;
-  CONFIG.COLOR_RPUF_TOOLTIP  = YELLOW;
-  CONFIG.RPUFALPHA           = 65;
-  CONFIG.RPUF_BACKDROP       = "BLIZZTOOLTIP";
-  CONFIG.STATUS_ALIGN        = "CENTER";
-  CONFIG.STATUS_TEXTURE      = "SHADED";
-  CONFIG.PORTRAIT_STYLE      = "LAYOUT";
-
-  -- appearance -- player
-  CONFIG.COLOR_RPUF_PLAYER           = BLACK;
-  CONFIG.COLOR_RPUF_TEXT_PLAYER      = WHITE;
-  CONFIG.COLOR_RPUF_TOOLTIP_PLAYER   = YELLOW;
-  CONFIG.RPUFALPHA_PLAYER            = 65;
-  CONFIG.RPUF_BACKDROP_PLAYER        = "BLIZZTOOLTIP";
-  CONFIG.STATUS_ALIGN_PLAYER         = "CENTER";
-  CONFIG.STATUS_TEXTURE_PLAYER       = "SHADED";
-  CONFIG.PORTRAIT_STYLE_PLAYER       = "LAYOUT";
-
-  -- appearance -- target
-  CONFIG.COLOR_RPUF_TARGET           = BLACK;
-  CONFIG.COLOR_RPUF_TEXT_TARGET      = WHITE;
-  CONFIG.COLOR_RPUF_TOOLTIP_TARGET   = YELLOW;
-  CONFIG.RPUFALPHA_TARGET            = 65;
-  CONFIG.RPUF_BACKDROP_TARGET        = "BLIZZTOOLTIP";
-  CONFIG.STATUS_ALIGN_TARGET         = "CENTER";
-  CONFIG.STATUS_TEXTURE_TARGET       = "SHADED";
-  CONFIG.PORTRAIT_STYLE_TARGET       = "LAYOUT";
-
-  -- appearance -- targettarget
-  CONFIG.COLOR_RPUF_TARGETTARGET           = BLACK;
-  CONFIG.COLOR_RPUF_TEXT_TARGETTARGET      = WHITE;
-  CONFIG.COLOR_RPUF_TOOLTIP_TARGETTARGET   = YELLOW;
-  CONFIG.RPUFALPHA_TARGETTARGET            = 65;
-  CONFIG.RPUF_BACKDROP_TARGETTARGET        = "BLIZZTOOLTIP";
-  CONFIG.STATUS_ALIGN_TARGETTARGET         = "CENTER";
-  CONFIG.STATUS_TEXTURE_TARGETTARGET       = "SHADED";
-  CONFIG.PORTRAIT_STYLE_TARGETTARGET       = "LAYOUT";
-
-  -- appearance -- focus
-  CONFIG.COLOR_RPUF_FOCUS           = BLACK;
-  CONFIG.COLOR_RPUF_TEXT_FOCUS      = WHITE;
-  CONFIG.COLOR_RPUF_TOOLTIP_FOCUS   = YELLOW;
-  CONFIG.RPUFALPHA_FOCUS            = 65;
-  CONFIG.RPUF_BACKDROP_FOCUS        = "BLIZZTOOLTIP";
-  CONFIG.STATUS_ALIGN_FOCUS         = "CENTER";
-  CONFIG.STATUS_TEXTURE_FOCUS       = "SHADED";
-  CONFIG.PORTRAIT_STYLE_FOCUS       = "LAYOUT";
-
+  CONFIG.SHOW_FRAME_TARGETTARGET = false;
   -- scale
   CONFIG.PLAYERFRAME_SCALE   = 0.9;
   CONFIG.TARGETFRAME_SCALE   = 0.9;
@@ -331,51 +298,6 @@ function(self, event, ...)
   CONFIG.PARTY_ORIENTATION   = "VERTICAL";
   CONFIG.RAID_GRID           = "5X8";
 
-  -- dimensions
-  CONFIG.DETAILHEIGHT        = 100;
-  CONFIG.GAPSIZE             = 6;
-  CONFIG.ICONWIDTH           = 25;
-  CONFIG.INFOWIDTH           = 200;
-  CONFIG.PORTRAIT_TYPE       = "FACE";
-  CONFIG.PORTWIDTH           = 100;
-  CONFIG.STATUSHEIGHT        = 35;
-
-  -- dimensions -- player
-  CONFIG.DETAILHEIGHT_PLAYER         = 100;
-  CONFIG.GAPSIZE_PLAYER              = 6;
-  CONFIG.ICONWIDTH_PLAYER            = 25;
-  CONFIG.INFOWIDTH_PLAYER            = 200;
-  CONFIG.PORTRAIT_TYPE_PLAYER        = "FACE";
-  CONFIG.PORTWIDTH_PLAYER            = 100;
-  CONFIG.STATUSHEIGHT_PLAYER         = 35;
-
-  -- dimensions -- target
-  CONFIG.DETAILHEIGHT_TARGET         = 100;
-  CONFIG.GAPSIZE_TARGET              = 6;
-  CONFIG.ICONWIDTH_TARGET            = 25;
-  CONFIG.INFOWIDTH_TARGET            = 200;
-  CONFIG.PORTRAIT_TYPE_TARGET        = "FACE";
-  CONFIG.PORTWIDTH_TARGET            = 100;
-  CONFIG.STATUSHEIGHT_TARGET         = 35;
-
-  -- dimensions -- focus
-  CONFIG.DETAILHEIGHT_FOCUS         = 100;
-  CONFIG.GAPSIZE_FOCUS              = 6;
-  CONFIG.ICONWIDTH_FOCUS            = 25;
-  CONFIG.INFOWIDTH_FOCUS            = 200;
-  CONFIG.PORTRAIT_TYPE_FOCUS        = "FACE";
-  CONFIG.PORTWIDTH_FOCUS            = 100;
-  CONFIG.STATUSHEIGHT_FOCUS         = 35;
-
-  -- dimensions -- targettarget
-  CONFIG.DETAILHEIGHT_TARGETTARGET         = 100;
-  CONFIG.GAPSIZE_TARGETTARGET              = 6;
-  CONFIG.ICONWIDTH_TARGETTARGET            = 25;
-  CONFIG.INFOWIDTH_TARGETTARGET            = 200;
-  CONFIG.PORTRAIT_TYPE_TARGETTARGET        = "FACE";
-  CONFIG.PORTWIDTH_TARGETTARGET            = 100;
-  CONFIG.STATUSHEIGHT_TARGETTARGET         = 35;
-
   -- panels
   CONFIG.DETAILPANEL         = "[rp:oocinfo]";
   CONFIG.ICON_1              = "[rp:icon]";
@@ -388,6 +310,21 @@ function(self, event, ...)
   CONFIG.NAMEPANEL           = "[rp:color][rp:name]";
   CONFIG.STATUSPANEL         = "[rp:statuscolor][rp:ic][rp:ooc] [nocolor][rp:currently]";
 
+  -- fonts
+  CONFIG.DETAILPANEL_FONTSIZE = "small";
+  CONFIG.ICON_1_FONTSIZE = "large";
+  CONFIG.ICON_2_FONTSIZE = "large";
+  CONFIG.ICON_3_FONTSIZE = "large";
+  CONFIG.ICON_4_FONTSIZE = "large";
+  CONFIG.ICON_5_FONTSIZE = "large";
+  CONFIG.ICON_6_FONTSIZE = "large";
+  CONFIG.INFOPANEL_FONTSIZE = "small";
+  CONFIG.NAMEPANEL_FONTSIZE = "medium";
+  CONFIG.STATUSPANEL_FONTSIZE = "medium";
+
+  CONFIG.NAMEPANEL_FONTFILE = "Fonts\\FRIZQT__.TTF";
+
+  --
   -- tooltips
   -- CONFIG.DETAIL_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc][nocolor] [rp:oocinfo-label]";
   CONFIG.DETAIL_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc][nocolor] [rp:oocinfo]";
@@ -407,8 +344,8 @@ function(self, event, ...)
   CONFIG.STATUS_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc] [nocolor][rp:currently]";
 
   -- editor
-  CONFIG.EDITOR_FONT         = "Interface\\AddOns\\RP_UnitFrames\\Resources\\Fonts\\Syne_Mono\\SyneMono-Regular.ttf";
-  CONFIG.EDITOR_CUSTOM_FONT  = false;
+  CONFIG.EDITOR_FONT         = "Syne Mono";
+  CONFIG.EDITOR_FONTSIZE     = 10;
   CONFIG.EDITOR_BUTTONS      = "rp:name|rp:color|rp:eyes|rp:eyecolor|rp:class|rp:icon|rp:height|rp:gender|rp:race|rp:fulltitle|rp:age|rp:body|rp:status|rp:statuscolor|rp:gendercolor";
   CONFIG.EDITOR_BUTTON_BAR   = true;
  

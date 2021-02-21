@@ -13,7 +13,9 @@ function(self, event, ...)
   local Set               = Config.set;
   local ifConfig          = Config.ifConfig;
   local Default           = Config.default;
-  local buttonList        = RPTAGS.CONST.RPUF.EDITOR_BUTTON_LIST;
+  local CONST             = RPTAGS.CONST;
+  local buttonList        = CONST.RPUF.EDITOR_BUTTON_LIST;
+  local fixedFonts        = CONST.FONT.FIXED_WIDTH;
   local Editor            = RPTAGS.Editor;
 
   local split             = Utils.text.split;
@@ -37,12 +39,14 @@ function(self, event, ...)
   local Reset             = optUtils.reset
   local Frame_Scaler      = optUtils.frame_scaler
   local Dim_Slider        = optUtils.dimensions_slider;
+  local Slider            = optUtils.slider;
   local TagPanel          = optUtils.tagpanel;
   local reqRPUF           = optUtils.requiresRPUF;
   local collectionBrowser = optUtils.collectionBrowser;
   local Font              = optUtils.font;
   local listOfAllTags     = optUtils.listOfAllTags;
   local Frame_Panel       = optUtils.frame_panel;
+  local Wide              = optUtils.set_width;
 
   local menu = {};
   menu.backdrop  =
@@ -72,6 +76,12 @@ function(self, event, ...)
     PAPERDOLL    = loc("RPUF_PAPERDOLL"        ),
     FULL         = loc("RPUF_FULL"             ), };
 
+  local function refreshFont(widget)
+    local setFunc = widget.set;
+    widget.set = function(self, value) setFunc(self, value); Editor:LoadFont() end;
+    return widget;
+  end;
+
   addOptionsPanel("RPUF_Editor",
   { name                = loc("OPT_EDITOR"),
     order               = source_order(),
@@ -79,8 +89,12 @@ function(self, event, ...)
     args                = 
     { -- panel             = Header("editor", nil, reqRPUF ),
       instruct          = Instruct("editor", nil, reqRPUF ),
-      useCustomFont     = Checkbox("editor custom font", nil, reqRPUF, true, true),
-      customFont        = Font("config editor font", nil, function(self) return not reqRPUF() and not Get("EDITOR_CUSTOM_FONT") end),
+      fontFile          = refreshFont(Wide(
+                             Font("EDITOR_FONT", nil, reqRPUF, fixedFonts), 
+                             1.5)
+                             ),
+      fontspacer        = Spacer(),
+      fontSize          = refreshFont(Slider("EDITOR_FONTSIZE", 6, 24, 1, 1.5)),
       editorStatus =
       { type = "group",
         name = "Editor Status",
@@ -113,7 +127,7 @@ function(self, event, ...)
           { type = "execute",
             name = "Re-Open Editor",
             func = function() Editor:Edit() end,
-            width = 0.75,
+            width = 1,
             order = source_order(),
           },
         },

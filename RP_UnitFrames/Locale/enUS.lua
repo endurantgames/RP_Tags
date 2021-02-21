@@ -97,11 +97,11 @@ function(self, event, ...)
   L["OPT_EDITOR_I"                      ] = "These options control how the " .. EDITOR .. " works.";
   L["OPT_RPUF_MAIN"                     ] = RPUF_NAME;
   L["OPT_RPUF_MAIN_I"                   ] = "These options control the basic functionality of rp:UnitFrames.";
-  L["OPT_RPUF_PANELS"                   ] = RPUF_NAME .." - Panels";
+  L["OPT_RPUF_PANELS"                   ] = "Panels";
   L["OPT_RPUF_PANELS_I"                 ] = "You can change the tags displayed in rp:UnitFrames panels, as well as the tooltips shown when you move your mouse over that panel.";
-  L["OPT_TITLE_RPUF_LAYOUT"             ] = RPUF_NAME .." Layout";
-  L["OPT_TITLE_RPUF_MAIN"               ] = RPUF_NAME .." General Settings";
-  L["OPT_TITLE_RPUF_PANELS"             ] = RPUF_NAME .." Panels";
+  L["OPT_TITLE_RPUF_LAYOUT"             ] = "Layout";
+  L["OPT_TITLE_RPUF_MAIN"               ] = "General Settings";
+  L["OPT_TITLE_RPUF_PANELS"             ] = "Panels";
   L["SET_LAYOUT"                        ] = "Set ";
   L["WARNING_RPUF_DISABLED"             ] = "|cffdd0000Note:|r These options are disabled because you have turned off rp:UnitFrames. To re-enable, go to the RPUF options panel."; -- should be OPT_INSTRUCT_
   -- error messages
@@ -123,39 +123,57 @@ function(self, event, ...)
   L["UNLOCKING_FRAMES"                  ] = RPUF_NAME .. " are now unlocked and can be moved."; -- should be NOTIFY_
 
   -- panel config
-  local panel = {};
-  panel.CONFIG_COLOR_RPUF                  = "Background Color";
-  panel.CONFIG_COLOR_RPUF_TEXT             = "Text Color";
-  panel.CONFIG_COLOR_RPUF_TEXT_TT          = "Choose the default font color.";
-  panel.CONFIG_COLOR_RPUF_TOOLTIP          = "Tooltip Text Color";
-  panel.CONFIG_COLOR_RPUF_TOOLTIP_TT       = "Choose the default font color for tooltips.";
-  panel.CONFIG_COLOR_RPUF_TT               = "Choose a background color.";
-  panel.CONFIG_DETAILHEIGHT                = "Details Panel Height";
-  panel.CONFIG_DETAILHEIGHT_TT             = "Choose how tall you want the details panel to be.";
-  panel.CONFIG_STATUSHEIGHT                = "Height";
-  panel.CONFIG_STATUSHEIGHT_TT             = "Set the height of the 'status' panel.";
-  panel.CONFIG_STATUS_ALIGN                = "Alignment";
-  panel.CONFIG_STATUS_ALIGN_TT             = "Choose how you want the text on the status bar to be aligned.";
-  panel.CONFIG_STATUS_TEXTURE              = "Appearance";
-  panel.CONFIG_STATUS_TEXTURE_TT           = "Choose how you want the status bar to appear.";
-  panel.CONFIG_GAPSIZE                     = "Layout Spacing";
-  panel.CONFIG_GAPSIZE_TT                  = "Choose how much extra space you want left around the elements of the unitframes.";
-  panel.CONFIG_ICONWIDTH                   = "Icon Width";
-  panel.CONFIG_ICONWIDTH_TT                = "Choose how wide you want the icon bar to be.";
-  panel.CONFIG_INFOWIDTH                   = "Info Panel Width";
-  panel.CONFIG_INFOWIDTH_TT                = "Choose how wide you want the info panel to be.";
-  panel.CONFIG_PORTWIDTH                   = "Portrait Width";
-  panel.CONFIG_PORTWIDTH_TT                = "Choose how wide you want the portrait to be.";
-  panel.CONFIG_RPUFALPHA                   = "Background Transparency";
-  panel.CONFIG_RPUFALPHA_TT                = "Set the transparency of the background. 0 is completely invisible, while 100 is completely opaque.";
-  panel.CONFIG_RPUF_BACKDROP               = "Frame Border";
-  panel.CONFIG_RPUF_BACKDROP_TT            = "Choose what kind of border, if any, you want.";
-  panel.CONFIG_SHOW_FRAME            = "Enable";
-  panel.CONFIG_SHOW_FRAME_TT = "Choose whether to show or hide this frame.";
-  panel.CONFIG_LINK_FRAME = "Link to Shared Settings";
-  panel.CONFIG_LINK_FRAME_TT = "Choose whether to link this frame to the shared settings, or configure it separately.";
+  local perFrame = 
+  { 
+    CONFIG_COLOR_RPUF             = "Background Color",
+    CONFIG_COLOR_RPUF_TEXT        = "Text Color",
+    CONFIG_COLOR_RPUF_TEXT_TT     = "Choose the default font color.",
+    CONFIG_COLOR_RPUF_TOOLTIP     = "Tooltip Text Color",
+    CONFIG_COLOR_RPUF_TOOLTIP_TT  = "Choose the default font color for tooltips.",
+    CONFIG_COLOR_RPUF_TT          = "Choose a background color.",
+    CONFIG_DETAILHEIGHT           = "Details Panel Height",
+    CONFIG_DETAILHEIGHT_TT        = "Choose how tall you want the details panel to be.",
+    CONFIG_GAPSIZE                = "Layout Spacing",
+    CONFIG_GAPSIZE_TT             = "Choose how much extra space you want left around the elements of the unitframes.",
+    CONFIG_ICONWIDTH              = "Icon Width",
+    CONFIG_ICONWIDTH_TT           = "Choose how wide you want the icon bar to be.",
+    CONFIG_INFOWIDTH              = "Info Panel Width",
+    CONFIG_INFOWIDTH_TT           = "Choose how wide you want the info panel to be.",
+    CONFIG_LINK_FRAME             = "Link to Shared Settings",
+    CONFIG_LINK_FRAME_TT          = "Choose whether to link this frame to the shared settings, or configure it separately.",
+    CONFIG_LOCK_FRAME             = "Lock Frame",
+    CONFIG_LOCK_FRAME_TT          = "Lock this unit frame so it can't be moved.";
+    CONFIG_MOUSEOVER_CURSOR       = "Change Cursor on Mouseover",
+    CONFIG_MOUSEOVER_CURSOR_TT    = "Choose whether the cursor should change to a magnifying glass when you mouse over a panel.",
+    CONFIG_PORTWIDTH              = "Portrait Width",
+    CONFIG_PORTWIDTH_TT           = "Choose how wide you want the portrait to be.",
+    CONFIG_RPUFALPHA              = "Background Transparency",
+    CONFIG_RPUFALPHA_TT           = "Set the transparency of the background. 0 is completely invisible, while 100 is completely opaque.",
+    CONFIG_RPUF_BACKDROP          = "Frame Border",
+    CONFIG_RPUF_BACKDROP_TT       = "Choose what kind of border, if any, you want.",
+    CONFIG_RPUF_HIDE_COMBAT       = "Hide in Combat",
+    CONFIG_RPUF_HIDE_COMBAT_TT    = "Check this to hide RPUF when you are in combat.",
+    CONFIG_RPUF_HIDE_DEAD         = "Hide when Dead",
+    CONFIG_RPUF_HIDE_DEAD_TT      = "Check this to hide RPUF when you are dead.",
+    CONFIG_RPUF_HIDE_PARTY        = "Hide in Party",
+    CONFIG_RPUF_HIDE_PARTY_TT     = "Check this to hide RPUF when you are in a party.",
+    CONFIG_RPUF_HIDE_PETBATTLE    = "Hide in Pet Battle",
+    CONFIG_RPUF_HIDE_PETBATTLE_TT = "Check this to hide RPUF when you are in a pet battle.",
+    CONFIG_RPUF_HIDE_RAID         = "Hide in Raid",
+    CONFIG_RPUF_HIDE_RAID_TT      = "Check this to hide RPUF when you are in a raid.",
+    CONFIG_RPUF_HIDE_VEHICLE      = "Hide in Vehicle",
+    CONFIG_RPUF_HIDE_VEHICLE_TT   = "Check this to hide RPUF when you are in a vehicle.",
+    CONFIG_SHOW_FRAME             = "Enable",
+    CONFIG_SHOW_FRAME_TT          = "Choose whether to show or hide this frame.",
+    CONFIG_STATUSHEIGHT           = "Height",
+    CONFIG_STATUSHEIGHT_TT        = "Set the height of the 'status' panel.",
+    CONFIG_STATUS_ALIGN           = "Alignment",
+    CONFIG_STATUS_ALIGN_TT        = "Choose how you want the text on the status bar to be aligned.",
+    CONFIG_STATUS_TEXTURE         = "Appearance",
+    CONFIG_STATUS_TEXTURE_TT      = "Choose how you want the status bar to appear.",
+  };
 
-  for k, v in pairs(panel)
+  for k, v in pairs(perFrame)
   do  L[k] = v;
       for frame, _ in pairs(RPTAGS.CONST.FRAMES.NAMES)
       do  local tt = k:match("_TT$");
@@ -163,6 +181,34 @@ function(self, event, ...)
           L[key] = v;
       end;
   end;
+  local PANEL_FONTSIZE = "Font Size";
+  local PANEL_FONTSIZE_TT = "Choose the relative font size for this panel.";
+  local PANEL_FONTFILE = "Font";
+  local PANEL_FONTFILE_TT = "Choose the font for this panel.";
+
+  L["CONFIG_DETAILPANEL_FONTSIZE"] = PANEL_FONTSIZE;
+  L["CONFIG_DETAILPANEL_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_1_FONTSIZE"] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_1_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_2_FONTSIZE"] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_2_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_3_FONTSIZE"] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_3_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_4_FONTSIZE"] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_4_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_5_FONTSIZE"] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_5_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_6_FONTSIZE"] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_6_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
+  L["CONFIG_INFOPANEL_FONTSIZE"] = PANEL_FONTSIZE;
+  L["CONFIG_INFOPANEL_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
+  L["CONFIG_NAMEPANEL_FONTSIZE"] = PANEL_FONTSIZE;
+  L["CONFIG_NAMEPANEL_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
+  L["CONFIG_STATUSPANEL_FONTSIZE"] = PANEL_FONTSIZE;
+  L["CONFIG_STATUSPANEL_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
+  L["CONFIG_NAMEPANEL_FONTFILE"] = PANEL_FONTFILE;
+  L["CONFIG_NAMEPANEL_FONTFILE_TT"] = PANEL_FONTFILE_TT;
+  -- 
   -- 
   -- L["CONFIG_COLOR_RPUF"                 ] = "Background Color";
   -- L["CONFIG_COLOR_RPUF_TEXT"            ] = "Text Color";
@@ -263,18 +309,8 @@ function(self, event, ...)
   L["CONFIG_RESET_FRAME_LOCATIONS_TT"   ] = "Set all frames back to their default locations.";
   L["CONFIG_RESET_THESE_VALUES"         ] = "Reset These Values";
   L["CONFIG_RESET_THESE_VALUES_TT"      ] = "Set the displayed values back to their default values.";
-  L["CONFIG_RPUF_HIDE_COMBAT"           ] = "Hide in Combat";
-  L["CONFIG_RPUF_HIDE_COMBAT_TT"        ] = "Check this to hide RPUF when you are in combat.";
-  L["CONFIG_RPUF_HIDE_DEAD"             ] = "Hide when Dead";
-  L["CONFIG_RPUF_HIDE_DEAD_TT"          ] = "Check this to hide RPUF when you are dead.";
-  L["CONFIG_RPUF_HIDE_PARTY"            ] = "Hide in Party";
-  L["CONFIG_RPUF_HIDE_PARTY_TT"         ] = "Check this to hide RPUF when you are in a party.";
-  L["CONFIG_RPUF_HIDE_PETBATTLE"        ] = "Hide in Pet Battle";
-  L["CONFIG_RPUF_HIDE_PETBATTLE_TT"     ] = "Check this to hide RPUF when you are in a pet battle.";
-  L["CONFIG_RPUF_HIDE_RAID"             ] = "Hide in Raid";
-  L["CONFIG_RPUF_HIDE_RAID_TT"          ] = "Check this to hide RPUF when you are in a raid.";
-  L["CONFIG_RPUF_HIDE_VEHICLE"          ] = "Hide in Vehicle";
-  L["CONFIG_RPUF_HIDE_VEHICLE_TT"       ] = "Check this to hide RPUF when you are in a vehicle.";
+
+
   L["CONFIG_STATUSPANEL"                ] = "Status Panel";
   L["CONFIG_STATUSPANEL_TT"             ] = "Set the tags for the 'status' panel. You don't have to use status tags.";
   L["CONFIG_STATUS_TOOLTIP"             ] = "Status Panel Tooltip";
@@ -283,8 +319,8 @@ function(self, event, ...)
     -- --- editor settings
   L["CONFIG_EDITOR_FONT"                ] = "Editor Font";
   L["CONFIG_EDITOR_FONT_TT"             ] = "Select a font to use in the " .. EDITOR .. ".";
-  L["CONFIG_EDITOR_CUSTOM_FONT"         ] = "Use Custom Font";
-  L["CONFIG_EDITOR_CUSTOM_FONT_TT"      ] = "Choose whether to use a custom font in the " .. EDITOR .. ".";
+  L["CONFIG_EDITOR_FONTSIZE"            ] = "Font Size";
+  L["CONFIG_EDITOR_FONTSIZE_TT"         ] = "Select the font size for the " .. EDITOR .. ".";
   L["CONFIG_EDITOR_BUTTON_BAR"          ] = "Show Tag Button Bar";
   L["CONFIG_EDITOR_BUTTON_BAR_TT"       ] = "Choose whether the tag button bar is shown in the " .. EDITOR .. ".";
   L["CONFIG_EDITOR_BUTTONS"             ] = "Buttons";

@@ -25,9 +25,10 @@ function(self, event, ...)
       self:SetActiveStyle('RP_UnitFrame')
       for unit, frameName in pairs(CONST.FRAMES.NAMES)
       do  local u = unit:lower();
-          self:Spawn(u, frameName);
+          local frame = self:Spawn(u, frameName);
+          frame:SetPoint("CENTER");
           RPTAGS.cache.UnitFrames[u] = _G[frameName];
-          RPTAGS.cache.UnitFrames[u]:Enable();
+          frame:UpdateEverything();
       end;
     end);
   end

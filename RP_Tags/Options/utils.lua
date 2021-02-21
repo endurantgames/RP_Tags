@@ -221,38 +221,22 @@ function(self, event, ...)
   end;
   
   local function build_color_picker(str, hidden, disabled)
-    str = "COLOR_" .. string.upper(str):gsub("%s","_");
-    local w =
-    { name = loc("CONFIG_" .. str),
-      order = source_order(),
-      width = "full",
-      type = "group" ,
-      inline = true,
-    };
-
-    local c    = build_common("color", "UI_", "BLANK", hidden, disabled);
-    c.hasAlpha = false;
-    c.get      = 
+    str = str:upper():gsub("%s+","_");
+    local w    = build_common("color", "CONFIG_COLOR_", str, hidden, disabled);
+    w.hasAlpha = false;
+    w.width = 1.5;
+    w.get      = 
       function(info, value) 
-        local  hexString = Config.get(str);
+        local  hexString = Config.get("COLOR_" .. str);
         if     type(hexString) == "number" then hexString = "000000"; end;
         local  r, g, b, a = RPTAGS.utils.color.colorToDecimals(hexString);
         return r, g, b, a;
       end;
-    c.set      = 
+    w.set      = 
       function(info, r, g, b, a) 
         local value = RPTAGS.utils.color.decimalsToColor(r, g, b);
         Config.set(str, value);
       end;
-    c.width = 0.25;
-    c.desc = loc("CONFIG_" .. str .. "_TT");
-
-    local s = build_spacer();
-
-    local l = build_markdown(loc("CONFIG_" .. str .. "_TT"));
-
-    w.args = { color = c, spacer = s, label = l };
-
     return w;
   end;
   
@@ -354,38 +338,53 @@ function(self, event, ...)
         return w
   end;
 
-  local function build_lsm_font(str, hidden, disabled, get, set)
-    local w    = build_common("select", "", str, hidden, disabled, get or true, set or true);
+  local function build_lsm_font(str, hidden, disabled, values)
+    str = str:upper():gsub("%s+","_");
+    local w    = build_common("select", "config_", str, hidden, disabled);
     w.dialogControl = "LSM30_Font";
-    w.values   = LibSharedMedia:HashTable("font");
+    w.values   = values or LibSharedMedia:HashTable("font");
+    w.get = function(self) return Config.get(str) end;
+    w.set = function(self, value) Config.set(str, value); end;
     return w;
   end;
 
-  local function build_lsm_sound(str, hidden, disabled, get, set)
-    local w    = build_common("select", "", str, hidden, disabled, get or true, set or true);
-    w.dialogControl = "LSM30_Sound";
-    w.values   = LibSharedMedia:HashTable("sound");
-    return w;
-  end;
-
-  local function build_lsm_statusbar(str, hidden, disabled, get, set)
-    local w    = build_common("select", "", str, hidden, disabled, get or true, set or true);
+  local function build_lsm_statusbar(str, hidden, disabled, values)
+    str = str:upper():gsub("%s+","_");
+    local w    = build_common("select", "config_", str, hidden, disabled);
     w.dialogControl = "LSM30_Statusbar";
-    w.values   = LibSharedMedia:HashTable("statusbar");
+    w.values   = values or LibSharedMedia:HashTable("statusbar");
+    w.get = function(self) return Config.get(str) end;
+    w.set = function(self, value) Config.set(str, value); end;
     return w;
   end;
 
-  local function build_lsm_background(str, hidden, disabled, get, set)
-    local w    = build_common("select", "", str, hidden, disabled, get or true, set or true);
+  local function build_lsm_sound(str, hidden, disabled, values)
+    str = str:upper():gsub("%s+","_");
+    local w    = build_common("select", "config_", str, hidden, disabled);
+    w.dialogControl = "LSM30_Sound";
+    w.values   = values or LibSharedMedia:HashTable("sound");
+    w.get = function(self) return Config.get(str) end;
+    w.set = function(self, value) Config.set(str, value); end;
+    return w;
+  end;
+
+  local function build_lsm_background(str, hidden, disabled, values)
+    str = str:upper():gsub("%s+","_");
+    local w    = build_common("select", "config_", str, hidden, disabled);
     w.dialogControl = "LSM30_Background";
-    w.values   = LibSharedMedia:HashTable("background");
+    w.values   = values or LibSharedMedia:HashTable("background");
+    w.get = function(self) return Config.get(str) end;
+    w.set = function(self, value) Config.set(str, value); end;
     return w;
   end;
 
-  local function build_lsm_border(str, hidden, disabled, get, set)
-    local w    = build_common("select", "", str, hidden, disabled, get or true, set or true);
+  local function build_lsm_border(str, hidden, disabled, values)
+    str = str:upper():gsub("%s+","_");
+    local w    = build_common("select", "config_", str, hidden, disabled);
     w.dialogControl = "LSM30_Border";
-    w.values   = LibSharedMedia:HashTable("border");
+    w.values   = values or LibSharedMedia:HashTable("border");
+    w.get = function(self) return Config.get(str) end;
+    w.set = function(self, value) Config.set(str, value); end;
     return w;
   end;
 

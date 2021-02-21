@@ -8,6 +8,35 @@ local addOnName, addOn = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
+Module:WaitUntil("INIT_OPTIONS",
+function(self, event, ...)
+
+  -- We run through the registered fonts to see which ones are fixed-width
+  -- and thus suitable for use in the tag editor
+  --
+  RPTAGS.CONST.FONT.FIXED_WIDTH = RPTAGS.CONST.FONT.FIXED_WIDTH or {};
+
+  local frame = CreateFrame("Frame");
+  local LibSharedMedia = LibStub("LibSharedMedia-3.0");
+
+  frame:Hide();
+  frame.www = frame:CreateFontString(nil, nil, "GameFontNormal");
+  frame.iii = frame:CreateFontString(nil, nil, "GameFontNormal");
+  frame.www:SetText("WWWWWWWWWW");
+  frame.iii:SetText("iiiiiiiiii");
+
+  for font, fontData in pairs(LibSharedMedia:HashTable("font"))
+  do  local fontFile = LibSharedMedia:Fetch("font", font);
+      frame.www:SetFont(fontFile, 10);
+      frame.iii:SetFont(fontFile, 10);
+
+      if   frame.www:GetUnboundedStringWidth() == frame.iii:GetUnboundedStringWidth()
+      or   font:match("Source Code Pro") -- okay this is cheating a little
+      then RPTAGS.CONST.FONT.FIXED_WIDTH[font] = fontData;
+      end;
+  end;
+end);
+
 Module:WaitUntil("MODULE_F",
 function(self, event, ...)
 
@@ -26,6 +55,7 @@ function(self, event, ...)
   local ConfigValid     = Utils.config.valid;
   local ConfigDefault   = Utils.config.default;
   local ConfigReset     = Utils.config.reset;
+  local LibSharedMedia  = LibStub("LibSharedMedia-3.0");
 
   local errorDialogName = "RPTAGS_RP_UNITFRAMES_EDITOR_ERRORS";
   local editorFrameName = "RP_UnitFrames_TagEditor";
@@ -43,6 +73,7 @@ function(self, event, ...)
   local toolBarSmallButtonWidth = 50;
   local statusBarButtonWidth = 75;
   local editBoxInset = 2;
+
 
   local Editor                  = AceGUI:Create("Window");
 
@@ -198,8 +229,10 @@ function(self, event, ...)
     EditBoxFrame:DisableButton(true);
     EditBoxFrame:SetMaxLetters(1024);
     EditBoxFrame:SetLabel(nil);
-    local _, TMLEBFontSize = EditBoxFrame.editBox:GetFont();
-    EditBoxFrame.editBox:SetFont(RPTAGS.CONST.FONT.FIXED, TMLEBFontSize);
+
+    EditBoxFrame.editBox:SetFont(
+        LibSharedMedia:Fetch("font", ConfigGet("EDITOR_FONT")), 
+        ConfigGet("EDITOR_FONTSIZE"));
     
     EditBoxFrame.editBox:ClearAllPoints();
     EditBoxFrame.editBox:SetPoint("TOPRIGHT",   editBoxInset * -1, editBoxInset * -1);
@@ -225,6 +258,13 @@ function(self, event, ...)
     self.editBox = EditBoxFrame.editBox;
     self.EditBoxFrame = EditBoxFrame;
     self:AddChild( EditBoxFrame );
+
+    Editor.frame:SetScript("OnSizeChanged", 
+      function() 
+        Editor.EditBoxFrame:SetHeight(Editor.frame:GetHeight() - 300) 
+      end
+    );
+
     return self;
   end;
 
@@ -388,6 +428,14 @@ function(self, event, ...)
   function Editor.SetChanged(self)        db.saved = false; return self; end;
   function Editor.SetSaved(self)          db.saved = true; return self; end;
   function Editor.IsSaved(self)           return db.saved end;
+  function Editor.LoadFont(self)          
+    if self.editBox
+    then self.editBox:SetFont( 
+           LibSharedMedia:Fetch("font", ConfigGet("EDITOR_FONT")),
+           ConfigGet("EDITOR_FONTSIZE")
+         );
+    end;
+  end;
 
   function Editor.SetText(self, text)
     text = text:gsub("%[p%]","\n\n"):gsub("%[br%]", "\n");
@@ -478,11 +526,6 @@ function(self, event, ...)
   };
   
     -- default values
-  Editor.frame:SetScript("OnSizeChanged", 
-    function() 
-      Editor.EditBoxFrame:SetHeight(Editor.frame:GetHeight() - 300) 
-    end
-  );
 
   RPTAGS.Editor = Editor;
 

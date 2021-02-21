@@ -61,7 +61,6 @@ function(self, event, ...)
     PAPERDOLL    = loc("RPUF_PAPERDOLL"        ),
     FULL         = loc("RPUF_FULL"             ), };
 
-
   addOptionsPanel("RPUF_Panels",
   { name                = loc("OPT_RPUF_PANELS"),
     order               = source_order(),
@@ -73,7 +72,7 @@ function(self, event, ...)
       infoPanel         = TagPanel("infopanel",   "info tooltip"),
       statusPanel       = TagPanel("statuspanel", "status tooltip"),
       detailPanel       = TagPanel("detailpanel", "detail tooltip"),
-      portraitPanel     = TagPanel("portrait",    "portrait tooltip"),
+      portraitPanel     = TagPanel("portrait", "portrait tooltip", nil, nil, { no_text = true } ),
       iconAPanel        = TagPanel("icon 1", "icon 1 tooltip"),
       iconBPanel        = TagPanel("icon 2", "icon 2 tooltip"),
       iconCPanel        = TagPanel("icon 3", "icon 3 tooltip"),

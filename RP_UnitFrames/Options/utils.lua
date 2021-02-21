@@ -29,7 +29,10 @@ function(self, event, ...)
   local evalTagString = Utils.tags.eval;
   local openEditor   = Config.openEditor;
   local Editor       = RPTAGS.Editor;
+  local linkHandler  = Utils.links.handler;
 
+  local menu = { fontSize = { small = loc("SIZE_SMALL"), medium = loc("SIZE_MEDIUM"), large = loc("SIZE_LARGE") } };
+  
   local function requiresRPUF() return Config.get("DISABLE_RPUF"); end;
 
   local function build_tag_editor_button(str)
@@ -116,88 +119,110 @@ function(self, event, ...)
     return w;
   end;
 
-  local function build_tagpanel(str, ttstr, hidden, disabled)
+  local function build_tagpanel(str, ttstr, hidden, disabled, opt)
+    opt = opt or {};
     str = str:upper():gsub("%s+", "_");
     ttstr = ttstr:upper():gsub("%s+", "_");
+
     local w    = 
     { type = "group",
       name     = loc("CONFIG_" .. str),
       order = source_order(),
-      args     = 
-      { header =
-        { type = "header",
-          width = "full",
-          name = "# " .. loc("CONFIG_" .. str),
-          dialogControl = "LMD30_Description",
-          order = source_order(),
-        },
-        instruct = 
-          { type = "description",
-            width = "full",
-            name = loc("CONFIG_" .. str .. "_TT"),
-            order = source_order(),
-          },
-        current = 
-          { type = "input",
-            width = "full",
-            name = loc("CONFIG_" .. str),
-            get = function(self) return Get(str) end,
-            set = function(self, value) Set(str, value) end,
-            order = source_order(),
-          },
-        tagPreview = 
-          { type = "group",
-            order = source_order(),
-            name = "Live Preview",
-            inline = true,
-            args = 
-            { preview = 
-              { type = "description",
-                order = source_order(),
-                name = function(self) return evalTagString(Get(str), "player", "player") end,
-                fontSize = function(self) return str:match("ICON") and "large" or "medium" end,
-              },
-            },
-          },
-        -- subhed2 = 
-        --   { type = "header",
-        --     width = "full",
-        --     name = "Current Values:",
-        --     order = source_order(),
-        --   },
-        currentTooltip = 
-          { type = "input",
-            width = "full",
-            name = loc("CONFIG_" .. ttstr),
-            get = function(self) return Get(ttstr) end,
-            set = function(self, value) Set(ttstr, value) end,
-            order = source_order(),
-          },
-        tooltipPreview = 
-          { type = "group",
-            order = source_order(),
-            name = "Live Preview",
-            inline = true,
-            args = 
-            { preview = 
-              { type = "description",
-                order = source_order(),
-                name = function(self) return evalTagString(Get(ttstr), "player", "player") end,
-                fontSize = "medium",
-              },
-            },
-          },
-        subhed4 = 
-          { type = "header",
-            name = "## Open in Tag Editor:",
-            width = "full",
-            dialogControl = "LMD30_Description",
-            order = source_order(),
-          },
-        editPanel   = Pushbutton(str,   function() openEditor(str)   end, hidden, requiresRPUF),
-        editTooltip = Pushbutton(ttstr, function() openEditor(ttstr) end, hidden, requiresRPUF),
-      };
+      args = {},
     };
+
+    w.args.header =
+    { type = "header",
+      width = "full",
+      name = "# " .. loc("CONFIG_" .. (opt["no_text"] and ttstr or str)),
+      dialogControl = "LMD30_Description",
+      order = source_order(),
+    };
+
+
+    if   not opt["no_text"]
+    then w.args.fontSize = Dropdown(str .. "_FONTSIZE", nil, nil, menu.fontSize);
+
+         w.args.instruct = 
+         { type = "description",
+           width = "full",
+           name = loc("CONFIG_" .. str .. "_TT"),
+           order = source_order(),
+         };
+
+         w.args.current = 
+         { type = "input",
+           width = "full",
+           name = loc("CONFIG_" .. str),
+           get = function(self) return Get(str) end,
+           set = function(self, value) Set(str, value) end,
+           order = source_order(),
+         };
+
+         w.args.tagPreview = 
+         { type = "group",
+           order = source_order(),
+           name = "Live Preview",
+           inline = true,
+           args = 
+           { preview = 
+             { type = "description",
+               order = source_order(),
+               name = function(self) return evalTagString(Get(str), "player", "player") end,
+               fontSize = function(self) return str:match("ICON") and "large" or "medium" end,
+             },
+           },
+         };
+    end;
+    if   not opt["no_tooltip"]
+    then w.args.instruct_tt = 
+         { type = "description",
+           width = "full",
+           name = loc("CONFIG_" .. ttstr .. "_TT"),
+           order = source_order(),
+         };
+
+         w.args.currentTooltip = 
+         { type = "input",
+           width = "full",
+           name = loc("CONFIG_" .. ttstr),
+           get = function(self) return Get(ttstr) end,
+           set = function(self, value) Set(ttstr, value) end,
+           order = source_order(),
+         };
+
+         w.args.tooltipPreview = 
+         { type = "group",
+           order = source_order(),
+           name = "Live Preview",
+           inline = true,
+           args = 
+           { preview = 
+             { type = "description",
+               order = source_order(),
+               name = function(self) return evalTagString(Get(ttstr), "player", "player") end,
+               fontSize = "medium",
+             },
+           },
+         };
+    end;
+
+    w.args.subhed4 = 
+    { type = "header",
+       name = "## Open in Tag Editor:",
+       width = "full",
+       dialogControl = "LMD30_Description",
+       order = source_order(),
+    };
+
+    if not opt["no_text"]
+    then w.args.editPanel = Pushbutton(str, function() openEditor(str) end);
+    end;
+
+    if not opt["no_tooltip"]
+    then w.args.editTooltip = Pushbutton(ttstr, function() openEditor(ttstr) end);
+    end;
+
     return w;
   end;
 
@@ -237,21 +262,29 @@ function(self, event, ...)
       PAPERDOLL    = loc("RPUF_PAPERDOLL"        ),
       FULL         = loc("RPUF_FULL"             ), };
 
-    local f          = {};
-    f.alpha          = "RPUFALPHA_"         .. str      ;
-    f.backdrop       = "RPUF_BACKDROP_"     .. str      ;
-    f.detailHeight   = "DETAILHEIGHT_"      .. str      ;
-    f.gapSize        = "GAPSIZE_"           .. str      ;
-    f.iconWidth      = "ICONWIDTH_"         .. str      ;
-    f.infoWidth      = "INFOWIDTH_"         .. str      ;
-    f.layout         = str                  .. "LAYOUT" ;
-    f.link           = "LINK_FRAME_"        .. str      ;
-    f.portWidth      = "PORTWIDTH_"         .. str      ;
-    f.show           = "SHOW_FRAME_"        .. str      ;
-    f.sAlign         = "STATUS_ALIGN_"      .. str      ;
-    f.sHeight        = "STATUSHEIGHT_"      .. str      ;
-    f.sTexture       = "STATUS_TEXTURE_"    .. str      ;
-
+    local f = 
+    { alpha           = "RPUFALPHA_"           .. str,
+      backdrop        = "RPUF_BACKDROP_"       .. str,
+      detailHeight    = "DETAILHEIGHT_"        .. str,
+      gapSize         = "GAPSIZE_"             .. str,
+      iconWidth       = "ICONWIDTH_"           .. str,
+      infoWidth       = "INFOWIDTH_"           .. str,
+      layout          = str                    .. "LAYOUT",
+      link            = "LINK_FRAME_"          .. str,
+      portWidth       = "PORTWIDTH_"           .. str,
+      show            = "SHOW_FRAME_"          .. str,
+      sAlign          = "STATUS_ALIGN_"        .. str,
+      sHeight         = "STATUSHEIGHT_"        .. str,
+      sTexture        = "STATUS_TEXTURE_"      .. str,
+      hideCombat      = "RPUF_HIDE_COMBAT_"    .. str,
+      hidePetBattle   = "RPUF_HIDE_PETBATTLE_" .. str,
+      hideVehicle     = "RPUF_HIDE_VEHICLE_"   .. str,
+      hideParty       = "RPUF_HIDE_PARTY_"     .. str,
+      hideRaid        = "RPUF_HIDE_RAID_"      .. str,
+      hideDead        = "RPUF_HIDE_DEAD_"      .. str,
+      mouseoverCursor = "MOUSEOVER_CURSOR_"    .. str,
+      lockFrame       = "LOCK_FRAME_"          .. str,
+    };
 
     local w          =
     { name           = loc(str .. "FRAME"),
@@ -273,12 +306,13 @@ function(self, event, ...)
           hidden = function() return Get("LINK_FRAME_" .. str) end,
           disabled = requiresRPUF,
           args =
-          { hideCombat      = Wide(Checkbox("rpuf hide combat",    nil , reqRPUF ), 1),
-            hidePetBattle   = Wide(Checkbox("rpuf hide petbattle", nil , reqRPUF ), 1),
-            hideVehicle     = Wide(Checkbox("rpuf hide vehicle",   nil , reqRPUF ), 1),
-            hideParty       = Wide(Checkbox("rpuf hide party",     nil , reqRPUF ), 1),
-            hideRaid        = Wide(Checkbox("rpuf hide raid",      nil , reqRPUF ), 1),
-            hideDead        = Wide(Checkbox("rpuf hide dead",      nil , reqRPUF ), 1),
+          { hideCombat      = Wide(Checkbox(f.hideCombat      ), 1      ),
+            hidePetBattle   = Wide(Checkbox(f.hidePetBattle   ), 1      ),
+            hideVehicle     = Wide(Checkbox(f.hideVehicle     ), 1      ),
+            hideParty       = Wide(Checkbox(f.hideParty       ), 1      ),
+            hideRaid        = Wide(Checkbox(f.hideRaid        ), 1      ),
+            hideDead        = Wide(Checkbox(f.hideDead        ), 1      ),
+            mouseoverCursor = Wide(Checkbox(f.mouseoverCursor ), "full" ),
           },
         },
         positioning =
@@ -288,7 +322,7 @@ function(self, event, ...)
           inline = true,
           hidden = function() return not Get("SHOW_FRAME_" .. str) or Get("DISABLE_RPUF") end,
           args =
-          { lockFrames      = Wide(Checkbox("lock frames", nil , reqRPUF ), 1),
+          { lockFrames      = Wide(Checkbox(f.lockFrame), 1),
             resetFrames     = Pushbutton("reset frame locations", resetFrames, nil , reqRPUF ),
           },
         },
@@ -301,6 +335,12 @@ function(self, event, ...)
           args       =
           { backdrop = Dropdown(f.backdrop, nil, requiresRPUF, menu.backdrop ), spb = Spacer(),
             alpha    = build_dimensions_slider(f.alpha, 0, 1, 0.05),             spa = Spacer(),
+            colors    = 
+            { type = "execute",
+              name = "Colors",
+              func = function() linkHandler("opt://colors/rpuf") end,
+              order = source_order(),
+            },
             statusBar    =
             { type       = "group",
               inline     = true,
