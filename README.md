@@ -250,11 +250,11 @@ translations into other languages, you can.
   - [ ] P3: Localization strings for options
   - [ ] P3: Review and update help files
   - [ ] Frames
-    - [ ] P1: Individualized settings per frame
+    - [x] P1: Individualized settings per frame
     - [x] Options for per-frame settings
+    - [x] P1: Mouseovers
     - [ ] P1: LibSharedMedia for frames
     - [ ] P1: Unit frames fully working
-    - [ ] P1: Mouseovers
   - [ ] Tags
     - [x] Get labels working in RPUF
     - [ ] P1: Get size modifiers working in RPUF
@@ -264,6 +264,7 @@ translations into other languages, you can.
     - [x] Tag editor buttons
     - [x] Color picker for editor
     - [x] Editor status bar (lower) buttons
+    - [x] P2: LibSharedMedia for editor
     - [ ] P1: "More" button
     - [ ] P2: Right-/modifier-clicks on toolbar
     - [ ] P3: Localization strings for editor
