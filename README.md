@@ -255,6 +255,7 @@ translations into other languages, you can.
     - [x] P1: Mouseovers
     - [ ] P1: LibSharedMedia for frames
     - [ ] P1: Unit frames fully working
+    - [ ] P2: Context menu
   - [ ] Tags
     - [x] Get labels working in RPUF
     - [ ] P1: Get size modifiers working in RPUF
