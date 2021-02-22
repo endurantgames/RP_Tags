@@ -163,7 +163,7 @@ function(self, event, ...)
   L["UI_CLOSE"]           = "Close";
   L["UI_BLANK"]               = "";
   L["UI_BLANK_TT"]            = "";
-  L["MORE_TAGS"]              = "More ...";
+  L["MORE_TAGS"]              = "More Tags...";
   L["UI_MORE_INFORMATION"]    = "More Information";
   L["UI_RESET"]               = "Reset";
   L["RESET"]                  = "Reset";

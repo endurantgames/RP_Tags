@@ -31,10 +31,21 @@ function(self, event, ...)
       frame.iii:SetFont(fontFile, 10);
 
       if   frame.www:GetUnboundedStringWidth() == frame.iii:GetUnboundedStringWidth()
-      or   font:match("Source Code Pro") -- okay this is cheating a little
+      or   font:match("Source Code Pro") -- okay this is cheating a little, not sure why it's not recognized
       then RPTAGS.CONST.FONT.FIXED_WIDTH[font] = fontData;
       end;
   end;
+end);
+
+Module:WaitUntil("after MODULE_F",
+function(self, event, ...)
+
+  local function openEditor(setting) 
+    RPTAGS.Editor:Edit(setting); 
+  end;
+
+  RPTAGS.utils.config.openEditor = openEditor;
+    
 end);
 
 Module:WaitUntil("MODULE_F",
@@ -71,9 +82,13 @@ function(self, event, ...)
   -- toolbar config
   local toolBarButtonWidth      = 100;
   local toolBarSmallButtonWidth = 50;
+
+  local toolBarButtonRelWidth      = 0.199;
+  local toolBarSmallButtonRelWidth = 0.099;
+  local toolBarWideButtonRelWidth  = 0.399;
+
   local statusBarButtonWidth = 75;
   local editBoxInset = 2;
-
 
   local Editor                  = AceGUI:Create("Window");
 
@@ -102,28 +117,25 @@ function(self, event, ...)
     return self;
   end;
 
-  -- hijack the color picker's "OK" button
-  local function SetFinalColorFromPicker()
-    local r, g, b = ColorPickerFrame:GetColorRGB(); 
-    db.color_picker_r = r;
-    db.color_picker_g = g;
-    db.color_picker_b = b;
-    local rgb = string.format(
-                  "%02x%02x%02x", 
-                   math.floor(r * 255), math.floor(g * 255), math.floor(b * 255)
-                );
-    Editor:Insert(
-      string.format(
-        "[colorcode(|cff%s%s|r)]", 
-        rgb, rgb
-      ));
+  local function SetFinalColorFromPicker(...)
+    if   Editor:IsVisible()
+    then local r, g, b = ColorPickerFrame:GetColorRGB(); 
+         db.color_picker_r = r;
+         db.color_picker_g = g;
+         db.color_picker_b = b;
+         local rgb = string.format("%02x%02x%02x", math.floor(r * 255), math.floor(g * 255), math.floor(b * 255));
+         Editor:Insert( string.format( "colorcode(|cff%s%s|r)", rgb, rgb));
+    end;
+    return ...; -- pass variables through
   end;
 
+  -- hijack the color picker's "OK" button
   ColorPickerOkayButton:HookScript("OnClick", SetFinalColorFromPicker);
 
   function Editor.CreateColorButton(self)
     local ColorButton = AceGUI:Create("Button");
-    ColorButton:SetWidth(toolBarSmallButtonWidth);
+    -- ColorButton:SetWidth(toolBarSmallButtonWidth);
+    ColorButton:SetRelativeWidth(toolBarSmallButtonRelWidth);
     ColorButton:SetText(RPTAGS.CONST.ICONS.COLORWHEEL);
     ColorButton:SetCallback("OnEnter",
       function(self)
@@ -149,7 +161,8 @@ function(self, event, ...)
 
   function Editor.CreateNoColorButton(self) 
     local NoColorButton = AceGUI:Create("Button");
-    NoColorButton:SetWidth(toolBarSmallButtonWidth);
+    -- NoColorButton:SetWidth(toolBarSmallButtonWidth);
+    NoColorButton:SetRelativeWidth(toolBarSmallButtonRelWidth);
     NoColorButton:SetText(RPTAGS.CONST.ICONS.COLORWHEEL);
     NoColorButton:SetCallback("OnEnter",
       function(self)
@@ -160,7 +173,7 @@ function(self, event, ...)
         GameTooltip:Show();
       end);
     NoColorButton:SetCallback("OnLeave", function() GameTooltip:FadeOut() end);
-    NoColorButton:SetCallback("OnClick", function(self) self:Insert("[nocolor]"); end);
+    NoColorButton:SetCallback("OnClick", function(self) self:Insert("nocolor"); end);
     self:AddChild( NoColorButton );
     return self;
   end;
@@ -168,7 +181,8 @@ function(self, event, ...)
   function Editor.CreateButton(self, tag)
     local Button = AceGUI:Create("Button");
     Button.tag = tag;
-    Button:SetWidth(toolBarButtonWidth);
+    -- Button:SetWidth(toolBarButtonWidth);
+    Button:SetRelativeWidth(toolBarButtonRelWidth);
     Button:SetText(tagLabel(tag));
     Button.frame.Left:SetWidth(10);
     Button.frame.Right:SetWidth(10);
@@ -179,6 +193,16 @@ function(self, event, ...)
         GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
         GameTooltip:AddLine("[" .. tag .. "]", 0, 1, 1, false);
         GameTooltip:AddLine( "Insert the tag for " .. tagLabel(tag) .. ".", 1, 1, 1, true)
+        if   Editor.tagIndex[tag] and Editor.tagIndex[tag].label
+        then GameTooltip:AddDoubleLine("Shift-Click", "Create a labeled tag.", 
+               0, 1, 0, 1, 1, 1, true);
+        end;
+        if   Editor.tagIndex[tag] and Editor.tagIndex[tag].size
+        then GameTooltip:AddDoubleLine("Alt-Click", "Set the tag to size |cff00ffffsmall|r.",
+               0, 1, 0, 1, 1, 1, true);
+             GameTooltip:AddDoubleLine("Control-Click", "Set the size manually.", 
+               0, 1, 0, 1, 1, 1, true);
+        end;
         GameTooltip:Show();
       end);
     Button:SetCallback("OnLeave", function() GameTooltip:FadeOut() end);
@@ -192,7 +216,7 @@ function(self, event, ...)
         -- if inTag then Editor.editBox:SetCursorPosition(next_right); end;
         -- Editor.editBox:Insert("[" .. tag .. "]");
         -- Editor.editBox:SetFocus();
-        Editor:Insert("[" .. tag .. "]");
+        Editor:Insert(tag);
       end);
     self:AddChild ( Button );
     return self;
@@ -221,6 +245,32 @@ function(self, event, ...)
     return count;
   end;
 
+  function Editor.CreateMore(self)
+    local source = RPTAGS.CONST.TAG_DATA;
+
+    local More = AceGUI:Create("Dropdown");
+    More:SetRelativeWidth(toolBarWideButtonRelWidth);
+    More:SetText(loc("MORE_TAGS"));
+    for g, group in ipairs(source)
+    do  More:AddItem(group.key, group.title, "Dropdown-Item-Header");
+        for t, tag in ipairs(group.tags)
+        do  if     tag.name
+            then   More:AddItem(tag.name, RPTAGS.CONST.NBSP .. (tag.desc or tag.label or tag.name))
+            elseif tag.title
+            then   More:AddItem(tag.title, RPTAGS.CONST.NBSP .. tag.title, "Dropdown-Item-Header");
+            end;
+        end;
+        More:AddItem(group.key .. "sep", group.key, "Dropdown-Item-Separator");
+    end;
+
+    More:SetCallback("OnValueChanged",
+       function(self, callbackName, key, checked)
+         Editor:Insert(key);
+         More:SetText(loc("MORE_TAGS"));
+       end);
+    self:AddChild(More);
+  end;
+    
   function Editor.CreateEditBox(self)
     local EditBoxFrame = AceGUI:Create("MultiLineEditBox");
     EditBoxFrame:SetNumLines(5);
@@ -249,7 +299,7 @@ function(self, event, ...)
         then   self:HighlightText(cursor, next_right)
         elseif key == "ENTER" and inTag
         then   self:SetCursorPosition( next_right);
-               if IsShiftKeyDown() then Editor:Insert("[br]\n") end;
+               if IsShiftKeyDown() then Editor:Insert("[br]\n", true) end;
         end;
       end);
     
@@ -269,12 +319,18 @@ function(self, event, ...)
   end;
 
   function Editor.CreatePreview(self)
+    local PreviewBox = AceGUI:Create("InlineGroup");
+    PreviewBox:SetFullWidth(true);
+    PreviewBox:SetTitle("Live Preview");
+
     local Preview = AceGUI:Create("LMD30_Description");
     Preview:SetText("");
     Preview:SetFullWidth(true);
-    Preview:SetHeight(50);
+    Preview:SetHeight(60);
     self.preview = Preview;
-    self:AddChild(Preview);
+
+    PreviewBox:AddChild(Preview);
+    self:AddChild(PreviewBox);
     return self;
   end;
 
@@ -327,7 +383,7 @@ function(self, event, ...)
     { name = "Cancel",  
       push = function(self) 
                Editor:Hide();
-               if Editor:IsSaved()
+               if   Editor:IsSaved()
                then notify( Editor:GetKeyName() .. " edit cancelled.");
                else notify( Editor:GetKeyName() .. " changes discarded.");
                end;
@@ -357,8 +413,15 @@ function(self, event, ...)
   end;
   
   function Editor.UpdateLayout(self)
+    -- order counts
     self:ReleaseChildren();
-    return self:CreateToolBar():CreateInfoBox():CreateEditBox():CreatePreview():CreateStatusBar();
+    self:CreateToolBar();
+    self:CreateMore();
+    self:CreateInfoBox();
+    self:CreateEditBox();
+    self:CreatePreview();
+    self:CreateStatusBar();
+    return self;
   end;
 
   function Editor.FindTagEnds(self, text, cursor)
@@ -383,12 +446,21 @@ function(self, event, ...)
     return inTag, prev_right, prev_left, next_right, next_left;
   end;
 
-  function Editor.Insert(self, str)
+  function Editor.Insert(self, tag, isRaw)
     local cursor = self.editBox:GetCursorPosition();
     local text   = self.editBox:GetText();
     local inTag, _, _, next_right, _ = self:FindTagEnds(text, cursor);
     if inTag then self.editBox:SetCursorPosition(next_right); end;
-    self.editBox:Insert(str);
+    if isRaw then self.editBox:Insert(tag)
+    else local tagIndex = self.tagIndex[tag] or {};
+         local mod = { ctrl = IsControlKeyDown(),
+                       alt  = IsAltKeyDown(),
+                       shift = IsShiftKeyDown() };
+         if     mod.shift and tagIndex.label then tag = tag .. "-label" end;
+         if     mod.alt   and tagIndex.size  then tag = tag .. "(small)"
+         elseif mod.ctrl  and tagIndex.size  then tag = tag .. "()" end;
+         self.editBox:Insert("[" .. tag .. "]");
+    end;
     self.editBox:SetFocus();
     return self;
   end;
@@ -474,43 +546,20 @@ function(self, event, ...)
     if self:GetKey() ~= key then self:ClearDraft(); end;
     self:SetKey(key)
     self:Init():UpdateTitle():LoadInfo();
-    if   self:GetDraft() then self:LoadDraft():ClearDraft():SetChanged(); else self:ConfigLoad():SetSaved() end;
+    if   self:GetDraft() 
+    then self:LoadDraft():SetChanged(); 
+    else self:ConfigLoad():SaveDraft():SetSaved() end;
     self:LoadPreview();
     self:Show();
     return self;
   end;
 
--- -- dropdown for "More..." tags ---------------------------------------------------------------------------------------
--- local dropDownData = {};
--- local dropDownFrame = CreateFrame("Frame", "ExampleMenuFrame", contentPane, "UIDropDownMenuTemplate")
-      -- dropDownFrame:SetPoint("TOPLEFT", moretagsButton, "TOPRIGHT", 0, 0);
--- local tagsSoFar; local currentMenu;
--- for i, tagData in ipairs(RPTAGS.cache.tagorder) -- menu builder
--- do  local  tagType, tagTitle, tagValue = unpack(tagData);
-    -- if     tagType == "submenu" and not tagsSoFar  -- it's a submenu but our first apparently
-    -- then   currentMenu = tagTitle;                 -- save the title of this submenu
-           -- tagsSoFar = {};                         -- start a clean list of tSF
-    -- elseif tagType == "submenu" and currentMenu    -- it's a new submenu but not our first
-    -- then   table.insert(dropDownData, { text     = currentMenu, hasArrow = true, -- let's insert the data we have so far into the menu
-                                        -- menuList = tagsSoFar, });
-           -- currentMenu = tagTitle;                 -- then save the new submenu name
-           -- tagsSoFar = {};                         -- then clear the tags
-    -- elseif tagType == "title"
-    -- then   table.insert(tagsSoFar, { text = tagTitle or "", isTitle = true, });
-    -- elseif tagType == "tag"                     -- it's a tag so insert it into tagsSoFar
-    -- then   table.insert(tagsSoFar, { text  = tagTitle, value = tagValue,
-                                     -- func  = function(Editor) TagEdit.textbox:Insert(tagValue); ToggleDropDownMenu(1, nil, dropDownFrame); end, });
-    -- end; -- if
--- end; -- for tagData
-
--- table.insert(dropDownData, { text = currentMenu, hasArrow = true, menuList = tagsSoFar }); -- do the final pass
-
--- local moretagsButton = CreateFrame("button", "RPTAGS_TagEdit_moretagsButton", contentPane, "UIPanelButtonTemplate");
-      -- moretagsButton:SetText(loc("MORE_TAGS"));
-      -- moretagsButton:SetWidth(80);
-      -- moretagsButton:SetPoint("TOP", lastButton, "TOP", 0, 0);
-      -- moretagsButton:SetPoint("RIGHT", contentPane, "RIGHT", 0, 0);
-      -- moretagsButton:SetScript("OnClick", function() EasyMenu(dropDownData, dropDownFrame, moretagsButton, 75, 5, "not MENU") end);
+  Editor.tagIndex = {} 
+  for _, group in ipairs(RPTAGS.CONST.TAG_DATA)
+  do  for _, tag in ipairs(group.tags)
+      do if tag.name then Editor.tagIndex[tag.name] = tag; end;
+      end;
+  end;
 
   StaticPopupDialogs[errorDialogName] = {
     showAlert    = 1,

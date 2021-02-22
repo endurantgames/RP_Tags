@@ -216,11 +216,11 @@ function(self, event, ...)
     };
 
     if not opt["no_text"]
-    then w.args.editPanel = Pushbutton(str, function() openEditor(str) end);
+    then w.args.editPanel = Pushbutton(str, function() InterfaceOptionsFrame:Hide() openEditor(str) end);
     end;
 
     if not opt["no_tooltip"]
-    then w.args.editTooltip = Pushbutton(ttstr, function() openEditor(ttstr) end);
+    then w.args.editTooltip = Pushbutton(ttstr, function() InterfaceOptionsFrame:Hide() openEditor(ttstr) end);
     end;
 
     return w;

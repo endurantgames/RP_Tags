@@ -349,7 +349,7 @@ function(self, event, ...)
   CONFIG.EDITOR_BUTTONS      = "rp:name|rp:color|rp:eyes|rp:eyecolor|rp:class|rp:icon|rp:height|rp:gender|rp:race|rp:fulltitle|rp:age|rp:body|rp:status|rp:statuscolor|rp:gendercolor";
   CONFIG.EDITOR_BUTTON_BAR   = true;
  
-  RPTAGS.CONST.RPUF.EDITOR_MAX_BUTTONS = 15;
+  RPTAGS.CONST.RPUF.EDITOR_MAX_BUTTONS = 13;
 
   CONFIG.EDITOR_NUM_BUTTONS = 7;
   CONFIG.EDITOR_BUTTON_RPNAME          = true;

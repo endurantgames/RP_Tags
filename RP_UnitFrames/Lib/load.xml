@@ -2,6 +2,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 	
-        <Include file="oUF\oUF.xml"                              />
+        <Include file="oUF\oUF.xml"             />
+        <Include file="LibDropdown-1.0\lib.xml" />
 
 </Ui>

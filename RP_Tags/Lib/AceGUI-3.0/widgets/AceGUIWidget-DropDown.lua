@@ -395,7 +395,7 @@ do
 
 		if not self.multiselect then
 			for i, item in this:IterateItems() do
-				item:SetValue(item.userdata.value == value)
+                                if item.SetValue then item:SetValue(item.userdata.value == value) end;
 			end
 		end
 

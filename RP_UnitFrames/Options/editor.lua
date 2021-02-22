@@ -126,7 +126,7 @@ function(self, event, ...)
           openEditor =
           { type = "execute",
             name = "Re-Open Editor",
-            func = function() Editor:Edit() end,
+            func = function() InterfaceOptionsFrame:Hide(); Editor:Edit() end,
             width = 1,
             order = source_order(),
           },

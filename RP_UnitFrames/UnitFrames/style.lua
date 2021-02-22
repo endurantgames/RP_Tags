@@ -303,6 +303,32 @@ function(self, event, ...)
       self:SetPoint("CENTER", UIParent);
     end;
 
+    self:SetMovable(true);
+    self:SetClampedToScreen(true);
+
+    self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+    self:SetScript("OnMouseDown", 
+      function(self, button) 
+        if  button == "LeftButton" then self:StartMoving() end; 
+      end
+    );
+    self:SetScript("OnMouseUp",   
+      function(self, button) 
+        if button == "LeftButton" then self:StopMovingOrSizing() end; 
+      end
+    );
+    self:SetScript("OnEnter",     
+      function(self)         
+      if   self:IsMovable()       
+      then SetCursor("Interface\\CURSOR\\UI-Cursor-Move.PNG") 
+      end 
+    end
+    );
+    self:SetScript("OnLeave", 
+      function(self) ResetCursor() end
+    );
+
+
   end; -- style definition
 
   oUF:RegisterStyle("RP_UnitFrame", RP_UnitFrame_Constructor);

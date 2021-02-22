@@ -256,6 +256,8 @@ translations into other languages, you can.
     - [ ] P1: LibSharedMedia for frames
     - [ ] P1: Unit frames fully working
     - [ ] P2: Context menu
+    - [ ] P1: Frames movable/position
+    - [ ] P1: Frame color
   - [ ] Tags
     - [x] Get labels working in RPUF
     - [ ] P1: Get size modifiers working in RPUF
@@ -266,8 +268,9 @@ translations into other languages, you can.
     - [x] Color picker for editor
     - [x] Editor status bar (lower) buttons
     - [x] P2: LibSharedMedia for editor
-    - [ ] P1: "More" button
-    - [ ] P2: Right-/modifier-clicks on toolbar
+    - [x] P1: "More" button
+    - [x] P2: Right-/modifier-clicks on toolbar
+    - [ ] P2: Layout tweaking
     - [ ] P3: Localization strings for editor
 - [ ] Long-Term
   - [ ] Config profiles with Ace3?
