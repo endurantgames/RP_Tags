@@ -54,10 +54,9 @@ function(self, event, ...)
     fonts            = "SetFont",
     textcolor        = "SetTextColor",
     tags             = "SetTagStrings",
-    backdrop         = "StyleFrame",
     hiding           = "SetVisibility",
     lock             = "ApplyLock",
-    statusBar        = "StyleStatusBar",
+    statusbar        = "StyleStatusBar",
     style            = "StyleFrame",
     location         = "SetPosition",
     vis              = "SetPanelVis",
@@ -67,30 +66,23 @@ function(self, event, ...)
 
   local function refresh(frameName, ...)
 
-    local function helper(funcName, frame)     -- takes a name of a method (from the list above)
-      local func = frame[funcName];     -- and a frame, and calls the func if possible
-      if func and type(func) == "function"
-      then func(frame)
-      else print(func,"is type",type(func))
-      end;
+    local function helper(funcName, frame) -- takes a name of a method (from the list above)
+      local func = frame[funcName];        -- and a frame, and calls the func if possible
+      if func and type(func) == "function" then func(frame) end;
     end;
 
-    for _, param in ipairs(...)
-    do  local what = refreshFuncs[param];
+    for _, param in ipairs({ ... })
+    do  local what = refreshFuncs[param:lower()];
         if    what
-        then  local ufCache = RPTAGS.cache.UnitFrames;
-              if     (not frameName) or (frameName == "all")
+        then  local  ufCache = RPTAGS.cache.UnitFrames;
+              if     (not frameName) or (frameName:lower() == "all")
               then   for name, frame in pairs(ufCache) do helper(what, frame); end;
-              elseif ufCache[frameName]
-              then   helper(what, ufCache[frameName]);
-              else   print("no idea what frameName", frameName, "is");
+              elseif ufCache[frameName:lower()]
+              then   helper(what, ufCache[frameName:lower()]);
               end;
-        else print("no idea what param", param, "is")
         end
     end;
   end;
-
-  local f;
 
   -- specialized loc()
   local function cloc(s) return loc( "CONFIG_" .. ( s or "" )          ) end;
@@ -101,6 +93,7 @@ function(self, event, ...)
 
   -- constructor functions            [---------------------------------------------]
   local function get(setting)  return function()            return Get(setting)  end; end; -- builds a Getter function
+
 local function set(setting)    return function(info, value) Set(setting, value); end; end; -- builds a Setter function
 
   local function build_frame_group(frameName, small)
@@ -158,7 +151,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.show),
       desc                      = tloc(f.show),
       get                       = get(f.show),
-      set                       = set(f.show, "hiding"),
+      set                       = function(info, value) Set(f.show, value); refresh(frameName, "hiding"); end,
       hidden                    = disableRpuf(),
       order                     = source_order(),
     };
@@ -171,7 +164,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       desc                      = tloc(f.link),
       get                       = get(f.link),
       hidden                    = not_show(),
-      set                       = set(f.link, "all"),
+      set                       = function(info, value) Set(f.link, value); refresh(frameName, "all"); end,
       order                     = source_order(),
     };
 
@@ -182,7 +175,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.layout),
       desc                      = tloc(f.layout),
       get                       = get(f.layout),
-      set                       = set(f.layout, "framesize", "sizes", "vis" ),
+      set                       = function(info, value) Set(f.layout, value); refresh(frameName, "framesize", "sizes", "vis"); end,
       values                    = small and menu.small or menu.large,
       order                     = source_order(),
       hidden                    = not_show(),
@@ -197,7 +190,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       isPercent                 = true,
       step                      = 0.05,
       get                       = get(f.scale),
-      set                       = set(f.scale, { "scale" }),
+      set                       = function(info, value) Set(f.scale, value); refresh(frameName, "scale") end,
       order                     = source_order(),
       hidden                    = not_show(),
       name                      = cloc(f.scale),
@@ -218,7 +211,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     { type                      = "toggle",
       name                      = cloc(f.hideCombat),
       desc                      = tloc(f.hideCombat),
-      set                       = set(f.hideCombat, "hiding"),
+      set                       = function(info, value) Set(f.hideCombat, value); refresh(frameName, "hiding"); end,
       get                       = get(f.hideCombat),
       order                     = source_order(),
     };
@@ -227,7 +220,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     { type                      = "toggle",
       name                      = cloc(f.hidePetBattle),
       desc                      = tloc(f.hidePetBattle),
-      set                       = set(f.hidePetBattle, "hiding"),
+      set                       = function(info, value) Set(f.hidePetBattle, value); refresh(frameName, "hiding"); end,
       get                       = get(f.hidePetBattle),
       order                     = source_order(),
     };
@@ -237,6 +230,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.hideVehicle),
       desc                      = tloc(f.hideVehicle),
       set                       = set(f.hideVehicle, "hiding"),
+      set                       = function(info, value) Set(f.hideVehicle, value); refresh(frameName, "hiding"); end,
       get                       = get(f.hideVehicle),
       order                     = source_order(),
     };
@@ -245,7 +239,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     { type                      = "toggle",
       name                      = cloc(f.hideParty),
       desc                      = tloc(f.hideParty),
-      set                       = set(f.hideParty, "hiding"),
+      set                       = function(info, value) Set(f.hideParty, value); refresh(frameName, "hiding"); end,
       get                       = get(f.hideParty),
       order                     = source_order(),
     };
@@ -254,7 +248,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     { type                      = "toggle",
       name                      = cloc(f.hideRaid),
       desc                      = tloc(f.hideRaid),
-      set                       = set(f.hideRaid, "hiding"),
+      set                       = function(info, value) Set(f.hideRaid, value); refresh(frameName, "hiding"); end,
       get                       = get(f.hideRaid),
       order                     = source_order(),
     };
@@ -263,7 +257,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     { type                      = "toggle",
       name                      = cloc(f.hideDead),
       desc                      = tloc(f.hideDead),
-      set                       = set(f.hideDead, "hiding"),
+      set                       = function(info, value) Set(f.hideDead, value); refresh(frameName, "hiding"); end,
       get                       = get(f.hideDead),
       order                     = source_order(),
     };
@@ -272,7 +266,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     { type                      = "toggle",
       name                      = cloc(f.mouseoverCursor),
       desc                      = tloc(f.mouseoverCursor),
-      set                       = set(f.mouseoverCursor),
+      set                       = function(info, value) Set(f.mouseoverCursor, value); end,
       get                       = get(f.mouseoverCursor),
       order                     = source_order(),
     };
@@ -294,7 +288,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       desc                      = tloc(f.lockFrame),
       width                     = "full",
       get                       = get(f.lockFrame),
-      set                       = set(f.lockFrame, "lock"),
+      set                       = function(info, value) Set(f.lockFrame, value); refresh(frameName, "lock"); end,
       order                     = source_order(),
     };
 
@@ -302,7 +296,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     { type                      = "execute",
       name                      = cloc("RESET_FRAME_LOCATIONS"),
       desc                      = tloc("RESET_FRAME_LOCATIONS"),
-      func                      = function() refresh("location") end,
+      func                      = function() refresh(frameName, "location") end,
       order                     = source_order(),
     };
 
@@ -322,7 +316,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       values                    = LibSharedMedia:HashTable("background"),
       width                     = "full",
       get                       = get(f.backdrop),
-      set                       = set(f.backdrop, "backdrop"),
+      set                       = function(info, value) Set(f.backdrop, value); refresh(frameName, "style"); end,
       name                      = cloc(f.backdrop),
       desc                      = tloc(f.backdrop),
       order                     = source_order(),
@@ -335,7 +329,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.alpha),
       desc                      = tloc(f.alpha),
       get                       = get(f.alpha),
-      set                       = set(f.alpha),
+      set                       = function(info, value) Set(f.alpha, value); refresh(frameName, "style", "statusbar" ); end,
       min                       = 0,
       max                       = 1,
       step                      = 0.01,
@@ -370,19 +364,19 @@ local function set(setting)    return function(info, value) Set(setting, value);
       desc                      = tloc(f.fontName),
       order                     = source_order(),
       get                       = get(f.fontName),
-      set                       = function(info, value) Set(f.fontName, value) refresh("fonts", str) end,
+      set                       = function(info, value) Set(f.fontName, value) refresh(frameName, "fonts", "statusbar") end,
     };
 
     fontSSG.args.Size           =
     { type                      = "range",
       min                       = 6,
       max                       = 24,
-          step                  = 1,
-          name                  = cloc(f.fontSize),
-          desc                  = tloc(f.fontSize),
-          order                 = source_order(),
-          get                   = get(f.fontSize),
-          set                   = set(f.fontSize, "fonts"),
+      step                      = 1,
+      name                      = cloc(f.fontSize),
+      desc                      = tloc(f.fontSize),
+      order                     = source_order(),
+      get                       = get(f.fontSize),
+      set                       = function(info, value) Set(f.fontSize, value) refresh(frameName, "fonts") end,
     };
 
     lookSG.args.fontSSG         = fontSSG;
@@ -402,7 +396,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       desc                      = tloc(f.statusAlign),
       order                     = source_order(),
       get                       = get(f.statusAlign),
-      set                       = set(f.statusAlign, "statusBar"),
+      set                       = function(info, value) Set(f.statusAlign, value); refresh(frameName, "statusbar") end,
       values                    = menu.align,
     };
 
@@ -414,7 +408,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.statusTexture),
       desc                      = tloc(f.statusTexture),
       get                       = get(f.statusTexture),
-      set                       = get(f.statusTexture, "statusBar"),
+      set                       = function(info, value) Set(f.statusTexture, value); refresh(frameName, "statusbar") end,
       values                    = LibSharedMedia:HashTable("statusbar"),
       order                     = source_order(),
     };
@@ -427,11 +421,12 @@ local function set(setting)    return function(info, value) Set(setting, value);
       desc                      = tloc(f.statusHeight),
       order                     = source_order(),
       get                       = get(f.statusHeight),
-      set                       = set(f.statusHeight, "statusBar", "framesize", "sizes"),
-      min                       = 10,
+      set                       = function(info, value) Set(f.statusHeight, value); refresh(frameName, "statusbar", "framesize", "sizes") end,
+      min                       = 5,
+      softMin                   = 10,
+      softMax                   = 50,
       max                       = 100,
       step                      = 1,
-      bigStep                   = 5,
     };
 
     lookSG.args.statSSG         = statSSG;
@@ -450,8 +445,9 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.gapSize),
       desc                      = cloc(f.gapSize),
       get                       = get(f.gapSize),
-      set                       = get(f.gapSize, "framesize", "sizes"),
+      set                       = function(info, value) Set(f.gapSize, value); refresh(frameName, "framesize", "sizes") end,
       min                       = 0,
+      softMax                   = 10,
       max                       = 20,
       step                      = 1,
       order                     = source_order(),
@@ -464,11 +460,11 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.iconWidth),
       desc                      = cloc(f.iconWidth),
       get                       = get(f.iconWidth),
-      set                       = get(f.iconWidth, "framesize", "sizes"),
-      min                       = 10,
+      set                       = function(info, value) Set(f.iconWidth, value); refresh(frameName, "framesize", "sizes") end,
+      min                       = 5,
+      softMin                   = 10,
       max                       = 50,
       step                      = 1,
-      bigStep                   = 5,
       order                     = source_order(),
     };
 
@@ -479,9 +475,11 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.portWidth),
       desc                      = cloc(f.portWidth),
       get                       = get(f.portWidth),
-      set                       = get(f.portWidth, "framesize", "sizes"),
-      min                       = 50,
-      max                       = 150,
+      set                       = function(info, value) Set(f.portWidth, value); refresh(frameName, "framesize", "sizes") end,
+      min                       = 10,
+      softMin                   = 25,
+      softMax                   = 100,
+      max                       = 200,
       step                      = 5,
       order                     = source_order(),
     };
@@ -493,8 +491,10 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.infoWidth),
       desc                      = cloc(f.infoWidth),
       get                       = get(f.infoWidth),
-      set                       = get(f.infoWidth, "framesize", "sizes"),
-      min                       = 100,
+      set                       = function(info, value) Set(f.infoWidth, value); refresh(frameName, "framesize", "sizes") end,
+      min                       = 20,
+      softMin                   = 50,
+      softMax                   = 300,
       max                       = 400,
       step                      = 10,
       order                     = source_order(),
@@ -507,10 +507,12 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.detailHeight),
       desc                      = cloc(f.detailHeight),
       get                       = get(f.detailHeight),
-      set                       = get(f.detailHeight, "framesize", "sizes"),
+      set                       = function(info, value) Set(f.detailHeight, value); refresh(frameName, "framesize", "sizes"); end,
       min                       = 20,
-      max                       = 250,
-      step                      = 5,
+      softMin                   = 50,
+      softMax                   = 300,
+      max                       = 400,
+      step                      = 10,
       order                     = source_order(),
     };
 
@@ -519,7 +521,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
 
   end;
 
-  local function statName(frameName)
+  local function statusName(frameName)
     return { type     = "description",
              name     = loc(frameName .. "FRAME"),
              width    = 1,
@@ -529,22 +531,22 @@ local function set(setting)    return function(info, value) Set(setting, value);
           };
   end;
 
-  local function statShow(frameName)
+  local function statusShow(frameName)
     return { type     = "toggle",
              name     = "Enabled",
              get      = get("SHOW_FRAME_" .. frameName),
-             set      = set("SHOW_FRAME_" .. frameName, "hiding"),
+             set      = function(info, value) Set("SHOW_FRAME_" .. frameName,  value); refresh(frameName, "hiding") end,
              disabled = disableRpuf(),
              width    = 0.5,
              order    = source_order(),
            };
   end;
 
-  local function statLinked(frameName)
+  local function statusLinked(frameName)
     return { type     = "toggle",
              name     = "Linked",
              get      = get("LINK_FRAME_" .. frameName),
-             set      = set("LINK_FRAME_" .. frameName, "all"),
+             set      = function(info, value) Set("LINK_FRAME_" .. frameName, value); refresh(frameName, "all") end,
              width    = 0.5,
              disabled = function() return Get("DISABLE_RPUF") or not Get("SHOW_FRAME_" .. frameName) end,
              order    = source_order(),
@@ -573,7 +575,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     name                      = loc("CONFIG_DISABLE_RPUF"),
     desc                      = loc("CONFIG_DISABLE_RPUF_TT"),
     get                       = get("DISABLE_RPUF"),
-    set                       = set("DISABLE_RPUF", "hiding");
+    set                       = function(info, value) Set("DISABLE_RPUF", value); refresh("hiding"); end,
     width                     = 1.5,
   };
 
@@ -583,7 +585,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     name                      = cloc("DISABLE_BLIZZARD"),
     desc                      = tloc("DISABLE_BLIZZARD"),
     get                       = get("DISABLE_BLIZZARD"),
-    set                       = set("DISABLE_BLIZZARD"),
+    set                       = function(info, value) Set("DISABLE_BLIZZARD", value); refresh("hiding"); end,
     width                     = 1.5,
   };
 
@@ -600,12 +602,11 @@ local function set(setting)    return function(info, value) Set(setting, value);
   for _, frameData in ipairs(frameList)
   do  local frameName, small = unpack(frameData);
       local name = frameName:lower();
-      print("frameName is", frameName, name);
-      statusGroup.args[name .. "Name"   ] = statName(frameName);
+      statusGroup.args[name .. "Name"   ] = statusName(frameName);
       statusGroup.args[name .. "Spacer1"] = Spacer();
-      statusGroup.args[name .. "Show"   ] = statShow(frameName);
+      statusGroup.args[name .. "Show"   ] = statusShow(frameName);
       statusGroup.args[name .. "Spacer2"] = Spacer();
-      statusGroup.args[name .. "Linked" ] = statLinked(frameName);
+      statusGroup.args[name .. "Linked" ] = statusLinked(frameName);
 
   end;
 
