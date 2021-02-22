@@ -367,12 +367,15 @@ function(self, event, ...)
       end);
 
     function self.ApplyLock(self) 
-      self.locked = self:ConfGet("LOCK_FRAMES"); 
-      self.lock:SetShown( not self.locked ) 
+      if   self:ConfGet("LOCK_FRAMES") 
+      then self.lock:Hide() 
+      else self.lock:Show() 
+      end;
     end;
 
     function self.IsLocked(self)
       self:ConfGet("LOCK_FRAMES")
+      print('ConfGet("LOCK_FRAMES") is ', self:ConfGet("LOCK_FRAMES") );
     end;
 
     function self.SetLock(self, value) 
@@ -391,7 +394,8 @@ function(self, event, ...)
     self:HookScript("OnDragStart", 
       function(self, ...) 
         if not self:IsLocked() 
-        then   self:StartMoving() end; 
+        -- then   self:StartMoving() 
+        end; 
         return self, ...  
       end);
     self:HookScript("OnDragStop",  
