@@ -20,6 +20,12 @@ function(self, event, ...)
   RPTAGS.CONST.RPUF              =
   { RPUF_COLOR                   = "|cffdd9933",
     OUF_STYLE                    = "RP_UnitFrames_UnitFrame",
+    COORDS                       =
+    { player                     = { 200, 200 },
+      focus                      = { 250, 200 },
+      target                     = { 600, 200 },
+      targettarget               = { 550, 200 },
+    },
     INITIAL_POSITION             =
     { player                     =
       { pt                       = 'TOPRIGHT',

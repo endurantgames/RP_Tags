@@ -1,7 +1,6 @@
 -- RP Tags
 -- by Oraibi, Moon Guard (US) server
 -- ------------------------------------------------------------------------------
---
 -- This work is licensed under the Creative Commons Attribution 4.0 International
 -- (CC BY 4.0) license. 
 
@@ -332,22 +331,6 @@ function(self, event, ...)
     return left; 
   end;
 
-  local function getPanelVisibility(panel, layout)
-    local hash =
-    { COMPACT   = { name  = true, icon1 = true, info      = true                                                 } ,
-      THUMBNAIL = { name  = true, icon1 = true, portrait  = true                                                 } ,
-      PAPERDOLL = { name  = true, info  = true, portrait  = true,
-                    icon1 = true, icon2 = true, icon3     = true, icon4    = true, icon5    = true, icon6 = true } ,
-      ABRIDGED  = { name  = true, info  = true, statusBar = true, portrait = true,
-                    icon1 = true, icon2 = true, icon3     = true, icon4    = true, icon5    = true, icon6 = true } ,
-      FULL      = { name  = true, info  = true, statusBar = true, details  = true, portrait = true,
-                    icon1 = true, icon2 = true, icon3     = true, icon4    = true, icon5    = true, icon6 = true } ,
-    };
-
-    return hash[layout][panel];
-  end;
-
-  RPTAGS.utils.frames.panels.layout.getVis     = getPanelVisibility;
   RPTAGS.utils.frames.panels.layout.getLeft    = getPanelLeftPoint;
   RPTAGS.utils.frames.panels.layout.getTop     = getPanelTopPoint;
   RPTAGS.utils.frames.panels.layout.getPoint   = getPanelTopLeftPoint;

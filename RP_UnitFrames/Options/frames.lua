@@ -612,7 +612,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
 
   for _, frameData in ipairs(frameList)
   do  local name, small = unpack(frameData);
-      panelGroup.args[name:lower()] = build_frame_group(name);
+      panelGroup.args[name:lower()] = build_frame_group(name, small);
   end;
 
   sharedGroup.args.statusGroup = statusGroup;

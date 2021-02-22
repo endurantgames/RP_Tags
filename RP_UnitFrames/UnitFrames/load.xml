@@ -6,9 +6,10 @@
     <Script file="layout.lua"     />
     <Script file="size.lua"       />
     <Script file="style.lua"      />
-    <Script file="content.lua"    />
     <Script file="look.lua"       />
-    <Script file="move.lua"       />
-    <Script file="visibility.lua" />
+
+    <!-- Script file="content.lua"    / -->
+    <!-- Script file="move.lua"       / -->
+    <!-- Script file="visibility.lua" / -->
 
 </Ui>

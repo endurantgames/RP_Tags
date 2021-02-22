@@ -9,8 +9,10 @@ local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:NewModule(addOnName, "rpClient");
 
-
-_G["RP_UnitFramesDB"] = RP_UnitFramesDB or {};
+Module:WaitUntil("ADDON_INIT",
+function(self, event, ...)
+  RP_UnitFramesDB = RP_UnitFramesDB or {};
+end);
 
 Module:WaitUntil("MODULE_C",
 function(self, event, ...)

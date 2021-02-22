@@ -300,17 +300,10 @@ function(self, event, ...)
     frame:SetHeight(h);
   end; -- function
 
-  local function setAllFrameSizes()
-    for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
-    do setFrameSize(frame) 
-    end; 
-  end;
-
   RPTAGS.utils.frames.all.size.scale.set    = setAllFrameScales;
   RPTAGS.utils.frames.all.size.set          = setAllFrameSizes;
   RPTAGS.utils.frames.panels.size.getHeight = getPanelHeight;
   RPTAGS.utils.frames.panels.size.getWidth  = getPanelWidth;
   RPTAGS.utils.frames.panels.size.set       = setPanelSize;
   RPTAGS.utils.frames.size.get              = getFrameSize;
-  RPTAGS.utils.frames.size.set              = setFrameSize;
 end);

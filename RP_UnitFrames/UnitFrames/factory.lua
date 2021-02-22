@@ -12,12 +12,12 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("after MODULE_J",
 function(self, event, ...)
 
-  local oUF                = _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- auto-added by oUF
-  local CONST              = RPTAGS.CONST;
-  local FRAME_NAMES        = CONST.FRAMES.NAMES;
-  local oUF_style          = CONST.RPUF.OUF_STYLE;
+  local oUF         = _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- auto-added by oUF
+  local CONST       = RPTAGS.CONST;
+  local FRAME_NAMES = CONST.FRAMES.NAMES;
+  local oUF_style   = CONST.RPUF.OUF_STYLE;
 
-  function oUF:DisableBlizzard() end;
+  function oUF:DisableBlizzard() end; -- this prevents oUF from disabling oUF
 
   oUF:Factory(
     function(self)
