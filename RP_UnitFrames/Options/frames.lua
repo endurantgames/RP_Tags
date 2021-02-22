@@ -154,11 +154,11 @@ local function set(setting)    return function(info, value) Set(setting, value);
       set                       = function(info, value) Set(f.show, value); refresh(frameName, "hiding"); end,
       hidden                    = disableRpuf(),
       order                     = source_order(),
-    };
+    } or nil;
 
-    frameGroup.args.spa         = Spacer();
+    frameGroup.args.spa         = frame and Spacer() or nil;
 
-    frameGroup.args.link        = frame and
+    frameGroup.args.link        = frame and 
     { type                      = "toggle",
       name                      = cloc(f.link),
       desc                      = tloc(f.link),
@@ -166,9 +166,9 @@ local function set(setting)    return function(info, value) Set(setting, value);
       hidden                    = not_show(),
       set                       = function(info, value) Set(f.link, value); refresh(frameName, "all"); end,
       order                     = source_order(),
-    };
+    } or nil;
 
-    frameGroup.args.spb         = Spacer();
+    frameGroup.args.spb         = frame and Spacer() or nil;
 
     frameGroup.args.layout      = frame and
     { type                      = "select",
@@ -179,9 +179,9 @@ local function set(setting)    return function(info, value) Set(setting, value);
       values                    = small and menu.small or menu.large,
       order                     = source_order(),
       hidden                    = not_show(),
-    };
+    } or nil;
 
-    frameGroup.args.spc         = Spacer();
+    frameGroup.args.spc         = frame and Spacer() or nil;
 
     frameGroup.args.scale       = frame and
     { type                      = "range",
@@ -195,7 +195,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       hidden                    = not_show(),
       name                      = cloc(f.scale),
       desc                      = tloc(f.scale),
-    };
+    } or nil;
 
     local visiSG                =
     { type                      = "group",
@@ -278,7 +278,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = "Positioning",
       order                     = source_order(),
       inline                    = true,
-      hidden                    = linked_or_not_show(),
+      hidden                    = frame and linked_or_not_show(),
       args                      = {},
     };
 
@@ -306,7 +306,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     { type                      = "group",
       name                      = "Frame Appearance",
       order                     = source_order(),
-      hidden                    = linked_or_not_show(),
+      hidden                    = frame and linked_or_not_show(),
       args                      = {}
     };
 
@@ -352,7 +352,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       inline                    = true,
       name                      = "Font",
       order                     = source_order(),
-      hidden                    = linked_or_not_show(),
+      hidden                    = frame and linked_or_not_show(),
       args                      = {};
     };
 
@@ -386,7 +386,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       inline                    = true,
       name                      = "Status Bar Appearance",
       order                     = source_order(),
-      hidden                    = linked_or_not_show(),
+      hidden                    = frame and linked_or_not_show(),
       args                      = {}
     };
 
@@ -436,7 +436,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     { type                      = "group",
       name                      = "Panel Dimensions",
       order                     = source_order(),
-      hidden                    = linked_or_not_show(),
+      hidden                    = frame and linked_or_not_show(),
       args                      = {}
     };
 
@@ -521,6 +521,8 @@ local function set(setting)    return function(info, value) Set(setting, value);
 
   end;
 
+  local sharedGroup           = build_frame_group();
+
   local function statusName(frameName)
     return { type     = "description",
              name     = loc(frameName .. "FRAME"),
@@ -536,7 +538,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
              name     = "Enabled",
              get      = get("SHOW_FRAME_" .. frameName),
              set      = function(info, value) Set("SHOW_FRAME_" .. frameName,  value); refresh(frameName, "hiding") end,
-             disabled = disableRpuf(),
+             disabled = function() return Get("DISABLE_PRUF") end,
              width    = 0.5,
              order    = source_order(),
            };
@@ -589,7 +591,6 @@ local function set(setting)    return function(info, value) Set(setting, value);
     width                     = 1.5,
   };
 
-  local sharedGroup           = build_frame_group();
 
   local statusGroup = 
   { type = "group",
@@ -610,13 +611,13 @@ local function set(setting)    return function(info, value) Set(setting, value);
 
   end;
 
+  sharedGroup.args.statusGroup = statusGroup;
+  panelGroup.args.sharedGroup  = sharedGroup;
+
   for _, frameData in ipairs(frameList)
   do  local name, small = unpack(frameData);
       panelGroup.args[name:lower()] = build_frame_group(name, small);
   end;
-
-  sharedGroup.args.statusGroup = statusGroup;
-  panelGroup.args.sharedGroup  = sharedGroup;
 
   addOptionsPanel("RPUF_Main", panelGroup);
 

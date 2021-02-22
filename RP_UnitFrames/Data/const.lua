@@ -242,7 +242,7 @@ function(self, event, ...)
 
   local perFrame          =
   { RPUFALPHA             = 65,
-    RPUF_BACKDROP         = "Blizzard Tooltip",
+    RPUF_BACKDROP         = "Blizzard Parchment 2",
     RPUF_BORDER           = "Blizzard Tooltip",
     DETAILHEIGHT          = 100,
     FONTNAME              = "Arial Narrow",
@@ -262,7 +262,7 @@ function(self, event, ...)
     PORTWIDTH             = 100,
     STATUSHEIGHT          = 35,
     STATUS_ALIGN          = "CENTER",
-    STATUS_TEXTURE        = "SHADED",
+    STATUS_TEXTURE        = "Blizzard Character Skills Bar",
     SHOW_FRAME            = true,
     COLOR_RPUF            = BLACK,
     COLOR_RPUF_TEXT       = WHITE,
@@ -325,22 +325,22 @@ function(self, event, ...)
 
   --
   -- tooltips
-  -- CONFIG.DETAIL_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc][nocolor] [rp:oocinfo-label]";
-  CONFIG.DETAIL_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc][nocolor] [rp:oocinfo]";
-  -- CONFIG.ICON_1_TOOLTIP      = "[rp:style-yes-label][br][rp:style-ask-label][br][rp:style-no-label]";
-  CONFIG.ICON_1_TOOLTIP      = "[rp:style-yes][br][rp:style-ask][br][rp:style-no]";
+  CONFIG.DETAIL_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc][nocolor] [rp:oocinfo-label]";
+  -- CONFIG.DETAIL_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc][nocolor] [rp:oocinfo]";
+  CONFIG.ICON_1_TOOLTIP      = "[rp:style-yes-label][br][rp:style-ask-label][br][rp:style-no-label]";
+  -- CONFIG.ICON_1_TOOLTIP      = "[rp:style-yes][br][rp:style-ask][br][rp:style-no]";
   CONFIG.ICON_2_TOOLTIP      = "[rp:glance-1-full]";
   CONFIG.ICON_3_TOOLTIP      = "[rp:glance-2-full]";
   CONFIG.ICON_4_TOOLTIP      = "[rp:glance-3-full]";
   CONFIG.ICON_5_TOOLTIP      = "[rp:glance-4-full]";
   CONFIG.ICON_6_TOOLTIP      = "[rp:glance-5-full]";
   CONFIG.INFO_TOOLTIP        = "[rp:gendercolor][rp:gender][nocolor] [rp:guildcolor][race] [rp:friendcolor][class] [level]";
-  -- CONFIG.NAME_TOOLTIP        = "[rp:namecolor][rp:friendcolor][rp:firstname] [rp:nick-quoted] [rp:lastname][nocolor][br][rp:title-long][p][rp:guildcolor][rp:guild-label][nocolor] [rp:guildstatuscolor][rp:guild-status][nocolor][br][rp:guild-rank-label]";
-  CONFIG.NAME_TOOLTIP        = "[rp:namecolor][rp:friendcolor][rp:firstname] [rp:nick-quoted] [rp:lastname][nocolor][br][rp:title-long][p][rp:guildcolor][rp:guild][nocolor] [rp:guildstatuscolor][rp:guild-status][nocolor][br][rp:guild-rank]";
-  -- CONFIG.PORTRAIT_TOOLTIP    = "[rp:eyecolor][rp:eyes-label][nocolor][br][rp:hair-label][br][rp:actor-label]";
-  CONFIG.PORTRAIT_TOOLTIP    = "[rp:eyecolor][rp:eyes][nocolor][br][rp:hair][br][rp:actor]";
-  -- CONFIG.STATUS_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc] [nocolor][rp:currently-label]";
-  CONFIG.STATUS_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc] [nocolor][rp:currently]";
+  CONFIG.NAME_TOOLTIP        = "[rp:namecolor][rp:friendcolor][rp:firstname] [rp:nick-quoted] [rp:lastname][nocolor][br][rp:title-long][p][rp:guildcolor][rp:guild-label][nocolor] [rp:guildstatuscolor][rp:guild-status][nocolor][br][rp:guild-rank-label]";
+  -- CONFIG.NAME_TOOLTIP        = "[rp:namecolor][rp:friendcolor][rp:firstname] [rp:nick-quoted] [rp:lastname][nocolor][br][rp:title-long][p][rp:guildcolor][rp:guild][nocolor] [rp:guildstatuscolor][rp:guild-status][nocolor][br][rp:guild-rank]";
+  CONFIG.PORTRAIT_TOOLTIP    = "[rp:eyecolor][rp:eyes-label][nocolor][br][rp:hair-label][br][rp:actor-label]";
+  -- CONFIG.PORTRAIT_TOOLTIP    = "[rp:eyecolor][rp:eyes][nocolor][br][rp:hair][br][rp:actor]";
+  CONFIG.STATUS_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc] [nocolor][rp:currently-label]";
+  -- CONFIG.STATUS_TOOLTIP      = "[rp:statuscolor][rp:ic][rp:ooc] [nocolor][rp:currently]";
 
   -- editor
   CONFIG.EDITOR_FONT         = "Syne Mono";

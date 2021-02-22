@@ -3,6 +3,14 @@ local addOnName, ns                 = ...;
 
 Module                              = RPTAGS.queue:GetModule(addOnName);
 
+Module:WaitUntil("ADDON_INIT",
+function(self, event, ...)
+
+  _G["RP_UnitFramesDB"]  = RP_UnitFramesDB        or {}
+  RP_UnitFramesDB.coords = RP_UnitFramesDB.coords or {}
+
+end);
+
 Module:WaitUntil("INIT_UTILS",
 function(self, event, ...)
 

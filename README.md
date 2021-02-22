@@ -256,7 +256,7 @@ translations into other languages, you can.
     - [ ] P1: LibSharedMedia for frames -- partial
     - [ ] P1: Unit frames fully working
     - [ ] P2: Context menu
-    - [ ] P1: Frames movable/position
+    - [x] P1: Frames movable/position
     - [ ] P1: Frame color
   - [ ] Tags
     - [x] Get labels working in RPUF

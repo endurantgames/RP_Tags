@@ -29,6 +29,7 @@ function(self, event, ...)
           frame:SetPoint("CENTER");
           RPTAGS.cache.UnitFrames[u] = _G[frameName];
           frame:UpdateEverything();
+          frame:SetFrameStrata("MEDIUM");
       end;
     end);
   end
