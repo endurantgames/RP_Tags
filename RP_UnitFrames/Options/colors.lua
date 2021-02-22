@@ -5,102 +5,91 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("MODULE_G",
 function(self, event, ...)
 
-  local loc               = RPTAGS.utils.locale.loc;
-  local Get               = RPTAGS.utils.config.get;
-  local Set               = RPTAGS.utils.config.set;
-  local Default           = RPTAGS.utils.config.default;
-  local addOptions        = RPTAGS.utils.modules.addOptions;
-  local addOptionsPanel   = RPTAGS.utils.modules.addOptionsPanel;
-  local source_order      = RPTAGS.utils.options.source_order;
-  local Checkbox          = RPTAGS.utils.options.checkbox
-  local Color_Picker      = RPTAGS.utils.options.color_picker
-  local Common            = RPTAGS.utils.options.common
-  local Dropdown          = RPTAGS.utils.options.dropdown
-  local Header            = RPTAGS.utils.options.header
-  local Instruct          = RPTAGS.utils.options.instruct
-  local Keybind           = RPTAGS.utils.options.keybind
-  local Pushbutton        = RPTAGS.utils.options.pushbutton
-  local Spacer            = RPTAGS.utils.options.spacer
-  local Reset             = RPTAGS.utils.options.reset
-  local Frame_Scaler      = RPTAGS.utils.options.frame_scaler
-  local Dim_Slider = RPTAGS.utils.options.dimensions_slider;
-  local TagPanel          = RPTAGS.utils.options.tagpanel;
-  local reqRPUF           = RPTAGS.utils.options.requiresRPUF;
-  local collectionBrowser = RPTAGS.utils.options.collectionBrowser;
-  local Font              = RPTAGS.utils.options.font;
-  local split             = RPTAGS.utils.text.split;
-  local listOfAllTags     = RPTAGS.utils.options.listOfAllTags;
-  local ifConfig          = RPTAGS.utils.config.ifConfig;
-  local Frame_Panel       = RPTAGS.utils.options.frame_panel;
+  local loc             = RPTAGS.utils.locale.loc;
+  local CONST           = RPTAGS.CONST;
+  local Get             = RPTAGS.utils.config.get;
+  local Set             = RPTAGS.utils.config.set;
+  local Default         = RPTAGS.utils.config.default;
+  local addOptions      = RPTAGS.utils.modules.addOptions;
+  local addOptionsPanel = RPTAGS.utils.modules.addOptionsPanel;
+  local source_order    = RPTAGS.utils.options.source_order;
+  local Color_Picker    = RPTAGS.utils.options.color_picker
+  local Spacer          = RPTAGS.utils.options.spacer
+  local toHex           = RPTAGS.utils.color.decimalsToColor;
 
   local function build_frame_colors(unit)
-    unit = unit:upper();
-    return 
+    local ufCache = RPTAGS.cache.UnitFrames;
+
+    local function helper_have_unit(color, unit, methodName)
+      local colorSetting = color .. "_" .. unit:upper();
+      local picker = Color_Picker(colorSetting);
+      picker.set = 
+        function(info, r, g, b, a)
+          local ufCache = RPTAGS.cache.UnitFrames;
+          Set("COLOR_" .. colorSetting , toHex(r, g, b));
+          if   methodName 
+          then local frame = ufCache[unit];
+               local method = frame[methodName];
+               if method then method(frame); end;
+          end;
+        end;
+      return picker;
+    end;
+
+    function helper_no_unit(color, methodName)
+      local picker = Color_Picker(color);
+      picker.set =
+        function(info, r, g, b, a)
+          local ufCache = RPTAGS.cache.UnitFrames;
+          Set("COLOR_" .. color, toHex(r, g, b));
+          if   methodName 
+          then for frameName, frame in pairs(ufCache)
+               do local method = frame[methodName];
+                  if    method then method(frame); end;
+               end;
+          end;
+        end;
+      return picker;
+    end;
+
+    local frame_group =
     { type = "group",
-      name = loc(unit .. "FRAME"),
-      inline = true,
+      name =  loc(unit and (unit:upper() .. "FRAME") or "OPT_COLORS_RPUF"),
+      inline = unit and true,
       order = source_order(),
-      hidden = 
-        function() 
-          return
-                Get("DISABLE_RPUF") or
-            not Get("SHOW_FRAME_" .. unit) or
-                Get("LINK_FRAME_" .. unit) 
-        end,
-      args =
-      { background = Color_Picker("RPUF_" .. unit),
-        text       = Color_Picker("RPUF_TEXT_" .. unit),
-        tooltip    = Color_Picker("RPUF_TOOLTIP_" .. unit),
-      }
     };
+
+    if unit 
+    then frame_group.args =
+         { background = helper_have_unit( "RPUF",         unit, "StyleFrame"     ),
+           text       = helper_have_unit( "RPUF_TEXT",    unit, "SetTextColor"   ),
+           tooltip    = helper_have_unit( "RPUF_TOOLTIP", unit, nil              ), -- don't need to fire an update method
+           statusBar  = helper_have_unit( "STATUS",       unit, "StyleStatusBar" ),
+           statusText = helper_have_unit( "STATUS_TEXT",  unit, "StyleStatusBar" ), };
+
+         frame_group.hidden = 
+         function() return Get("DISABLE_RPUF")
+                        or Get("LINK_FRAME_" .. unit:upper())
+                    or not Get("SHOW_FRAME_" .. unit:upper()); end;
+
+    else frame_group.args =
+         { background = helper_no_unit(   "RPUF",               "StyleFrame"     ),
+           text       = helper_no_unit(   "RPUF_TEXT",          "SetTextColor"   ),
+           tooltip    = helper_no_unit(   "RPUF_TOOLTIP",       nil              ), -- don't need to fire an update method
+           statusBar  = helper_no_unit(   "STATUS",             "StyleStatusBar" ),
+           statusText = helper_no_unit(   "STATUS_TEXT",        "StyleStatusBar" ), };
+
+        frame_group.hidden = function() return Get("DISABLE_RPUF") end;
+    end;
+
+    return frame_group;
   end;
+            
+  local rpufColors = build_frame_colors();
+  for   unit, _ in pairs(CONST.FRAMES.NAMES)
+  do    rpufColors.args[unit:lower()] = build_frame_colors(unit:lower());
+  end;
+  
+  addOptions(addOnName, "colors", { rpuf = rpufColors }  );
 
-  local menu = {};
-  menu.backdrop  =
-  { BLIZZTOOLTIP = loc("BACKDROP_BLIZZTOOLTIP" ),
-    THIN_LINE    = loc("BACKDROP_ORIGINAL"     ),
-    THICK_LINE   = loc("BACKDROP_THICK_LINE"   ),
-    ORIGINAL     = loc("BACKDROP_THIN_LINE"    ), };
-  menu.texture   =
-  { BAR          = loc("BAR"                   ),
-    SKILLS       = loc("SKILLS"                ),
-    BLANK        = loc("BLANK"                 ),
-    SHADED       = loc("SHADED"                ),
-    SOLID        = loc("SOLID"                 ),
-    RAID         = loc("RAID"                  ), };
-  menu.align     =
-  { LEFT         = loc("LEFT"                  ),
-    CENTER       = loc("CENTER"                ),
-    RIGHT        = loc("RIGHT"                 ), };
-  menu.small     =
-  { COMPACT      = loc("RPUF_COMPACT"          ),
-    ABRIDGED     = loc("RPUF_ABRIDGED"         ),
-    THUMBNAIL    = loc("RPUF_THUMBNAIL"        ), };
-  menu.large     =
-  { COMPACT      = loc("RPUF_COMPACT"          ),
-    ABRIDGED     = loc("RPUF_ABRIDGED"         ),
-    THUMBNAIL    = loc("RPUF_THUMBNAIL"        ),
-    PAPERDOLL    = loc("RPUF_PAPERDOLL"        ),
-    FULL         = loc("RPUF_FULL"             ), };
-
-  addOptions(addOnName, "colors",
-  { rpuf =
-    { type                    = "group",
-      childGroups             = "inline",
-      name                    = loc("OPT_COLORS_RPUF"),
-      order                   = source_order(),
-      hidden                  = reqRPUF,
-      args                    =
-      { header            = Header("colors rpuf"),
-        background        = Color_Picker("rpuf"),
-        text         = Color_Picker("rpuf text"),
-        tooltip      = Color_Picker("rpuf tooltip"),
-        player = build_frame_colors("player"),
-        target = build_frame_colors("target"),
-        focus = build_frame_colors("focus"),
-        targetTarget = build_frame_colors("targettarget"),
-        -- reset              = Reset( { "color rpuf", "color rpuf text", "color rpuf tooltip" } , nil, reqRPUF ),
-      },
-    },
-  });
 end);

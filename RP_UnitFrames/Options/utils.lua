@@ -23,6 +23,7 @@ function(self, event, ...)
   local Instruct     = optUtils.instruct;
   local Wide         = optUtils.set_width;
   local Textbox      = optUtils.textbox;
+  local Slider       = optUtils.slider;
   local Dropdown     = optUtils.dropdown;
   local Checkbox     = optUtils.checkbox;
   local Spacer       = optUtils.spacer;
@@ -30,10 +31,7 @@ function(self, event, ...)
   local openEditor   = Config.openEditor;
   local Editor       = RPTAGS.Editor;
   local linkHandler  = Utils.links.handler;
-
-  local menu = { fontSize = { small = loc("SIZE_SMALL"), medium = loc("SIZE_MEDIUM"), large = loc("SIZE_LARGE") } };
-  
-  local function requiresRPUF() return Config.get("DISABLE_RPUF"); end;
+  local Font         = optUtils.font;
 
   local function build_tag_editor_button(str)
     local STR         = str:upper():gsub("[:%-]", "");
@@ -99,25 +97,21 @@ function(self, event, ...)
 
     return w;
   end;
-
-  local function build_frame_scaler(str, hidden, disabled)
-    local w    = Common("range", "CONFIG_", str .. "frame scale", hidden, disabled, true, true);
-    w.min      = 0.25;
-    w.max      = 2;
-    w.step     = 0.05;
-    w.disabled = requiresRPUF;
-    return w;
+  
+  local function Percent(w)
+    w.isPercent = true;
+   return w; 
   end;
 
-  local function build_dimensions_slider(str, min, max, step, hidden, disabled)
-    local w    = Common("range", "CONFIG_", str, hidden, disabled, true);
-    w.min      = min or 0;
-    w.max      = max or 100;
-    w.step     = step or 1;
-    w.disabled = requiresRPUF;
-    w.set      = function(info, value) Config.set(str, value); resizeAll(); end;
-    return w;
-  end;
+  local menu = 
+  { fontSize =
+    { extrasmall = loc("SIZE_EXTRA_SMALL"),
+      small = loc("SIZE_SMALL"),
+      medium = loc("SIZE_MEDIUM"),
+      large = loc("SIZE_LARGE"),
+      extralarge = loc("SIZE_EXTRA_LARGE"),
+    },
+  };
 
   local function build_tagpanel(str, ttstr, hidden, disabled, opt)
     opt = opt or {};
@@ -226,159 +220,7 @@ function(self, event, ...)
     return w;
   end;
 
-  local function build_frame_panel(str, info)
-    info             = info or {};
-    str              = str:upper():gsub("%s+", "_");
-
-    local menu     = {};
-    menu.backdrop  =
-    { BLIZZTOOLTIP = loc("BACKDROP_BLIZZTOOLTIP" ),
-      THIN_LINE    = loc("BACKDROP_ORIGINAL"     ),
-      THICK_LINE   = loc("BACKDROP_THICK_LINE"   ),
-      ORIGINAL     = loc("BACKDROP_THIN_LINE"    ), };
-
-    menu.texture   =
-    { BAR          = loc("BAR"                   ),
-      SKILLS       = loc("SKILLS"                ),
-      BLANK        = loc("BLANK"                 ),
-      SHADED       = loc("SHADED"                ),
-      SOLID        = loc("SOLID"                 ),
-      RAID         = loc("RAID"                  ), };
-
-    menu.align     =
-    { LEFT         = loc("LEFT"                  ),
-      CENTER       = loc("CENTER"                ),
-      RIGHT        = loc("RIGHT"                 ), };
-
-    menu.small     =
-    { COMPACT      = loc("RPUF_COMPACT"          ),
-      ABRIDGED     = loc("RPUF_ABRIDGED"         ),
-      THUMBNAIL    = loc("RPUF_THUMBNAIL"        ), };
-
-    menu.large     =
-    { COMPACT      = loc("RPUF_COMPACT"          ),
-      ABRIDGED     = loc("RPUF_ABRIDGED"         ),
-      THUMBNAIL    = loc("RPUF_THUMBNAIL"        ),
-      PAPERDOLL    = loc("RPUF_PAPERDOLL"        ),
-      FULL         = loc("RPUF_FULL"             ), };
-
-    local f = 
-    { alpha           = "RPUFALPHA_"           .. str,
-      backdrop        = "RPUF_BACKDROP_"       .. str,
-      detailHeight    = "DETAILHEIGHT_"        .. str,
-      gapSize         = "GAPSIZE_"             .. str,
-      iconWidth       = "ICONWIDTH_"           .. str,
-      infoWidth       = "INFOWIDTH_"           .. str,
-      layout          = str                    .. "LAYOUT",
-      link            = "LINK_FRAME_"          .. str,
-      portWidth       = "PORTWIDTH_"           .. str,
-      show            = "SHOW_FRAME_"          .. str,
-      sAlign          = "STATUS_ALIGN_"        .. str,
-      sHeight         = "STATUSHEIGHT_"        .. str,
-      sTexture        = "STATUS_TEXTURE_"      .. str,
-      hideCombat      = "RPUF_HIDE_COMBAT_"    .. str,
-      hidePetBattle   = "RPUF_HIDE_PETBATTLE_" .. str,
-      hideVehicle     = "RPUF_HIDE_VEHICLE_"   .. str,
-      hideParty       = "RPUF_HIDE_PARTY_"     .. str,
-      hideRaid        = "RPUF_HIDE_RAID_"      .. str,
-      hideDead        = "RPUF_HIDE_DEAD_"      .. str,
-      mouseoverCursor = "MOUSEOVER_CURSOR_"    .. str,
-      lockFrame       = "LOCK_FRAME_"          .. str,
-    };
-
-    local w          =
-    { name           = loc(str .. "FRAME"),
-      order          = source_order(),
-      type           = "group",
-      hidden         = function() return Get("DISABLE_RPUF") end,
-      args           =
-      { show         = Wide(Checkbox(f.show,   nil, requiresRPUF), 1),
-        link         = Wide(Checkbox(f.link,   function() return not Get(f.show) end, requiresRPUF), 1),
-        layout       = Dropdown(f.layout, function() return not Get(f.show) end, requiresRPUF, 
-                         info.small and menu.small or menu.large),
-        spacer       = Spacer(2),
-        scale        = build_frame_scaler(str, function() return not Get(f.show) end, requiresRPUF),
-        visibility =
-        { type = "group",
-          inline = true,
-          name = "Visibility",
-          order = source_order(),
-          hidden = function() return Get("LINK_FRAME_" .. str) end,
-          disabled = requiresRPUF,
-          args =
-          { hideCombat      = Wide(Checkbox(f.hideCombat      ), 1      ),
-            hidePetBattle   = Wide(Checkbox(f.hidePetBattle   ), 1      ),
-            hideVehicle     = Wide(Checkbox(f.hideVehicle     ), 1      ),
-            hideParty       = Wide(Checkbox(f.hideParty       ), 1      ),
-            hideRaid        = Wide(Checkbox(f.hideRaid        ), 1      ),
-            hideDead        = Wide(Checkbox(f.hideDead        ), 1      ),
-            mouseoverCursor = Wide(Checkbox(f.mouseoverCursor ), "full" ),
-          },
-        },
-        positioning =
-        { type = "group",
-          name = "Positioning",
-          order = source_order(),
-          inline = true,
-          hidden = function() return not Get("SHOW_FRAME_" .. str) or Get("DISABLE_RPUF") end,
-          args =
-          { lockFrames      = Wide(Checkbox(f.lockFrame), 1),
-            resetFrames     = Pushbutton("reset frame locations", resetFrames, nil , reqRPUF ),
-          },
-        },
-        look         =
-        { type       = "group",
-          -- inline     = true,
-          name       = "Frame Appearance",
-          order      = source_order(),
-          hidden     = function() return Get(f.link) or not Get(f.show) end,
-          args       =
-          { backdrop = Dropdown(f.backdrop, nil, requiresRPUF, menu.backdrop ), spb = Spacer(),
-            alpha    = build_dimensions_slider(f.alpha, 0, 1, 0.05),             spa = Spacer(),
-            colors    = 
-            { type = "execute",
-              name = "Colors",
-              func = function() linkHandler("opt://colors/rpuf") end,
-              order = source_order(),
-            },
-            statusBar    =
-            { type       = "group",
-              inline     = true,
-              name       = "Status Bar Appearance",
-              order      = source_order(),
-              hidden     = function() return Get(f.link) or not Get(f.show) end,
-              args       =
-              { align    = Dropdown(  f.sAlign,    nil, requiresRPUF, menu.align   ), spa = Spacer(),
-                texture  = Dropdown(  f.sTexture,  nil, requiresRPUF, menu.texture ), spt = Spacer(),
-                height   = build_dimensions_slider(f.sHeight,   15, 140, 5),                         sph = Spacer(),
-              },
-            },
-          },
-        },
-        dimensions   =
-        { type       = "group",
-          -- inline     = true,
-          name       = "Panel Dimensions",
-          order      = source_order(),
-          hidden     = function() return Get(f.link) or not Get(f.show) end,
-          args       =
-          { gap      = build_dimensions_slider(f.gapSize,       0,  20,  1), spg = Spacer(),
-            icon     = build_dimensions_slider(f.iconWidth,    10,  75,  1), spi = Spacer(),
-            port     = build_dimensions_slider(f.portWidth,    25, 200,  5), spp = Spacer(),
-            info     = build_dimensions_slider(f.infoWidth,   100, 400, 10), spn = Spacer(),
-            detail   = build_dimensions_slider(f.detailHeight, 20, 250,  5), spd = Spacer(),
-          },
-        },
-      },
-    };
-    return w;
-
-  end;
-  RPTAGS.utils.options.frame_scaler      = build_frame_scaler;
-  RPTAGS.utils.options.dimensions_slider = build_dimensions_slider;
   RPTAGS.utils.options.tagpanel          = build_tagpanel;
-  RPTAGS.utils.options.requiresRPUF      = requiresRPUF;
-  RPTAGS.utils.options.frame_panel       = build_frame_panel;
   RPTAGS.utils.options.editor_button     = build_tag_editor_button;
   RPTAGS.utils.options.editor_bar_mockup = build_editor_bar_mockup;
 

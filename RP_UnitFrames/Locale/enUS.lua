@@ -82,6 +82,7 @@ function(self, event, ...)
   L["USE_TAG_EDITOR"                    ] = "Editor";
   L["OPT_COLORS_RPUF"                   ] = RPUF_NAME .. " Colors";   -- used
   L["OPT_FORMATS"                       ] = "Tag Formats";            -- used
+  L["OPT_SHARED_SETTINGS"               ] = "Shared Settings";
   L["OPT_EDITOR"                        ] = "Editor";
   L["OPT_FORMATS"                       ] = RP .. "Formats";
   L["OPT_KEYBINDINGS"                   ] = "Keybindings";
@@ -131,8 +132,16 @@ function(self, event, ...)
     CONFIG_COLOR_RPUF_TOOLTIP     = "Tooltip Text Color",
     CONFIG_COLOR_RPUF_TOOLTIP_TT  = "Choose the default font color for tooltips.",
     CONFIG_COLOR_RPUF_TT          = "Choose a background color.",
+    CONFIG_COLOR_STATUS_TEXT      = "Status Bar Text",
+    CONFIG_COLOR_STATUS_TEXT_TT   = "Choose the color of text on the status bar.",
+    CONFIG_COLOR_STATUS           = "Status Bar",
+    CONFIG_COLOR_STATUS_TT        = "Choose the color of the status bar.",
     CONFIG_DETAILHEIGHT           = "Details Panel Height",
     CONFIG_DETAILHEIGHT_TT        = "Choose how tall you want the details panel to be.",
+    CONFIG_FONTNAME               = "Font",
+    CONFIG_FONTNAME_TT            = "Choose the font you want to use in this frame.",
+    CONFIG_FONTSIZE               = "Font Size",
+    CONFIG_FONTSIZE_TT            = "Choose the font size you want to use in this frame.",
     CONFIG_GAPSIZE                = "Layout Spacing",
     CONFIG_GAPSIZE_TT             = "Choose how much extra space you want left around the elements of the unitframes.",
     CONFIG_ICONWIDTH              = "Icon Width",
@@ -141,16 +150,18 @@ function(self, event, ...)
     CONFIG_INFOWIDTH_TT           = "Choose how wide you want the info panel to be.",
     CONFIG_LINK_FRAME             = "Link to Shared Settings",
     CONFIG_LINK_FRAME_TT          = "Choose whether to link this frame to the shared settings, or configure it separately.",
-    CONFIG_LOCK_FRAME             = "Lock Frame",
-    CONFIG_LOCK_FRAME_TT          = "Lock this unit frame so it can't be moved.";
+    CONFIG_LOCK_FRAMES            = "Lock Frame",
+    CONFIG_LOCK_FRAMES_TT         = "Lock this unit frame so it can't be moved.";
     CONFIG_MOUSEOVER_CURSOR       = "Change Cursor on Mouseover",
     CONFIG_MOUSEOVER_CURSOR_TT    = "Choose whether the cursor should change to a magnifying glass when you mouse over a panel.",
     CONFIG_PORTWIDTH              = "Portrait Width",
     CONFIG_PORTWIDTH_TT           = "Choose how wide you want the portrait to be.",
     CONFIG_RPUFALPHA              = "Background Transparency",
     CONFIG_RPUFALPHA_TT           = "Set the transparency of the background. 0 is completely invisible, while 100 is completely opaque.",
-    CONFIG_RPUF_BACKDROP          = "Frame Border",
-    CONFIG_RPUF_BACKDROP_TT       = "Choose what kind of border, if any, you want.",
+    CONFIG_RPUF_BACKDROP          = "Frame Background",
+    CONFIG_RPUF_BACKDROP_TT       = "Choose what kind of background, if any, you want.",
+    CONFIG_RPUF_BORDER            = "Frame Background",
+    CONFIG_RPUF_BORDER_TT         = "Choose what kind of border, if any, you want.",
     CONFIG_RPUF_HIDE_COMBAT       = "Hide in Combat",
     CONFIG_RPUF_HIDE_COMBAT_TT    = "Check this to hide RPUF when you are in combat.",
     CONFIG_RPUF_HIDE_DEAD         = "Hide when Dead",
@@ -183,32 +194,33 @@ function(self, event, ...)
   end;
   local PANEL_FONTSIZE = "Font Size";
   local PANEL_FONTSIZE_TT = "Choose the relative font size for this panel.";
-  local PANEL_FONTFILE = "Font";
-  local PANEL_FONTFILE_TT = "Choose the font for this panel.";
+  local PANEL_FONTNAME = "Font";
+  local PANEL_FONTNAME_TT = "Choose the font for this panel.";
 
-  L["CONFIG_DETAILPANEL_FONTSIZE"] = PANEL_FONTSIZE;
-  L["CONFIG_DETAILPANEL_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
-  L["CONFIG_ICON_1_FONTSIZE"] = PANEL_FONTSIZE;
-  L["CONFIG_ICON_1_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
-  L["CONFIG_ICON_2_FONTSIZE"] = PANEL_FONTSIZE;
-  L["CONFIG_ICON_2_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
-  L["CONFIG_ICON_3_FONTSIZE"] = PANEL_FONTSIZE;
-  L["CONFIG_ICON_3_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
-  L["CONFIG_ICON_4_FONTSIZE"] = PANEL_FONTSIZE;
-  L["CONFIG_ICON_4_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
-  L["CONFIG_ICON_5_FONTSIZE"] = PANEL_FONTSIZE;
-  L["CONFIG_ICON_5_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
-  L["CONFIG_ICON_6_FONTSIZE"] = PANEL_FONTSIZE;
-  L["CONFIG_ICON_6_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
-  L["CONFIG_INFOPANEL_FONTSIZE"] = PANEL_FONTSIZE;
-  L["CONFIG_INFOPANEL_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
-  L["CONFIG_NAMEPANEL_FONTSIZE"] = PANEL_FONTSIZE;
-  L["CONFIG_NAMEPANEL_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
-  L["CONFIG_STATUSPANEL_FONTSIZE"] = PANEL_FONTSIZE;
-  L["CONFIG_STATUSPANEL_FONTSIZE_TT"] = PANEL_FONTSIZE_TT;
-  L["CONFIG_NAMEPANEL_FONTFILE"] = PANEL_FONTFILE;
-  L["CONFIG_NAMEPANEL_FONTFILE_TT"] = PANEL_FONTFILE_TT;
-  -- 
+  L["CONFIG_DETAILPANEL_FONTSIZE"    ] = PANEL_FONTSIZE;
+  L["CONFIG_DETAILPANEL_FONTSIZE_TT" ] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_1_FONTSIZE"         ] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_1_FONTSIZE_TT"      ] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_2_FONTSIZE"         ] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_2_FONTSIZE_TT"      ] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_3_FONTSIZE"         ] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_3_FONTSIZE_TT"      ] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_4_FONTSIZE"         ] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_4_FONTSIZE_TT"      ] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_5_FONTSIZE"         ] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_5_FONTSIZE_TT"      ] = PANEL_FONTSIZE_TT;
+  L["CONFIG_ICON_6_FONTSIZE"         ] = PANEL_FONTSIZE;
+  L["CONFIG_ICON_6_FONTSIZE_TT"      ] = PANEL_FONTSIZE_TT;
+  L["CONFIG_INFOPANEL_FONTSIZE"      ] = PANEL_FONTSIZE;
+  L["CONFIG_INFOPANEL_FONTSIZE_TT"   ] = PANEL_FONTSIZE_TT;
+  L["CONFIG_NAMEPANEL_FONTSIZE"      ] = PANEL_FONTSIZE;
+  L["CONFIG_NAMEPANEL_FONTSIZE_TT"   ] = PANEL_FONTSIZE_TT;
+  L["CONFIG_STATUSPANEL_FONTSIZE"    ] = PANEL_FONTSIZE;
+  L["CONFIG_STATUSPANEL_FONTSIZE_TT" ] = PANEL_FONTSIZE_TT;
+
+  L["CONFIG_NAMEPANEL_FONTNAME"      ] = PANEL_FONTNAME;
+  L["CONFIG_NAMEPANEL_FONTNAME_TT"   ] = PANEL_FONTNAME_TT;
+
   -- 
   -- L["CONFIG_COLOR_RPUF"                 ] = "Background Color";
   -- L["CONFIG_COLOR_RPUF_TEXT"            ] = "Text Color";

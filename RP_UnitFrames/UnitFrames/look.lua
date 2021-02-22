@@ -14,6 +14,8 @@ function(self, event, ...)
 
   local CONST      = RPTAGS.CONST;
   local PANEL_LIST = CONST.FRAMES.PANELS;
+  local Utils = RPTAGS.utils;
+  local Config = Utils.config;
 
   local function setStatusTexture(frame)
     if not frame.StatusBarPanel then return nil end;

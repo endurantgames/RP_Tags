@@ -15,9 +15,11 @@ function(self, event, ...)
   local BLACK                    = "000000";
   local WHITE                    = "ffffff";
   local YELLOW                   = "ffff66";
+  local TEAL                     = "006060";
 
   RPTAGS.CONST.RPUF              =
   { RPUF_COLOR                   = "|cffdd9933",
+    OUF_STYLE                    = "RP_UnitFrames_UnitFrame",
     INITIAL_POSITION             =
     { player                     =
       { pt                       = 'TOPRIGHT',
@@ -38,13 +40,6 @@ function(self, event, ...)
         relto                    = 'UIParent',
         relpt                    = 'CENTER',
         x                        = 100,
-        y                        = -200
-      },
-      mouseover                  =
-      { pt                       = 'TOP',
-        relto                    = 'UIParent',
-        relpt                    = 'TOP',
-        x                        = 0,
         y                        = -200
       },
       targettarget               =
@@ -230,48 +225,45 @@ function(self, event, ...)
   RPTAGS.CONST.ICONS.IC           = "RAIDFRAME\\ReadyCheck-Ready";
   RPTAGS.CONST.ICONS.STATUS       = "RAIDFRAME\\UI-RaidFrame-Threat";
 
-  -- RPTAGS.CONST.FONT.FIXED        = "Interface\\AddOns\\RP_UnitFrames\\Resources\\Fonts\\Source_Code_Pro\\SourceCodePro-Regular.ttf";
-  -- RPTAGS.CONST.FONT.FIXED        = "Interface\\AddOns\\RP_UnitFrames\\Resources\\Fonts\\ShareTechMono\\ShareTechMono-Regular.ttf";
-  RPTAGS.CONST.FONT.FIXED        = "Interface\\AddOns\\RP_UnitFrames\\Resources\\Fonts\\Syne_Mono\\SyneMono-Regular.ttf";
+  RPTAGS.CONST.FONT.FIXED        = "Syne Mono";
   RPTAGS.CONST.NBSP              = "|TInterface\\Store\\ServicesAtlas:0::0:0:1024:1024:1023:1024:1023:1024|t";
 
   local CONFIG = RPTAGS.CONST.CONFIG.DEFAULTS;
 
   -- disable
-  CONFIG.DISABLE_RPUF        = false;
-  CONFIG.DISABLE_BLIZZARD    = false;
-  CONFIG.RPUF_WITH_ELVUI     = true;
+  CONFIG.DISABLE_RPUF     = false;
+  CONFIG.DISABLE_BLIZZARD = false;
 
-  -- linking frames
-  CONFIG.LINK_FRAME_PLAYER = true;
-  CONFIG.LINK_FRAME_TARGET = true;
-  CONFIG.LINK_FRAME_FOCUS = true;
-  CONFIG.LINK_FRAME_TARGETTARGET = true;
+  local perFrame          =
+  { RPUFALPHA             = 65,
+    RPUF_BACKDROP         = "Blizzard Tooltip",
+    RPUF_BORDER           = "Blizzard Tooltip",
+    DETAILHEIGHT          = 100,
+    FONTNAME              = "Arial Narrow",
+    FONTSIZE              = 12,
+    GAPSIZE               = 6,
+    RPUF_HIDE_COMBAT      = true,
+    RPUF_HIDE_DEAD        = false,
+    RPUF_HIDE_PARTY       = false,
+    RPUF_HIDE_PETBATTLE   = true,
+    RPUF_HIDE_RAID        = true,
+    RPUF_HIDE_VEHICLE     = true,
+    ICONWIDTH             = 25,
+    INFOWIDTH             = 200,
+    LINK_FRAME            = true,
+    LOCK_FRAMES           = true,
+    MOUSEOVER_CURSOR      = true,
+    PORTWIDTH             = 100,
+    STATUSHEIGHT          = 35,
+    STATUS_ALIGN          = "CENTER",
+    STATUS_TEXTURE        = "SHADED",
+    SHOW_FRAME            = true,
+    COLOR_RPUF            = BLACK,
+    COLOR_RPUF_TEXT       = WHITE,
+    COLOR_RPUF_TOOLTIP    = YELLOW,
+    COLOR_STATUS          = TEAL,
+    COLOR_STATUS_TEXT     = WHITE,
 
-  local perFrame =
-  { COLOR_RPUF          = BLACK,
-    COLOR_RPUF_TEXT     = WHITE,
-    COLOR_RPUF_TOOLTIP  = YELLOW,
-    DETAILHEIGHT        = 100,
-    GAPSIZE             = 6,
-    ICONWIDTH           = 25,
-    INFOWIDTH           = 200,
-    LINK_FRAME          = true,
-    LOCK_FRAME          = true,
-    MOUSEOVER_CURSOR    = true,
-    PORTWIDTH           = 100,
-    RPUFALPHA           = 65,
-    RPUF_BACKDROP       = "BLIZZTOOLTIP",
-    RPUF_HIDE_COMBAT    = true,
-    RPUF_HIDE_DEAD      = false,
-    RPUF_HIDE_PARTY     = false,
-    RPUF_HIDE_PETBATTLE = true,
-    RPUF_HIDE_RAID      = true,
-    RPUF_HIDE_VEHICLE   = true,
-    SHOW_FRAME          = true,
-    STATUSHEIGHT        = 35,
-    STATUS_ALIGN        = "CENTER",
-    STATUS_TEXTURE      = "SHADED",
   };
 
   for k, v in pairs(perFrame)
@@ -282,6 +274,7 @@ function(self, event, ...)
   end;
 
   CONFIG.SHOW_FRAME_TARGETTARGET = false;
+
   -- scale
   CONFIG.PLAYERFRAME_SCALE   = 0.9;
   CONFIG.TARGETFRAME_SCALE   = 0.9;
@@ -311,18 +304,18 @@ function(self, event, ...)
   CONFIG.STATUSPANEL         = "[rp:statuscolor][rp:ic][rp:ooc] [nocolor][rp:currently]";
 
   -- fonts
-  CONFIG.DETAILPANEL_FONTSIZE = "small";
+  CONFIG.DETAILPANEL_FONTSIZE = "medium";
   CONFIG.ICON_1_FONTSIZE = "large";
   CONFIG.ICON_2_FONTSIZE = "large";
   CONFIG.ICON_3_FONTSIZE = "large";
   CONFIG.ICON_4_FONTSIZE = "large";
   CONFIG.ICON_5_FONTSIZE = "large";
   CONFIG.ICON_6_FONTSIZE = "large";
-  CONFIG.INFOPANEL_FONTSIZE = "small";
-  CONFIG.NAMEPANEL_FONTSIZE = "medium";
+  CONFIG.INFOPANEL_FONTSIZE = "medium";
+  CONFIG.NAMEPANEL_FONTSIZE = "extralarge";
   CONFIG.STATUSPANEL_FONTSIZE = "medium";
 
-  CONFIG.NAMEPANEL_FONTFILE = "Fonts\\FRIZQT__.TTF";
+  CONFIG.NAMEPANEL_FONTNAME = "Morpheus";
 
   --
   -- tooltips

@@ -12,11 +12,11 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("after MODULE_E",
 function(self, event, ...)
 
-  local CONST       = RPTAGS.CONST;
-  local Utils       = RPTAGS.utils; 
-  local notify      = Utils.text.notify;
-  local Config      = Utils.config;
-  local PANELS      = RPTAGS.CONST.FRAMES.PANELS;
+  local CONST  = RPTAGS.CONST;
+  local Utils  = RPTAGS.utils; 
+  local notify = Utils.text.notify;
+  local Config = Utils.config;
+  local PANELS = RPTAGS.CONST.FRAMES.PANELS;
 
   local function lockAllFrames(init) 
     for frameName, frame in pairs(RPTAGS.cache.UnitFrames)

@@ -22,6 +22,7 @@ function(self, event, ...)
   local FRAME_NAMES        = CONST.FRAMES.NAMES;
   local eval               = Utils.tags.eval;
   local split              = Utils.text.split;
+  local oUF_style          = CONST.RPUF.OUF_STYLE;
 
   local getLeft            = frameUtils.panels.layout.getLeft;
   local getTop             = frameUtils.panels.layout.getTop;
@@ -30,6 +31,7 @@ function(self, event, ...)
   local getWidth           = frameUtils.panels.size.getWidth;
   local getJustifyH        = frameUtils.panels.align.getH;
   local getVis             = frameUtils.panels.layout.getVis;
+  local LibSharedMedia     = LibStub("LibSharedMedia-3.0");
 
   local getFrameDimensions = frameUtils.size.get;
   local fontFile           = frameUtils.font.getFile;
@@ -52,40 +54,11 @@ function(self, event, ...)
     icon6     = { setting          = "ICON_6",      tooltip = "ICON_6_TOOLTIP"    },
     portrait  = { no_tag_string    = true,          tooltip = "PORTRAIT_TOOLTIP",
                   portrait         = true                                         },
-    statusbar = { setting          = "STATUSPANEL", tooltip = "STATUS_TOOLTIP",
+    statusBar = { setting          = "STATUSPANEL", tooltip = "STATUS_TOOLTIP",
                   has_own_backdrop = true,
                   has_own_align    = true,                                        },
   };
 
-  function showContextMenu(self, event, ...) 
-    print("context menu for", self.name); 
-  end;
-
-  function showTooltip(self, event, ...) 
-    local tooltip = eval(Config.get(self.tooltip), self:GetUnit(), self:GetUnit());
-    local r, g, b = self.unitframe:GetTooltipColor();
-
-    if   self:Config("MOUSEOVER_CURSOR")
-    then SetCursor("Interface\\CURSOR\\Inspect.PNG");
-    end;
-
-    if tooltip and tooltip:len() > 0
-    then 
-         GameTooltip:ClearLines();
-         GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-         GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
-         local lines = split(tooltip, "\n");
-         for i, line in ipairs(lines)
-         do GameTooltip:AddLine(line, r, g, b, true)
-         end;
-         GameTooltip:Show();
-    end;
-  end;
-
-  function hideTooltip(self, event, ...) 
-    GameTooltip:FadeOut();
-    ResetCursor();
-  end;
 
   -- rpuf "style" for oUF ----------------------------------------------------------------------------------------------------------------------------------
   local function RP_UnitFrame_Constructor(self, unit)
@@ -101,10 +74,17 @@ function(self, event, ...)
     self.backdrop:SetAllPoints();
     self.backdrop:SetColorTexture(0, 0, 0, 0.75);
 
-    function self.Config(self, setting)
-      if Config.get("LINK_FRAME_" .. self.unit:upper())
+    function self.CGet(self, setting)
+      if    Config.get("LINK_FRAME_" .. self.unit:upper())
       then return Config.get(setting)
       else return Config.get(setting .. "_" .. self.unit:upper())
+      end;
+    end;
+
+    function self.CSet(self, setting, value)
+      if   Config.get("LINK_FRAME_" .. self.unit:upper())
+      then Config.set(setting, value);
+      else Config.set(setting .. "_" .. self.unit:upper(), value);
       end;
     end;
 
@@ -124,10 +104,15 @@ function(self, event, ...)
       opt = opt or {};
       local panel
 
+      panel = CreateFrame("Frame", self.frameName .. panelName, self);
+      panel:SetPoint("TOPLEFT");
+
       if   opt["has_own_backdrop"]
-      then panel = CreateFrame("Frame", self.frameName .. panelName, self, 
-                     BackdropTemplateMixin and "BackdropTemplate");
-      else panel = CreateFrame("Frame", self.frameName .. panelName, self);
+      then panel.backdrop = panel:CreateTexture(nil, "BACKGROUND");
+           panel.backdrop:SetColorTexture(1, 1, 1, 0.5);
+           panel.backdrop:SetAllPoints();
+           function panel.SetBackdrop(self, textureFile) self.backdrop:SetTexture(textureFile) end;
+           function panel.SetVertexColor(self, ...) self.backdrop:SetVertexColor(...) end;
       end;
 
       panel.unitframe = self;
@@ -137,7 +122,6 @@ function(self, event, ...)
       local setting = opt.setting or panelName:upper();
       local tooltip = opt.tooltip or setting .. "_TOOLTIP";
 
-      panel:SetPoint("TOPLEFT");
 
       if not opt["no_tag_string"]
       then 
@@ -153,19 +137,48 @@ function(self, event, ...)
            panel.portrait:SetAllPoints();
            self.Portrait = Portrait;
       end;
+ 
+      function panel.showTooltip(self, event, ...) 
+        local tooltip = eval(Config.get(self.tooltip), self:GetUnit(), self:GetUnit());
+        local r, g, b = self.unitframe:GetTooltipColor();
+    
+        if   self:CGet("MOUSEOVER_CURSOR")
+        then SetCursor("Interface\\CURSOR\\Inspect.PNG");
+        end;
+    
+        if tooltip and tooltip:len() > 0
+        then 
+             GameTooltip:ClearLines();
+             GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+             GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+             local lines = split(tooltip, "\n");
+             for i, line in ipairs(lines)
+             do GameTooltip:AddLine(line, r, g, b, true)
+             end;
+             GameTooltip:Show();
+        end;
+      end; 
+
+      function hideTooltip(self, ...) GameTooltip:FadeOut(); ResetCursor(); return self, ... end;
 
       if not opt["no_tooltip"]
       then panel:SetScript("OnEnter", showTooltip );
            panel:SetScript("OnLeave", hideTooltip );
            panel.tooltip = tooltip;
       end;
-
-      if not opt["no_context_menu"]
-      then self:RegisterForClicks("RightButtonUp");
-           panel:SetScript( "OnMouseUp", showContextMenu);
-           panel.contextMenu = true;
-      end;
+       
+      function showContextMenu(self, event, ...) print("context menu for", self.name); end;
   
+      if   not opt["no_context_menu"]
+      then panel.showContextMenu = showContextMenu;
+           self:SetScript("OnMouseUp",
+             function(self, button) if button == "RightButton" then self:showContextMenu() end; end);
+      end;
+
+      panel:RegisterForDrag("LeftButton");
+      panel:HookScript("OnDragStart", function(self, ...) self:GetParent():StartMoving()        return self, ...  end);
+      panel:HookScript("OnDragStop",  function(self, ...) self:GetParent():StopMovingOrSizing() return self, ...  end);
+
       function panel.GetUnit(self)     return self.unitframe:GetUnit()    end;
       function panel.GetLayout(self)   return self.unitframe:GetLayout(); end;
       function panel.Config(self, ...) return self.unitframe:Config(...)  end;
@@ -178,88 +191,82 @@ function(self, event, ...)
         local width    = getWidth(  self.name, layout);
 
         if top and left
-        then 
-             self:ClearAllPoints();
+        then self:ClearAllPoints();
              self:SetPoint("TOPLEFT", self.unitframe, "TOPLEFT", left, top);
              self:SetSize(width, height);
         end;
       end;
 
       function panel.SetJustify(self)
-        if not self.text then return end;
-        self.text:SetJustifyH(getJustifyH(self.name, self:GetLayout()));
-        self.text:SetJustifyV("TOP");
-      end;
-        
-      function panel.SetFont(self, fontFile, fontName) 
-        if not self.text then return end;
-        self.text:SetFont(fontFile, fontName); 
+        if   self.text 
+        then self.text:SetJustifyH(getJustifyH(self.name, self:GetLayout()));
+             self.text:SetJustifyV("TOP");
+        end;
       end;
 
-      function panel.SetTextColor(self, r, g, b) 
-        if not self.text then return end;
-        self.text:SetTextColor(r, g, b); 
-      end;
+      function panel.SetJustifyH(self, justifyH) if self.text then self.text:SetJustifyH(justifyH); end; end;
+      function panel.SetJustifyV(self, justifyV) if self.text then self.text:SetJustifyV(justifyV); end; end;
+      function panel.SetTextColor(self, r, g, b) if self.text then self.text:SetTextColor(r, g, b); end; end;
 
       function panel.SetTagString(self) 
-        if not self.text then return end;
-        self.unitframe:Tag(self.text, Config.get(self.setting)); 
-      end;
+        if self.text then self.unitframe:Tag(self.text, Config.get(self.setting)); end; end;
 
-      function panel.SetVis(self) 
-        self:SetShown( getVis( self.name, self:GetLayout() )) 
+      function panel.SetVis(self) self:SetShown( getVis( self.name, self:GetLayout() )) end;
+
+      function panel.SetFont(self, fontFile, fontSize) 
+        if   self.text
+        then local hash =
+             { ["extrasmall" ] = -4,
+               ["small"      ] = -2,
+               ["medium"     ] =  0,
+               ["large"      ] =  2,
+               ["extralarge" ] =  4, };
+
+             local relativeSize = hash[Config.get( self.setting .. "_FONTSIZE")];
+             self.text:SetFont(fontFile, fontSize + relativeSize);  
+        end; 
       end;
-       
       self.panels[panelName] = panel;
+
     end; -- create panel
+
+    function self.CreatePanels(self)  
+      for panelName, opt in pairs( panelList )      
+      do  self:CreatePanel( panelName, opt); 
+      end; 
+    end;
+      
+    function self.PlacePanels(self)   for _, panel in pairs(self:GetPanels()) do panel:Place();        end end;
+    function self.SetPanelVis(self)   for _, panel in pairs(self:GetPanels()) do panel:SetVis();       end end;
+    function self.SetTagStrings(self) for _, panel in pairs(self:GetPanels()) do panel:SetTagString(); end end;
+
+    function self.SetTextColor(self) 
+      local r, g, b = toRGB(self:CGet("COLOR_RPUF_TEXT"))
+      for _, panel in pairs(self:GetPanels()) 
+      do  panel:SetTextColor(r / 255, g / 255, b / 255) 
+      end;
+    end;
 
     function self.SetFont(self)
       local layout   = self:GetLayout();
-      local fontSize = fontSize(self.name);
-      local fontFile = fontFile(self.name);
-      for _, panel in pairs(self:GetPanels()) do panel:SetJustify(); panel:SetFont(fontFile, fontSize) end;
-    end;
-
-    function self.SetTextColor(self)
-      local r, g, b = toRGB(Config.get("COLOR_RPUF_TEXT"))
-      for _, panel in pairs(self:GetPanels()) do panel:SetTextColor(r / 255, g / 255, b / 255) end;
-    end;
-      
-    function self.CreatePanels(self)
-      for panelName, opt in pairs( panelList )
-      do  self:CreatePanel( panelName, opt);
+      local fontSize = self:CGet("FONTSIZE");
+      local fontName = self:CGet("FONTNAME");
+      local fontFile = LibSharedMedia:Fetch("font", fontName) or LibSharedMedia:Fetch("font", "Arial Narrow");
+      for _, panel in pairs(self:GetPanels()) 
+      do  panel:SetJustify(); 
+          panel:SetFont(fontFile, fontSize) 
       end;
-    end;
-
-    function self.PositionLock(self)
-      
-    end;
-
-    function self.PlacePanels(self)  
-      for _, panel in pairs(self:GetPanels()) 
-      do panel:Place();        
-      end; 
-    end;
-    function self.SetPanelVis(self)  
-      for _, panel in pairs(self:GetPanels()) 
-      do panel:SetVis();       
-      end; 
-    end;
-    function self.SetTagStrings(self) 
-      for _, panel in pairs(self:GetPanels()) 
-      do  panel:SetTagString(); 
-      end; 
+      self:GetPanel("name"):SetFont( LibSharedMedia:Fetch("font", Config.get("NAMEPANEL_FONTNAME")), fontSize);
     end;
 
     function self.GetTooltipColor(self)
-      local r, g, b = toRGB(Config.get("COLOR_RPUF_TOOLTIP"))
+      local r, g, b = toRGB(self:CGet("COLOR_RPUF_TOOLTIP"))
       return r / 255, g / 255, b / 255;
     end;
 
     function self.GenerateVisibilityString(self)
       local conditions = {};
-      if self:Config("DISABLE_RPUF") then return "hide" end;
-
+      if self:CGet("DISABLE_RPUF") then return "hide" end;
       local hash =
       { ["RPUF_HIDE_DEAD"]      = "[dead] hide",
         ["RPUF_HIDE_PETBATTLE"] = "[petbattle] hide",
@@ -268,14 +275,10 @@ function(self, event, ...)
         ["RPUF_HIDE_RAID"]      = "[group:raid] hide",
         ["RPUF_HIDE_COMBAT"]    = "[combat] hide",
       };
-
-      for k, v in pairs(hash) 
-      do  if self:Config(k) then table.insert(conditions, v) end; 
-      end;
+      for k, v in pairs(hash) do if self:CGet(k) then table.insert(conditions, v) end; end;
 
       table.insert(conditions, "[@" .. self.unit .. ",exists] show");
       table.insert(conditions, "hide");
-
       return table.concat(conditions, ";")
     end;
 
@@ -284,11 +287,59 @@ function(self, event, ...)
       RegisterStateDriver(self, "visibility", self:GenerateVisibilityString());
     end;
 
-    function self.Initialize(self)
-      if not self.initialized
-      then self:CreatePanels();
-           self.initialized = true;
-      end;
+    function self.StyleStatusBar(self)
+      local statusBar = self:GetPanel("statusBar");
+      local textureFile = LibSharedMedia:Fetch("statusbar", self:CGet("STATUS_TEXTURE"));
+      local r, g, b = toRGB(self:CGet("COLOR_RPUF"))
+      statusBar:SetBackdrop(textureFile or LibSharedMedia:Fetch("statusbar", "Blizzard"));
+      statusBar:SetJustifyH( self:CGet("STATUS_ALIGN"))
+      statusBar:SetHeight( self:CGet("STATUSHEIGHT"));
+      statusBar:SetJustifyV("CENTER");
+      statusBar:SetVertexColor( r / 255, g / 255, b / 255, self:CGet( "RPUFALPHA" ) );
+    end;
+     
+    function self.StyleFrame(self)
+      local backdropFile = LibSharedMedia:Fetch("background", self:CGet("RPUF_BACKDROP"));
+      local borderFile   = LibSharedMedia:Fetch("border", self:CGet("RPUF_BORDER"));
+      local r, g, b      = toRGB(self:CGet("COLOR_RPUF"))
+      self.backdrop:SetTexture( self:CGet("RPUF_BACKDROP"));
+      self.backdrop:SetVertexColor( r / 255, g / 255, b / 255, self:CGet( "RPUFALPHA" ));
+    end;
+      
+    -- moving frames
+    --
+    self.lock = CreateFrame("Button", nil, self);
+    self.lock:SetWidth(24);
+    self.lock:SetHeight(24);
+    self.lock:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT");
+    self.lock:SetNormalTexture("Interface\\LFGFRAME\\UI-LFG-ICON-LOCK.PNG");
+    self.lock:SetClampedToScreen(true);
+    self.lock:SetScript("OnClick", function(self) self:GetParent():ToggleLock(); end);
+
+    function self.ApplyLock(self) 
+      self.locked = self:CGet("LOCK_FRAMES"); 
+      self.lock:SetShown( not self.locked ) 
+    end;
+
+    function self.IsLocked(self)       return self.locked;                                     end;
+    function self.SetLock(self, value) self:CSet("LOCK_FRAMES", value); self:ApplyLock(); end;
+    function self.ToggleLock(self)     self:SetLock(not self:IsLocked() );                     end;
+
+    self:SetMovable(true);
+    self:SetClampedToScreen(true);
+    self:RegisterForDrag("LeftButton");
+    self:HookScript("OnDragStart", 
+      function(self, ...) if not self:IsLocked() then self:StartMoving() end; return self, ...  end);
+    self:HookScript("OnDragStop",  
+      function(self, ...) self:StopMovingOrSizing() return self, ...  end);
+
+    function self.SetPosition(self)
+    end;
+    function self.CallScaleHelper(self)
+    end;
+
+    function self.Initialize(self) 
+      if not self.initialized then self:CreatePanels(); self.initialized = true; end; 
     end;
 
     function self.UpdateEverything(self)
@@ -300,38 +351,15 @@ function(self, event, ...)
       self:SetTextColor();
       self:SetTagStrings();
       self:SetVisibility();
+      self:StyleStatusBar();
+      self:ApplyLock();
+      self:StyleFrame();
       self:SetPoint("CENTER", UIParent);
     end;
 
-    self:SetMovable(true);
-    self:SetClampedToScreen(true);
-
-    self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
-    self:SetScript("OnMouseDown", 
-      function(self, button) 
-        if  button == "LeftButton" then self:StartMoving() end; 
-      end
-    );
-    self:SetScript("OnMouseUp",   
-      function(self, button) 
-        if button == "LeftButton" then self:StopMovingOrSizing() end; 
-      end
-    );
-    self:SetScript("OnEnter",     
-      function(self)         
-      if   self:IsMovable()       
-      then SetCursor("Interface\\CURSOR\\UI-Cursor-Move.PNG") 
-      end 
-    end
-    );
-    self:SetScript("OnLeave", 
-      function(self) ResetCursor() end
-    );
-
-
   end; -- style definition
 
-  oUF:RegisterStyle("RP_UnitFrame", RP_UnitFrame_Constructor);
+  oUF:RegisterStyle(oUF_style, RP_UnitFrame_Constructor);
 
 end);
 
