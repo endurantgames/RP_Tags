@@ -6,11 +6,8 @@
     <Script  file="module.lua"          />
 
     <Include file="Core\load.xml"       />
-    <Include file="Data\load.xml"       />
-    <Include file="Editor\load.xml"     />
     <Include file="Locale\load.xml"     />
     <Include file="Media\load.xml"      />
     <Include file="Options\load.xml"    />
-    <Include file="UnitFrames\load.xml" />
 
 </Ui>

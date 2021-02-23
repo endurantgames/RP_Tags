@@ -2,10 +2,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 
-    <Script file="Fonts\Fonts.lua"                  />
-    <!-- <Script file="Sounds\Sounds.lua"           /> -->
-    <!-- <Script file="Backgrounds\Backgrounds.lua" /> -->
-    <!-- <Script file="Statusbars\Statusbars.lua"   /> -->
-    <!-- <Script file="Borders\Borders.lua"         /> -->
+    <Script file="Fonts\fonts.lua"                  />
 
 </Ui>
