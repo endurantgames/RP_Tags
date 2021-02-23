@@ -253,13 +253,14 @@ translations into other languages, you can.
     - [x] P1: Individualized settings per frame
     - [x] Options for per-frame settings
     - [x] P1: Mouseovers
-    - [ ] P1: LibSharedMedia for frames -- partial
+    - [x] P1: LibSharedMedia for frames
     - [ ] P1: Unit frames fully working
     - [ ] P2: Context menu
     - [x] P1: Frames movable/position
     - [ ] P1: Frame color
+    - [ ] P1: Fix portrait
   - [ ] Tags
-    - [x] Get labels working in RPUF
+    - [ ] Get labels working in RPUF
     - [ ] P1: Confirm size modifiers working in RPUF
   - [ ] Editor
     - [x] Tag live previews
