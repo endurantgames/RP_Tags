@@ -48,7 +48,7 @@ function(self, event, ...)
     portrait  = { no_tag_string    = true,          tooltip = "PORTRAIT_TOOLTIP",
                   portrait         = true                                         },
     statusBar = { setting          = "STATUSPANEL", tooltip = "STATUS_TOOLTIP",
-                  has_own_backdrop = true,
+                  has_statusBar = true,
                   has_own_align    = true,                                        },
   };
 
@@ -63,9 +63,10 @@ function(self, event, ...)
 
     self.frameName = FRAME_NAMES[unit:upper()];
 
-    self.backdrop = self:CreateTexture();
-    self.backdrop:SetAllPoints();
-    self.backdrop:SetColorTexture(0, 0, 0, 0.75);
+    self.bg = CreateFrame("Frame", nil, self, BackdropTemplateMixin and "BackdropTemplate");
+    self.bg:SetAllPoints();
+    self.bg:SetBackdrop({ bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border" });
+    self.bg:Show();
 
     function self.ConfGet(self, setting)
       if    Config.get("LINK_FRAME_" .. self.unit:upper())
@@ -113,15 +114,15 @@ function(self, event, ...)
       panel = CreateFrame("Frame", self.frameName .. panelName, self);
       panel:SetPoint("TOPLEFT");
 
-      if   opt["has_own_backdrop"]
-      then panel.backdrop = panel:CreateTexture();
-           panel.backdrop:SetColorTexture(1, 1, 1, 0.5);
-           panel.backdrop:SetAllPoints();
-           function panel.SetBackdrop(self, textureFile) 
-             self.backdrop:SetTexture(textureFile) 
+      if   opt["has_statusBar"]
+      then panel.statusBar = panel:CreateTexture();
+           panel.statusBar:SetColorTexture(1, 1, 1, 0.5);
+           panel.statusBar:SetAllPoints();
+           function panel.SetStatusbar(self, textureFile) 
+             self.statusBar:SetTexture(textureFile) 
             end;
            function panel.SetVertexColor(self, ...) 
-             self.backdrop:SetVertexColor(...) 
+             self.statusBar:SetVertexColor(...) 
            end;
       end;
 
@@ -144,7 +145,16 @@ function(self, event, ...)
       if opt["portrait"]
       then panel.portrait = CreateFrame("PlayerModel", nil, panel);
            panel.portrait:SetAllPoints();
-           self.Portrait = Portrait;
+           self.Portrait = panel.portrait;
+
+           panel.pictureFrame = CreateFrame("Frame", nil, panel,
+               BackdropTemplateMixin and "BackdropTemplate");
+
+           panel.pictureFrame:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", 5, 5);
+
+           panel.pictureFrame:SetBackdrop(
+           { bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background", 
+             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border" });
       end;
  
       function panel.showTooltip(self, event, ...) 
@@ -265,6 +275,7 @@ function(self, event, ...)
                         icon4 = true, icon5 = true, icon6     = true                   },
         };
 
+        print(self:GetLayout(), self.name, hash[self:GetLayout()][self.name]);
         return hash[self:GetLayout()][self.name]
       end;
     
@@ -373,7 +384,7 @@ function(self, event, ...)
       local textureFile = LibSharedMedia:Fetch("statusbar", self:ConfGet("STATUS_TEXTURE")) or
               LibSharedMedia:Fetch("statusbar", "Blizzard");
 
-      statusBar:SetBackdrop(textureFile);
+      statusBar:SetStatusbar(textureFile);
 
       local a = self:ConfGet( "RPUFALPHA" );
       if a > 1 then a = a / 100; self:ConfSet( "RPUFALPHA", a) end;
@@ -390,25 +401,39 @@ function(self, event, ...)
 
     end;
      
+    function self.UpdatePortrait(self)
+      local portraitPanel = self:GetPanel("portrait");
+      self.Portrait:SetUnit( self:GetUnit() );
+
+      local border = LibSharedMedia:Fetch("border", Config.get("PORTRAIT_BORDER"))
+                     or LibSharedMedia:Fetch("border", "Blizzard Achievement Wood");
+      local background = LibSharedMedia:Fetch("background", Config.get("PORTRAIT_BG")) 
+                     or LibSharedMedia:Fetch("Blizzard Rock");
+      portraitPanel.pictureFrame:SetBackdrop({ bgFile = background, edgeFile = border, 
+        edgeSize = 8, insets = { left = 3, right = 3, top = 3, bottom = 3 }}); 
+    end;
+
     function self.StyleFrame(self)
       -- local borderFile   = LibSharedMedia:Fetch("border", self:ConfGet("RPUF_BORDER"));
       --
-      local backdropFile = 
-        LibSharedMedia:Fetch("background", self:ConfGet("RPUF_BACKDROP")) or
-        LibSharedMedia:Fetch("background", "Blizzard Tooltip");
+      -- local background = 
+      --   LibSharedMedia:Fetch("background", self:ConfGet("RPUF_BACKDROP")) or
+      --   LibSharedMedia:Fetch("background", "Blizzard Tooltip");
 
-
+      local border = LibSharedMedia:Fetch("border", self:ConfGet("RPUF_BORDER")) or LibSharedMedia:Fetch("border", "Blizzard Tooltip");
+      local background = LibSharedMedia:Fetch("background", self:ConfGet("RPUF_BACKDROP")) or LibSharedMedia:Fetch("background", "Blizzard Tooltip");
       local a = self:ConfGet( "RPUFALPHA" );
+      local inset = 12;
       if a > 1 then a = a / 100; self:ConfSet( "RPUFALPHA") end;
       local r, g, b      = toRGB(self:ConfGet("COLOR_RPUF"))
-      self.backdrop:SetVertexColor( r / 255, g / 255, b / 255, a );
+      self.bg:SetBackdrop({ bgFile = background, edgeFile = border, edgeSize = 10, insets = { left = 5, right = 5, top = 5, bottom = 5 }});
+      self.bg:SetBackdropColor( r / 255, g / 255, b / 255, a );
 
-      self.backdrop:SetTexture( backdropFile);
+      -- self.background:SetTexture( backgroundFile);
     end;
       
     function self.CallScaleHelper(self)  -- placeholder
     end;
-    
 
     -- moving frames
     --
@@ -426,8 +451,12 @@ function(self, event, ...)
         self.unitframe:SetFrameLock(true); 
       end);
 
+    function self.IsFrameLocked(self)
+      return Config.get("LOCK_FRAMES_" .. self:GetUnit(true))
+    end;
+
     function self.ApplyFrameLock(self) 
-      if   self:ConfGet("LOCK_FRAMES") 
+      if   self:IsFrameLocked()
       then self.padlock:Hide() 
            self:RegisterForDrag(nil);
       else self.padlock:Show() 
@@ -437,13 +466,9 @@ function(self, event, ...)
 
     self:SetMovable(true);
 
-    function self.IsFrameLocked(self)
-      self:ConfGet("LOCK_FRAMES")
-    end;
-
-    function self.SetFrameLock(self, value) 
+    function self.SetFrameLock(self, value, andApplyIt) 
       self:ConfSet("LOCK_FRAMES", value); 
-      self:ApplyFrameLock(); 
+      if andApplyIt then self:ApplyFrameLock() end;
     end;
 
     function self.ToggleFrameLock(self)     
@@ -490,6 +515,10 @@ function(self, event, ...)
 
     function self.RestoreCoords(self) self:SetCoords( self:GetSavedCoords() ); end;
 
+    function self.RefreshContentNow()
+      self:UpdateAllElements("now");
+    end;
+
     -- initialization: things that shouldo only be done once
     function self.Initialize(self) 
       if not self.initialized 
@@ -504,6 +533,7 @@ function(self, event, ...)
       self:Initialize();
       self:SetUF_Size();
       self:PlacePanels();
+      self:UpdatePortrait();
       self:SetPanelVis();
       self:SetFont();
       self:SetTextColor();
@@ -511,6 +541,7 @@ function(self, event, ...)
       self:ApplyFrameLock();
       self:StyleFrame();
       self:SetTagStrings();
+      self:RefreshContentNow();
     end;
 
   end; -- style definition

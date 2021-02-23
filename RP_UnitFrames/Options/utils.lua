@@ -111,9 +111,15 @@ function(self, event, ...)
       large = loc("SIZE_LARGE"),
       extralarge = loc("SIZE_EXTRA_LARGE"),
     },
+    portraitStyle =
+    { STANDARD = "Standard 3D portrait",
+      FROZEN = "Non-animated portrait",
+    },
+
   };
 
   local function build_tagpanel(str, ttstr, hidden, disabled, opt)
+
     opt = opt or {};
     str = str:upper():gsub("%s+", "_");
     ttstr = ttstr:upper():gsub("%s+", "_");
@@ -132,7 +138,6 @@ function(self, event, ...)
       dialogControl = "LMD30_Description",
       order = source_order(),
     };
-
 
     if   not opt["no_text"]
     then w.args.fontSize = Dropdown(str .. "_FONTSIZE", nil, nil, menu.fontSize);

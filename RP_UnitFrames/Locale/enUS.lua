@@ -82,6 +82,8 @@ function(self, event, ...)
   L["USE_TAG_EDITOR"                    ] = "Editor";
   L["OPT_COLORS_RPUF"                   ] = RPUF_NAME .. " Colors";   -- used
   L["OPT_FORMATS"                       ] = "Tag Formats";            -- used
+  L["OPT_PORTRAIT"                      ] = "Portrait";
+  L["OPT_PORTRAIT_I"                    ] = "Set your preferences on the unit portait. (Not all layouts will display portraits.";
   L["OPT_SHARED_SETTINGS"               ] = "Shared Settings";
   L["OPT_EDITOR"                        ] = "Editor";
   L["OPT_FORMATS"                       ] = RP .. "Formats";
@@ -152,15 +154,19 @@ function(self, event, ...)
     CONFIG_LINK_FRAME_TT          = "Choose whether to link this frame to the shared settings, or configure it separately.",
     CONFIG_LOCK_FRAMES            = "Lock Frame",
     CONFIG_LOCK_FRAMES_TT         = "Lock this unit frame so it can't be moved.";
+    CONFIG_LSM_FILTER             = "Filter SharedMedia Files",
+    CONFIG_LSM_FILTER_TT          = "Choose whether you want to see all available SharedMedia files, or just those we think work best.",
     CONFIG_MOUSEOVER_CURSOR       = "Change Cursor on Mouseover",
     CONFIG_MOUSEOVER_CURSOR_TT    = "Choose whether the cursor should change to a magnifying glass when you mouse over a panel.",
     CONFIG_PORTWIDTH              = "Portrait Width",
     CONFIG_PORTWIDTH_TT           = "Choose how wide you want the portrait to be.",
+
+
     CONFIG_RPUFALPHA              = "Background Transparency",
     CONFIG_RPUFALPHA_TT           = "Set the transparency of the background. 0 is completely invisible, while 100 is completely opaque.",
     CONFIG_RPUF_BACKDROP          = "Frame Background",
     CONFIG_RPUF_BACKDROP_TT       = "Choose what kind of background, if any, you want.",
-    CONFIG_RPUF_BORDER            = "Frame Background",
+    CONFIG_RPUF_BORDER            = "Frame Border",
     CONFIG_RPUF_BORDER_TT         = "Choose what kind of border, if any, you want.",
     CONFIG_RPUF_HIDE_COMBAT       = "Hide in Combat",
     CONFIG_RPUF_HIDE_COMBAT_TT    = "Check this to hide RPUF when you are in combat.",
@@ -174,6 +180,8 @@ function(self, event, ...)
     CONFIG_RPUF_HIDE_RAID_TT      = "Check this to hide RPUF when you are in a raid.",
     CONFIG_RPUF_HIDE_VEHICLE      = "Hide in Vehicle",
     CONFIG_RPUF_HIDE_VEHICLE_TT   = "Check this to hide RPUF when you are in a vehicle.",
+    CONFIG_COLOR_RPUF_BORDER      = "Unit Frame Border Color",
+    CONFIG_COLOR_RPUF_BORDER_TT   = "Choose the color that will tint the border around the unit frame.",
     CONFIG_SHOW_FRAME             = "Enable",
     CONFIG_SHOW_FRAME_TT          = "Choose whether to show or hide this frame.",
     CONFIG_STATUSHEIGHT           = "Height",
@@ -221,6 +229,14 @@ function(self, event, ...)
   L["CONFIG_NAMEPANEL_FONTNAME"      ] = PANEL_FONTNAME;
   L["CONFIG_NAMEPANEL_FONTNAME_TT"   ] = PANEL_FONTNAME_TT;
 
+  L["CONFIG_PORTRAIT_BG"      ]     = "Portrait Background";
+  L["CONFIG_PORTRAIT_BG_TT"    ]     = "Set the background for the portrait.";
+  L["CONFIG_PORTRAIT_BORDER" ]         = "Portrait Border";
+  L["CONFIG_PORTRAIT_BORDER_TT" ]     = "Set the border for the portrait.";
+  L["CONFIG_PORTRAIT_STYLE" ] =    "Portrait Styling";
+  L["CONFIG_PORTRAIT_STYLE_TT"]     = "Select the style for portraits.";
+  L["CONFIG_PORTRAIT_BORDER_STYLE"]  = "Portrait Frame Coloring";
+  L["CONFIG_PORTRAIT_BORDER_STYLE_TT"] = "Select how you want to color the portrait frame.";
   -- 
   -- L["CONFIG_COLOR_RPUF"                 ] = "Background Color";
   -- L["CONFIG_COLOR_RPUF_TEXT"            ] = "Text Color";

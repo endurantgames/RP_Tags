@@ -62,6 +62,7 @@ function(self, event, ...)
     if unit 
     then frame_group.args =
          { background = helper_have_unit( "RPUF",         unit, "StyleFrame"     ),
+           border     = helper_have_unit( "RPUF_BORDER",  unit, "StyleFrame"     ),
            text       = helper_have_unit( "RPUF_TEXT",    unit, "SetTextColor"   ),
            tooltip    = helper_have_unit( "RPUF_TOOLTIP", unit, nil              ), -- don't need to fire an update method
            statusBar  = helper_have_unit( "STATUS",       unit, "StyleStatusBar" ),
@@ -74,6 +75,7 @@ function(self, event, ...)
 
     else frame_group.args =
          { background = helper_no_unit(   "RPUF",               "StyleFrame"     ),
+           border     = helper_no_unit(   "RPUF_BORDER",        "StyleFrame"     ),
            text       = helper_no_unit(   "RPUF_TEXT",          "SetTextColor"   ),
            tooltip    = helper_no_unit(   "RPUF_TOOLTIP",       nil              ), -- don't need to fire an update method
            statusBar  = helper_no_unit(   "STATUS",             "StyleStatusBar" ),

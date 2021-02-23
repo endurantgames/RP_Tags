@@ -300,10 +300,29 @@ function(self, event, ...)
     frame:SetHeight(h);
   end; -- function
 
+  local function scaleFrame(frame)
+    print(frame, type(frame));
+    if   type(frame) == "string"
+    then frame = RPTAGS.cache.UnitFrames[frame:lower()];
+    end;
+    print(Config.get(frame:GetUnit():upper() .. "FRAME_SCALE"));
+    if   frame 
+    then frame:SetScale(Config.get(frame:GetUnit():upper() .. "FRAME_SCALE"));
+    end
+  end;
+
+  local function scaleAllFrames()
+    for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
+    do  frame:SetScale(Config.get(frameName:upper() .. "FRAME_SCALE"))
+    end;
+  end;
+
   RPTAGS.utils.frames.all.size.scale.set    = setAllFrameScales;
   RPTAGS.utils.frames.all.size.set          = setAllFrameSizes;
   RPTAGS.utils.frames.panels.size.getHeight = getPanelHeight;
   RPTAGS.utils.frames.panels.size.getWidth  = getPanelWidth;
   RPTAGS.utils.frames.panels.size.set       = setPanelSize;
   RPTAGS.utils.frames.size.get              = getFrameSize;
+  RPTAGS.utils.frames.scaleAll              = scaleAllFrames;
+  RPTAGS.utils.frames.scale                 = scaleFrame;
 end);
