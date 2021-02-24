@@ -301,11 +301,10 @@ function(self, event, ...)
   end; -- function
 
   local function scaleFrame(frame)
-    print(frame, type(frame));
     if   type(frame) == "string"
     then frame = RPTAGS.cache.UnitFrames[frame:lower()];
     end;
-    print(Config.get(frame:GetUnit():upper() .. "FRAME_SCALE"));
+
     if   frame 
     then frame:SetScale(Config.get(frame:GetUnit():upper() .. "FRAME_SCALE"));
     end
