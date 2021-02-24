@@ -5,6 +5,7 @@
 ## Notes: LibSharedMedia fonts for rp|cffdd33aarpTags|r, plus font manager 
 ## OptionalDeps: RP_Tags
 ## DefaultState: Enabled
+## SavedVariables: RP_FontsDB
 ## X-URL: http://spindrift.games/rpfonts
 ## X-RPQVersion: 1
 ## X-RPQModuleId: rpfonts
