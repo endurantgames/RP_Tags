@@ -34,8 +34,6 @@ function(self, event, ...)
 
   local initialize_panel(panel, panelName, opt);
 
-    if self.initialized then return end;
-
     --   -- passthrough ---------------------------------------------------------------------------------------
     
     function self.GetUnit(   self, ... ) return self:GetParent():GetUnit(    ... ) end;
@@ -43,6 +41,8 @@ function(self, event, ...)
     function self.ConfGet(   self, ... ) return self:GetParent():ConfGet(    ... ) end;
     function self.ConfSet(   self, ... ) return self:GetParent():ConfSet(    ... ) end;
     function self.GetSetting(self, ... ) return self:GetParent():GetSetting( ... ) end;
+    function self.PanelGet(  self, ... ) return self:GetParent():PanelGet(   ... ) end;
+    function self.Gap(       self, ... ) return self:GetParent():Gap(        ... ) end;
 
     --   -- general -------------------------------------------------------------------------------------------
     
@@ -56,13 +56,12 @@ function(self, event, ...)
       if top and left
       then 
         self:ClearAllPoints();
-        self:SetPoint("TOPLEFT", self.unitframe, "TOPLEFT", left, top);
+        self:SetPoint("TOPLEFT", self:GetParent(), "TOPLEFT", left, top);
         self:SetSize(width, height);
       end;
     end;
 
-    function self.GetVis(self) return hash[self:GetLayout()][self.name] end;
-    function self.SetVis(self) self:SetShown( self:GetVis() )           end;
+    function self.SetVis(self) self:SetShown( self:GetPanelVis() ) end;
 
     --   ---- has_statusBar -----------------------------------------------------------------------------------
     if   opt["has_statusBar"]
@@ -81,14 +80,13 @@ function(self, event, ...)
     if not opt["no_tag_string"]
     then 
 
-
       self.text = panel:CreateFontString(self:GetParent():GetName() .. 
                   panel.name .. "Tag", "OVERLAY", "GameFontNormal");
 
       self.text:SetAllPoints();
       self.text:SetText(panel.name);
 
-      function self.SetTagString( self) self.unitframe:Tag(self.text, Config.get(self.setting)) end;
+      function self.SetTagString( self) self:GetParent():Tag(self.text, Config.get(self.setting)) end;
       function self.SetTextColor( self, r, g, b) self.text:SetTextColor(r, g, b)                end;
 
       function self.GetJustify(self)
@@ -103,27 +101,12 @@ function(self, event, ...)
       end;
 
       function self.SetJustify(self)
-        local justifyH, justifyV = self:GetJustify();
-        self.text:SetJustifyH(justifyH);
-        self.text:SetJustifyV(justifyV);
+        self.text:SetJustifyH( self:GetPanelJustifyH() );
+        self.text:SetJustifyV( self:GetPanelJustifyV() );
       end;
   
       local font_size_hash =
       { ["extrasmall" ] = -4, ["small" ] = -2, ["medium" ] = 0, ["large" ] = 2, ["extralarge" ] = 4 };
-  
-      local vis_hash =
-      { COMPACT   = { name  = true, icon1 = true, info      = true                   },
-        THUMBNAIL = { name  = true, icon1 = true, portrait  = true                   },
-        PAPERDOLL = { name  = true, info  = true, portrait  = true,
-                      icon1 = true, icon2 = true, icon3     = true,
-                      icon4 = true, icon5 = true, icon6     = true                   },
-        ABRIDGED  = { name  = true, info  = true, statusBar = true, portrait = true,
-                      icon1 = true, icon2 = true, icon3     = true,
-                      icon4 = true, icon5 = true, icon6     = true                   },
-        FULL      = { name  = true, info  = true, statusBar = true, details  = true,
-                      icon1 = true, icon2 = true, icon3     = true, portrait = true,
-                      icon4 = true, icon5 = true, icon6     = true                   },
-      };
   
       function self.GetFont(self, ...) return self:GetParent():GetFont(...) end;
 
@@ -136,9 +119,7 @@ function(self, event, ...)
         return fontSize;
       end;
 
-      function self:GetFontActualSize(self)
-        return self:AdjustFont( self:GetFontSize() );
-      end;
+      function self:GetActualFontSize(self) return self:AdjustFont( self:GetFontSize() ); end;
 
       if opt["use_font"]
       then 
@@ -189,7 +170,7 @@ function(self, event, ...)
 
     end;
  
-    --   ------ no_tooltip ------------------------------------------------------------------------------------
+    --   -- tooltips ------------------------------------------------------------------------------------------
     if not opt["no_tooltip"]
     then 
 
@@ -200,7 +181,7 @@ function(self, event, ...)
        
       function self.showTooltip(self, event, ...) 
         local tooltip = eval(Config.get(self.tooltip), self:GetUnit(), self:GetUnit());
-        local r, g, b = self.unitframe:GetTooltipColor();
+        local r, g, b = self:GetParent():GetTooltipColor();
     
         if   self:ConfGet("MOUSEOVER_CURSOR")
         then SetCursor("Interface\\CURSOR\\Inspect.PNG");
@@ -227,7 +208,7 @@ function(self, event, ...)
       function self.GetTooltipColor(self ...) return self:GetParent():GetTooltipColor( ... ) end;
     end;
   
-    --   ------ no_context_menu -------------------------------------------------------------------------------
+    --   -- context_menu --------------------------------------------------------------------------------------
     if not opt["no_context_menu"]
     then 
 
@@ -274,8 +255,6 @@ function(self, event, ...)
     --
     --   ------------------------------------------------------------------------------------------------------
   
-    panel.initialized = true;
-
   end;
 
   RPTAGS.utils.panels.initialize = initialize_panel;

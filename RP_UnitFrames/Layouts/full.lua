@@ -8,17 +8,17 @@ local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("after MODULE_E", -- depends on size functions
+Module:WaitUntil("after MODULE_E", 
 function(self, event, ...)
   
   local layout = RPTAGS.utils.frames.RPUF_NewLayout("full", "large");
 
   local function get_statusBar_top(self)
     return
-      math.min(
-        self:Gap(-7) + self:PanelGet("Height", "icon1") * -6,
-        self:Gap(-1) - self:PanelGet("Height", "portrait"),
-        self:Gap(-4) - self:PanelGet("Height", "name") - self:PanelGet("Height", "info") - self:PanelGet("Height", "details")
+      math.max(
+        self:Gap(7) + self:ConfGet("ICONWIDTH") * 6,
+        self:Gap(1) + self:ConfGet("PORTWIDTH") * 1.5,
+        self:Gap(4) * self:PanelGet("Height", "name") + self:PanelGet("Height", "info") + self:ConfGet("DETAILHEIGHT")
       )
   end;
 
@@ -47,16 +47,16 @@ function(self, event, ...)
     });
 
   layout:Register_Panel_Method_Hash("GetPanelTop",
-    { [ "portrait"  ] = function(self) return self:Gap(-1) end,
-      [ "icon1"     ] = function(self) return self:Gap(-1) end,
-      [ "icon2"     ] = function(self) return self:Gap(-2) + self:PanelGet("Height", "icon1") * -1, end,
-      [ "icon3"     ] = function(self) return self:Gap(-3) + self:PanelGet("Height", "icon1") * -2, end,
-      [ "icon4"     ] = function(self) return self:Gap(-4) + self:PanelGet("Height", "icon1") * -3, end,
-      [ "icon5"     ] = function(self) return self:Gap(-5) + self:PanelGet("Height", "icon1") * -4, end,
-      [ "icon6"     ] = function(self) return self:Gap(-6) + self:PanelGet("Height", "icon1") * -5, end,
+    { [ "portrait"  ] = function(self) return self:Gap(1) end,
+      [ "icon1"     ] = function(self) return self:Gap(1) end,
+      [ "icon2"     ] = function(self) return self:Gap(2) + self:ConfGet("ICONWIDTH") * 1, end,
+      [ "icon3"     ] = function(self) return self:Gap(3) + self:ConfGet("ICONWIDTH") * 2, end,
+      [ "icon4"     ] = function(self) return self:Gap(4) + self:ConfGet("ICONWIDTH") * 3, end,
+      [ "icon5"     ] = function(self) return self:Gap(5) + self:ConfGet("ICONWIDTH") * 4, end,
+      [ "icon6"     ] = function(self) return self:Gap(6) + self:ConfGet("ICONWIDTH") * 5, end,
       [ "name"      ] =  "portrait",
-      [ "info"      ] = function(self) return self:Gap(-2) - self:PanelGet("Height", "name") end,
-      [ "details"   ] = function(self) return self:PanelGet("Top", "info") + Gap(-1) - self:PanelGet("Height", "info") end,
+      [ "info"      ] = function(self) return self:Gap(2) + self:PanelGet("Height", "name") end,
+      [ "details"   ] = function(self) return self:PanelGet("Top", "info") + Gap(1) + self:PanelGet("Height", "info") end,
       [ "statusBar" ] = get_statusBar_top,
     });
 

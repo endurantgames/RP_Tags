@@ -3,7 +3,7 @@
 -- ------------------------------------------------------------------------------
 -- This work is licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) license. 
 
-local addOnName, addOn = ...;
+local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
@@ -14,34 +14,24 @@ function(self, event, ...)
 
   local function get_name_top(self)
     return 
-      math.min( 
-        self:GetPanelHeight("name") - self:GetPanelHeight("portrait"),
-        -1 * self:GetPanelHeight("icon1")
-      ); 
-  end;
-
-  function get_name_width(self) 
-    return 
       math.max( 
-        self:ConfGet("PORTWIDTH") * 2/3 - self:HGap(2/3),
-        self:ConfGet("ICONWIDTH") - self:HGap(2/3)
+        self:GetPanelHeight("name") + self:ConfGet("PORTHEIGHT") * 1.5,
+        self:ConfGet("ICONWIDTH"),
       ); 
   end;
 
   function get_Frame_dimensions(self)
     return 
-      math.max( self:GetPanel("portrait"):GetPanelWidth(), 
-                self:GetPanel("icon1"   ):GetPanelWidth()  ),
+      math.max(self:ConfGet("PORTWIDTH") * 2/3, self:ConfGet("ICONWIDTH")),
 
-      math.max( self:GetPanel("icon1"   ):GetPanelHeight() 
-                  + self:GetPanel("name"):GetPanelHeight(),
-                self:GetPanel("portrait"):GetPanelHeight() )
+      math.max(self:ConfGet("ICONWIDTH") + self:PanelGet("Height", "name"),
+               self:ConfGet("PORTWIDTH") * 1.5)
   end
 
   layout:Register_Panel_Method_Hash( "GetPanelLeft",
     { [ "portrait" ] = 0,
       [ "icon1"    ] = 0,
-      [ "name"     ] = function() return self:HGap(1/3) end,
+      [ "name"     ] = function() return self:Gap(1/3) end,
     });
 
   layout:Register_Panel_Method_Hash( "GetPanelTop",
@@ -59,16 +49,17 @@ function(self, event, ...)
   layout:Register_Panel_Method_Hash( "GetPanelWidth",
     { [ "portrait" ] = function(self) return self:ConfGet("PORTWIDTH") * 2/3 end,
       [ "icon1"    ] = function(self) return self:ConfGet("ICONWIDTH") end, 
-      [ "name"     ] = get_name_width,
+      [ "name"     ] = function(self) return math.max(self:ConfGet("PORTWIDTH"), 
+                                                      self:ConfGet("ICONWIDTH")) - self:Gap(2/3); end,
     });
   
-  layout:Register_Panel_Method_Hash( "GetPanelAlignH",
-    { [ "portrait" ] = function() return nil      end,
+  layout:Register_Panel_Method_Hash( "GetPanelJustifyH",
+    { [ "portrait" ] = function() return "LEFT"   end,
       [ "name"     ] = function() return "CENTER" end,
       [ "info"     ] = function() return "CENTER" end,
     });
 
-  layout:Register_Panel_Method( "GetPanelAlignV", function() return "TOP" end);
+  layout:Register_Panel_Method( "GetPanelJustifyV", function() return "TOP" end);
 
   layout:Register_Panel_Method_Hash( "GetPanelVis", 
     { [ "portrait" ] = true, 

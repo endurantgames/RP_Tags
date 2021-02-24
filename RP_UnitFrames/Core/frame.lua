@@ -1,11 +1,9 @@
 -- RP Tags
 -- by Oraibi, Moon Guard (US) server
--- ------------------------------------------------------------------------------
---
--- This work is licensed under the Creative Commons Attribution 4.0 International
--- (CC BY 4.0)
+-- -------------------------------------------------
+-- This work is licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0)
 
-local addOnName, addOn = ...;
+local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
@@ -55,17 +53,17 @@ function(self, event, ...)
   };
 
 
-  -- rpuf "style" for oUF ----------------------------------------------------------------------------------------------------------------------------------
+  -- rpuf "style" for oUF -----------------------------------------------------------------------------------------------------
   local function RP_UnitFrame_Constructor(self, unit)
 
-    -- -- basics ---------------------------------------------------------------------------------------------------------------------------------------------
+    -- -- basics ----------------------------------------------------------------------------------------------------------------
     self.unit      = unit;
     self.panels    = {};
     self.toolTips  = {};
     self.tagStrs   = {}
     self.frameName = FRAME_NAMES[unit:upper()];
 
-    -- -- configuration, when per-unit -----------------------------------------------------------------------------------------------------------------------
+    -- -- configuration, when per-unit ------------------------------------------------------------------------------------------
     function self.ConfGet(self, setting)
       if    Config.get("LINK_FRAME_" .. self.unit:upper())
       then return Config.get(setting)
@@ -80,7 +78,7 @@ function(self, event, ...)
       end;
     end;
 
-    -- -- information functions ------------------------------------------------------------------------------------------------------------------------------
+    -- -- information functions -------------------------------------------------------------------------------------------------
     function self.GetName(   self )           return self.frameName                                   end;
     function self.GetUnit(   self, caps)      return caps and self.unit:upper() or self.unit:lower(); end;
     function self.GetLayout( self )           return Config.get( self:GetUnit(true) .. "LAYOUT");     end;
@@ -102,7 +100,7 @@ function(self, event, ...)
 
     end;
 
-    -- -- frame size -----------------------------------------------------------------------------------------------------------------------------------------
+    -- -- frame size ------------------------------------------------------------------------------------------------------------
     function self.SetUF_Size(self)
 
       local width, height = getUF_Size( self:GetLayout() );
@@ -110,13 +108,13 @@ function(self, event, ...)
 
     end;
 
-    -- -- backdrop -------------------------------------------------------------------------------------------------------------------------------------------
+    -- -- backdrop --------------------------------------------------------------------------------------------------------------
     self.bg = CreateFrame("Frame", nil, self, BackdropTemplateMixin and "BackdropTemplate");
     self.bg:SetAllPoints();
     self.bg:SetBackdrop({ bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border" });
     self.bg:Show();
 
-    -- -- state driver registration --------------------------------------------------------------------------------------------------------------------------
+    -- -- state driver registration ---------------------------------------------------------------------------------------------
     function self.GenerateSSD_String(self)
       local conditions = {};
       if self:ConfGet("DISABLE_RPUF") then return "hide" end;
@@ -140,7 +138,7 @@ function(self, event, ...)
       RegisterStateDriver(self,   "visibility", self:GenerateSSD_String());
     end;
 
-    -- -- unit frame appearance ------------------------------------------------------------------------------------------------------------------------------
+    -- -- unit frame appearance -------------------------------------------------------------------------------------------------
     function self.StyleFrame(self)
 
       local border     = LibSharedMedia:Fetch("border",     self:ConfGet("RPUF_BORDER")) or 
@@ -160,29 +158,22 @@ function(self, event, ...)
 
     end;
 
-    -- -- panels ---------------------------------------------------------------------------------------------------------------------------------------------
+    -- -- panels ----------------------------------------------------------------------------------------------------------------
     function self.CreatePanel(self, panelName, opt)
       opt = opt or {};
       local panel
 
       panel = CreateFrame("Frame", self:GetName().. titlecase(panelName), self);
-      panel:SetPoint("TOPLEFT");
 
-      panel.unitframe  = self;
       panel.unit       = unit;
       panel.name       = panelName;
       panel.frameName  = self:GetName() .. titlecase(panelName);
       panel.setting    = opt.setting;
-      panel.initialize = initialize_panel;
 
-      self.panels[panelName] = panel; -- save it for when we need it
+      initialize_panel(panel);
 
-      panel:Initialize();
-
+      self.panels[panelName] = panel; 
     end; -- create panel
-
-    function self.CreatePanels(self)   -- this produces all the panels
-    end;
 
     -- collective functions, i.e. they iterate through the panels
     
@@ -219,7 +210,9 @@ function(self, event, ...)
       return panel[funcName](self);
     end;
 
-    -- -- frame locking --------------------------------------------------------------------------------------------------------------------------------------
+    function self.Gap(self, num) return self:ConfGet("GAPSIZE") * (num or 1) end;
+    
+    -- -- frame locking ---------------------------------------------------------------------------------------------------------
     function self.IsFrameLocked(   self )       return Config.get("LOCK_FRAMES_" .. self:GetUnit(true)) end;
     function self.SetFrameLock(    self, value) self:ConfSet("LOCK_FRAMES", value); end;
     function self.ToggleFrameLock( self )       self:SetLock(not self:IsFrameLocked() ); end;
@@ -231,7 +224,7 @@ function(self, event, ...)
       end;
     end;
 
-    -- -- padlock --------------------------------------------------------------------------------------------------------------------------------------------
+    -- -- padlock ---------------------------------------------------------------------------------------------------------------
     self.padlock = CreateFrame("Button", nil, self);
     self.padlock:SetSize(24, 24);
     self.padlock:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT");
@@ -240,7 +233,7 @@ function(self, event, ...)
 
     self.padlock:SetScript("OnClick", function(self) self:GetParent():SetFrameLock(true); end);
 
-    -- -- frame moving ---------------------------------------------------------------------------------------------------------------------------------------
+    -- -- frame moving ----------------------------------------------------------------------------------------------------------
     self:SetMovable(true);
     self:SetClampedToScreen(true);
 
@@ -265,7 +258,7 @@ function(self, event, ...)
     self:SetScript("OnDragStart", function(self, button, ...) if button == "LeftButton" then self:StartMoving() end; end);
     self:SetScript("OnDragStop",  function(self, button, ...) self:StopMovingOrSizing(); self:SaveCoords();          end);
 
-    -- -- frame updating -------------------------------------------------------------------------------------------------------------------------------------
+    -- -- frame updating --------------------------------------------------------------------------------------------------------
     function self.RefreshContentNow() 
       self:UpdateAllElements("now"); 
     end;

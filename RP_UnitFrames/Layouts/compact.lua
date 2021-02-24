@@ -4,7 +4,7 @@
 -- This work is licensed under the Creative Commons Attribution 4.0 International
 -- (CC BY 4.0) license. 
 
-local addOnName, addOn = ...;
+local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
@@ -15,29 +15,25 @@ function(self, event, ...)
 
   local function get_frame_dimensions(self)
     return 
-      self:Gap(0.5) + self:PanelGet("Width", "icon1")  +
-      self:Gap(0.5) + self:PanelGet("Width", "name") +
-      self:Gap(0.5),
+      self:Gap(1.5) + self:ConfGet("ICONWIDTH") + self:ConfGet("INFOWIDTH"),
 
+      self:Gap(1) +
       math.max( 
-        self:Gap(0.5) + self:PanelGet("Height", "name") +
-        self:Gap(0.5) + self:PanelGet("Height", "info") +
-        self:Gap(0.5),
-        self:Gap(0.5) + self:PanelGet("Height", "icon1") +
-        self:Gap(0.5)
+        self:Gap(0.5) + self:PanelGet("Height", "name") + self:PanelGet("Height", "info"),
+        self:ConfGet("ICONWIDTH")
       )
   end;
 
   layout:Register_Panel_Method_Hash("GetPanelLeft",
     { [ "icon1" ] = function(self) return self:Gap(0.5) end,
-      [ "name"  ] = function(self) return self:Gap(0.5) + self:GetPanelWidth("icon1") + self:Gap(0.5) end,
+      [ "name"  ] = function(self) return self:Gap(1) + self:ConfGet("ICONWIDTH") end,
       [ "info"  ] = "name",
     });
 
   layout:Register_Panel_Method_Hash("GetPanelTop",
-    { [ "icon1" ] = function(self) return self:Gap(-0.5) end,
+    { [ "icon1" ] = function(self) return self:Gap(0.5) end,
       [ "name"  ] = "icon1",
-      [ "info"  ] = function(self) return self:Gap(-0.5) - self:GetPanelHeight("name") end,
+      [ "info"  ] = function(self) return self:Gap(0.5) + self:GetPanelHeight("name") end,
     });
 
   layout:Register_Panel_Method_Hash("GetPanelHeight",

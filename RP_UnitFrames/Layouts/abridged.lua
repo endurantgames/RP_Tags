@@ -4,7 +4,7 @@
 -- This work is licensed under the Creative Commons Attribution 4.0 International
 -- (CC BY 4.0) license. 
 
-local addOnName, addOn = ...;
+local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
@@ -16,16 +16,16 @@ function(self, event, ...)
   local function get_statusBar_top(self)
     return
       math.min(
-        self:Gap(-2) - self:GetPanelHeight("icon1"),
-        self:Gap(-3) - self:GetPanelHeight("name") + self:GetPanelHeight("info")
+        self:Gap(2) + self:ConfGet("ICONWIDTH"),
+        self:Gap(3) + self:PanelGet("Height", "name") + self:PanelGet("Height", "info")
       )
   end;
 
   local function get_icon_top(self)
     return
-      self:Gap(-3) - self:GetPanelHeight("statusBar") -
+      self:Gap(3) + self:GetPanelHeight("statusBar") +
       math.max( 
-        self:GetPanelHeight("icon1"),
+        self:ConfGet("ICONWIDTH"),
         self:GetPanelHeight("name") + self:GetPanelHeight("info") + self:Gap(1)
       )
   end;
@@ -39,35 +39,35 @@ function(self, event, ...)
   local function get_frame_dimensions(self)
     return
       math.max(
-        self:Gap(3) + self:PanelGet("Width", "icon1") + self:PanelGet("Width", "name"),
-        self:Gap(3) + self:PanelGet("Width", "icon1") + self:PanelGet("Width", "info"),
-        self:PanelGet("Width", "statusBar"),
-        self:Gap(6) + self:PanelGet("Width", "icon2") * 5,
+        self:Gap(3) + self:ConfGet("ICONWIDTH") + self:PanelGet("Width", "name"),
+        self:Gap(3) + self:ConfGet("ICONWIDTH") + self:PanelGet("Width", "info"),
+        get_statusBar_width(),
+        self:Gap(6) + self:ConfGet("ICONWIDTH") * 5
       ),
 
+      self:ConfGet("ICONWIDTH") + self:Gap(4) + self:ConfGet("STATUSHEIGHT") +
       math.max(
-        self:Gap(4) + self:PanelGet("Height", "icon1") * 2 + self:PanelGet("Height", "statusBar"),
-        self:Gap(5) + self:PanelGet("Height", "name") + self:PanelGet("info")
-        + self:PanelGet("statusBar") + self:PanelGet("icon2")
+        self:ConfGet("ICONWIDTH"),
+        self:Gap(1) + self:PanelGet("Height", "name") + self:PanelGet("Height", "info")
       );
   end;
 
   layout:Register_Panel_Method_Hash("GetPanelLeft",
-    { [ "name"      ] = function(self) return self:Gap(2) + self:GetPanelWidth("icon1") end,
+    { [ "name"      ] = function(self) return self:Gap(2) + self:ConfGet("ICONWIDTH") end,
       [ "info"      ] = "name",
       [ "icon1"     ] = function(self) return self:Gap(1) end,
       [ "statusBar" ] =  0,
       [ "icon2"     ] = "icon1",
       [ "icon3"     ] = "name",
-      [ "icon4"     ] = function(self) return self:Gap(3) + self:GetPanelWidth("icon2") * 2 end,
-      [ "icon5"     ] = function(self) return self:Gap(4) + self:GetPanelWidth("icon2") * 3 end,
-      [ "icon6"     ] = function(self) return self:Gap(5) + self:GetPanelWidth("icon2") * 4 end,
+      [ "icon4"     ] = function(self) return self:Gap(3) + self:ConfGet("ICONWIDTH") * 2 end,
+      [ "icon5"     ] = function(self) return self:Gap(4) + self:ConfGet("ICONWIDTH") * 3 end,
+      [ "icon6"     ] = function(self) return self:Gap(5) + self:ConfGet("ICONWIDTH") * 4 end,
 
     });
 
   layout:Register_Panel_Method_Hash("GetPanelTop",
-    { [ "name"      ] = function(self) return self:Gap(-1) end,
-      [ "info"      ] = function(self) return self:Gap(-2) + self:GetPanelHeight("name") end,
+    { [ "name"      ] = function(self) return self:Gap(1) end,
+      [ "info"      ] = function(self) return self:Gap(2) + self:PanelGet("Height", "name") end,
       [ "icon1"     ] = "name",
       [ "statusBar" ] = get_statusBar_top,
       [ "icon2"     ] = get_icon_top,
