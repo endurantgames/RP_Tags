@@ -131,26 +131,6 @@ function(self, event, ...)
 
 end);
 
-Module:WaitUntil("UTILS_MODULE",
-function(self, event, ...)
-  local function registerLayout(self, layoutName, layoutFunc)
-    if self.layouts[layoutName] then return error("Layout already registered: " .. layoutName) end;
-
-    self.layouts[layoutName] = layoutFunc;
-
-  end;
-
-  local function fetchLayout(self, layoutName)
-    layoutName = layoutName or self:GetLayout();
-
-    return self.layouts[layoutName];
-  end;
-
-  RPTAGS.utils.frames.registerLayout = registerLayout;
-  RPTAGS.utils.frames.fetchLayout    = fetchLayout;
-
-end);
-
 Module:WaitUntil("after CORE_STATE",
 function(self, event, ...)
   RPTAGS.oUF = _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- let RP_Tags use our oUF for previews

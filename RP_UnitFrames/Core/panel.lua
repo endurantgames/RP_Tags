@@ -33,6 +33,7 @@ function(self, event, ...)
   local toRGB              = Utils.color.hexaToNumber;
 
   local initialize_panel(panel, panelName, opt);
+
     if self.initialized then return end;
 
     --   -- passthrough ---------------------------------------------------------------------------------------
@@ -91,11 +92,11 @@ function(self, event, ...)
       function self.SetTextColor( self, r, g, b) self.text:SetTextColor(r, g, b)                end;
 
       function self.GetJustify(self)
-        if      self.name == "statusBar" 
+        if     self.name == "statusBar" 
         then   return self:ConfGet("STATUS_ALIGN"), "CENTER";
-        elseif (self.name == "name" or self.name == "info") and
-               (self:GetLayout() == "PAPERDOLL" or
-                self:GetLayout() == "THUMBNAIL")
+        elseif (self.name == "name" or self.name == "info") 
+                 and
+               (self:GetLayout() == "PAPERDOLL" or self:GetLayout() == "THUMBNAIL")
         then   return "CENTER", "CENTER";
         else   return "LEFT", "TOP";
         end;
@@ -124,10 +125,19 @@ function(self, event, ...)
                       icon4 = true, icon5 = true, icon6     = true                   },
       };
   
-      function self.GetFont(self, ...) return self:GetParent():GetFont() end;
+      function self.GetFont(self, ...) return self:GetParent():GetFont(...) end;
 
       function self.AdjustFont(self, size)
         return size + (font_size_hash[ Config.get( self.setting .. "_FONTSIZE" ) or 0]);
+      end;
+
+      function self.GetFontSize(self, ...)
+        local _, fontSize = self:GetParent():GetFont(...);
+        return fontSize;
+      end;
+
+      function self:GetFontActualSize(self)
+        return self:AdjustFont( self:GetFontSize() );
       end;
 
       if opt["use_font"]
@@ -231,8 +241,39 @@ function(self, event, ...)
 
     end;
   
-    --   ------------------------------------------------------------------------------------------------------
+    --   -- layouts -------------------------------------------------------------------------------------------
+    function.self.SetLayout(self, layoutName)
+      layoutName = layoutName or self:GetLayout();
+
+      local  layout = RPTAGS.utils.frames.RPUF_GetLayout(layoutName);
+      if not layout then return end;
+
+      for key, func in pairs(layoutStruct.panel_methods) do self[k] = func; end; 
+
+      for key, hash in pairs(layoutStruct.panel_method_hash)
+      do  self[key] = 
+            function(self, panel)
+              if     type(panel) == "string" then panel = self:GetParent:GetPanel(panel);
+              elseif not panel               then panel = self;
+              elseif type(panel) ~= "table"  then error("unknown panel given to function " .. (key or "nil"));
+              end;
+ 
+              local  item = hash[panel:GetName()];
+
+              if     type(item) == "boolean" or  type(item)       == "number"   then return item 
+              elseif type(item) == "string"  and type(hash[item]) == "function" then return hash[item](panel);
+              elseif type(item) == "string"  and type(hash[item]) == "boolean"  then return hash[item]
+              elseif type(item) == "string"  and type(hash[item]) == "number"   then return hash[item]
+              elseif type(item) == "function"                                   then return item(panel);
+              else   error("unknown function type " .. (k or "nil"));
+              end;
+            end;
+      end;
+    end;
+ 
     --
+    --   ------------------------------------------------------------------------------------------------------
+  
     panel.initialized = true;
 
   end;

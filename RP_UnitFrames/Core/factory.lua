@@ -39,6 +39,35 @@ end);
 Module:WaitUntil("before MODULE_G",
 function(self, event, ...)
 
+  RPTAGS.cache.layouts = {};
+
+  local function RPUF_GetLayout(layoutName) return RPTAGS.cache.layouts[layoutName]; end;
+
+  local function RPUF_RegisterLayout(layoutName, layoutStruct)
+    local layouts_known = RPTAGS.cache.layouts;
+
+    if layouts_known[layoutName] then return error("This layout is already registered: " .. layoutName); end;
+    
+    layouts_known[layoutName] = layoutStruct;
+  end;
+
+  local function RPUF_NewLayout(layoutName, layoutSize, layoutVersion)
+    return 
+    { name = loc("LAYOUT_" .. layoutName:upper()),
+      key = layoutName,
+      panel_methods = {},
+      frame_methods = {},
+      panel_method_hash = {},
+      size = layoutSize,
+      version = layoutVersion or GetAddOnMetadata(addOnName, "Version"),
+      Register_Panel_Method      = function(self, hashName, hashTable) self.panel_method_hash[hashName] = hashTable; end,
+      Register_Panel_Method_Hash = function(self, hashName, func)      self.panel_methods[hash] = func;              end,
+      Register_Frame_Method      = function(self, func)                self.frame_methods[hash] = func;              end,
+      RegisterLayout             = function(self)                      RPUF_RegisterLayout(layoutName, self)         end,
+    };
+  end;
+
+
   local frameList =    -- uppercase name, isSmallFrame
   { { "PLAYER",        false },
     { "TARGET",        false },
@@ -87,6 +116,9 @@ function(self, event, ...)
   RPTAGS.utils = RPTAGS.utils or {};
   RPTAGS.utils.frames = RPTAGS.utils.frames or {};
   RPTAGS.utils.frames.RPUF_Refresh = RPUF_Refresh;
+  RPTAGS.utils.frames.RPUF_RegisterLayout = RPUF_RegisterLayout;
+  RPTAGS.utils.frames.RPUF_GetLayout = RPUF_GetLayout;
+  RPTAGS.utils.frames.RPUF_NewLayout = RPUF_NewLayout;
 
 end);
 
