@@ -194,7 +194,7 @@ function(self, event, ...)
 
   for k, v in pairs(perFrame)
   do  L[k] = v;
-      for frame, _ in pairs(RPTAGS.CONST.RPUF.FRAMES.NAMES)
+      for frame, _ in pairs(RPTAGS.CONST.RPUF.FRAME_NAMES)
       do  local tt = k:match("_TT$");
           local key = k:gsub("_TT$","") .. "_" .. frame .. (tt or "");
           L[key] = v;

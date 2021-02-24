@@ -9,74 +9,25 @@ function(self, event, ...)
   local LibSharedMedia  = LibStub("LibSharedMedia-3.0");
   local CONST           = RPTAGS.CONST;
   local oUF_style       = CONST.RPUF.OUF_STYLE;
-  local FRAME_NAMES     = CONST.RPUF.FRAMES.NAMES;
+  local FRAME_NAMES     = CONST.RPUF.FRAME_NAMES;
   local Utils           = RPTAGS.utils;
   local Config          = Utils.config;
-  local initializePanel = Utils.frames.initializePanel;
+  local initializePanel = Utils.frames.initialize_panel;
+  local RPUF_GetLayout  = Utils.frames.RPUF_GetLayout;
   local titlecase       = Utils.text.titlecase;
   local toRGB           = Utils.color.hexaToNumber;
 
-  local panelInfo   =
-  { name            =
-    { setting       = "NAMEPANEL",
-      tooltip       = "NAME_TOOLTIP",
-      use_font      = "NAMEPANEL"
-    },
-    info            =
-    { setting       = "INFOPANEL",
-      tooltip       = "INFO_TOOLTIP"
-    },
-    details         =
-    { setting       = "DETAILPANEL",
-      tooltip       = "DETAIL_TOOLTIP"
-    },
-    icon1           =
-    { setting       = "ICON_1",
-      tooltip       = "ICON_1_TOOLTIP"
-    },
-    icon2           =
-    { setting       = "ICON_2",
-      tooltip       = "ICON_2_TOOLTIP"
-    },
-    icon3           =
-    { setting       = "ICON_3",
-      tooltip       = "ICON_3_TOOLTIP"
-    },
-    icon4           =
-    { setting       = "ICON_4",
-      tooltip       = "ICON_4_TOOLTIP"
-    },
-    icon5           =
-    { setting       = "ICON_5",
-      tooltip       = "ICON_5_TOOLTIP"
-    },
-    icon6           =
-    { setting       = "ICON_6",
-      tooltip       = "ICON_6_TOOLTIP"
-    },
-    portrait        =
-    { no_tag_string = true,
-      tooltip       = "PORTRAIT_TOOLTIP",
-      portrait      = true
-    },
-    statusBar       =
-    { setting       = "STATUSPANEL",
-      tooltip       = "STATUS_TOOLTIP",
-      has_statusBar = true,
-      has_own_align = true,
-    },
-  };
-
+  local panelInfo   = CONST.RPUF.PANEL_INFO;
   -- rpuf "style" for oUF -----------------------------------------------------------------------------------------------------
   local function Constructor(self, unit)
 
     -- -- basics ----------------------------------------------------------------------------------------------------------------
-    self.unit      = unit;
+    self.unit       = unit;
     local panels    = {};
     local tooltips  = {};
     local tagStrs   = {}
     local frameName = FRAME_NAMES[unit:upper()];
-    local public = {};
+    local public    = {};
 
     -- -- configuration, when per-unit ------------------------------------------------------------------------------------------
     local function confGet(setting)
@@ -95,12 +46,11 @@ function(self, event, ...)
 
 
     -- -- information functions -------------------------------------------------------------------------------------------------
-    -- function self.GetName(   self )           return frameName                                   end;
-    local function getUnit(caps) return caps and unit:upper() or unit:lower(); end;
-    local function getPanels() return panels end;
-
-    local function getLayout()         return Config.get( unit:upper() .. "LAYOUT"); end;
-    local function getPanel(panelName) return panels[panelName] end;
+    -- function self.GetName(   self ) return frameName end;
+    local function getUnit(caps)       return caps and unit:upper() or unit:lower(); end;
+    local function getPanels()         return panels                                 end;
+    local function getLayoutName()     return Config.get( unit:upper() .. "LAYOUT"); end;
+    local function getPanel(panelName) return panels[panelName]                      end;
 
     local function getTooltipColor()
       local r, g, b = toRGB(confGet("COLOR_RPUF_TOOLTIP"))
@@ -312,7 +262,19 @@ function(self, event, ...)
       self:UpdateAllElements("now");
     end;
 
+    local function updateLayout()
+      local layoutName = getLayoutName()
+      local layout = RPUF_GetLayout(layoutName);
+      if not layout then error("Unknown layout in updateLayout"); end;
+
+      for funcName, func in pairs(layout.frame_methods)
+      do  self[funcName] = func;
+      end;
+      for_each_panel("SetLayout") 
+    end;
+
     local function updateEverything()
+      updateLayout();
       updateFrameSize();
       updatePanelPlacement();
       updatePortrait();
@@ -331,7 +293,7 @@ function(self, event, ...)
     public.ConfSet               = confSet;
     public.Gap                   = gap;
     public.GetFont               = getFont;
-    public.GetLayout             = getLayout;
+    public.GetLayoutName         = getLayoutName;
     public.GetTooltipColor       = getTooltipColor;
     public.GetUnit               = getUnit;
     public.PanelGet              = panelGet;
@@ -342,6 +304,7 @@ function(self, event, ...)
     public.UpdateFrameLock       = updateFrameLock;
     public.UpdateFrameSize       = updateFrameSize;
     public.UpdateFrameVisibility = updateFrameVisibility;
+    public.UpdateLayout          = updateLayout;
     public.UpdatePanelPlacement  = updatePanelPlacement;
     public.UpdatePanelVisibility = updatePanelVisibility;
     public.UpdatePortrait        = updatePortrait;
@@ -353,6 +316,7 @@ function(self, event, ...)
       if   public[funcName]
       then return public[funcName](...)
       else error("No public function " .. funcName)
+      end;
     end;
 
     -- initialization

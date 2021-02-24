@@ -6,7 +6,7 @@ Module:WaitUntil("MODULE_G",
 function(self, event, ...)
 
   local loc             = RPTAGS.utils.locale.loc;
-  local frameNames      = RPTAGS.CONST.RPUF.FRAMES.NAMES;
+  local frameNames      = RPTAGS.CONST.RPUF.FRAME_NAMES;
   local Get             = RPTAGS.utils.config.get;
   local Set             = RPTAGS.utils.config.set;
   local Default         = RPTAGS.utils.config.default;

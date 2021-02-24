@@ -310,6 +310,7 @@ function(self, event, ...)
 
   local ourConfigBlanks = { "LINK_FRAME", "SHOW_FRAME", };
 
+  local ourUrls = {};
   --[[
   local ourConstants   =
   local ourIcons       =

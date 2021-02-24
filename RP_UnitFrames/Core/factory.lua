@@ -7,7 +7,7 @@ function(self, event, ...)
 
   local oUF         = _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- auto-added by oUF
   local CONST       = RPTAGS.CONST;
-  local frameNames  = CONST.RPUF.FRAMES.NAMES;
+  local frameNames  = CONST.RPUF.FRAME_NAMES;
   local oUF_style   = CONST.RPUF.OUF_STYLE;
 
   function oUF:DisableBlizzard() end; -- this prevents oUF from disabling oUF

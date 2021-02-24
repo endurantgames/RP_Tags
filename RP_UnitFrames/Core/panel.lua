@@ -9,7 +9,7 @@ function(self, event, ...)
   local Utils              = RPTAGS.utils;
   local Config             = Utils.config;
   local frameUtils         = Utils.frames;
-  local FRAME_NAMES        = CONST.RPUF.FRAMES.NAMES;
+  local FRAME_NAMES        = CONST.RPUF.FRAME_NAMES;
   local eval               = Utils.tags.eval;
   local split              = Utils.text.split;
 
@@ -27,7 +27,7 @@ function(self, event, ...)
 
   local function initialize_panel(panel, panelName, opt)
 
-    function self.Public(self, ...) return self:GetParent().Public(funcName ...) end;
+    function self.Public(self, ...) return self:GetParent().Public(funcName, ...) end;
     --   -- passthrough ---------------------------------------------------------------------------------------
     
     
