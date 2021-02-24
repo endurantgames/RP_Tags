@@ -169,7 +169,7 @@ local function targetMeta(u, request) if not u or not UnitIsPlayer(u) then retur
     class       = RPTAGS.utils.get.text.class,
     color       = RPTAGS.utils.get.color.name,
     icon        = RPTAGS.utils.get.icon.unit,
-    gender      = RPTAGS.utils.utils.get.text.gender,
+    gender      = RPTAGS.utils.get.text.gender,
     gendercolor = RPTAGS.utils.get.color.gender,
     gendericon  = RPTAGS.utils.get.icon.gender,
     race        = RPTAGS.utils.get.text.race,

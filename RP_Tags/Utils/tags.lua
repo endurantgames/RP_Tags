@@ -1,6 +1,5 @@
 local RPTAGS = RPTAGS;
 
-
 RPTAGS.queue:WaitUntil("after UTILS_LOCALE",
 function(self, event, ...)
 
