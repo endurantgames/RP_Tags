@@ -1,8 +1,3 @@
--- RP Tags
--- by Oraibi, Moon Guard (US) server
--- -------------------------------------------------
--- This work is licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0)
-
 local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
@@ -10,325 +5,365 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("MODULE_J",
 function(self, event, ...)
 
-  local oUF                = _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- auto-added by oUF
-  local CONST              = RPTAGS.CONST;
-  local Utils              = RPTAGS.utils;
-  local Config             = Utils.config;
-  local frameUtils         = Utils.frames;
-  local FRAME_NAMES        = CONST.FRAMES.NAMES;
-  local eval               = Utils.tags.eval;
-  local split              = Utils.text.split;
-  local oUF_style          = CONST.RPUF.OUF_STYLE;
+  local oUF             = _G[GetAddOnMetadata(addOnName, "X-oUF")];
+  local LibSharedMedia  = LibStub("LibSharedMedia-3.0");
+  local CONST           = RPTAGS.CONST;
+  local oUF_style       = CONST.RPUF.OUF_STYLE;
+  local FRAME_NAMES     = CONST.FRAMES.NAMES;
+  local Utils           = RPTAGS.utils;
+  local Config          = Utils.config;
+  local initializePanel = Utils.frames.initializePanel;
+  local titlecase       = Utils.text.titlecase;
+  local toRGB           = Utils.color.hexaToNumber;
 
-  local getLeft            = frameUtils.panels.layout.getLeft;
-  local getTop             = frameUtils.panels.layout.getTop;
-  local getPoint           = frameUtils.panels.layout.getPoint;
-  local getHeight          = frameUtils.panels.size.getHeight;
-  local getWidth           = frameUtils.panels.size.getWidth;
-  local LibSharedMedia     = LibStub("LibSharedMedia-3.0");
-  local initialzize_panel  = frameUtils.panels.initialize;
-  local titlecase          = Utils.text.titlecase;
-
-  local getUF_Size         = frameUtils.size.get;
-
-  local scaleFrame         = frameUtils.size.scale.set;
-  local toRGB              = Utils.color.hexaToNumber;
-  local openEditor         = Utils.config.openEditor;
-
-  local panelList =
-  { name      = { setting          = "NAMEPANEL",   tooltip = "NAME_TOOLTIP", use_font = "NAMEPANEL"      },
-    info      = { setting          = "INFOPANEL",   tooltip = "INFO_TOOLTIP"      },
-    details   = { setting          = "DETAILPANEL", tooltip = "DETAIL_TOOLTIP"    },
-    icon1     = { setting          = "ICON_1",      tooltip = "ICON_1_TOOLTIP"    },
-    icon2     = { setting          = "ICON_2",      tooltip = "ICON_2_TOOLTIP"    },
-    icon3     = { setting          = "ICON_3",      tooltip = "ICON_3_TOOLTIP"    },
-    icon4     = { setting          = "ICON_4",      tooltip = "ICON_4_TOOLTIP"    },
-    icon5     = { setting          = "ICON_5",      tooltip = "ICON_5_TOOLTIP"    },
-    icon6     = { setting          = "ICON_6",      tooltip = "ICON_6_TOOLTIP"    },
-    portrait  = { no_tag_string    = true,          tooltip = "PORTRAIT_TOOLTIP",
-                  portrait         = true                                         },
-    statusBar = { setting          = "STATUSPANEL", tooltip = "STATUS_TOOLTIP",
-                  has_statusBar = true,
-                  has_own_align    = true,                                        },
+  local panelInfo   =
+  { name            =
+    { setting       = "NAMEPANEL",
+      tooltip       = "NAME_TOOLTIP",
+      use_font      = "NAMEPANEL"
+    },
+    info            =
+    { setting       = "INFOPANEL",
+      tooltip       = "INFO_TOOLTIP"
+    },
+    details         =
+    { setting       = "DETAILPANEL",
+      tooltip       = "DETAIL_TOOLTIP"
+    },
+    icon1           =
+    { setting       = "ICON_1",
+      tooltip       = "ICON_1_TOOLTIP"
+    },
+    icon2           =
+    { setting       = "ICON_2",
+      tooltip       = "ICON_2_TOOLTIP"
+    },
+    icon3           =
+    { setting       = "ICON_3",
+      tooltip       = "ICON_3_TOOLTIP"
+    },
+    icon4           =
+    { setting       = "ICON_4",
+      tooltip       = "ICON_4_TOOLTIP"
+    },
+    icon5           =
+    { setting       = "ICON_5",
+      tooltip       = "ICON_5_TOOLTIP"
+    },
+    icon6           =
+    { setting       = "ICON_6",
+      tooltip       = "ICON_6_TOOLTIP"
+    },
+    portrait        =
+    { no_tag_string = true,
+      tooltip       = "PORTRAIT_TOOLTIP",
+      portrait      = true
+    },
+    statusBar       =
+    { setting       = "STATUSPANEL",
+      tooltip       = "STATUS_TOOLTIP",
+      has_statusBar = true,
+      has_own_align = true,
+    },
   };
 
-
   -- rpuf "style" for oUF -----------------------------------------------------------------------------------------------------
-  local function RP_UnitFrame_Constructor(self, unit)
+  local function Constructor(self, unit)
 
     -- -- basics ----------------------------------------------------------------------------------------------------------------
     self.unit      = unit;
-    self.panels    = {};
-    self.toolTips  = {};
-    self.tagStrs   = {}
-    self.frameName = FRAME_NAMES[unit:upper()];
+    local panels    = {};
+    local tooltips  = {};
+    local tagStrs   = {}
+    local frameName = FRAME_NAMES[unit:upper()];
+    local public = {};
 
     -- -- configuration, when per-unit ------------------------------------------------------------------------------------------
-    function self.ConfGet(self, setting)
-      if    Config.get("LINK_FRAME_" .. self.unit:upper())
+    local function confGet(setting)
+      if    Config.get("LINK_FRAME_" .. unit:upper())
       then return Config.get(setting)
-      else return Config.get(setting .. "_" .. self.unit:upper())
+      else return Config.get(setting .. "_" .. unit:upper())
       end;
     end;
 
-    function self.ConfSet(self, setting, value)
-      if   Config.get("LINK_FRAME_" .. self.unit:upper())
+    local function confSet(setting, value)
+      if   Config.get("LINK_FRAME_" .. unit:upper())
       then Config.set(setting, value);
-      else Config.set(setting .. "_" .. self.unit:upper(), value);
+      else Config.set(setting .. "_" .. unit:upper(), value);
       end;
     end;
+
 
     -- -- information functions -------------------------------------------------------------------------------------------------
-    function self.GetName(   self )           return self.frameName                                   end;
-    function self.GetUnit(   self, caps)      return caps and self.unit:upper() or self.unit:lower(); end;
-    function self.GetLayout( self )           return Config.get( self:GetUnit(true) .. "LAYOUT");     end;
-    function self.GetPanel(  self, panelName) return self.panels[panelName]                           end;
-    function self.GetPanels( self )           return self.panels                                      end;
+    -- function self.GetName(   self )           return frameName                                   end;
+    local function getUnit(caps) return caps and unit:upper() or unit:lower(); end;
+    local function getPanels() return panels end;
 
-    function self.GetTooltipColor(self)
+    local function getLayout()         return Config.get( unit:upper() .. "LAYOUT"); end;
+    local function getPanel(panelName) return panels[panelName] end;
 
-      local r, g, b = toRGB(self:ConfGet("COLOR_RPUF_TOOLTIP"))
+    local function getTooltipColor()
+      local r, g, b = toRGB(confGet("COLOR_RPUF_TOOLTIP"))
       return r / 255, g / 255, b / 255;
-
     end;
 
-    function self.GetFont(self)
-
-      return LibSharedMedia:Fetch("font", self:ConfGet("FONTNAME")) or
+    local function getFont()
+      return LibSharedMedia:Fetch("font", confGet("FONTNAME")) or
              LibSharedMedia:Fetch("font", "Arial Narrow"),
-             self:ConfGet("FONTSIZE");
-
+             confGet("FONTSIZE");
     end;
 
     -- -- frame size ------------------------------------------------------------------------------------------------------------
-    function self.SetUF_Size(self)
-
-      local width, height = getUF_Size( self:GetLayout() );
+    local function updateFrameSize()
+      local width, height = self:GetDimensions();
       self:SetSize( width, height);
-
     end;
 
     -- -- backdrop --------------------------------------------------------------------------------------------------------------
-    self.bg = CreateFrame("Frame", nil, self, BackdropTemplateMixin and "BackdropTemplate");
-    self.bg:SetAllPoints();
-    self.bg:SetBackdrop({ bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border" });
-    self.bg:Show();
+    local backdrop = CreateFrame("Frame", nil, self, BackdropTemplateMixin and "BackdropTemplate");
+    backdrop:SetAllPoints();
+    backdrop:SetBackdrop({ bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border" });
+    backdrop:Show();
 
     -- -- state driver registration ---------------------------------------------------------------------------------------------
-    function self.GenerateSSD_String(self)
+    local function generateSSDString()
       local conditions = {};
-      if self:ConfGet("DISABLE_RPUF") then return "hide" end;
+      if confGet("DISABLE_RPUF") then return "hide" end;
       local hash =
-      { ["RPUF_HIDE_DEAD"]      = "[dead] hide",
+      { ["RPUF_HIDE_DEAD"     ] = "[dead] hide",
         ["RPUF_HIDE_PETBATTLE"] = "[petbattle] hide",
-        ["RPUF_HIDE_VEHICLE"]   = "[vehicleui] hide",
-        ["RPUF_HIDE_PARTY"]     = "[group:party] hide",
-        ["RPUF_HIDE_RAID"]      = "[group:raid] hide",
-        ["RPUF_HIDE_COMBAT"]    = "[combat] hide",
+        ["RPUF_HIDE_VEHICLE"  ] = "[vehicleui] hide",
+        ["RPUF_HIDE_PARTY"    ] = "[group:party] hide",
+        ["RPUF_HIDE_RAID"     ] = "[group:raid] hide",
+        ["RPUF_HIDE_COMBAT"   ] = "[combat] hide",
       };
-      for k, v in pairs(hash) do if self:ConfGet(k) then table.insert(conditions, v) end; end;
+      for k, v in pairs(hash) do if confGet(k) then table.insert(conditions, v) end; end;
 
       table.insert(conditions, "[@" .. self.unit .. ",exists] show");
       table.insert(conditions, "hide");
       return table.concat(conditions, ";")
     end;
 
-    function self.Start_SSD(self)
+    local function updateFrameVisibility(self)
       UnregisterStateDriver(self, "visibility");
-      RegisterStateDriver(self,   "visibility", self:GenerateSSD_String());
+      RegisterStateDriver(self,   "visibility", generateSSDString());
     end;
 
     -- -- unit frame appearance -------------------------------------------------------------------------------------------------
-    function self.StyleFrame(self)
+    local function updateFrameAppearance()
 
-      local border     = LibSharedMedia:Fetch("border",     self:ConfGet("RPUF_BORDER")) or 
+      local border     = LibSharedMedia:Fetch("border",     confGet("RPUF_BORDER")) or
                          LibSharedMedia:Fetch("border",     "Blizzard Tooltip");
-      local background = LibSharedMedia:Fetch("background", self:ConfGet("RPUF_BACKDROP")) or 
+      local background = LibSharedMedia:Fetch("background", confGet("RPUF_BACKDROP")) or
                          LibSharedMedia:Fetch("background", "Blizzard Tooltip");
 
-      local a = self:ConfGet( "RPUFALPHA" );
-      if a > 1 then a = a / 100; self:ConfSet( "RPUFALPHA") end;
+      local a = confGet( "RPUFALPHA" );
+      if a > 1 then a = a / 100; confSet( "RPUFALPHA") end;
 
-      local r, g, b      = toRGB(self:ConfGet("COLOR_RPUF"))
+      local r, g, b      = toRGB(confGet("COLOR_RPUF"))
 
       local insent = 5;
 
-      self.bg:SetBackdrop({ bgFile = background, edgeFile = border, edgeSize = 10, insets = { left = inset, right = inset, top = inset, bottom = 5 }});
-      self.bg:SetBackdropColor( r / 255, g / 255, b / 255, a );
+      backdrop:SetBackdrop({ bgFile = background, edgeFile = border, edgeSize = 10, insets = { left = inset, right = inset, top = inset, bottom = 5 }});
+      backdrop:SetBackdropColor( r / 255, g / 255, b / 255, a );
 
     end;
 
     -- -- panels ----------------------------------------------------------------------------------------------------------------
-    function self.CreatePanel(self, panelName, opt)
-      opt = opt or {};
-      local panel
-
-      panel = CreateFrame("Frame", self:GetName().. titlecase(panelName), self);
+    local function createPanel(panelName, info)
+      local panel = CreateFrame("Frame", frameName .. titlecase(panelName), self);
 
       panel.unit       = unit;
       panel.name       = panelName;
-      panel.frameName  = self:GetName() .. titlecase(panelName);
-      panel.setting    = opt.setting;
+      panel.frameName  = frameName .. titlecase(panelName);
+      panel.setting    = info.setting;
+      panel.info = info;
 
-      initialize_panel(panel);
-
-      self.panels[panelName] = panel; 
+      initializePanel(panel);
+      panels[panelName] = panel;
     end; -- create panel
 
     -- collective functions, i.e. they iterate through the panels
-    
+
     local function for_each_panel(func, ...)
-      for _, panel in pairs( self:GetPanels() )
-      do  if   panel[func] and type(panel[func]) ~= "function" 
-          then panel[func](panel, ...); 
+      for _, panel in pairs(panels)
+      do  if   panel[func] and type(panel[func]) ~= "function"
+          then panel[func](panel, ...);
           end;
       end;
-    end; 
+    end;
 
-    function self.PlacePanels(   self ) for_each_panel( "Place"       ); end;
-    function self.SetPanelVis(   self ) for_each_panel( "SetVis"      ); end;
-    function self.SetFont(       self ) for_each_panel( "SetFont"     ); end;
-    function self.SetTagStrings( self ) for_each_panel( "SetTagString"); end;
+    local function updatePanelPlacement() for_each_panel("Place"  ); end;
+    local function updatePanelVisibility() for_each_panel("SetVis" ); end;
+    local function updateFont()     for_each_panel("SetFont"); end;
 
-    function self.SetTextColor(self)
-      local r, g, b = toRGB(self:ConfGet("COLOR_RPUF_TEXT"))
+    local function updateTagStrings() for_each_panel("SetTagString"); end;
+
+    local function updateTextColor()
+      local r, g, b = toRGB(confGet("COLOR_RPUF_TEXT"))
       for_each_panel("SetTextColor", r / 255, g / 255, b / 255);
     end;
 
-    function self.PanelGet(self, funcName, panel)
+    local function panelGet(funcName, panel)
       panel = (type(panel) == "string") and self:GetPanel(panel);
       funcName = funcName:match("^GetPanel") and funcName or ("GetPanel" .. funcName);
 
-      if     not panel 
-      then   error("width requested for unknown panel") 
-      elseif type(funcName) ~= "string" 
-      then   error("no funcName given") 
-      elseif type(panel[funcName]) ~= "function" 
-      then   error("unknown function") 
+      if     not panel
+      then   error("width requested for unknown panel")
+      elseif type(funcName) ~= "string"
+      then   error("no funcName given")
+      elseif type(panel[funcName]) ~= "function"
+      then   error("unknown function")
       end;
 
       return panel[funcName](self);
     end;
 
-    function self.Gap(self, num) return self:ConfGet("GAPSIZE") * (num or 1) end;
-    
-    -- -- frame locking ---------------------------------------------------------------------------------------------------------
-    function self.IsFrameLocked(   self )       return Config.get("LOCK_FRAMES_" .. self:GetUnit(true)) end;
-    function self.SetFrameLock(    self, value) self:ConfSet("LOCK_FRAMES", value); end;
-    function self.ToggleFrameLock( self )       self:SetLock(not self:IsFrameLocked() ); end;
+    local function gap(num) return confGet("GAPSIZE") * (num or 1) end;
 
-    function self.ApplyFrameLock(self)
-      if   self:IsFrameLocked() 
-      then self.padlock:Hide() self:RegisterForDrag(nil);
-      else self.padlock:Show() self:RegisterForDrag("LeftButton");
+    -- -- frame locking ---------------------------------------------------------------------------------------------------------
+    local function isFrameLocked()     return Config.get("LOCK_FRAMES_" .. unit:upper()) end;
+    local function setFrameLock(value) confSet("LOCK_FRAMES", value); end;
+    local function toggleFrameLock()   setFrameLock(not isFrameLocked() ); end;
+
+    local padlock = CreateFrame("Button", nil, self);
+    padlock:SetSize(24, 24);
+    padlock:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT");
+    padlock:SetNormalTexture("Interface\\PetBattles\\PetBattle-LockIcon.PNG");
+    padlock:SetClampedToScreen(true);
+
+    local function updateFrameLock()
+      if   isFrameLocked()
+      then padlock:Hide() self:RegisterForDrag(nil);
+      else padlock:Show() self:RegisterForDrag("LeftButton");
       end;
     end;
 
-    -- -- padlock ---------------------------------------------------------------------------------------------------------------
-    self.padlock = CreateFrame("Button", nil, self);
-    self.padlock:SetSize(24, 24);
-    self.padlock:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT");
-    self.padlock:SetNormalTexture("Interface\\PetBattles\\PetBattle-LockIcon.PNG");
-    self.padlock:SetClampedToScreen(true);
-
-    self.padlock:SetScript("OnClick", function(self) self:GetParent():SetFrameLock(true); end);
+    padlock:SetScript("OnClick", function() setFrameLock(true); end);
 
     -- -- frame moving ----------------------------------------------------------------------------------------------------------
-    self:SetMovable(true);
-    self:SetClampedToScreen(true);
 
-    function self.GetDefaultCoords(self) return RPTAGS.CONST.RPUF.COORDS[self.unit:lower()] end;
-    function self.GetSavedCoords(self) return RP_UnitFramesDB.coords[self.unit] or self:GetDefaultCoords() end;
-    function self.RestoreCoords(self) self:SetCoords( self:GetSavedCoords() ); end;
-
-    function self.SaveCoords(self)
+    local function saveCoords()
       local x, y = self:GetCenter();
-      if x and y then RP_UnitFramesDB.coords[self.unit:lower()] = { x, y }; end;
+      if x and y then RP_UnitFramesDB.coords[unit] = { x, y }; end;
     end;
 
-    function self.SetCoords(self, coords)
-      coords = coords or self:GetSavedCoords();
+    local function getDefaultCoords() return RPTAGS.CONST.RPUF.COORDS[unit] end;
+    local function getSavedCoords() return RP_UnitFramesDB.coords[unit] or getDefaultCoords() end;
+
+    local function setCoords(coords)
+      coords = coords or getSavedCoords();
       local x, y = unpack(coords);
       if not x or not y then return end;
       self:ClearAllPoints();
       self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y);
-      self:SaveCoords();
+      saveCoords();
     end
 
-    self:SetScript("OnDragStart", function(self, button, ...) if button == "LeftButton" then self:StartMoving() end; end);
-    self:SetScript("OnDragStop",  function(self, button, ...) self:StopMovingOrSizing(); self:SaveCoords();          end);
-
-    -- -- frame updating --------------------------------------------------------------------------------------------------------
-    function self.RefreshContentNow() 
-      self:UpdateAllElements("now"); 
+    local function onDragStart(self, button)
+      if button == "LeftButton" then self:StartMoving() end;
     end;
 
-    function self.StyleStatusBar(self)
-      local statusBar = self:GetPanel("statusBar");
-      local textureFile = LibSharedMedia:Fetch("statusbar", self:ConfGet("STATUS_TEXTURE")) or
+    local function onDragStop(self)
+      self:StopMovingOrSizing();
+      saveCoords();
+    end;
+
+    local function updateStatusBar()
+      local statusBar = panels["statusBar"];
+      local textureFile = LibSharedMedia:Fetch("statusbar", confGet("STATUS_TEXTURE")) or
               LibSharedMedia:Fetch("statusbar", "Blizzard");
 
       statusBar:SetStatusbar(textureFile);
 
-      local a = self:ConfGet( "RPUFALPHA" );
+      local a = confGet( "RPUFALPHA" );
 
-      if a > 1 then a = a / 100; self:ConfSet( "RPUFALPHA", a) end;
+      if a > 1 then a = a / 100; confSet( "RPUFALPHA", a) end;
 
-      local r, g, b = toRGB(self:ConfGet("COLOR_STATUS"))
+      local r, g, b = toRGB(confGet("COLOR_STATUS"))
       statusBar:SetVertexColor( r / 255, g / 255, b / 255, a );
 
-      statusBar.text:SetJustifyH( self:ConfGet("STATUS_ALIGN" ))
+      statusBar.text:SetJustifyH( confGet("STATUS_ALIGN" ))
       statusBar.text:SetJustifyV("CENTER");
-      statusBar:SetHeight( self:ConfGet("STATUSHEIGHT"));
+      statusBar:SetHeight( confGet("STATUSHEIGHT"));
 
-      r, g, b = toRGB(self:ConfGet("COLOR_STATUS_TEXT"));
+      r, g, b = toRGB(confGet("COLOR_STATUS_TEXT"));
       statusBar:SetTextColor(r / 255, g / 255, b / 255);
 
     end;
 
-    function self.UpdateThePortrait(self)
-
-      print (self.unit .. "portrait updating now");
-
-      local portraitPanel = self:GetPanel("portrait");
-      self.Portrait:SetUnit( self:GetUnit() );
-
+    local function updatePortrait()
+      print (unit .. " portrait updating now");
+      local portraitPanel = panels["portrait"];
+      self.Portrait:SetUnit(unit);
       local border     = LibSharedMedia:Fetch("border", Config.get("PORTRAIT_BORDER"))
                          or LibSharedMedia:Fetch("border", "Blizzard Achievement Wood");
       local background = LibSharedMedia:Fetch("background", Config.get("PORTRAIT_BG"))
                          or LibSharedMedia:Fetch("Blizzard Rock");
-
       portraitPanel.pictureFrame:SetBackdrop(
       { bgFile   = background,
         edgeFile = border,
         edgeSize = 8,
         insets   = { left = 3, right = 3, top = 3, bottom = 3 }
       });
-
     end;
 
-    function self.UpdateEverything(self)
-      self:Initialize();
-      self:SetUF_Size();
-      self:PlacePanels();
-      self:UpdateThePortrait();
-      self:SetPanelVis();
-      self:SetFont();
-      self:SetTextColor();
-      self:StyleStatusBar();
-      self:ApplyFrameLock();
-      self:StyleFrame();
-      self:SetTagStrings();
-      self:RefreshContentNow();
+    local function updateContent()
+      self:UpdateAllElements("now");
     end;
 
-    for panelName, opt in pairs( panelList ) do self:CreatePanel( panelName, opt); end;
-    self:Start_SSD();
-    self:RestoreCoords();
-    
+    local function updateEverything()
+      updateFrameSize();
+      updatePanelPlacement();
+      updatePortrait();
+      updatePanelVisibility();
+      updateFrameVisibility();
+      updateFonts();
+      updateTextColor();
+      updateStatusBar();
+      updateFrameLock();
+      updateFrameAppearance();
+      updateTagStrings();
+      updateContent();
+    end;
+
+    public.ConfGet               = confGet;
+    public.ConfSet               = confSet;
+    public.Gap                   = gap;
+    public.GetLayout             = getLayout;
+    public.GetTooltipColor       = getTooltipColor;
+    public.GetUnit               = getUnit;
+    public.PanelGet              = panelGet;
+    public.UpdateContent         = updateContent;
+    public.UpdateEverything      = updateEverything;
+    public.UpdateFont            = updateFont;
+    public.UpdateFrameAppearance = updateFrameAppearance;
+    public.UpdateFrameLock       = updateFrameLock;
+    public.UpdateFrameSize       = updateFrameSize;
+    public.UpdateFrameVisibility = updateFrameVisibility;
+    public.UpdatePanelPlacement  = updatePanelPlacement;
+    public.UpdatePanelVisibility = updatePanelVisibility;
+    public.UpdatePortrait        = updatePortrait;
+    public.UpdateStatusBar       = updateStatusBar;
+    public.UpdateTagStrings      = updateTagStrings;
+    public.UpdateTextColor       = updateTextColor;
+
+    function self.Public(self, funcName, ...)
+      if   public[funcName]
+      then return public[funcName](...)
+    end;
+
+    -- initialization
+    self:SetMovable(true);
+    self:SetClampedToScreen(true);
+    setCoords(getSavedCoords());
+    for name, info in pairs( panelInfo ) do createPanel( name, info); end;
+    self:SetScript("OnDragStart", onDragStart);
+    self:SetScript("OnDragStop",  onDragStop);
+
   end; -- style definition
 
-  oUF:RegisterStyle(oUF_style, RP_UnitFrame_Constructor);
+  oUF:RegisterStyle(oUF_style, Constructor);
 
 end);
 

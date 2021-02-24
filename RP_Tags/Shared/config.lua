@@ -12,11 +12,11 @@ function(self, event, ...)
   
   RPTAGS.utils.config = RPTAGS.utils.config or {};
   
-  local CONST         = RPTAGS.CONST;
-  local Utils         = RPTAGS.utils;
-  local Config        = Utils.config;
-  local Default       = CONST.CONFIG.DEFAULTS;
-  local db            = RP_TagsDB.settings;
+  local CONST   = RPTAGS.CONST;
+  local Utils   = RPTAGS.utils;
+  local Config  = Utils.config;
+  local Default = CONST.CONFIG;
+  local db      = RP_TagsDB.settings;
 
   local function keyIsValid(key) if not key then return false end;
     if   RP_TagsDB.settings[key]

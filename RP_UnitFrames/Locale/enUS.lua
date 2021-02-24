@@ -1,7 +1,7 @@
 -- US English localization ==========================================================================================================================================
 -- ------------------ - core app strings
 
-local addOnName, addOn = ...
+local addOnName, ns = ...
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 

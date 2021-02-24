@@ -1,7 +1,6 @@
-local RPTAGS                        = RPTAGS
-local addOnName, ns                 = ...;
-
-Module                              = RPTAGS.queue:GetModule(addOnName);
+local RPTAGS        = RPTAGS
+local addOnName, ns = ...;
+local Module        = RPTAGS.queue:GetModule(addOnName);
 
 Module:WaitUntil("ADDON_INIT",
 function(self, event, ...)

@@ -8,6 +8,6 @@
     <Script file="frame.lua"   />
     <Script file="init.lua"    />
     <Script file="keybind.lua" />
-    <Script file="panel.lua "  />
+    <Script file="panel.lua"   />
 
 </Ui>

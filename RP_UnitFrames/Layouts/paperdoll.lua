@@ -1,14 +1,8 @@
--- RP Tags
--- by Oraibi, Moon Guard (US) server
--- ------------------------------------------------------------------------------
--- This work is licensed under the Creative Commons Attribution 4.0 International
--- (CC BY 4.0) license. 
-
 local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("after MODULE_E", -- depends on size functions
+Module:WaitUntil("MODULE_F",
 function(self, event, ...)
 
   local layout = RPTAGS.utils.frames.RPUF_NewLayout("paperdoll", "large");
