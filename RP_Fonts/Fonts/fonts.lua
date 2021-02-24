@@ -16,7 +16,6 @@ local fontList=
   --               Fam  = "FAM", File = "Regular.ttf" },
   SCPBla       = { Load = 0,     Name = "Source Code Pro Black",              
                    Fam  = "SCP", File = "Black.ttf" }, 
-                   Lic  = "OFL", Who  = 
   SCPBlaIta    = { Load = 0,     Name = "Source Code Pro Black Italic",             
                    Fam  = "SCP", File = "BlackItalic.ttf" }, 
   SCPBol       = { Load = 1,     Name = "Source Code Pro Bold",               
