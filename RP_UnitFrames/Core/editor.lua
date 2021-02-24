@@ -8,8 +8,8 @@ function(self, event, ...)
   -- We run through the registered fonts to see which ones are fixed-width
   -- and thus suitable for use in the tag editor
   --
-  RPTAGS.CONST.FONT.FIXED_WIDTH = RPTAGS.CONST.FONT.FIXED_WIDTH or {};
-
+  RPTAGS.cache.Fonts = RPTAGS.cache.Fonts or {};
+  RPTAGS.cache.Fonts.fixed = RPTAGS.cache.Fonts.fixed or {};
   local frame = CreateFrame("Frame");
   local LibSharedMedia = LibStub("LibSharedMedia-3.0");
 
@@ -26,7 +26,7 @@ function(self, event, ...)
 
       if   frame.www:GetUnboundedStringWidth() == frame.iii:GetUnboundedStringWidth()
       or   font:match("Source Code Pro") -- okay this is cheating a little, not sure why it's not recognized
-      then RPTAGS.CONST.FONT.FIXED_WIDTH[font] = fontData;
+      then RPTAGS.cache.Fonts.fixed[font] = fontData;
       end;
   end;
 end);

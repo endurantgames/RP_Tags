@@ -7,7 +7,7 @@ function(self, event, ...)
 
   local oUF         = _G[GetAddOnMetadata(addOnName, "X-oUF")]; -- auto-added by oUF
   local CONST       = RPTAGS.CONST;
-  local FRAME_NAMES = CONST.FRAMES.NAMES;
+  local frameNames  = CONST.RPUF.FRAMES.NAMES;
   local oUF_style   = CONST.RPUF.OUF_STYLE;
 
   function oUF:DisableBlizzard() end; -- this prevents oUF from disabling oUF
@@ -16,7 +16,7 @@ function(self, event, ...)
     function(self)
       RPTAGS.cache.UnitFrames = RPTAGS.cache.UnitFrames or {};
       self:SetActiveStyle(oUF_style)
-      for unit, frameName in pairs(CONST.FRAMES.NAMES)
+      for unit, frameName in pairs(frameNames)
       do  local u = unit:lower();
           local frame = self:Spawn(u, frameName);
           frame:SetPoint("CENTER");

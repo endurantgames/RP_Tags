@@ -9,7 +9,7 @@ function(self, event, ...)
   local Utils              = RPTAGS.utils;
   local Config             = Utils.config;
   local frameUtils         = Utils.frames;
-  local FRAME_NAMES        = CONST.FRAMES.NAMES;
+  local FRAME_NAMES        = CONST.RPUF.FRAMES.NAMES;
   local eval               = Utils.tags.eval;
   local split              = Utils.text.split;
 

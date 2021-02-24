@@ -15,7 +15,7 @@ function(self, event, ...)
   local Default           = Config.default;
   local CONST             = RPTAGS.CONST;
   local buttonList        = CONST.RPUF.EDITOR_BUTTON_LIST;
-  local fixedFonts        = CONST.FONT.FIXED_WIDTH;
+  local fixedFonts        = RPTAGS.cache.Fonts.fixed;
   local Editor            = RPTAGS.Editor;
 
   local split             = Utils.text.split;

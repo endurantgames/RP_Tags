@@ -9,7 +9,7 @@ function(self, event, ...)
   local LibSharedMedia  = LibStub("LibSharedMedia-3.0");
   local CONST           = RPTAGS.CONST;
   local oUF_style       = CONST.RPUF.OUF_STYLE;
-  local FRAME_NAMES     = CONST.FRAMES.NAMES;
+  local FRAME_NAMES     = CONST.RPUF.FRAMES.NAMES;
   local Utils           = RPTAGS.utils;
   local Config          = Utils.config;
   local initializePanel = Utils.frames.initializePanel;

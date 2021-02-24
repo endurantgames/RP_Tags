@@ -6,7 +6,7 @@ Module:WaitUntil("MODULE_G",
 function(self, event, ...)
 
   local loc             = RPTAGS.utils.locale.loc;
-  local CONST           = RPTAGS.CONST;
+  local frameNames      = RPTAGS.CONST.RPUF.FRAMES.NAMES;
   local Get             = RPTAGS.utils.config.get;
   local Set             = RPTAGS.utils.config.set;
   local Default         = RPTAGS.utils.config.default;
@@ -88,10 +88,8 @@ function(self, event, ...)
   end;
             
   local rpufColors = build_frame_colors();
-  for   unit, _ in pairs(CONST.FRAMES.NAMES)
+  for   unit, _ in pairs(frameNames)
   do    rpufColors.args[unit:lower()] = build_frame_colors(unit:lower());
   end;
   
-  addOptions(addOnName, "colors", { rpuf = rpufColors }  );
-
 end);
