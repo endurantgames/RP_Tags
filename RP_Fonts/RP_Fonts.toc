@@ -1,0 +1,13 @@
+## Interface: 90002
+## Version: 9.0.2.1 alpha 1
+## Title: rp|cff33ddffFonts|r
+## Author: Oraibi-MoonGuard
+## Notes: LibSharedMedia fonts for rp|cffdd33aarpTags|r, plus font manager 
+## OptionalDeps: RP_Tags
+## DefaultState: Enabled
+## X-URL: http://spindrift.games/rpfonts
+## X-RPQVersion: 1
+## X-RPQModuleId: rpfonts
+## X-RPQModuleType: fontManager
+
+load.xml
