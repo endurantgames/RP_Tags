@@ -330,6 +330,7 @@ function(self, event, ...)
     public.ConfGet               = confGet;
     public.ConfSet               = confSet;
     public.Gap                   = gap;
+    public.GetFont               = getFont;
     public.GetLayout             = getLayout;
     public.GetTooltipColor       = getTooltipColor;
     public.GetUnit               = getUnit;
@@ -351,6 +352,7 @@ function(self, event, ...)
     function self.Public(self, funcName, ...)
       if   public[funcName]
       then return public[funcName](...)
+      else error("No public function " .. funcName)
     end;
 
     -- initialization

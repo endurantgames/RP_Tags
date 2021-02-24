@@ -27,15 +27,16 @@ function(self, event, ...)
 
   local function initialize_panel(panel, panelName, opt)
 
+    function self.Public(self, ...) return self:GetParent().Public(funcName ...) end;
     --   -- passthrough ---------------------------------------------------------------------------------------
     
-    function self.GetUnit(   self, ... ) return self:GetParent():GetUnit(    ... ) end;
-    function self.GetLayout( self, ... ) return self:GetParent():GetLayout(  ... ) end;
-    function self.ConfGet(   self, ... ) return self:GetParent():ConfGet(    ... ) end;
-    function self.ConfSet(   self, ... ) return self:GetParent():ConfSet(    ... ) end;
-    function self.GetSetting(self, ... ) return self:GetParent():GetSetting( ... ) end;
-    function self.PanelGet(  self, ... ) return self:GetParent():PanelGet(   ... ) end;
-    function self.Gap(       self, ... ) return self:GetParent():Gap(        ... ) end;
+    
+    function self.Gap(       self, ... ) return self:GetParent():Public("Gap",       ... ) end;
+    function self.GetUnit(   self, ... ) return self:GetParent():Public("GetUnit",   ... ) end;
+    function self.GetLayout( self, ... ) return self:GetParent():Public("GetLayout", ... ) end;
+    function self.ConfGet(   self, ... ) return self:GetParent():Public("ConfGet",   ... ) end;
+    function self.ConfSet(   self, ... ) return self:GetParent():Public("ConfSet",   ... ) end;
+    function self.PanelGet(  self, ... ) return self:GetParent():Public("PanelGet",  ... ) end;
 
     --   -- general -------------------------------------------------------------------------------------------
     
@@ -101,14 +102,14 @@ function(self, event, ...)
       local font_size_hash =
       { ["extrasmall" ] = -4, ["small" ] = -2, ["medium" ] = 0, ["large" ] = 2, ["extralarge" ] = 4 };
   
-      function self.GetFont(self, ...) return self:GetParent():GetFont(...) end;
+      function self.GetFont(self, ...) return self:GetParent():Public("GetFont", ...) end;
 
       function self.AdjustFont(self, size)
         return size + (font_size_hash[ Config.get( self.setting .. "_FONTSIZE" ) or 0]);
       end;
 
       function self.GetFontSize(self, ...)
-        local _, fontSize = self:GetParent():GetFont(...);
+        local _, fontSize = self:GetFont(...);
         return fontSize;
       end;
 
@@ -172,9 +173,11 @@ function(self, event, ...)
       panel:SetScript("OnLeave", hideTooltip );
       panel.tooltip = tooltip;
        
+      function self.GetTooltipColor(self, ...) return self:GetParent():Public("GetTooltipColor", ...) end;
+
       function self.showTooltip(self, event, ...) 
         local tooltip = eval(Config.get(self.tooltip), self:GetUnit(), self:GetUnit());
-        local r, g, b = self:GetParent():GetTooltipColor();
+        local r, g, b = self:GetTooltipColor();
     
         if   self:ConfGet("MOUSEOVER_CURSOR")
         then SetCursor("Interface\\CURSOR\\Inspect.PNG");
@@ -198,7 +201,6 @@ function(self, event, ...)
         return self, ... 
       end;
   
-      function self.GetTooltipColor(self, ...) return self:GetParent():GetTooltipColor( ... ) end;
     end;
   
     --   -- context_menu --------------------------------------------------------------------------------------
@@ -224,14 +226,9 @@ function(self, event, ...)
 
       for key, func in pairs(layoutStruct.panel_methods) do self[k] = func; end; 
 
-      for key, hash in pairs(layoutStruct.panel_method_hash)
-      do  self[key] = 
-            function(self, panel)
-              if     type(panel) == "string" then panel = self:GetParent:GetPanel(panel);
-              elseif not panel               then panel = self;
-              elseif type(panel) ~= "table"  then error("unknown panel given to function " .. (key or "nil"));
-              end;
- 
+      for hashName, hashTable in pairs(layoutStruct.panel_method_hash)
+      do  self[key] =
+            function(self)
               local  item = hash[panel:GetName()];
 
               if     type(item) == "boolean" or  type(item)       == "number"   then return item 
@@ -250,7 +247,7 @@ function(self, event, ...)
   
   end;
 
-  RPTAGS.utils.panels.initialize = initialize_panel;
+  RPTAGS.utils.frames.initialize_panel = initialize_panel;
   
 end);
   
