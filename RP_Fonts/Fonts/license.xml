@@ -2,9 +2,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 
-    <Script file="Mrs_Saint_Delafield\OFL.lua" />
-    <Script file="ShareTechMono\OFL.lua" />
-    <Script file="Source_Code_Pro\OFL.lua" />
-    <Script file="Syne_Mono\OFL.lua" />
+    <Script file="Mrs_Saint_Delafield\license.lua" />
+    <Script file="ShareTechMono\license.lua" />
+    <Script file="Source_Code_Pro\license.lua" />
+    <Script file="Syne_Mono\license.lua" />
 
 </Ui>

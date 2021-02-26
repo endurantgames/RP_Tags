@@ -4,7 +4,7 @@
     <!-- order matters here -->
 
     <Include file="Lib\load.xml" />
-    <Include file="Fonts\load.xml" />
     <Script  file="RP_Fonts.lua" />
+    <Include file="Fonts\load.xml" />
 
 </Ui>

@@ -1,8 +1,11 @@
 local addOnName, ns = ...;
 
-local LSM=LibStub("LibSharedMedia-3.0");
+local LibSharedMedia=LibStub("LibSharedMedia-3.0");
 local baseFontDir = "Interface\\AddOns\\" .. addOnName .. 
                     (GetAddOnMetadata(addOnName, "X-FontDir") or "\\Media\\Fonts\\");
+
+local RP_Fonts = RP_Fonts;
+RP_Fonts.tmp = RP_Fonts.tmp or {};
 
 local family = { 
   SCP = baseFontDir .. "Source_Code_Pro\\SourceCodePro-",
@@ -53,11 +56,8 @@ local fontList=
                    Fam  = "MSD", File = "Regular.ttf" },
  };
 
-ns[addOnName .. "Cache"]         = ns[addOnName .. "Cache"]         or {};
-ns[addOnName .. "Cache"].enabled = ns[addOnName .. "Cache"].enabled or {};
-
 for fontCode, font in pairs(fontList)
-do  LSM:Register(LSM.MediaType.FONT, font.Name, family[font.Fam] .. font.File); 
-    ns[addOnName .. "Cache"].enabled[font.Name] = (font.Load == 1);
+do  LibSharedMedia:Register(LibSharedMedia.MediaType.FONT, font.Name, family[font.Fam] .. font.File); 
+    RP_Fonts.tmp[font] = { active = font.Load };
 end;
 
