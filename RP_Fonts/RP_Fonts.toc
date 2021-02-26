@@ -1,5 +1,5 @@
 ## Interface: 90002
-## Version: 9.0.2.1 alpha 1
+## Version: 9.0.2.1 alpha 2
 ## Title: rp|cff33ddffFonts|r
 ## Author: Oraibi-MoonGuard
 ## Notes: LibSharedMedia fonts for rp|cffdd33aarpTags|r, plus font manager 
