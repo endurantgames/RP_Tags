@@ -2,7 +2,7 @@
 ## Version: 9.0.2.1 alpha 2
 ## Title: rp|cff33ddffFonts|r
 ## Author: Oraibi-MoonGuard
-## Notes: LibSharedMedia fonts for rp|cffdd33aarpTags|r, plus font manager 
+## Notes: LibSharedMedia fonts for rp|cffdd33aaTags|r, with LSM font manager
 ## OptionalDeps: RP_Tags
 ## DefaultState: Enabled
 ## SavedVariables: RP_FontsDB

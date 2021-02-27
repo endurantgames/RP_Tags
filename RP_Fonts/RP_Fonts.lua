@@ -8,29 +8,27 @@ local addOnName, ns = ...;
 ns.RP_Fonts = ns.RP_Fonts or {};
 ns.RP_Fonts.tmp = ns.RP_Fonts.tmp or {};
 
-local LibSharedMedia  = LibStub("LibSharedMedia-3.0");
-local AceConfig       = LibStub("AceConfig-3.0");
-local AceConfigDialog = LibStub("AceConfigDialog-3.0");
+local LibSharedMedia    = LibStub("LibSharedMedia-3.0");
+local AceConfig         = LibStub("AceConfig-3.0");
+local AceConfigDialog   = LibStub("AceConfigDialog-3.0");
+local AceConfigRegistry = LibStub("AceConfigRegistry-3.0");
 
--- Do we have RP_Tags?
-local _, _, _, rpTagsLoadable, rpTagsReason = GetAddOnInfo("RP_Tags")
-
-if not rpTagsLoadable and (rpTagsReason == "MISSING" or rpTagsReason == "DISABLED")
-then   rpTags = false;
-else   rpTags = true; -- hey we do have RPTAGS!
-end;
+local waitingFrame = CreateFrame("Frame");
+waitingFrame:RegisterEvent("ADDON_LOADED");
+waitingFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
 
 local rpFontsTitle = GetAddOnMetadata(addOnName, "Title");
 local rpFontsDesc  = GetAddOnMetadata(addOnName, "Notes");
 
 -- constants
-local col = { 0.15, 1, 1, 0.65, 0.5 };
+local col = { 0.2, 1.5, 1, 0.5 };
 local BUILTIN = "Built-in font";
 local MANUAL = "Manually added";
 
--- Utility functions
+-- general utilities
 --
-local function stripcolor(str) return str:gsub("|cff%x%x%x%x%x%x", ""):gsub("|r", "")      end;
+local function stripcolor(str) return str:gsub("|cff%x%x%x%x%x%x", ""):gsub("|r", "") end;
+
 local function     grey(  str) return  DISABLED_FONT_COLOR_CODE .. stripcolor(str) .. "|r" end;
 local function      red(  str) return       RED_FONT_COLOR_CODE .. stripcolor(str) .. "|r" end;
 local function   yellow(  str) return    YELLOW_FONT_COLOR_CODE .. stripcolor(str) .. "|r" end;
@@ -39,12 +37,19 @@ local function bluzzard(  str) return BATTLENET_FONT_COLOR_CODE .. stripcolor(st
 local function   hilite(  str) return HIGHLIGHT_FONT_COLOR_CODE .. stripcolor(str) .. "|r" end;
 local function   normal(  str) return    NORMAL_FONT_COLOR_CODE .. stripcolor(str) .. "|r" end;
 
-local db;
+local function notify(...) print("[" .. rpFontsTitle .. "]", ...) end;
+
+-- options
+--
 local options;
 
-local function notify(...)
-  print("[" .. rpFontsTitle .. "]", ...)
+local function registerOptions()
+  AceConfigRegistry:RegisterOptionsTable(addOnName, options);
+  AceConfig:RegisterOptionsTable(  addOnName, options);
+  AceConfigDialog:AddToBlizOptions(addOnName, rpFontsTitle);
 end;
+
+local function updateOptions() AceConfigRegistry:NotifyChange(addOnName); end;
 
 local function getAddonFromPath(path) return path:match("^[iI]nterface\\[aA]dd[oO]ns\\(.-)\\") or BUILTIN; end;
 
@@ -58,9 +63,10 @@ local function isAddonLoaded(name)
 end;
 
 local function setFontStatus(font, value) 
+  local db = _G["RP_FontsDB"];
   if font.missing or not(font.loaded or font.disabled and db.Settings.LoadDisabledFonts) then return end;
 
-  if   value 
+  if   value == true
   then for fileName, file in pairs(font.file)
        do  if   file.loaded or file.disabled
            then font.active = "YES";
@@ -81,7 +87,6 @@ local function setFontStatus(font, value)
   _ = db.initialized and notify("Unable to set font " .. font .. " to " .. (value and "" or "in") .. "active.");
 end;
 
-
 local function makeAddonList(font, delim)
   local addons = {};
 
@@ -94,7 +99,7 @@ local function makeAddonList(font, delim)
       then   table.insert(addons, red(name))
       elseif addon.disabled
       then   table.insert(addons,   grey(GetAddOnMetadata(name, "Title")))
-      else   table.insert(addons, normal(GetAddOnMetadata(name, "Title")))
+      else   table.insert(addons, GetAddOnMetadata(name, "Title"))
       end;
    end;
 
@@ -102,19 +107,21 @@ local function makeAddonList(font, delim)
 end;
 
 local function makeFileList(font, delim)
+  local db = _G["RP_FontsDB"];
   local files = {}
 
   for name, file in pairs(font.file)
   do  if     file.addon == BUILTIN
-      then   table.insert(files, bluzzard(file))
+      then   table.insert(files, bluzzard(name))
       elseif file.addon == MANUAL
-      then   table.insert(files, yellow(file))
+      then   table.insert(files, yellow(name))
       elseif file.missing
-      then   table.insert(files, red(file))
+      then   table.insert(files, red(name))
       elseif file.disabled and not db.Settings.LoadDisabledFonts
-      then   table.insert(files, grey(file))
-      else   table.insert(files, file);
+      then   table.insert(files, grey(name))
+      else   table.insert(files, name);
       end;
+      print(files[#files]);
   end;
 
   return table.concat(files, delim or ", ")
@@ -138,6 +145,7 @@ local function newline(template_or_order)
 end;
 
 local function addFontToDatabase(fontName, fontFile)
+  local db = _G["RP_FontsDB"];
   if not db.Fonts[fontNane] 
   then   db.Fonts[fontName] = {}
          db.Stats.new = db.Stats.new + (db.initialized and 0 or 1);
@@ -176,9 +184,6 @@ local function addFontToDatabase(fontName, fontFile)
    font.firstSeen = font.firstSeen or time();
    font.lastSeen  = time();
 
-   -- We use "YES"/NO" instead of true/false, so we can do things like this:
-   font.active = font.active or "YES";
-
    local loaded, missing, disabled;
    for name, file in pairs(font.file)
    do  if file.loaded   then loaded   = true end;
@@ -195,11 +200,12 @@ end;
 
 local function initializeDatabase()
 
-  if not _G["RP_FontsDB"] then _G["RP_FontsDB"] = {} end;
-  db              = _G["RP_FontsDB"];
+  _G["RP_FontsDB"] = _G["RP_FontsDB"] or {};
+  local db = _G["RP_FontsDB"];
   db.Fonts        = db.Fonts or {};
 
-  db.DetailSelect = db.DetailSelect or "Morpheus";
+  db.BrowserSelect = "Morpheus";
+  db.PreviewText = nil;
 
   db.Stats        =
   { total         = 0,
@@ -214,8 +220,6 @@ local function initializeDatabase()
   db.initialized  = nil;
   db.Settings     = db.Settings or {};
 
-  return db;
-
 end;
 
 local function scanForFonts()
@@ -223,8 +227,10 @@ local function scanForFonts()
   for fontName, fontFile in pairs(LibSharedMedia:HashTable("font"))
   do  local font = addFontToDatabase(fontName, fontFile);
   end;
+end;
 
 local function applyCachedFontData()
+  local db = _G["RP_FontsDB"];
   -- load any data that we had cached prior to the DB loading
   if   ns.RP_Fonts.tmp
   then for fontName, fontData in pairs(ns.RP_Fonts.tmp)
@@ -238,232 +244,263 @@ local function applyCachedFontData()
   ns.RP_Fonts.tmp = nil;
 end;
 
-local function activateOrDeactiveFonts()
+local function activateOrDeactivateFonts()
+  local db = _G["RP_FontsDB"];
   -- activate or deactive fonts
   for name, font in pairs(db.Fonts)
-  do  print("setting", name, "to", font.active);
-      setFontStatus(font, font.active == "YES")
+  do  if     font.missing    then setFontStatus(font, false);
+      elseif font.disabled   then setFontStatus(font, false);
+      elseif font.inactive   then setFontStatus(font, false);
+      elseif not font.loaded then setFontStatus(font, false);
+      else                        setFontStatus(font, true );
+      end;
   end;
 end;
 
-local function buildFontDetails()
+local function buildFontBrowser()
+  local db = _G["RP_FontsDB"];
 
-  local function licenseAuthorNotKnown() local font = db.Fonts[db.DetailSelect]; return not font.license.person and not font.license.company; end;
+  local function buildLicenseSection()
 
-  local function licenseAuthorDetails()
-    local license = db.Fonts[db.DetailSelect].licence;
-    local text = "Copyright ";
-    if license.date then text = text .. license.date .. " " end;
-    if   license.person 
-    then text = text .. license.person .. " ";
-         if license.personEmail then text = text .. "<" .. license.personEmail .. ">" 
-            if license.personUrl then text = text .. ", " else text = text .. " "; end;
-            end;
-         if license.personUrl then text = text .. "<" .. license.personUrl .. "> " end;
-         if license.company then text = text .. ", " end;
+    local function licenseAuthorNotKnown() local font = db.Fonts[db.BrowserSelect]; return not font.license.person and not font.license.company; end;
+  
+    local function licenseAuthorBrowser()
+      local license = db.Fonts[db.BrowserSelect].license;
+      if not license then return "" end;
+      local text = "Copyright ";
+      if license.date then text = text .. license.date .. " " end;
+      if   license.person 
+      then text = text .. license.person .. " ";
+  
+           if   license.personEmail  
+           then text = text .. "<" .. license.personEmail .. ">" 
+                if license.personUrl then text = text .. ", " else text = text .. " "; end;
+           end;
+  
+           if   license.personUrl 
+           then text = text .. "<" .. license.personUrl .. "> " 
+           end;
+  
+           if license.company then text = text .. ", " end;
+      end;
+      if   license.company 
+      then text = text .. license.company .. " ";
+           if license.companyEmail then text = text .. "<" .. license.companyEmail .. ">" 
+              if license.companyUrl then text = text .. ", " else text = text .. " "; end;
+              end;
+           if license.companyUrl then text = text .. "<" .. license.companyUrl .. "> " end;
+      end;
+      return text;
     end;
-    if   license.company 
-    then text = text .. license.company .. " ";
-         if license.companyEmail then text = text .. "<" .. license.companyEmail .. ">" 
-            if license.companyUrl then text = text .. ", " else text = text .. " "; end;
-            end;
-         if license.companyUrl then text = text .. "<" .. license.companyUrl .. "> " end;
+
+    local function licenseName() 
+      if db.Fonts[db.BrowserSelected] and db.Fonts[db.BrowserSelected].license
+      then return db.Fonts[db.BrowserSelected].license.license or "Unknown"
+      else return "Unknown"
+      end;
     end;
-    return text;
+
+    local function licenseReservedFontName()
+      if db.Fonts[db.BrowserSelected] and db.Fonts[db.BrowserSelected].license
+      then return db.Fonts[db.BrowserSelected].license.reservedFontName or db.Fonts[db.BrowserSelected].name or ""
+      else return db.Fonts[db.BrowserSelected] and db.Fonts[db.BrowserSelected].name or ""
+      end;
+    end;
+
+    return
+    { type = "group",
+      inline = true,
+      order = 2600,
+      name = "License",
+      args =
+      { licenseLicenseLeft =
+        { type = "description",
+          name = "License",
+          order = 2610,
+          width = 1,
+        },
+        
+        licenseLicenseRight =
+        { type = "description",
+          name = licenseName,
+          order = 2611,
+          width = 2,
+        },
+
+        licenseLicenseNewline = newline(2612),
+
+        licenseReservedFontNameLeft =
+        { type = "description",
+          name = "Official Font Name",
+          order = 2621,
+          width = 1,
+        },
+        licenseReservedFontNameRight =
+        { type = "description",
+          name = licenseReservedFontName,
+          order = 2622,
+          width = 2,
+        },
+        licenseReservedFontNameNewline = newline(2623),
+
+        licenseAuthorLeft =
+        { type = "description",
+          name = "Author",
+          order = 2631,
+          width = 1,
+        },
+        licenseAuthorRight =
+        { type = "description",
+          name = licenseAuthorBrowser,
+          order = 2632,
+          width = 2,
+        },
+        licenseAuthorNewline = newline(2633),
+      },
+    };
   end;
-       
-  local fontDetails =
-  { name = "Font Details",
+           
+  local fontBrowser =
+  { name = "Font Browser",
     type = "group",
-    order = 5,
+    order = 2000,
 
     args = 
-    { header =
-      { type = "description",
-        width = "full",
-        name = function() return hilite(db.DetailSelect) end,
-        order = 1,
-        fontSize = "large",
+    { previewBox =
+      { type = "group",
+        inline = true,
+        name = "Font Preview",
+        order = 2200,
+        hidden = function() return db.HidePreview end,
+        args =
+        { preview =
+          { type = "input",
+            width = "full",
+            dialogControl = "RPF_FontPreviewEditBox",
+            get = function() return db.PreviewText or db.BrowserSelect end,
+            set = function(info, value) db.PreviewText = value end,
+            name = function() return db.BrowserSelect end,
+            order = 2101,
+            desc = "Click to set custom sample text to display.",
+          },
+        },
       },
   
-      headerNewline = newline(2), 
-        
       selector = 
       { type = "select",
         width = 2,
-        name = "Font Details",
-        order = 3,
+        name = function() return db.BrowserSelect end,
+        order = 2100,
         values = function() return LibSharedMedia:HashTable("font") end,
         dialogControl = "LSM30_Font",
-        get = function() return db.DetailSelect or "Morpheus" end,
-        set = function(info, value) db.DetailSelect = value end,
+        get = function() return db.BrowserSelect or "Morpheus" end,
+        set = function(info, value) db.BrowserSelect = value end,
       },
-  
-      selectorNewline = newline(4),
-  
-      fontNameLeft =
+
+      spacer =
       { type = "description",
-        name = "Font Name",
-        order = 11,
-        width = 1,
-        fontSize = "medium",
+        width = 0.1,
+        name = " ",
+        order = 2101,
       },
-  
-      fontNameRight =
-      { type = "description",
-        name = function() return db.Fonts[db.DetailSelect].name end,
-        order = 12,
-        width = 2,
-        fontSize = "medium",
+      showPreview = 
+      { type = "toggle",
+        width = 0.75,
+        name = "Show Preview",
+        order = 2102,
+        get = function() return not db.HidePreview end,
+        set = function(info, value) db.HidePreview = not value end,
+        desc = "Choose whether to show or hide the text preview.",
       },
-  
-      fontNameNewline = newline(13),
-  
-      fontAddOnLeft =
-      { type = "description",
-        name = hilite("Source Addon(s)"),
-        order = 21,
-        width = 1,
-        fontSize = "medium",
-      },
-  
-      fontAddOnRight =
-      { type = "description",
-        name = function() return makeAddonList(db.Fonts[db.DetailSelect], "\n"); end,
-        order = 22,
-        width = 2,
-        fontSize = "medium",
-      },
-  
-      fontAddOnNewline = newline(23),
-  
-      fontFileLeft =
-      { type = "description",
-        name = hilite("File Location(s)"),
-        order = 31,
-        width = 1,
-        fontSize = "medium",
-      },
-      fontFileRight =
-      { type = "description",
-        name = function() return makeAddonList(db.Fonts[db.DetailSelect], "\n"); end,
-        order = 32,
-        width = 2,
-        fontSize = "medium",
-      },
-      fontFileNewline = newline(33),
-  
-      fontLicenceSection =
+
+      source =
       { type = "group",
+        name = "Source",
+        order = 2400,
         inline = true,
-        order = 41,
-        name = "License",
-        hidden = function() return not db.Fonts[db.DetailSelect].license end,
         args =
-        { licenceLicenseLeft =
+        { fontAddOnLeft =
           { type = "description",
-            name = "License",
-            order = 1,
+            name = yellow("Source Addon(s)"),
+            order = 2401,
             width = 1,
-            hidden = function() return not db.Fonts[db.DetailSelect].licence.license end,
-          },
-          
-          licenseLicenseRight =
-          { type = "description",
-            name = function() return db.Fonts[db.DetailSelect].license.license end,
-            order = 2,
-            width = 2,
-            hidden = function() return not db.Fonts[db.DetailSelect].licence.license end,
+            fontSize = "medium",
           },
   
-          licenseLicenseNewline = newline({ hidden = function() return not db.Fonts[db.DetailSelect].licence.license end, order = 3 }),
-  
-          licenseReservedFontnameLeft =
+          fontAddOnRight =
           { type = "description",
-            name = "Official Font Name",
-            order = 4,
+            name = function() return makeAddonList(db.Fonts[db.BrowserSelect], "\n"); end,
+            order = 2402,
             width = 1,
-            hidden = function() return not db.Fonts[db.DetailSelect].license.reservedFontName end,
+            fontSize = "medium",
           },
-          licenseReservedFontNameRight =
-          { type = "description",
-            name = function() return '"' .. (db.Fonts[db.DetailSelect].license.reservedFontName or "") .. '"' end,
-            order = 5,
-            width = 2,
-            hidden = function() return not db.Fonts[db.DetailSelect].license.reservedFontName end,
-          },
-          licenseReservedFontNameNewline = newline( { hidden = function() return not db.Fonts[db.DetailSelect].license.reservedFontName end, order = 6}),
   
-          licenseAuthorLeft =
+          newline = newline(2403),
+
+          fontFileLeft =
           { type = "description",
-            name = "Author",
-            order = 7,
-            width = 1,
-            hidden = licenseAuthorNotKnown,
+            name = yellow("File Location(s):"),
+            order = 2501,
+            width = "full",
+            fontSize = "medium",
           },
-          licenseAuthorRight =
+          fontFileRight =
           { type = "description",
-            name = licenseAuthorDetails,
-            order = 8,
-            width = 2,
-            hidden = licenseAuthorNotKnown,
+            name = function() return makeFileList(db.Fonts[db.BrowserSelect], "\n"); end,
+            order = 2502,
+            width = "full",
+            fontSize = "small",
           },
-          licenseAuthorNewline = newline( { hidden = licenseAuthorNotKnown, order = 9 }),
         },
       },
+      
+      fontLicense = buildLicenseSection(),
     },
-  },
+  };
         
-  options.data.fontDetails = fontDetails;
+  options.args.fontBrowser = fontBrowser;
 end;
 
 local function buildDataTable()
+  local db = _G["RP_FontsDB"];
   local keys = {};
 
-  local 
-  dataTable = 
+  local dataTable = 
   { name = "Font List",
     type = "group",
-    order = 18,
-    args =
-    { columnActive =
-      { type = "description",
-        name = "",
-        width = col[1],
-        order = 11,
-        fontSize = "small",
-      },
-  
-      columnName = 
-      { type = "description",
-        name = "|cffffff00Font Name|r",
-        width = col[2],
-        order = 12,
-        fontSize = "small",
-      },
-  
-      columnAddOn =
-      { type = "description",
-        name = "|cffffff00Source AddOn(s)|r",
-        width = col[3],
-        order = 13,
-        fontSize = "small",
-      },
-  
-      columnFirstRecorded =
-      { type = "description",
-        name = "|cffffff00First Recorded|r",
-        width = col[4],
-        order = 14,
-        fontSize = "small",
-      },
-  
-      columnNewline = newline(15),
-    },
+    order = 1000,
   };
-  
+
+  local args =
+  { columnActive =
+    { type = "description",
+      name = "",
+      width = col[1],
+      order = 1001,
+      fontSize = "medium",
+    },
+
+    columnName = 
+    { type = "description",
+      name = "|cffffff00Font Name|r",
+      width = col[2],
+      order = 1002,
+      fontSize = "medium",
+    },
+
+    columnAddOn =
+    { type = "description",
+      name = "|cffffff00Source AddOn(s)|r",
+      width = col[3],
+      order = 1003,
+      fontSize = "medium",
+    },
+
+    columnNewline = newline(1005),
+  };
+
   local function buildDataTableLine(font)
-    dataTable[font.name .. "_Active"] =
+    args[font.name .. "_Active"] =
     { type     = "toggle",
       name     = "",
       width    = col[1],
@@ -472,39 +509,38 @@ local function buildDataTable()
       disabled = function() return font.missing end,
     };
   
-    dataTable[font.name .. "_Name"] =
+    args[font.name .. "_Name"] =
     { type = "description",
-      name = function() return font.missing and red(font.name)
+      name = function() return font.missing  and red(font.name)
                             or font.disabled and gray(font.name)
-                            or font.manual and green(font.name)
-                            or font.builtin and bluzzard(font.name)
-                            or normal(font.name)
+                            or font.manual   and green(font.name)
+                            or font.builtin  and bluzzard(font.name)
+                            or font.name
                         end,
       width = col[2],
-      fontSize = "small",
+      fontSize = "medium",
     };
   
-    dataTable[font.name .. "_AddOn"] =
+    args[font.name .. "_AddOn"] =
     { type = "description",
       name = function() return makeAddonList(font, ", ") end,
       width = col[3],
-      fontSize = "small",
+      fontSize = "medium",
     };
   
-    dataTable[font.name .. "_FirstSeen"] =
-    { type = "description",
-      name = function() return date("%c", font.firstSeen) end,
-      width = col[4],
-      fontSize = "small",
-    };
-   
-    dataTable[font.name .. "_Newline"] =
+    args[font.name .. "_Newline"] =
     { type = "description",
       name = "",
       width = "full",
       fontSize = "small",
     };
 
+    args[font.name .. "_Details"] =
+    { type = "execute",
+      name = "Details",
+      width = col[4],
+      func = function() db.BrowserSelect = font.name; AceConfigDialog:SelectGroup(addOnName, "fontBrowser") end,
+    },
     table.insert(keys, font.name);
 
   end;
@@ -516,11 +552,11 @@ local function buildDataTable()
   table.sort(keys);
 
   for i, key in ipairs(keys)
-  do dataTable[key .. "_Active"   ].order = 100 + i * 10 + 1;
-     dataTable[key .. "_Name"     ].order = 100 + i * 10 + 2;
-     dataTable[key .. "_AddOn"    ].order = 100 + i * 10 + 3;
-     dataTable[key .. "_FirstSeen"].order = 100 + i * 10 + 4;
-     dataTable[key .. "_Newline"  ].order = 100 + i * 10 + 5;
+  do args[key .. "_Active"   ].order = 1000 + i * 10 + 1;
+     args[key .. "_Name"     ].order = 1000 + i * 10 + 2;
+     args[key .. "_AddOn"    ].order = 1000 + i * 10 + 3;
+     args[key .. "_Details"  ].order = 1000 + i * 10 + 4;
+     args[key .. "_Newline"  ].order = 1000 + i * 10 + 5;
 
      local font = db.Fonts[key];
 
@@ -532,16 +568,19 @@ local function buildDataTable()
      db.Stats.total = db.Stats.total + 1;
   end;
 
+  dataTable.args = args;
+
   options.args.dataTable = dataTable;
-  return dataTable;
 end;
 
 local function applyUseFontsSlashCommand(info, value)
+  local db = _G["RP_FontsDB"];
   db.Settings.UseFontsSlashCommand = value; 
   _G["SLASH_RPFONTS3"] = value and "/fonts" or nil
 end;
 
 local function applyLoadDisabledFonts(info, value)
+  local db = _G["RP_FontsDB"];
   db.Settings.LoadDisabledFonts = value;
   if   value 
   then 
@@ -568,6 +607,7 @@ local function applyLoadDisabledFonts(info, value)
 end;
 
 local function applyManuallyAddFont(info, value)
+  local db = _G["RP_FontsDB"];
   if not value:match(".ttf$") then value = value .. ".ttf"; end;
   local fontName = value:match("\\(.-)%ttf$");
   LibSharedMedia:Register("font", fontName, value);
@@ -586,10 +626,11 @@ local function applyManuallyAddFont(info, value)
 end;
 
 local function buildSettingsPanel()
+  local db = _G["RP_FontsDB"];
   local settings =
   { name = "Settings",
     type = "group",
-    order = 20,
+    order = 3000,
     args = 
     { useFontsSlash = 
       { type = "toggle",
@@ -597,7 +638,7 @@ local function buildSettingsPanel()
         desc = "By default, only the /rpfonts command is active. You can choose to use /fonts as well.",
         get = function() return db.Settings.UseFontsSlashCommand end,
         set = applyUseFontsSlashCommand,
-        order = 1,
+        order = 3001,
         width = 1.5,
       },
       loadDisabledFonts =
@@ -606,7 +647,7 @@ local function buildSettingsPanel()
         desc = "If " .. rpFontsTitle .. " has recorded a font from another addon and the addon is still installed, it can load the font even if the addon itself is disabled.",
         get = function() return db.Settings.LoadDisabledFonts end,
         set = applyLoadDisabledFonts,
-        order = 2,
+        order = 3002,
         width = 1.5,
       },
       manuallyAddFont =
@@ -615,7 +656,7 @@ local function buildSettingsPanel()
         desc = "You can manually enter the path to a font to add it to LibSharedMedia.",
         get = function() return "Interface\\AddOns\\" end,
         set = applyManuallyAddFont,
-        order = 3,
+        order = 3003,
         width = "full",
       },
     },
@@ -625,12 +666,13 @@ local function buildSettingsPanel()
 end;
 
 local function buildCoreOptions()
+  local db = _G["RP_FontsDB"];
   -- Create an options panel
   --
   options =
   { type = "group",
     name = rpFontsTitle,
-    order = 100,
+    order = 1,
     childGroups = "tab",
     args = 
     { blurb =
@@ -641,7 +683,7 @@ local function buildCoreOptions()
         fontSize = "medium" 
       },
 
-      blankLine =
+      newline =
       { type = "description",
         name = " ",
         width = "full",
@@ -653,60 +695,112 @@ local function buildCoreOptions()
       { type = "description",
         name = hilite("Total Fonts"),
         width = 1,
-        order = 4,
+        order = 104,
         fontSize = "medium",
       },
+
       StatsTotalRight =
       { type = "description",
         name = function() return normal(db.Stats.total .. " known") end,
         width = 1,
-        order = 5,
+        order = 105,
         fontSize = "medium",
       },
-      StatsTotalNewline = newline(6),
+
+      StatsTotalNewline = 
+      { type = "description",
+        name = "",
+        width = "full",
+        order = 106,
+        fontSize = "small",
+      },
 
       StatsNewLeft =
       { type = "description",
         name = hilite("New Fonts"),
         width = 1,
-        order = 7,
+        order = 201,
         fontSize = "medium",
         hidden = function() return (db.Stats.new == 0) end,
       },
+
       StatsNewRight =
       { type = "description",
         name = function() return green(db.Stats.new .. " fonts") end,
         width = 1,
-        order = 8,
+        order = 202,
         fontSize = "medium",
         hidden = function() return (db.Stats.new == 0) end,
       },
-      StatsNewNewline = newline({ order = 9, hidden = function () return (db.Stats.new == 0) end } ),
+
+      StatsNewNewline = 
+      { type = "description",
+        name = "",
+        width = "full",
+        order = 203,
+        fontSize = "small",
+        hidden = function() return (db.Stats.new == 0) end,
+      },
 
       StatsActiveLeft =
       { type = "description",
         name = hilite("Active Fonts"),
         width = 1,
-        order = 10,
-        fontSize = "medium",
-        hidden = function() return (db.Stats.active == 0) end,
-      },
-      StatsActiveRight =
-      { type = "description",
-        name = function() return yellow(db.Stats.active .. " fonts") end,
-        width = 1,
-        order = 11,
+        order = 301,
         fontSize = "medium",
         hidden = function() return (db.Stats.active == 0) end,
       },
 
-      StatsActiveNewline = newline({ order = 12, hidden = function () return (db.Stats.active == 0) end } ),
+      StatsActiveRight =
+      { type = "description",
+        name = function() return yellow(db.Stats.active .. " fonts") end,
+        width = 1,
+        order = 302,
+        fontSize = "medium",
+        hidden = function() return (db.Stats.active == 0) end,
+      },
+
+      StatsActiveNewline = 
+      { type = "description",
+        name = "",
+        width = "full",
+        order = 303, 
+        fontSize = "small",
+        hidden = function() return (db.Stats.active == 0) end,
+      },
+
+      StatsInactiveLeft =
+      { type = "description",
+        name = hilite("Inactive Fonts"),
+        width = 1,
+        order = 401,
+        fontSize = "medium",
+        hidden = function() return (db.Stats.inactive == 0) end,
+      },
+
+      StatsInactiveRight =
+      { type = "description",
+        name = function() return yellow(db.Stats.inactive .. " fonts") end,
+        width = 1,
+        order = 402,
+        fontSize = "medium",
+        hidden = function() return (db.Stats.inactive == 0) end,
+      },
+
+      StatsInactiveNewline = 
+      { type = "description",
+        name = "",
+        width = "full",
+        order = 403,
+        fontSize = "small",
+        hidden = function() return (db.Stats.inactive == 0) end,
+      },
 
       StatsDisabledLeft =
       { type = "description",
         name = hilite("Disabled Fonts"),
         width = 1,
-        order = 13,
+        order = 501,
         fontSize = "medium",
         hidden = function() return (db.Stats.disabled == 0) end,
       },
@@ -714,17 +808,53 @@ local function buildCoreOptions()
       { type = "description",
         name = function() return yellow(db.Stats.disabled .. " fonts") end,
         width = 1,
-        order = 14,
+        order = 502,
         fontSize = "medium",
         hidden = function() return (db.Stats.disabled == 0) end,
       },
-      StatsDisabledNewline = newline({ order = 15, hidden = function () return (db.Stats.disabled == 0) end } ),
+
+      StatsDisabledNewline = 
+      { type = "description",
+        name = "",
+        width = "full",
+        order = 503,
+        fontSize = "small",
+        hidden = function() return (db.Stats.disabled == 0) end,
+      },
+
+      StatsMissingLeft =
+      { type = "description",
+        name = hilite("Missing Fonts"),
+        width = 1,
+        order = 601,
+        fontSize = "medium",
+        hidden = function() return (db.Stats.missing == 0) end,
+      },
+
+      StatsMissingRight =
+      { type = "description",
+        name = function() return yellow(db.Stats.missing .. " fonts") end,
+        width = 1,
+        order = 602,
+        fontSize = "medium",
+        hidden = function() return (db.Stats.missing == 0) end,
+      },
+
+      StatsMissingNewline = 
+      { type = "description",
+        name = "",
+        width = "full",
+        order = 603,
+        fontSize = "small",
+        hidden = function() return (db.Stats.missing == 0) end,
+      },
 
     },
   };
 end;
 
 local function registerSlashCommand()
+  local db = _G["RP_FontsDB"];
   _G["SLASH_RPFONTS1"] = "/rpfonts";
   _G["SLASH_RPFONTS2"] = "/rpfont";
 
@@ -734,28 +864,10 @@ local function registerSlashCommand()
     function() 
       InterfaceOptionsFrame:Show();
       InterfaceOptionsFrame_OpenToCategory(rpFontsTitle);
-      -- InterfaceOptionsFrame_OpenToCategory(addOnName);
     end;
 
 end;
 
-local function main()
-  initializeDatabase();
-  readDatabase();
-  local options = buildOptions();
-
-
-  AceConfig:RegisterOptionsTable(  addOnName, options);
-  AceConfigDialog:AddToBlizOptions(addOnName, rpFontsTitle);
-
-  registerSlashCommand();
-
-  db.initialized = true;
-end;
-
-local waitingFrame = CreateFrame("Frame");
-waitingFrame:RegisterEvent("ADDON_LOADED");
-waitingFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
 waitingFrame:SetScript("OnEvent", 
   function(self, event, addOnLoaded, ...)
     if     event == "ADDON_LOADED" and addOnLoaded == addOnName
@@ -764,11 +876,12 @@ waitingFrame:SetScript("OnEvent",
     then   scanForFonts();
            applyCachedFontData();
            activateOrDeactivateFonts();
-           buildOptions();
-           AceConfig:RegisterOptionsTable(  addOnName, options);
-           AceConfigDialog:AddToBlizOptions(addOnName, rpFontsTitle);
+           buildCoreOptions();
+           buildDataTable()
+           buildFontBrowser()
+           buildSettingsPanel()
+           registerOptions();
            registerSlashCommand();
     end;
   end
 );
-

@@ -1,8 +1,7 @@
 local addOnName, ns = ...;
 
 local LibSharedMedia=LibStub("LibSharedMedia-3.0");
-local baseFontDir = "Interface\\AddOns\\" .. addOnName .. 
-                    (GetAddOnMetadata(addOnName, "X-FontDir") or "\\Media\\Fonts\\");
+local baseFontDir = "Interface\\AddOns\\" .. addOnName .. "\\Fonts\\";
 
 ns.RP_Fonts = ns.RP_Fonts or {};
 ns.RP_Fonts.tmp = ns.RP_Fonts.tmp or {};
