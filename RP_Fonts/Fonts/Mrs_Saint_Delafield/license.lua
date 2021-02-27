@@ -14,5 +14,5 @@ local license      =
   companyUrl       = nil,
 };
 
-RP_Fonts.tmp[fontName].license = license;
+ns.RP_Fonts.tmp[fontName].license = license;
 

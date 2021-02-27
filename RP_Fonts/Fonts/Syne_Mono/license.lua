@@ -14,5 +14,5 @@ local license      =
   companyUrl       = "https://gitlab.com/bonjour-monde/fonderie/syne-typeface",
 };
 
-RP_Fonts.tmp[fontname].license = license;
+ns.RP_Fonts.tmp[fontName].license = license;
 

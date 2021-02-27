@@ -14,4 +14,4 @@ local license      =
   companyUrl       = "http://www.carrois.com",
 };
 
-RP_Fonts.tmp[fontName].license = license;
+ns.RP_Fonts.tmp[fontName].license = license;
