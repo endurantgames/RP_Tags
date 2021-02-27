@@ -121,32 +121,16 @@ local function makeFileList(font, delim)
       then   table.insert(files, grey(name))
       else   table.insert(files, name);
       end;
-      print(files[#files]);
   end;
 
   return table.concat(files, delim or ", ")
 end;
 
-local function newline(template_or_order) 
-  local newline = {};
-  if type(template_or_order) == "table" then newline = template_or_order; end;
-
-  local newline = template or {};
-  newline["name"] = newline.name or " ";
-  newline["type"] = "description";
-
-  if type(template_or_order) == "number"
-  then newline["order"] = template_or_order
-  else newline["order"] = newline.order or 1;
-  end;
-
-  newline["fontSize"] = newline.fontSize or "small";
-  return newline;
-end;
+local function newline(order) return { type = "description", name = "", width = "full", order = order }; end;
 
 local function addFontToDatabase(fontName, fontFile)
   local db = _G["RP_FontsDB"];
-  if not db.Fonts[fontNane] 
+  if not db.Fonts[fontName] 
   then   db.Fonts[fontName] = {}
          db.Stats.new = db.Stats.new + (db.initialized and 0 or 1);
   end;
@@ -202,7 +186,7 @@ local function initializeDatabase()
 
   _G["RP_FontsDB"] = _G["RP_FontsDB"] or {};
   local db = _G["RP_FontsDB"];
-  db.Fonts        = db.Fonts or {};
+  db.Fonts = db.Fonts or {};
 
   db.BrowserSelect = "Morpheus";
   db.PreviewText = nil;
@@ -234,11 +218,7 @@ local function applyCachedFontData()
   -- load any data that we had cached prior to the DB loading
   if   ns.RP_Fonts.tmp
   then for fontName, fontData in pairs(ns.RP_Fonts.tmp)
-       do   for field, value  in pairs(fontData)
-            do  db.Fonts[fontName] = db.Fonts[fontName] or {};
-                db.Fonts[fontName].field = value;
-                print("adding data for " .. fontName);
-            end;
+       do   --
        end;
   end;
   ns.RP_Fonts.tmp = nil;
@@ -255,6 +235,15 @@ local function activateOrDeactivateFonts()
       else                        setFontStatus(font, true );
       end;
   end;
+end;
+
+local function generateHashTable()
+  local db = _G["RP_FontsDB"];
+  local list = {};
+  for fontName, font in pairs(db.Fonts)
+  do  list[fontName] = font.name
+  end;
+  return list
 end;
 
 local function buildFontBrowser()
@@ -391,9 +380,8 @@ local function buildFontBrowser()
         width = 2,
         name = function() return db.BrowserSelect end,
         order = 2100,
-        values = function() return LibSharedMedia:HashTable("font") end,
-        dialogControl = "LSM30_Font",
-        get = function() return db.BrowserSelect or "Morpheus" end,
+        values = generateHashTable,
+        get = function() return db.Fonts[db.BrowserSelect] and db.BrowserSelect or "Morpheus" end,
         set = function(info, value) db.BrowserSelect = value end,
       },
 
@@ -461,6 +449,15 @@ local function buildFontBrowser()
   options.args.fontBrowser = fontBrowser;
 end;
 
+local filters  =
+{ [""]         = "Filter List...",
+  ["active"]   = "Active Fonts",
+  ["inactive"] = "Inactive Fonts",
+  ["disabled"] = "Disabled Fonts",
+  ["missing"]  = "Missing Fonts",
+  ["new"]      = "New Fonts",
+};
+
 local function buildDataTable()
   local db = _G["RP_FontsDB"];
   local keys = {};
@@ -472,7 +469,24 @@ local function buildDataTable()
   };
 
   local args =
-  { columnActive =
+  { headline = 
+    { type = "description",
+      name = function() if not db.Filter or db.Filter == "" then return "All Fonts"
+                          else return filters[db.Filter] end end,
+      width = 2,
+      order = 900,
+    },
+
+    filters =
+    { type = "select"
+      values = filters,
+      width = 1,
+      order = 910,
+      get = function() return db.Filter or "" end,
+      set = function(info, value) db.Filter = value end,
+    },
+
+    columnActive =
     { type = "description",
       name = "",
       width = col[1],
@@ -500,13 +514,19 @@ local function buildDataTable()
   };
 
   local function buildDataTableLine(font)
+
+    local function filter()
+      return not db.Filter == "" and not db.Fonts[font.name][db.Filter] end,
+    end;
+
     args[font.name .. "_Active"] =
     { type     = "toggle",
       name     = "",
       width    = col[1],
       get      = function() return (font.active == "YES") end,
-      set      = function(info, value) setFontStatus(font, value) end,
+      set      = function(info, value) font.inactive = true; setFontStatus(font, value) end,
       disabled = function() return font.missing end,
+      hidden = filter,
     };
   
     args[font.name .. "_Name"] =
@@ -519,6 +539,7 @@ local function buildDataTable()
                         end,
       width = col[2],
       fontSize = "medium",
+      hidden = filter,
     };
   
     args[font.name .. "_AddOn"] =
@@ -526,20 +547,18 @@ local function buildDataTable()
       name = function() return makeAddonList(font, ", ") end,
       width = col[3],
       fontSize = "medium",
+      hidden = filter,
     };
   
-    args[font.name .. "_Newline"] =
-    { type = "description",
-      name = "",
-      width = "full",
-      fontSize = "small",
-    };
+    -- args[font.name .. "_Newline"] = newline();
 
     args[font.name .. "_Details"] =
     { type = "execute",
       name = "Details",
+      desc = "Click to view details about the font " .. font.name .. " in the font browser.",
       width = col[4],
       func = function() db.BrowserSelect = font.name; AceConfigDialog:SelectGroup(addOnName, "fontBrowser") end,
+      hidden = filter,
     },
     table.insert(keys, font.name);
 
@@ -548,7 +567,6 @@ local function buildDataTable()
   for fontName, font in pairs(db.Fonts) do buildDataTableLine(font); end;
 
   -- second pass, for displaying in order:
-  
   table.sort(keys);
 
   for i, key in ipairs(keys)
@@ -556,7 +574,6 @@ local function buildDataTable()
      args[key .. "_Name"     ].order = 1000 + i * 10 + 2;
      args[key .. "_AddOn"    ].order = 1000 + i * 10 + 3;
      args[key .. "_Details"  ].order = 1000 + i * 10 + 4;
-     args[key .. "_Newline"  ].order = 1000 + i * 10 + 5;
 
      local font = db.Fonts[key];
 
@@ -571,12 +588,6 @@ local function buildDataTable()
   dataTable.args = args;
 
   options.args.dataTable = dataTable;
-end;
-
-local function applyUseFontsSlashCommand(info, value)
-  local db = _G["RP_FontsDB"];
-  db.Settings.UseFontsSlashCommand = value; 
-  _G["SLASH_RPFONTS3"] = value and "/fonts" or nil
 end;
 
 local function applyLoadDisabledFonts(info, value)
@@ -608,6 +619,7 @@ end;
 
 local function applyManuallyAddFont(info, value)
   local db = _G["RP_FontsDB"];
+
   if not value:match(".ttf$") then value = value .. ".ttf"; end;
   local fontName = value:match("\\(.-)%ttf$");
   LibSharedMedia:Register("font", fontName, value);
@@ -632,15 +644,7 @@ local function buildSettingsPanel()
     type = "group",
     order = 3000,
     args = 
-    { useFontsSlash = 
-      { type = "toggle",
-        name = "Enable /fonts command",
-        desc = "By default, only the /rpfonts command is active. You can choose to use /fonts as well.",
-        get = function() return db.Settings.UseFontsSlashCommand end,
-        set = applyUseFontsSlashCommand,
-        order = 3001,
-        width = 1.5,
-      },
+    { 
       loadDisabledFonts =
       { type = "toggle",
         name = "Load fonts from disabled addons",
@@ -650,6 +654,7 @@ local function buildSettingsPanel()
         order = 3002,
         width = 1.5,
       },
+
       manuallyAddFont =
       { type = "input",
         name = "Manually enter a font",
@@ -659,10 +664,59 @@ local function buildSettingsPanel()
         order = 3003,
         width = "full",
       },
+
     },
   };
   
   options.args.settings = settings;
+end;
+
+local POPUP = "RPFONTS_CONFIRMATION_BUTTON";
+
+StaticPopupDialogs["RPFONTS_CONFIRMATION_BUTTON"] =
+{
+  button1 = YES,
+  button2 = NO,
+  hideOnEscape = 1,
+  timeout = 60,
+  whileDead = 1,
+  OnCancel = function(self) notify("Purge cancelled.") end,
+};
+
+local function scaryWarningMessage(fontState)
+  return "This will permanently delete the records of " .. fontState .. " fonts from " .. 
+         rpFontsTitle .. "'s records. It can't be undone. " ..
+         "Your font files themselves won't be harmed." .. 
+         "\n\nIf you load addons that register those fonts with LibSharedMedia, " ..
+         rpFontsTitle .. " will create new records for them, as it will no longer " ..
+         "have stored records telling it to deactivate or activate the fonts." ..
+         "\n\nAre you sure this is what you want to do?";
+end;
+
+local function doPurge(fontState)
+  local db = _G["RP_FontsDB"];
+  local num = 0;
+  for fontName, font in pairs(db.Fonts)
+  do  if font[fontState] then db.Fonts[fontName] = nil;
+         num = num + 1;
+      end;
+  end;
+  if   num > 0 
+  then notify(num .. " font records deleted.")
+  else notify("No font records deleted.");
+  end;
+end;
+
+local function purgeMissing()
+  StaticPopupDialogs[POPUP].text = scaryWarningMessage(red("missing"));
+  StaticPopupDialogs[POPUP].OnAccept = function() doPurge("missing") end;
+  StaticPopup_Show(POPUP);  
+end;
+
+local function purgeDisabled()
+  StaticPopupDialogs[POPUP].text = scaryWarningMessage(grey("disabled"));
+  StaticPopupDialogs[POPUP].OnAccept = function() doPurge("disabled") end;
+  StaticPopup_Show(POPUP);  
 end;
 
 local function buildCoreOptions()
@@ -804,6 +858,7 @@ local function buildCoreOptions()
         fontSize = "medium",
         hidden = function() return (db.Stats.disabled == 0) end,
       },
+
       StatsDisabledRight =
       { type = "description",
         name = function() return yellow(db.Stats.disabled .. " fonts") end,
@@ -813,11 +868,20 @@ local function buildCoreOptions()
         hidden = function() return (db.Stats.disabled == 0) end,
       },
 
+      StatsDisabledPurge =
+      { type = "execute",
+        name = "Purge",
+        width = 0.5,
+        order = 503,
+        hidden = function() return (db.Stats.disabled == 0) end,
+        func = purgeDisabled,
+      },
+
       StatsDisabledNewline = 
       { type = "description",
         name = "",
         width = "full",
-        order = 503,
+        order = 504,
         fontSize = "small",
         hidden = function() return (db.Stats.disabled == 0) end,
       },
@@ -849,6 +913,14 @@ local function buildCoreOptions()
         hidden = function() return (db.Stats.missing == 0) end,
       },
 
+      StatsMissingPurge =
+      { type = "execute",
+        name = "Purge",
+        width = 0.5,
+        order = 503,
+        hidden = function() return (db.Stats.missing == 0) end,
+        func = purgeMissing,
+      },
     },
   };
 end;
@@ -858,8 +930,6 @@ local function registerSlashCommand()
   _G["SLASH_RPFONTS1"] = "/rpfonts";
   _G["SLASH_RPFONTS2"] = "/rpfont";
 
-  if db.Settings.UseFontsSlashCommand then _G["SLASH_RPFONTS3"] = "/fonts"; end;
-  
   SlashCmdList["RPFONTS"] = 
     function() 
       InterfaceOptionsFrame:Show();
