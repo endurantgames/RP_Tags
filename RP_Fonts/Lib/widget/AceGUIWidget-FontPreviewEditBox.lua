@@ -3,7 +3,6 @@ based on: EditBox Widget
 -------------------------------------------------------------------------------]]
 local Type, Version = "RPF_FontPreviewEditBox", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
-local LibSharedMedia = LibStub("LibSharedMedia-3.0");
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
 -- Lua APIs
@@ -179,7 +178,15 @@ local methods = {
 		-- end
                 --
                 -- added:
-                self.editbox:SetFont( text and LibSharedMedia:Fetch("font", text) or LibSharedMedia:Fetch("font", "MoK"), 30);
+                local db = _G["RP_FontsDB"];
+                local file;
+                if   text and db.Fonts[text] and db.Fonts[text].file
+                then for fileName, fileData in pairs(db.Fonts[text].file)
+                     do   if not fileData.missing then file = fileName; break; end; 
+                     end;
+                end;
+                file = file or GameFontNormal:GetFont();
+                self.editbox:SetFont( file, 30);
                 self:SetHeight(50);
 	end,
 

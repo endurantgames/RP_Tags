@@ -1,6 +1,7 @@
 local addOnName, ns = ...;
 
 local fontName     = "Source Code Pro";
+
 local license      =
 { license          = "OFL",
   licenseUrl       = "http://scripts.sil.org/OFL",
@@ -13,7 +14,6 @@ local license      =
   companyEmail     = nil,
   companyUrl       = "http://www.adobe.com/",
 };
-
 
 ns.RP_Fonts.tmp[ fontName .. ""                    ].license = license;
 ns.RP_Fonts.tmp[ fontName .. " Black"              ].license = license;

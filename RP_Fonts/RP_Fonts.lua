@@ -21,7 +21,7 @@ local rpFontsTitle = GetAddOnMetadata(addOnName, "Title");
 local rpFontsDesc  = GetAddOnMetadata(addOnName, "Notes");
 
 -- constants
-local col = { 0.2, 1.5, 1, 0.5 };
+local col = { 0.2, 1.5, 1.1, 0.5 };
 local BUILTIN = "Built-in font";
 local MANUAL = "Manually added";
 
@@ -36,8 +36,19 @@ local function    green(  str) return     GREEN_FONT_COLOR_CODE .. stripcolor(st
 local function bluzzard(  str) return BATTLENET_FONT_COLOR_CODE .. stripcolor(str) .. "|r" end;
 local function   hilite(  str) return HIGHLIGHT_FONT_COLOR_CODE .. stripcolor(str) .. "|r" end;
 local function   normal(  str) return    NORMAL_FONT_COLOR_CODE .. stripcolor(str) .. "|r" end;
+local function    white(  str) return              "|cffffffff" .. stripcolor(str) .. "|r" end;
 
 local function notify(...) print("[" .. rpFontsTitle .. "]", ...) end;
+
+local function colorName(font)
+  return font.builtin  and bluzzard( font.name )
+      or font.new      and green(    font.name )
+      or font.active   and yellow(   font.name )
+      or font.inactive and  white(   font.name )
+      or font.disabled and grey(     font.name )
+      or font.missing  and red(      font.name )
+      or font.name;
+end;
 
 -- options
 --
@@ -69,7 +80,8 @@ local function setFontStatus(font, value)
   if   value == true
   then for fileName, file in pairs(font.file)
        do  if   file.loaded or file.disabled
-           then font.active = "YES";
+           then font.active = true;
+                font.inactive = false;
                 LibSharedMedia:Register("font", font.name, file);
                 _ = db.initialized and notify("Font " .. font.name .. " set to active.");
                 db.Stats.active = db.Stats.active + (db.initialized and 1 or 0);
@@ -77,7 +89,8 @@ local function setFontStatus(font, value)
                 return;
            end;
          end;
-  else font.active = "NO";
+  else font.active = false;
+       font.inactive = true; 
        LibSharedMedia.MediaTable.font[font.name] = nil;
        _ = db.initialized and notify("Font " .. font.name .. " set to inactive.");
        db.Stats.inactive = db.Stats.inactive + (db.initialized and 1 or 0);
@@ -129,16 +142,19 @@ end;
 local function newline(order) return { type = "description", name = "", width = "full", order = order }; end;
 
 local function addFontToDatabase(fontName, fontFile)
+  local new;
   local db = _G["RP_FontsDB"];
   if not db.Fonts[fontName] 
   then   db.Fonts[fontName] = {}
          db.Stats.new = db.Stats.new + (db.initialized and 0 or 1);
+         new = true;
   end;
 
   local font = db.Fonts[fontName]
   font.name  = font.name or fontName;
   font.file  = font.file   or {};
   font.addon = font.addon or {};
+  font.new   = new;
 
   local addon = getAddonFromPath(fontFile);
   local loaded, reason = isAddonLoaded(addon);
@@ -165,8 +181,8 @@ local function addFontToDatabase(fontName, fontFile)
      manual          = (addon == "MANUAL"),
    };
 
-   font.firstSeen = font.firstSeen or time();
-   font.lastSeen  = time();
+   font.firstSeen = font.firstSeen or db.Stats.now;
+   font.lastSeen  = db.Stats.now;
 
    local loaded, missing, disabled;
    for name, file in pairs(font.file)
@@ -188,8 +204,9 @@ local function initializeDatabase()
   local db = _G["RP_FontsDB"];
   db.Fonts = db.Fonts or {};
 
-  db.BrowserSelect = "Morpheus";
+  db.BrowserSelect = db.BrowserSelect or "Morpheus";
   db.PreviewText = nil;
+  db.Filter = "none";
 
   db.Stats        =
   { total         = 0,
@@ -214,14 +231,32 @@ local function scanForFonts()
 end;
 
 local function applyCachedFontData()
-  local db = _G["RP_FontsDB"];
   -- load any data that we had cached prior to the DB loading
+  --
+  local db = _G["RP_FontsDB"];
   if   ns.RP_Fonts.tmp
   then for fontName, fontData in pairs(ns.RP_Fonts.tmp)
-       do   --
-       end;
-  end;
-  ns.RP_Fonts.tmp = nil;
+       do  if    db.Fonts[fontName]
+           then
+
+             if not db.Fonts[fontName].inactive and 
+                not db.Fonts[fontName].active and
+                fontData.active ~= nil
+             then 
+               db.Fonts[fontName].active = fontData.active;
+               db.Fonts[fontName].inactive = not fontData.active;
+               print("setting font status to ", fontData.active);
+             end;
+
+             if fontData.license
+             then
+               db.Fonts[fontName].license = fontData.licence;
+             end;
+
+          end; -- if db.Fonts
+       end; -- for fontName
+  end; -- if .tmp
+ --  ns.RP_Fonts.tmp = nil;
 end;
 
 local function activateOrDeactivateFonts()
@@ -229,7 +264,6 @@ local function activateOrDeactivateFonts()
   -- activate or deactive fonts
   for name, font in pairs(db.Fonts)
   do  if     font.missing    then setFontStatus(font, false);
-      elseif font.disabled   then setFontStatus(font, false);
       elseif font.inactive   then setFontStatus(font, false);
       elseif not font.loaded then setFontStatus(font, false);
       else                        setFontStatus(font, true );
@@ -355,93 +389,125 @@ local function buildFontBrowser()
     order = 2000,
 
     args = 
-    { previewBox =
-      { type = "group",
-        inline = true,
-        name = "Font Preview",
-        order = 2200,
-        hidden = function() return db.HidePreview end,
-        args =
-        { preview =
-          { type = "input",
-            width = "full",
+    { 
+      selector =
+      { type   = "select",
+        width  = 2,
+        name   = function() return db.BrowserSelect end,
+        order  = 2100,
+        values = generateHashTable,
+        get    = function() return db.Fonts[db.BrowserSelect] and db.BrowserSelect or "Morpheus" end,
+        set    = function(info, value) db.BrowserSelect = value end,
+      },
+
+      spacer = { type = "description", width = 0.1, name = " ", order = 2101, },
+
+      showPreview =
+      { type      = "toggle",
+        width     = 0.75,
+        name      = "Show Preview",
+        order     = 2102,
+        get       = function() return not db.HidePreview end,
+        set       = function(info, value) db.HidePreview                = not value end,
+        desc      = "Choose whether to show or hide the text preview.",
+      },
+
+      previewBox          =
+      { type              = "group",
+        inline            = true,
+        name              = "Font Preview",
+        order             = 2200,
+        hidden            = function() return db.HidePreview end,
+        args              =
+        { preview         =
+          { type          = "input",
+            width         = "full",
             dialogControl = "RPF_FontPreviewEditBox",
-            get = function() return db.PreviewText or db.BrowserSelect end,
-            set = function(info, value) db.PreviewText = value end,
-            name = function() return db.BrowserSelect end,
-            order = 2101,
-            desc = "Click to set custom sample text to display.",
+            get           = function() return db.PreviewText or db.BrowserSelect end,
+            set           = function(info, value) db.PreviewText = value end,
+            name          = function() return db.BrowserSelect end,
+            order         = 2101,
+            desc          = "Click to set custom sample text to display.",
           },
         },
       },
-  
-      selector = 
-      { type = "select",
-        width = 2,
-        name = function() return db.BrowserSelect end,
-        order = 2100,
-        values = generateHashTable,
-        get = function() return db.Fonts[db.BrowserSelect] and db.BrowserSelect or "Morpheus" end,
-        set = function(info, value) db.BrowserSelect = value end,
-      },
 
-      spacer =
-      { type = "description",
-        width = 0.1,
-        name = " ",
-        order = 2101,
-      },
-      showPreview = 
-      { type = "toggle",
-        width = 0.75,
-        name = "Show Preview",
-        order = 2102,
-        get = function() return not db.HidePreview end,
-        set = function(info, value) db.HidePreview = not value end,
-        desc = "Choose whether to show or hide the text preview.",
-      },
 
-      source =
+      buttonBar =
       { type = "group",
-        name = "Source",
-        order = 2400,
+        name = "",
         inline = true,
+        order = 2300,
         args =
+        { inactive = 
+          { type = "execute",
+            order = 2301,
+            hidden = function() return db.Fonts[db.BrowserSelect].inactive end,
+            name = "Set Inactive",
+            width = 0.75,
+            func = function() setFontStatus(db.Fonts[db.BrowserSelect], false) end,
+          },
+          active = 
+          { type = "execute",
+            order = 2302,
+            hidden = function() return db.Fonts[db.BrowserSelect].active end,
+            name = "Set Active",
+            width = 0.75,
+            func = function() setFontStatus(db.Fonts[db.BrowserSelect], true) end,
+          },
+          deleteRecord =
+          { type = "execute",
+            order = 2303,
+            name = "Delete",
+            width = 0.75,
+            func = function() notify("Why you wanna delete this??") end,
+          },
+        },
+      },
+
+      source   =
+      { type   = "group",
+        name   = "Source",
+        order  = 2400,
+        inline = true,
+        args   =
+
         { fontAddOnLeft =
-          { type = "description",
-            name = yellow("Source Addon(s)"),
-            order = 2401,
-            width = 1,
+          { type     = "description",
+            name     = yellow("Source Addon(s)"),
+            order    = 2401,
+            width    = 1,
             fontSize = "medium",
           },
-  
+
           fontAddOnRight =
-          { type = "description",
-            name = function() return makeAddonList(db.Fonts[db.BrowserSelect], "\n"); end,
-            order = 2402,
-            width = 1,
+          { type     = "description",
+            name     = function() return makeAddonList(db.Fonts[db.BrowserSelect], "\n"); end,
+            order    = 2402,
+            width    = 1,
             fontSize = "medium",
           },
-  
+
           newline = newline(2403),
 
           fontFileLeft =
-          { type = "description",
-            name = yellow("File Location(s):"),
-            order = 2501,
-            width = "full",
+          { type     = "description",
+            name     = yellow("File Location(s):"),
+            order    = 2501,
+            width    = 1,
             fontSize = "medium",
           },
+
           fontFileRight =
-          { type = "description",
-            name = function() return makeFileList(db.Fonts[db.BrowserSelect], "\n"); end,
-            order = 2502,
-            width = "full",
+          { type     = "description",
+            name     = function() return makeFileList(db.Fonts[db.BrowserSelect], "\n"); end,
+            order    = 2502,
+            width    = 2,
             fontSize = "small",
           },
         },
       },
-      
+
       fontLicense = buildLicenseSection(),
     },
   };
@@ -450,64 +516,94 @@ local function buildFontBrowser()
 end;
 
 local filters  =
-{ [""]         = "Filter List...",
-  ["active"]   = "Active Fonts",
-  ["inactive"] = "Inactive Fonts",
-  ["disabled"] = "Disabled Fonts",
-  ["missing"]  = "Missing Fonts",
-  ["new"]      = "New Fonts",
+{ ["none"]     = "Filter List...",
+  ["active"]   = hilite("Active Fonts"),
+  ["inactive"] = normal("Inactive Fonts"),
+  ["disabled"] = grey("Disabled Fonts"),
+  ["missing"]  = red("Missing Fonts"),
+  ["new"]      = green("New Fonts"),
 };
 
-local function buildDataTable()
-  local db = _G["RP_FontsDB"];
-  local keys = {};
+local filter_desc =
+{ [""] = "",
+  ["active"] = "Active fonts are those which are loaded into LibSharedMedia and which you can use in any addon that uses LibSharedMedia.",
+  ["inactive"] = "Inactive fonts are fonts which could be loaded, but you've chosen to disable them. You can re-enable them at any time.",
+  ["disabled"] = "A disabled font was originally registered with LibSharedMedia by an addon that you still have installed, but is currently disabled.",
+  ["missing"] = "A missing font was registered with LibSharedMedia by another addon, but you don't have that addon installed, so the font isn't available.",
+  ["new"] = "New fonts are fonts which are newly registered with LibSharedMedia since the last time you logged on.", };
 
-  local dataTable = 
-  { name = "Font List",
-    type = "group",
-    order = 1000,
+local filter_order = { "none", "new", "active", "inactive", "disabled", "missing", };
+
+local function buildDataTable()
+
+  local db        = _G["RP_FontsDB"];
+  local keys      = {};
+  local dataTable =
+  { name          = "Font List",
+    type          = "group",
+    order         = 700,
   };
 
-  local args =
-  { headline = 
-    { type = "description",
-      name = function() if not db.Filter or db.Filter == "" then return "All Fonts"
-                          else return filters[db.Filter] end end,
-      width = 2,
-      order = 900,
+  local function showCurrentFilter()
+     if   not db.Filter 
+          or  db.Filter == "none" 
+     then return "All Fonts" 
+     else return filters[db.Filter] 
+     end
+  end;
+
+  local args   =
+  { headline   =
+    { type     = "description",
+      name     = showCurrentFilter,
+      width    = col[1] + col[2],
+      order    = 900,
+      fontSize = "large";
     },
 
-    filters =
-    { type = "select"
-      values = filters,
-      width = 1,
-      order = 910,
-      get = function() return db.Filter or "" end,
-      set = function(info, value) db.Filter = value end,
+    filters   =
+    { type    = "select",
+      values  = filters,
+      name    = "",
+      width   = col[3],
+      order   = 910,
+      sorting = filter_order,
+      get     = function() return db.Filter or "" end,
+      set     = function(info, value) db.Filter = value end,
     },
+
+    filtersDescription = 
+    { type = "description",
+      fontSize = "small",
+      name = function() return filter_desc[db.Filter] end,
+      order = 920,
+      width = col[1] + col[2],
+      hidden = function() return db.Filter == "" end,
+    },
+
+    filtersNewline = newline(999),
 
     columnActive =
-    { type = "description",
-      name = "",
-      width = col[1],
-      order = 1001,
-      fontSize = "medium",
+    { type       = "description",
+      name       = "",
+      width      = col[1],
+      order      = 1001,
     },
 
-    columnName = 
-    { type = "description",
-      name = "|cffffff00Font Name|r",
-      width = col[2],
-      order = 1002,
+    columnName =
+    { type     = "description",
+      name     = "|cffffff00Font Name|r",
+      width    = col[2],
+      order    = 1002,
       fontSize = "medium",
     },
 
     columnAddOn =
-    { type = "description",
-      name = "|cffffff00Source AddOn(s)|r",
-      width = col[3],
-      order = 1003,
-      fontSize = "medium",
+    { type      = "description",
+      name      = "|cffffff00Source AddOn(s)|r",
+      width     = col[3],
+      order     = 1003,
+      fontSize  = "medium",
     },
 
     columnNewline = newline(1005),
@@ -516,27 +612,22 @@ local function buildDataTable()
   local function buildDataTableLine(font)
 
     local function filter()
-      return not db.Filter == "" and not db.Fonts[font.name][db.Filter] end,
+      return not (db.Filter == "none") and not db.Fonts[font.name][db.Filter] 
     end;
 
     args[font.name .. "_Active"] =
     { type     = "toggle",
       name     = "",
       width    = col[1],
-      get      = function() return (font.active == "YES") end,
+      get      = function() return font.active end,
       set      = function(info, value) font.inactive = true; setFontStatus(font, value) end,
       disabled = function() return font.missing end,
-      hidden = filter,
+      hidden   = filter,
     };
-  
+
     args[font.name .. "_Name"] =
     { type = "description",
-      name = function() return font.missing  and red(font.name)
-                            or font.disabled and gray(font.name)
-                            or font.manual   and green(font.name)
-                            or font.builtin  and bluzzard(font.name)
-                            or font.name
-                        end,
+      name = function() return colorName(font) end,
       width = col[2],
       fontSize = "medium",
       hidden = filter,
@@ -552,12 +643,17 @@ local function buildDataTable()
   
     -- args[font.name .. "_Newline"] = newline();
 
+    local function browseFont()
+      db.BrowserSelect = font.name; 
+      AceConfigDialog:SelectGroup(addOnName, "fontBrowser") 
+    end
+    
     args[font.name .. "_Details"] =
     { type = "execute",
       name = "Details",
-      desc = "Click to view details about the font " .. font.name .. " in the font browser.",
+      desc = "Click to view details about the font " .. colorName(font) .. " in the font browser.",
       width = col[4],
-      func = function() db.BrowserSelect = font.name; AceConfigDialog:SelectGroup(addOnName, "fontBrowser") end,
+      func = browseFont,
       hidden = filter,
     },
     table.insert(keys, font.name);
@@ -583,6 +679,8 @@ local function buildDataTable()
      else                      db.Stats.active   = db.Stats.active   + 1;
      end;
      db.Stats.total = db.Stats.total + 1;
+
+     if font.new and (db.Stats.now ~= font.firstSeen or font.builtin) then font.new = nil; end;
   end;
 
   dataTable.args = args;
@@ -596,20 +694,20 @@ local function applyLoadDisabledFonts(info, value)
   if   value 
   then 
     for fontName, font in pairs(db.Fonts)
-    do  if   font.disabled and font.active == "NO"
+    do  if   font.disabled and not font.active
         then for _, file in font.file
              do  LibSharedMedia:Register("font", font.name, font.file);
-                 font.active = "YES";
+                 font.active = true;
              end;
         end;
     end;
   else
     for fontName, font in pairs(db.Fonts)
-    do  if   font.disabled and font.active == "YES"
+    do  if   font.disabled and font.active
         then 
         for _, file in font.file
              do  LibSharedMedia:Register("font", font.name, font.file);
-                 font.active = "YES";
+                 font.active = true;
              end;
         end;
     end;
@@ -619,6 +717,8 @@ end;
 
 local function applyManuallyAddFont(info, value)
   local db = _G["RP_FontsDB"];
+
+  value = value:gsub("^.+_retail_\\[iI]nterface","Interface");
 
   if not value:match(".ttf$") then value = value .. ".ttf"; end;
   local fontName = value:match("\\(.-)%ttf$");
@@ -631,10 +731,164 @@ local function applyManuallyAddFont(info, value)
   table.insert(font.file, value);
   font.addon = font.addon or {}
   table.insert(font.addon, MANUAL);
-  font.firstSeen = time();
-  font.lastSeen = time();
+  font.firstSeen = db.Stats.now;
+  font.lastSeen = db.Stats.now;
 
   notify("Font " .. yellow(fontName) .. " has been added.");
+end;
+
+local function buildLibSharedMediaPanel()
+  local db = _G["RP_FontsDB"];
+
+  local function countLSM()
+    local num = 0;
+    for _, _ in pairs(LibSharedMedia:HashTable("font")) do num = num + 1; end;
+    return num;
+  end;
+
+  options.args.libSharedMedia =
+  { name = "LibSharedMedia",
+    type = "group",
+    order = 8000,
+    args =
+    { headline =
+      { type = "description",
+        fontSize = "large",
+        order = 8001,
+        name = "LibSharedMedia Status\n\n",
+        width = "full",
+      },
+      countLeft = 
+      { type = "description",
+        fontSize = "medium",
+        order = 8002,
+        width = 1,
+        name = yellow("Fonts Loaded"),
+      },
+      countRight =
+      { type = "description",
+        fontSize = "medium",
+        order = 8003,
+        width = 1,
+        name = white( countLSM() .. " fonts")
+      },
+      newline = newline(8004),
+
+      globalOverride =
+      { type = "group",
+        inline = true,
+        name = "",
+        order = 8200,
+        args =
+        {
+          globalOverrideLeft =
+          { type = "description",
+            fontSize = "medium",
+            order = 8201,
+            width = 1,
+            name = "Current Global Override",
+          },
+    
+          globalOverrideRight =
+          { type = "select",
+            values = function() return LibSharedMedia:HashTable("font") end,
+            dialogControl = "LSM30_Font",
+            name = "",
+            order = 8202,
+            desc = "You can set the global override that LibSharedMedia will use. Caution, this might not be what you want!",
+            get = function() return LibSharedMedia:GetGlobal("font") end,
+            set = function(info, value) LibSharedMedia:SetGlobal("font", value) 
+                                        db.LibSharedMedia_GlobalUnlocked = false end,
+            disabled = function() return not db.LibSharedMedia_GlobalUnlocked end,
+          },
+
+          spacer = { type = "description", name = " ", order = 8203, width = 0.2, },
+
+          globalOverrideUnlock =
+          { type = "toggle",
+            name = "Unlock",
+            order = 8204,
+            width = 0.75,
+            desc = "Click this to unlock the global override for LibSharedMedia.",
+            get = function() return db.LibSharedMedia_GlobalUnlocked end,
+            set = function(self, value) db.LibSharedMedia_GlobalUnlocked = value end,
+
+          },
+        },
+      },
+      
+      defaultFont =
+      { type = "group",
+        inline = true,
+        name = "",
+        order = 8100,
+        args = 
+        { defaultFontLeft =
+          { type = "description",
+            fontSize = "medium",
+            order = 8101,
+            width = 1,
+            name = "Current Default Font",
+          },
+
+          defaultFontRight =
+          { type = "select",
+            values = function() return LibSharedMedia:HashTable("font") end,
+            dialogControl = "LSM30_Font",
+            name = "",
+            order = 8102,
+            desc = "You can set the default font that LibSharedMedia will use if it can't find a font of a specific name.",
+            get = function() return LibSharedMedia:GetDefault("font") end,
+            set = function(info, value) 
+                    LibSharedMedia:SetDefault("font", value) 
+                    db.LibSharedMedia_DefaultUnlocked = false 
+                  end,
+            disabled = function() return not db.LibSharedMedia_DefaultUnlocked end,
+          },
+
+          spacer = { type = "description", name = " ", order = 8103, width = 0.2, },
+
+          defaultFontUnlock =
+          { type = "toggle",
+            name = "Unlock",
+            order = 8104,
+            desc = "Click this to unlock the default font for LibSharedMedia.",
+            get = function() return db.LibSharedMedia_DefaultUnlocked end,
+            set = function(self, value) db.LibSharedMedia_DefaultUnlocked = value end,
+          },
+        },
+      },
+
+      testingSandbox =
+      { type = "group",
+        inline = true,
+        name = "Sandbox",
+        order = 8500,
+        args =
+        { fontSelector =
+          { type = "select",
+            values = function() return LibSharedMedia:HashTable("font") end,
+            dialogControl = "LSM30_Font",
+            name = "Test Widget",
+            order = 8200,
+            width = 2,
+            get = function() return db.SandboxFont or LibSharedMedia:GetDefault("font") end,
+            set = function(info, value) db.SandboxFont = value end,
+            desc = "This doesn't really do anything, but it's here in case you need to confirm whether fonts were added or removed from LibSharedMedia."
+          },
+          previewBox = { type          = "input",
+            width         = "full",
+            dialogControl = "RPF_FontPreviewEditBox",
+            get           = function() return db.SandboxText or db.SandboxFont or LibSharedMedia:GetDefault("font") end,
+            set           = function(info, value) db.SandboxText = value end,
+            name          = function() return db.SandboxFont or LibSharedMedia:GetDefault("font") end,
+            order         = 8202,
+            desc          = "Click to set custom sample text to display.",
+          },
+        },
+      },
+    },
+  };
 end;
 
 local function buildSettingsPanel()
@@ -642,7 +896,7 @@ local function buildSettingsPanel()
   local settings =
   { name = "Settings",
     type = "group",
-    order = 3000,
+    order = 9000,
     args = 
     { 
       loadDisabledFonts =
@@ -651,20 +905,129 @@ local function buildSettingsPanel()
         desc = "If " .. rpFontsTitle .. " has recorded a font from another addon and the addon is still installed, it can load the font even if the addon itself is disabled.",
         get = function() return db.Settings.LoadDisabledFonts end,
         set = applyLoadDisabledFonts,
-        order = 3002,
-        width = 1.5,
-      },
-
-      manuallyAddFont =
-      { type = "input",
-        name = "Manually enter a font",
-        desc = "You can manually enter the path to a font to add it to LibSharedMedia.",
-        get = function() return "Interface\\AddOns\\" end,
-        set = applyManuallyAddFont,
-        order = 3003,
+        order = 9002,
         width = "full",
       },
 
+      -- manuallyAddFont =
+      -- { type = "input",
+      --   name = "Manually enter a font",
+      --   desc = "You can manually enter the path to a font to add it to LibSharedMedia.",
+      --   get = function() return "Interface\\AddOns\\Fonts" end,
+      --   set = applyManuallyAddFont,
+      --   order = 9003,
+      --   width = "full",
+      -- },
+
+      forceDefault =
+      { 
+        type = "group",
+        inline = true,
+        name = "",
+        order = 9100,
+        args = 
+        { forceDefaultFont =
+          { type = "toggle",
+            name = "Set LSM's default font upon loading",
+            width = 2,
+            desc = "You can force LibSharedMedia to use a specific font if it can't find a font of another name. " .. rpFontsTitle .. " normally does not do this, but you can enable it here.",
+            get = function() return db.Settings.ForceDefaultFont end,
+            set = function(info, value) 
+                    db.Settings.ForceDefaultFont = value 
+                    _ = not value and notify("LibSharedMedia's default font will " .. yellow("not") .. " be set upon loading.")
+                    end,
+            order = 9100,
+          },
+    
+          defaultFontToForce =
+          { type = "select",
+            name = "Default Font",
+            width = 1,
+            values = function() return LibSharedMedia:HashTable("font") end,
+            dialogControl = "LSM30_Font",
+            get = function() return db.Settings.DefaultFontToForce or LibSharedMedia:GetDefault("font") end,
+            set = function(info, value) 
+                    db.Settings.DefaultFontToForce = value ;
+                    notify("LibSharedMedia's default font " .. green("will") .. " be set upon loading.")
+                  end,
+            order = 9101,
+            disabled = function() return not db.Settings.ForceDefaultFont end,
+          },
+
+          resetForceDefaultFont =
+          { type = "execute",
+            name = "Reset",
+            width = 0.5,
+            desc = "Reset to the default.",
+            order = 9110,
+            hidden = function() return not db.Settings.ForceDefaultFont or not db.Settings.DefaultFontToForce  end,
+            func = function() 
+                     db.Settings.ForceDefaultFont = nil;
+                     db.Settings.DefaultFontToForce = nil; 
+                     notify("LibSharedMedia's default font will " .. yellow("not") .. " be set upon loading.")
+                   end,
+          },
+        },
+      },
+      forceGlobal =
+      { 
+        type = "group",
+        inline = true,
+        name = "",
+        order = 9200,
+        args = 
+        { forceGlobalFont =
+          { type = "toggle",
+            name = "Set LSM's global override font upon loading",
+            width = 2,
+            desc = "You can force LibSharedMedia to return a specific font instead of the font requested. " .. rpFontsTitle .. " normally does not do this, but you can enable it here. " .. red("It's really not a good idea."),
+            get = function() return db.Settings.ForceGlobalFont end,
+            set = function(info, value) 
+                    db.Settings.ForceGlobalFont = value 
+                    _ = not value and notify("LibSharedMedia's global override font will " .. yellow("not") .. " be set upon loading.")
+                  end,
+            order = 9201,
+          },
+    
+          defaultFontToForce =
+          { type = "select",
+            name = "Global Font",
+            width = 1,
+            values = function() return LibSharedMedia:HashTable("font") end,
+            dialogControl = "LSM30_Font",
+            get = function() return db.Settings.GlobalFontToForce or LibSharedMedia:GetGlobal("font") end,
+            set = function(info, value) 
+                    db.Settings.GlobalFontToForce = value 
+                    notify("LibSharedMedia's global override font " .. red("will") .. " be set upon loading.")
+                  end,
+            order = 9202,
+            disabled = function() return not db.Settings.ForceGlobalFont end,
+          },
+
+          resetForceDefaultFont =
+          { type = "execute",
+            name = "Reset",
+            width = 0.5,
+            desc = "Reset to the default.",
+            order = 9210,
+            hidden = function() return not db.Settings.ForceGlobalFont or not db.Settings.GlobalFontToForce  end,
+            func = function() 
+                     db.Settings.GlobalFontToForce = nil; 
+                     db.Settings.ForceGlobalFont  = nil;
+                     notify("LibSharedMedia's global override font will " .. yellow("not") .. " be set upon loading.")
+                   end,
+          },
+
+          anotherWarning =
+          { type = "description",
+            name = red("You can make this change if you want to. However, it's a really bad idea and you should think twice about doing this."),
+            order = 9213,
+            width = "full",
+            fontSize = "medium",
+            hidden = function() return not db.Settings.ForceGlobalFont and not db.Settings.GlobalFontToForce end,
+          },
+        },
+      },
     },
   };
   
@@ -950,6 +1313,7 @@ waitingFrame:SetScript("OnEvent",
            buildDataTable()
            buildFontBrowser()
            buildSettingsPanel()
+           buildLibSharedMediaPanel()
            registerOptions();
            registerSlashCommand();
     end;
