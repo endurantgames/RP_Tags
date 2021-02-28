@@ -26,6 +26,21 @@ local col        = { 0.2, 1.5, 1.1, 0.5 };
 local BUILTIN    = "Built-in font";
 local POPUP      = "RPFONTS_CONFIRMATION_BUTTON";
 
+-- general utilities -----------------------------------------------------------------------------------------------------------------------
+--
+local function strip(str) return str:gsub("|cff%x%x%x%x%x%x", ""):gsub("|r", "") end;
+
+local function     grey(  str) return  DISABLED_FONT_COLOR_CODE .. strip(str) .. "|r" end;
+local function      red(  str) return       RED_FONT_COLOR_CODE .. strip(str) .. "|r" end;
+local function   yellow(  str) return    YELLOW_FONT_COLOR_CODE .. strip(str) .. "|r" end;
+local function    green(  str) return     GREEN_FONT_COLOR_CODE .. strip(str) .. "|r" end;
+local function bluzzard(  str) return BATTLENET_FONT_COLOR_CODE .. strip(str) .. "|r" end;
+local function   hilite(  str) return HIGHLIGHT_FONT_COLOR_CODE .. strip(str) .. "|r" end;
+local function   normal(  str) return    NORMAL_FONT_COLOR_CODE .. strip(str) .. "|r" end;
+local function    white(  str) return              "|cffffffff" .. strip(str) .. "|r" end;
+
+local function notify(...) print("[" .. rpFontsTitle .. "]", ...) end;
+
 -- filters 
 local filters    =
 { [ "none"     ] =         "Filter List..." ,
@@ -52,21 +67,6 @@ local filter_desc =
 
 local filter_order = { "none", "new", "active", "inactive", "disabled", "missing", };
 
--- general utilities -----------------------------------------------------------------------------------------------------------------------
---
-local function strip(str) return str:gsub("|cff%x%x%x%x%x%x", ""):gsub("|r", "") end;
-
-local function     grey(  str) return  DISABLED_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function      red(  str) return       RED_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function   yellow(  str) return    YELLOW_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function    green(  str) return     GREEN_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function bluzzard(  str) return BATTLENET_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function   hilite(  str) return HIGHLIGHT_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function   normal(  str) return    NORMAL_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function    white(  str) return              "|cffffffff" .. strip(str) .. "|r" end;
-
-local function notify(...) print("[" .. rpFontsTitle .. "]", ...) end;
-
 -- addons and files ------------------------------------------------------------------------------------------------------------------------
 --
 -- database ------------------------------------------------------------------------------------------------------------------------------
@@ -88,6 +88,7 @@ local function initializeDatabase()
     now      = time(),
   };
 
+  keys = {};
  end;
 
 local function clearCounts() 
@@ -143,7 +144,7 @@ local methods =
     function(self, flag, value) 
       if value == nil then value = true end;
 
-      if flag and tContains(flags[ self:WhatAmI()], flag)
+      if   flag and tContains(flags[ self:WhatAmI()], flag)
       then self.data.flag = value;
       end;
     end,
@@ -151,7 +152,7 @@ local methods =
   ["HasFlag"] = "GetFlag",
   ["GetFlag"] = 
     function(self, flag)
-      if flag and tContains(flags[ self:WhatAmI(), flag)
+      if flag and tContains(flags[ self:WhatAmI()], flag)
       then return self.data.flag;
       end;
     end,
@@ -184,12 +185,9 @@ local methods =
       then   self.font = font;
       elseif type(font) == "string" 
       then   font = getFontFromDatabase(font);
-             if font 
-             then self.font = font
-             else error("Unknown font: " .. font)
-             end;
+             if font then self.font = font else error("Unknown font: " .. font) end;
       else   error("Invalid font: " .. type(font));
-      end,
+      end;
     end,
 
   ["GetFont"] = function(self) return self.font; end,
@@ -205,7 +203,8 @@ local methods =
       if   what == "font"
       then db.Fonts[name] = db.Fonts[name] or self.data;
       else local fontData = self:GetFont():GetData();
-           fontData[what][name] = fontData[what][name] or self.data;
+           fontData[what]       = fontData[what] or {};
+           fontData[what][name] = fontData[what][name] or self.data or {};
       end;
 
       return self.data;
@@ -231,6 +230,7 @@ local methods =
           end
         end,
 
+      ["AddItem"] = "SetItem",
       ["SetItem"] =
         function(self, objType, item)
           if   tContains(objectTypes, objType) and
@@ -267,11 +267,11 @@ local function attachMethods(object, objType, font)
        if font then object:SetFont(font) end;
 
        if type(methods[objType]) == "table"
-       then for funcName, func in pairs(methods) 
+       then for funcName, func in pairs(methods[objType]) 
             do  if     type(func) == "function"
                 then   object[funcName] = func; 
-                elseif type(func) == "string" and methods[func] and type(methods[func]) == "function"
-                then   object[funcName] = methods[func]
+                elseif type(func) == "string" and methods[objType][func] and type(methods[objType][func]) == "function"
+                then   object[funcName] = methods[objType][func]
                 end; 
             end;
        end;
@@ -295,17 +295,13 @@ local function makeFont(fontName, fontFile)
     if name and tContains(objectTypes, what)
     then 
 
-      local item      = self[what] or {};
-      item.name       = name;
+      local list = self:GetList(what) or self:InitList(what) and {};
+      local item = self:GetItem(what, name) or {};
+      item.name  = name;
 
       attachMethods(item, what, self);
-
       self:AddItem(what, item);
-
       local data = item:InitData();
-
-      function item.SetFile(self, file)  self:SetItem("file", file); end;
-      function item.GetFile(self) return self:GetItem("file")        end;
 
       return item, data;
 
@@ -434,7 +430,8 @@ local function makeFont(fontName, fontFile)
 
   function font.GetOptionsTableArgs(self)
 
-    local function filter() return not (Filter == "none") and not self:HasFlag(Filter); end;
+    local function filter() return false end;
+   -- not (Filter == "none") and not self:HasFlag(Filter); end;
 
     local function browseFont()
       Browsing = self:GetName(); 
@@ -487,7 +484,8 @@ local function makeFont(fontName, fontFile)
 
   if   fontFile 
   then local  file,  fileData  = font:NewFile(fontFile)
-       local  addon, addonData = font:NewAddon( file:GetAddonFromPath() );
+       local newAddonName = file:GetAddonFromPath();
+       local  addon, addonData = font:NewAddon( newAddonName );
        return font, data, file, addon;
   end;
        
@@ -497,15 +495,15 @@ end;
   
 -- -------------------------------------------------------------------------------------------------------------------------------
 local function restoreSavedData()
-  for fontName, data in db.Fonts
+  for fontName, data in pairs(db.Fonts)
+  do  local font, data = makeFont(fontName);
 
-  do  local font, data = makeFont(font.name);
-
-      for fileName, fileData in pairs(data.file)
-      do  local file  = font:NewFile(fileName)
-          local addon = font:NewAddon( file:GetAddonFromPath() );
+      if   data and data.file 
+      then for fileName, fileData in pairs(data.file)
+           do  local file  = font:NewFile(fileName)
+               local addon = font:NewAddon( file:GetAddonFromPath() );
+           end;
       end;
-
   end;
 end;
 
@@ -537,8 +535,12 @@ end;
 
 local function doPurge(fontState)
   local num = 0;
-  for fontName, font in pairs(Fonts)
-  do  if font[fontState] then font:GetData() = nil; Fonts[fontName] = nil; num = num + 1; end;
+  for name, font in pairs(Fonts)
+  do  if font[fontState] 
+      then font.data   = nil; 
+           Fonts[name] = nil; 
+           num         = num + 1; 
+      end;
   end;
   notify( (num > 0) and (num .. " font records deleted.") or "No font records deleted."); 
 end;
@@ -684,7 +686,7 @@ local function buildFontBrowser()
       selector            =
       { type              = "select",
         width             = 2,
-        name              = function() return Browsing:GetName() end,
+        name              = function() return Browsing and Browsing:GetName() or "" end,
         order             = 2100,
         values            = generateHashTable,
         get               = function() return Fonts[Browsing] and Browsing:GetName() or "Morpheus" end,
@@ -997,7 +999,7 @@ end;
 -- settings --------------------------------------------------------------------------------------------------------------------------
 local function buildSettingsPanel()
 
-  options.args.settings = settings;
+  options.args.settings = 
   { name                = "Settings",
     type                = "group",
     order               = 9000,
@@ -1248,14 +1250,14 @@ local function scanForFonts()
 
   -- Get existing fonts from LSM, store them in our master list
   for fontName, fontFile in pairs(LSM:HashTable("font"))
-  do  local font, addon, file = makeFont(fontName, fontFile)
+  do  local font, data, addon, file = makeFont(fontName, fontFile)
       addon:SetFlag( "loaded" );
       file:SetFlag(  "loaded" );
   end;
 
 end;
 
-local function applyCachedFontData()
+local function applyCachedData()
   --[[ load any data that we had cached prior to the DB loading
      
        At present, only two types of data can be pre-cached: a default 

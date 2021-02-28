@@ -180,9 +180,9 @@ local methods = {
                 -- added:
                 local db = _G["RP_FontsDB"];
                 local file;
-                if   text and db.Fonts[text] and db.Fonts[text].file
-                then for fileName, fileData in pairs(db.Fonts[text].file)
-                     do   if not fileData.missing then file = fileName; break; end; 
+                if   text and Fonts[text] and Fonts[text]:GetItems("file")
+                then for fileName, fileData in pairs(Fonts[text]:GetItems())
+                     do   if not fileData:HasFlag("missing") then file = fileName; break; end; 
                      end;
                 end;
                 file = file or GameFontNormal:GetFont();
