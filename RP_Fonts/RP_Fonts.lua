@@ -217,12 +217,12 @@ local function notify(...) print("[" .. rpFontsTitle .. "]", ...) end;
 -- filters 
 local filters    =
 { [ "none"     ] =           "Filter List..." ,
-  [ "active"   ] =   hilite(   "Active Fonts"   ),
-  [ "inactive" ] =   normal(   "Inactive Fonts" ),
-  [ "disabled" ] =     grey(     "Disabled Fonts" ),
-  [ "missing"  ] =      red(      "Missing Fonts"  ),
-  [ "new"      ] =    green(    "New Fonts"      ),
-  [ "builtin"  ] = bluzzard( "Built-In Fonts"),
+  [ "active"   ] =   yellow( "Active Fonts"   ),
+  [ "inactive" ] =    white( "Inactive Fonts" ),
+  [ "disabled" ] =     grey( "Disabled Fonts" ),
+  [ "missing"  ] =      red( "Missing Fonts"  ),
+  [ "new"      ] =    green( "New Fonts"      ),
+  [ "builtin"  ] = bluzzard( "Built-In Fonts" ),
 };
 
 local filter_desc =
@@ -306,11 +306,10 @@ local flags  =
             
      "active"   = not deactivated by the user; implies not("inactive"), not("missing")
      "inactive" = deactivated by the user; implies not("active")
-     "loaded"   = has been loaded into LibSharedMedia
+     "loaded"   = the addon associated with the font file has been loaded into WoW
      "disabled" = is part of an addon that exists but is disabled; implies not("missing")
      "new"      = added since the last login; implies not("missing")
-     "missing"  = is part of an addon that is no longer installed; implies not("loaded"),
-                  not("loaded"), not("disabled"), not("new")
+     "missing"  = is part of an addon that is no longer installed; implies, not("disabled"), not("new")
      "builtin"  = a built-in font; implies not("missing")
 
 --]]
@@ -399,7 +398,8 @@ local methods =
   ["GetFont"] = function(self) return self.font; end,
 
   addon =
-    { ["GetTitle"] = function(self) return GetAddOnMetadata(self:GetName(), "Title"); end,
+    { 
+      ["GetTitle"] = function(self) return GetAddOnMetadata(self:GetName(), "Title"); end,
     },
   font =
     { ["InitList"] =
