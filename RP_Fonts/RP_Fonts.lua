@@ -25,50 +25,52 @@ local listOfIncludedFonts = [===[
 |cff00ffffAmarante|r
 Copyright (c) 2012 by Sorkin Type Co (www.sorkintype.com), with Reserved Font Name "Amarante".
 
+|cff00ffffAlmendra Display|r
+Copyright (c) 2011-2012, Ana Sanfelippo (anasanfe@gmail.com), with Reserved Font Name 'Almendra'
+
 |cff00ffffArima Madruai|r
 Copyright 2015 The Arima Project Authors (info@ndiscovered.com)
 
 |cff00ffffBarlow Condensed|r
 Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)
 
-|cff00ffffBebas Neue|r
-Copyright © 2010 by Dharma Type.
+|cff00ffffBellefair|r
+Copyright 2015 The Bellefair Project Authors (https://github.com/shinntype/bellefair)
+
+|cff00ffffBerkshire Swash|r
+Copyright (c) 2012 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Names "Berkshire Swash"
 
 |cff00ffffBig Shoulders Stencil Display|r
 Copyright 2019 The Big Shoulders Project Authors (https://github.com/xotypeco/big_shoulders)
 
-|cff00ffffBitter|r
-Copyright 2011 The Bitter Project Authors (https://github.com/solmatas/BitterPro)
+|cff00ffffCinzel Decorative|r
+Copyright (c) 2012 Natanael Gama (info@ndiscovered.com), with Reserved Font Name 'Cinzel'
 
-|cff00ffffBree Serif|r
-Copyright (c) 2011, TypeTogether (www.type-together.com), 
+|cff00ffffCreepster|r
+Copyright (c) 2011, Font Diner, Inc (diner@fontdiner.com),
+with Reserved Font Names "Creepster"
 
-|cff00ffffCedarville Cursive|r
-Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com)
-
-|cff00ffffDotGothic16|r
-Copyright 2020 The DotGothic16 Project Authors (https://github.com/fontworks-fonts/DotGothic16)
-
-|cff00ffffEast Sea Dokdo|r
-Copyright (c) YoonDesign Inc. All Rights Reserved.
+|cff00ffffElsie Swash Caps|r
+Copyright (c) 2010-2012, Alejandro Inler (alejandroinler@gmail.com), with Reserved Font Name 'Elsie'
 
 |cff00ffffFlamenco|r
 Copyright (c) 2011 by LatinoType Limitada (luciano@latinotype.com), 
 
-|cff00ffffFondamento|r
-Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Names "Fondamento" and "Fondamento Italic"
-
 |cff00ffffIM_Fell Types|r
 Copyright (c) 2010, Igino Marini (mail@iginomarini.com)
 
-|cff00ffffKrona One|r
-Copyright (c) 2011 by Sorkin Type Co (www.sorkintype.com), with Reserved Font Names "Krona" and "Krona One".
+|cff00ffffLimelight|r
+Copyright (c) 2011 by Sorkin Type Co (www.sorkintype.com),
+with Reserved Font Name "Limelight".
 
-|cff00ffffMerriweather Sans|r
-Copyright 2019 The Merriweather Project Authors (https://github.com/SorkinType/Merriweather-Sans) with Reserved Font Name 'Merriweather'
+|cff00ffffMiltonian|r
+Copyright (c) 2011 by Pablo Impallari (www.impallari.com impallari@gmail.com). Igino Marini (www.ikern.com)
 
 |cff00ffffMrs Saint Delafield|r
 Copyright (c) 2011 Alejandro Paul (sudtipos@sudtipos.com), with Reserved Font Name "Mrs Saint Delafield"
+
+|cff00ffffNosifer|r
+Copyright (c) 2011, Typomondo, with Reserved Font Name "Nosifer".
 
 |cff00ffffOswald|r
 Copyright 2016 The Oswald Project Authors (https://github.com/googlefonts/OswaldFont)
@@ -79,12 +81,6 @@ Copyright 2020 The Poppins Project Authors (https://github.com/itfoundry/Poppins
 |cff00ffffPress Start 2P|r
 Copyright 2012 The Press Start 2P Project Authors (cody@zone38.net), with Reserved Font Name "Press Start 2P".
 
-|cff00ffffPrincess Sofia|r
-Copyright (c) 2011, Font Diner (www.fontdiner.com), with Reserved Font Name "Princess Sofia".
-
-|cff00ffffReggae_One|r
-Copyright 2020 The Reggae Project Authors (https://github.com/fontworks-fonts/Reggae)
-
 |cff00ffffShareTechMono|r
 Copyright (c) 2012, Carrois Type Design, Ralph du Carrois (post@carrois.com www.carrois.com), with Reserved Font Name 'Share'
 
@@ -92,6 +88,9 @@ Copyright (c) 2012, Carrois Type Design, Ralph du Carrois (post@carrois.com www.
 
 |cff00ffffSyne_Mono|r
 Copyright 2017 The Syne Project Authors (https://gitlab.com/bonjour-monde/fonderie/syne-typeface)
+
+|cff00ffffTangerine|r
+Copyright (c) 2010, Toshi Omagari (tosche@mac.com)
 
 |cff00ffffUncial Antiqua|r
 Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Names "Uncial Antiqua"
@@ -192,10 +191,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 ]===];
 
 -- variables
-local options, db, Fonts, keys, SearchTerms, Browsing, Stats, PreviewText, PreviewSize, Filter, SandboxText, SandboxFont, ViewFontList, ViewLicense;
+local options, db, Fonts, keys, SearchTerms, SearchResults, Browsing, Stats, PreviewText, PreviewSize, Filter, SandboxText, SandboxFont, ViewFontList, ViewLicense;
 
 -- constants
-local col        = { 0.2, 1.4, 1.0, 0.5 };
+local col        = { 0.2, 1.5, 0.9, 0.5 };
 local BUILTIN    = "Built-in font";
 local POPUP      = "RPFONTS_CONFIRMATION_BUTTON";
 local TEST_STRIP = "This is a TEST STRIP for testing. We use it to detect if fonts are being applied.";
@@ -442,7 +441,7 @@ local methods =
           local verified = false;
           for fileName, file in pairs(self:GetList("file"))
           do  local result, baseline, diff = file:Verify();
-              if math.abs(diff) > (db.Settings.VerifyTolerance or 0.05) or file:HasFlag("builtin")
+              if math.abs(diff) > (db.Settings.VerifyTolerance or 0.05) or self:HasFlag("builtin")
               then file:SetFlag("verified"); 
                    verified = true 
               else file:SetFlag("unverified");
@@ -804,6 +803,14 @@ local function makeFont(fontName, fontFile)
           func             = browseFont,
           hidden           = filter,
       },
+
+      [name .. "_Newline"] =
+        { type = "description",
+          width = "full",
+          fontSize = "small",
+          name = "",
+          hidden           = filter,
+        },
     };
 
     table.insert(keys, font.name);
@@ -863,7 +870,7 @@ StaticPopupDialogs[POPUP] =
 
 local function scaryWarningMessage(fontState)
 
-  return "This will permanently delete the records of " .. fontState .. " fonts from " .. 
+  return "This will permanently delete information on " .. fontState .. " from " .. 
          rpFontsTitle .. "'s records. It can't be undone. " ..
          "Your font files themselves won't be harmed." .. 
          "\n\nIf you load addons that register those fonts with LibSharedMedia, " ..
@@ -891,22 +898,34 @@ local function doPurge(flag)
 end;
 
 local function purgeMissing()
-  StaticPopupDialogs[POPUP].text = scaryWarningMessage(red("missing"));
+  StaticPopupDialogs[POPUP].text = scaryWarningMessage(red("missing fonts"));
   StaticPopupDialogs[POPUP].OnAccept = function() doPurge("missing") end;
   StaticPopup_Show(POPUP);  
 end;
 
 local function purgeDisabled()
-  StaticPopupDialogs[POPUP].text = scaryWarningMessage(grey("disabled"));
+  StaticPopupDialogs[POPUP].text = scaryWarningMessage(grey("disabled fonts"));
   StaticPopupDialogs[POPUP].OnAccept = function() doPurge("disabled") end;
   StaticPopup_Show(POPUP);  
 end;
 
 local function purgeEverything()
-  StaticPopupDialogs[POPUP].text = scaryWarningMessage(yellow("all"));
+  StaticPopupDialogs[POPUP].text = scaryWarningMessage(yellow("all fonts"));
   StaticPopupDialogs[POPUP].OnAccept = function() doPurge("all") end;
   StaticPopup_Show(POPUP);  
 end;
+
+--[[
+local function purgeBrowsingFont()
+  StaticPopupDialogs[POPUP].text = scaryWarningMessage(Browsing:ColorName());
+  StaticPopupDialogs[POPUP].OnAccept = 
+    function() 
+      Browsing:SetFlag("deleted");
+      Browsing = Fonts[ LibSharedMedia:GetDefault("font") ];
+    end;
+  StaticPopup_Show(POPUP);  
+end;
+--]]
 
 local function generateHashTable()
   local list = {};
@@ -997,26 +1016,33 @@ local function buildFontBrowser()
         { inactive        =
           { type          = "execute",
             order         = 2301,
-            hidden        = function() return Browsing and Browsing:HasFlag("inactive") end,
+            hidden        = function() return Browsing and not Browsing:HasFlag("active") end,
             name          = "Set Inactive",
             width         = 0.75,
             func          = function() Browsing:SetRegistrationStatus(false) end,
+            disabled      = function() return Browsing and LibSharedMedia:GetDefault("font") == Browsing:GetName() end,
           },
           active          =
           { type          = "execute",
             order         = 2302,
-            hidden        = function() return Browsing and Browsing:HasFlag("active") end,
+            hidden        = function() return Browsing and not Browsing:HasFlag("inactive") end,
             name          = "Set Active",
             width         = 0.75,
             func          = function() Browsing:SetRegistrationStatus(true) end,
           },
+          --[[
           deleteRecord    =
           { type          = "execute",
             order         = 2303,
-            name          = "Delete",
+            name          = "Delete Record",
             width         = 0.75,
-            func          = function() notify("Why you wanna delete this??") end,
+            desc          = "Deleting this record won't delete the font file from your computer, or even from " ..
+                            "LibSharedMedia. All that deleting will do is delete " .. rpFontsTitle .. "'s record of " ..
+                            "the font, which means that it won't know whether to set the font active or inactive -- " ..
+                            "and will likely default to active.",
+            func          = purgeBrowsingFont,
           },
+          --]]
         },
       },
 
@@ -1180,7 +1206,7 @@ local function buildDataTable()
         get              = function() return db.Settings.DataTools end,
         set              = function(info, value) 
                              db.Settings.DataTools = value 
-                             if not value then Filter = "none" end;
+                             if not value then Filter = "none"; SearchTerms = nil; SearchResults = nil; end;
                            end,
         desc             = "You can turn off or on tools for working with the table here.",
       },
@@ -1200,22 +1226,51 @@ local function buildDataTable()
         hidden           = function() return not db.Settings.DataTools end,
         order = 922,
       },
+      searchBarBlank =
+      { type = "description",
+        fontSize = "small",
+        name = " ",
+        hidden  = function() return not db.Settings.DataTools end,
+        width = "full",
+        order = 930,
+      },
       searchBarLabel =
       { type = "description",
         fontSize = "medium",
         name = "Search",
-        width = 0.3,
-        hidden           = function() return not db.Settings.DataTools end,
+        width = 0.4,
+        hidden  = function() return not db.Settings.DataTools end,
         order = 935,
       },
       searchBar =
       { type = "input",
         name = "",
-        width = col[1] + col[2] + col[3] - 0.2,
+        width = col[1] + col[2] + col[3] - 0.5,
         get = function() return SearchTerms end,
-        set = function(info, value) SearchTerms = value end,
+        set = function(info, value) 
+                SearchTerms = value 
+                if   SearchTerms
+                then local count = 0;
+                     for _, font in pairs(Fonts)
+                     do  if   font:GetName():lower():match( SearchTerms:lower() )
+                              and ( not Filter or font:HasFlag(Filter))
+                         then count = count + 1;
+                         end;
+                     end;
+                     SearchResults = count;
+                else SearchResults = nil;
+                end;
+            end,
         hidden = function() return not db.Settings.DataTools end,
         order = 940,
+      },
+      searchBarSpacer =
+      { type = "description",
+        fontSize = "medium",
+        name = " ",
+        width = 0.2,
+        hidden  = function() return not db.Settings.DataTools end,
+        order = 945,
       },
       searchBarClear =
       { type = "execute",
@@ -1224,13 +1279,13 @@ local function buildDataTable()
         order = 945,
         hidden = function() return not db.Settings.DataTools end,
         disabled = function() return not SearchTerms end,
-        func = function() SearchTerms = nil end,
+        func = function() SearchTerms = nil; SearchResults = nil; end,
       },
       columns = 
       { 
         type = "group",
         inline = true,
-        name = " ",
+        name = function() return SearchResults and (SearchResults .. " |4match:matches;") or " " end,
         order = 950,
         args = 
         {
@@ -1258,12 +1313,12 @@ local function buildDataTable()
           },
           columnNewline      = newline(1005),
 
-          blankPlaceholder =
+          filterPlaceholder =
           { type = "header",
             name = white("Nothing to display"),
             width = "full",
             order = 1006,
-            hidden = function() return not(Stats[Filter] == 0) end,
+            hidden = function() return not(Stats[Filter] == 0) or SearchTerms and SearchResults ~= nil and SearchResults == 0 end,
           },
         },
       },
@@ -1285,6 +1340,7 @@ local function buildDataTable()
      dataTable.args.columns.args[key .. "_Name"     ].order = 1000 + i * 10 + 2;
      dataTable.args.columns.args[key .. "_AddOn"    ].order = 1000 + i * 10 + 3;
      dataTable.args.columns.args[key .. "_Details"  ].order = 1000 + i * 10 + 4;
+     dataTable.args.columns.args[key .. "_Newline"  ].order = 1000 + i * 10 + 5;
   end;
 
   options.args.dataTable = dataTable;
