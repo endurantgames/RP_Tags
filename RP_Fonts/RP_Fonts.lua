@@ -195,10 +195,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 ]===];
 
 -- variables
-local options, db, Fonts, keys, Browsing, Stats, PreviewText, PreviewSize, Filter, SandboxText, SandboxFont, ViewFontList, ViewLicense;
+local options, db, Fonts, keys, SearchTerms, Browsing, Stats, PreviewText, PreviewSize, Filter, SandboxText, SandboxFont, ViewFontList, ViewLicense;
 
 -- constants
-local col        = { 0.2, 1.5, 1.1, 0.5 };
+local col        = { 0.2, 1.4, 1.0, 0.5 };
 local BUILTIN    = "Built-in font";
 local POPUP      = "RPFONTS_CONFIRMATION_BUTTON";
 local TEST_STRIP = "This is a TEST STRIP for testing. We use it to detect if fonts are being applied.";
@@ -325,7 +325,7 @@ local function newline(order) return { type = "description", name = "", width = 
 -- object methods
 
 local flags  = 
-{ font  = { "active", "loaded",   "inactive", "disabled", "new", "missing", "builtin", "verified", "unverified" },
+{ font  = { "active", "loaded",   "inactive", "disabled", "new", "missing", "builtin", "verified", "unverified", "deleted" },
   addon = { "loaded", "disabled", "missing",  "builtin", }, 
   file  = { "loaded", "disabled", "missing", "verified", "unverified" } 
 };
@@ -341,6 +341,7 @@ local flags  =
      "builtin"  = a built-in font; implies not("missing")
      "verified" = the font has been tested and has proven to load correctly
      "unverified" = the opposite of verified
+     "deleted"  = a victim of a purge
 
 --]]
 
@@ -446,7 +447,7 @@ local methods =
           local verified = false;
           for fileName, file in pairs(self:GetList("file"))
           do  local result, baseline, diff = file:Verify();
-              if math.abs(diff) > db.Settings.VerifyTolerance or file:HasFlag("builtin")
+              if math.abs(diff) > (db.Settings.VerifyTolerance or 0.01) or file:HasFlag("builtin")
               then file:SetFlag("verified"); 
                    verified = true 
               else file:SetFlag("unverified");
@@ -703,6 +704,8 @@ local function makeFont(fontName, fontFile)
     local function incr(category) Stats[category] = Stats[category] + 1 end;
     local function have(category) return self:HasFlag(category) end;
 
+    if self:HasFlag("deleted") then return end;
+
     if   self:GetTimestamp("FirstSeen") == Stats.now 
     then self:SetFlag("new") 
     else self:ClearFlag("new");
@@ -730,7 +733,9 @@ local function makeFont(fontName, fontFile)
 
   function font.GetOptionsTableArgs(self)
 
-    local function filter() return not (Filter == "none") and not self:HasFlag(Filter); end;
+    local function filter() 
+      return self:HasFlag("deleted") or (not (Filter == "none") and not self:HasFlag(Filter)); 
+    end;
 
     local function browseFont()
       Browsing = self;
@@ -826,12 +831,14 @@ end;
 -- -------------------------------------------------------------------------------------------------------------------------------
 local function restoreSavedData()
   for fontName, data in pairs(db.Fonts)
-  do  local font = makeFont(fontName);
-
-      if   data and data.file 
-      then for fileName, fileData in pairs(data.file)
-           do  local file  = font:NewFile(fileName)
-               local addon = font:NewAddon( file:GetAddonFromPath() );
+  do  if data and data.db and data.db.flags and data.db.flags.deleted
+      then  db.Fonts[fontName] = nil;
+      else local font = makeFont(fontName);
+           if   data and data.file 
+           then for fileName, fileData in pairs(data.file)
+                do  local file  = font:NewFile(fileName)
+                    local addon = font:NewAddon( file:GetAddonFromPath() );
+                end;
            end;
       end;
   end;
@@ -872,10 +879,17 @@ local function doPurge(flag)
 
   local num = 0;
   for name, font in pairs(Fonts)
-  do  if flag == "all" or font:HasFlag(flag) then Fonts[name] = nil; num = num + 1; end;
+  do  if flag == "all" or font:HasFlag(flag) 
+      then font:SetFlag("deleted")
+      num = num + 1; end;
   end;
 
-  notify( (num > 0) and (num .. " font records deleted.") or "No font records deleted."); 
+  if num > 0
+  then notify(num .. " font records deleted.")
+       recount();
+       updateOptions();
+  else notify("No font records deleted.")
+  end;
 end;
 
 local function purgeMissing()
@@ -898,7 +912,8 @@ end;
 
 local function generateHashTable()
   local list = {};
-  for fontName, font in pairs(Fonts) do list[fontName] = font:GetName(); end;
+  for fontName, font in pairs(Fonts) 
+  do list[fontName] = font:ColorName(); end;
   return list
 end;
 
@@ -1108,75 +1123,159 @@ end;
 
 local function buildDataTable()
 
-  local function showCurrentFilter() if not Filter or Filter == "none" then return "All Fonts" else return filters[Filter] end end;
+  local function showCurrentFilter() 
+    if not Filter or Filter == "none" 
+    then return "All Fonts" 
+    else return filters[Filter] 
+    end 
+  end;
 
   local dataTable      =
   { name               = "Font List",
     type               = "group",
     order              = 700,
-  };
+      args           =
+    { 
+      shadowHeadline     =
+      { type = "description",
+        name = " ",
+        width = col[1] + col[2] + col[3] + 0.1,
+        order = 890,
+        fontSize = "small",
+        hidden = function() return db.Settings.DataTools end,
+      },
+      
+      headline           =
+      { type             = "description",
+        name             = showCurrentFilter,
+        width            = 1.1,
+        order            = 900,
+        fontSize         = "large",
+        hidden           = function() return not db.Settings.DataTools end,
+      },
+  
+      filters            =
+      { type             = "select",
+        values           = filters,
+        name             = "",
+        width            = col[1] + col[2] + col[3] - 1.5,
+        order            = 905,
+        sorting          = filter_order,
+        get              = function() return Filter or "" end,
+        set              = function(info, value) Filter = value end,
+        hidden           = function() return not db.Settings.DataTools end,
+      },
 
-  local args           =
-  { headline           =
-    { type             = "description",
-      name             = showCurrentFilter,
-      width            = col[1] + col[2],
-      order            = 900,
-      fontSize         = "large";
+      spacer             =
+      { type = "description",
+        name = " ",
+        order = 906,
+        width = 0.5,
+        fontSize = "small",
+        hidden           = function() return not db.Settings.DataTools end,
+      },
+      toolsToggle        =
+      { type             = "toggle",
+        name             = "Tools",
+        width            = col[4],
+        order            = 908,
+        get              = function() return db.Settings.DataTools end,
+        set              = function(info, value) 
+                             db.Settings.DataTools = value 
+                             if not value then Filter = "none" end;
+                           end,
+        desc             = "You can turn off or on tools for working with the table here.",
+      },
+      filtersDescription =
+      { type             = "description",
+        fontSize         = "small",
+        name             = function() return filter_desc[Filter] end,
+        order            = 920,
+        width            = col[1] + col[2] + col[3],
+        hidden           = function() return not db.Settings.DataTools end,
+      },
+      filtersSpacer = 
+      { type = "description",
+        fontSize = "large",
+        name = "\n\n\n",
+        width = col[4],
+        hidden           = function() return not db.Settings.DataTools end,
+        order = 922,
+      },
+      searchBarLabel =
+      { type = "description",
+        fontSize = "medium",
+        name = "Search",
+        width = 0.3,
+        hidden           = function() return not db.Settings.DataTools end,
+        order = 935,
+      },
+      searchBar =
+      { type = "input",
+        name = "",
+        width = col[1] + col[2] + col[3] - 0.2,
+        get = function() return SearchTerms end,
+        set = executeSearch,
+        hidden = function() return not db.Settings.DataTools end,
+        order = 940,
+      },
+      searchBarClear =
+      { type = "execute",
+        name = "Clear",
+        width = col[4],
+        order = 945,
+        hidden = function() return not db.Settings.DataTools end,
+        disabled = function() return not SearchTerms end,
+        func = function() SearchTerms = nil end,
+      },
+      columns = 
+      { 
+        type = "group",
+        inline = true,
+        name = " ",
+        order = 950,
+        args = 
+        {
+          columnActive       =
+          { type             = "description",
+            name             = "",
+            width            = col[1],
+            order            = 1001,
+          },
+      
+          columnName         =
+          { type             = "description",
+            name             = "|cffffff00Font Name|r",
+            width            = col[2],
+            order            = 1002,
+            fontSize         = "medium",
+          },
+      
+          columnAddOn        =
+          { type             = "description",
+            name             = "|cffffff00Source AddOn(s)|r",
+            width            = col[3],
+            order            = 1003,
+            fontSize         = "medium",
+          },
+          columnNewline      = newline(1005),
+
+          blankPlaceholder =
+          { type = "header",
+            name = white("Nothing to display"),
+            width = "full",
+            order = 1006,
+            hidden = function() return not(Stats[Filter] == 0) end,
+          },
+        },
+      },
     },
-
-    filters            =
-    { type             = "select",
-      values           = filters,
-      name             = "",
-      width            = col[3],
-      order            = 910,
-      sorting          = filter_order,
-      get              = function() return Filter or "" end,
-      set              = function(info, value) Filter = value end,
-    },
-
-    filtersDescription =
-    { type             = "description",
-      fontSize         = "small",
-      name             = function() return filter_desc[Filter] end,
-      order            = 920,
-      width            = col[1] + col[2],
-      hidden           = function() return Filter == "" end,
-    },
-
-    filtersNewline     = newline(999),
-
-    columnActive       =
-    { type             = "description",
-      name             = "",
-      width            = col[1],
-      order            = 1001,
-    },
-
-    columnName         =
-    { type             = "description",
-      name             = "|cffffff00Font Name|r",
-      width            = col[2],
-      order            = 1002,
-      fontSize         = "medium",
-    },
-
-    columnAddOn        =
-    { type             = "description",
-      name             = "|cffffff00Source AddOn(s)|r",
-      width            = col[3],
-      order            = 1003,
-      fontSize         = "medium",
-    },
-
-    columnNewline      = newline(1005),
   };
 
   if   Fonts 
   then for fontName, font in pairs(Fonts) 
        do  local font_args = font:GetOptionsTableArgs()
-           for k, v in pairs(font_args) do args[k] = v end;
+           for k, v in pairs(font_args) do dataTable.args.columns.args[k] = v end;
        end;
   end;
 
@@ -1184,13 +1283,11 @@ local function buildDataTable()
   table.sort(keys);
 
   for i, key in ipairs(keys)
-  do args[key .. "_Active"   ].order = 1000 + i * 10 + 1;
-     args[key .. "_Name"     ].order = 1000 + i * 10 + 2;
-     args[key .. "_AddOn"    ].order = 1000 + i * 10 + 3;
-     args[key .. "_Details"  ].order = 1000 + i * 10 + 4;
+  do dataTable.args.columns.args[key .. "_Active"   ].order = 1000 + i * 10 + 1;
+     dataTable.args.columns.args[key .. "_Name"     ].order = 1000 + i * 10 + 2;
+     dataTable.args.columns.args[key .. "_AddOn"    ].order = 1000 + i * 10 + 3;
+     dataTable.args.columns.args[key .. "_Details"  ].order = 1000 + i * 10 + 4;
   end;
-
-  dataTable.args = args;
 
   options.args.dataTable = dataTable;
 
@@ -1346,7 +1443,7 @@ local function buildSettingsPanel()
         get             = function() return db.Settings.LoadDisabled end,
         set             = applyLoadDisabled,
         order           = 9002,
-        width           = "full",
+        width           = 1.5,
       },
 
       resetAll      =
@@ -1869,7 +1966,9 @@ local function cycleThroughFonts()
       font:SetFlagsFromAddons();
       font:SetRegistrationStatus();
       font:Count();
-      font:Verify();
+      if db.Settings.VerifyFonts and not db.Settings.VerifyOnlyActive
+      then font:Verify();
+      end;
   end;
 end;
 
