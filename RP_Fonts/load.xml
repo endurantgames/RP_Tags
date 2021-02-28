@@ -5,6 +5,5 @@
 
     <Include file="Lib\load.xml" />
     <Script  file="RP_Fonts.lua" />
-    <Include file="Fonts\load.xml" />
 
 </Ui>

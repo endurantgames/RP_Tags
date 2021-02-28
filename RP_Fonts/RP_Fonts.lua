@@ -15,6 +15,7 @@ local Interface_Open    = InterfaceOptionsFrame_OpenToCategory;
 local rpFontsTitle      = GetAddOnMetadata(addOnName, "Title");
 local rpFontsDesc       = GetAddOnMetadata(addOnName, "Notes");
 local rpFontsVersion    = GetAddOnMetadata(addOnName, "Version");
+local baseFontDir = "Interface\\AddOns\\" .. addOn     .. "\\Fonts\\";
 
 local rpFontsFrame = CreateFrame("Frame");
       rpFontsFrame:RegisterEvent("ADDON_LOADED");
@@ -1920,33 +1921,6 @@ local function scanForFonts()
 
 end;
 
-local function applyCachedData()
-  --[[ load any data that we had cached prior to the DB loading
-     
-       At present, only two types of data can be pre-cached: a default 
-       active flag (true/false), and a license structure
-  --]]
-  --
-  local function foundFont(font, fontName, cachedData)
-
-    if   cachedData.active ~= nil 
-     and font:GetFlag("inactive") == nil 
-     and font:GetFlag("active") == nil
-    then font:SetFlag("active", cachedData.active);
-         font:SetFlag("inactive", not cachedData.active);
-    end;
-
-    if   cachedData.license and cachedData.license.what == "license" and font.license == nil
-    then font.license = CopyTable(cachedData.license)
-    end;
-  end;
-     
-  if  not ns.RP_Fonts.tmp then return end;
-  for fontName, fontData in pairs(ns.RP_Fonts.tmp)
-  do  if Fonts[fontName] then foundFont(Fonts[fontName], fontName, fontData) end;
-  end;
-
-end;
 
 local function registerSlashCommand()
 
@@ -1991,12 +1965,118 @@ local function initializationDone()
   SandboxFont = Fonts[LSM_Default];
 end;
 
+-- our fonts -------------------------------------------------------------------------------
+local family = { 
+  Almen  = baseFontDir .. "Almendra_Display\\AlmendraDisplay-",
+  Amara  = baseFontDir .. "Amarante\\Amarante-",
+  Arima  = baseFontDir .. "Arima_Madurai\\ArimaMadurai-",
+  Barlow = baseFontDir .. "Barlow_Condensed\\BarlowCondensed-",
+  Belle  = baseFontDir .. "Bellefair\\Bellefair-",
+  Berk   = baseFontDir .. "Berkshire_Swash\\BerkshireSwash-",
+  BigSho = baseFontDir .. "Big_Shoulders_Stencil_Display\\BigShouldersStencilDisplay-",
+  Cinzel = baseFontDir .. "Cinzel_Decorative\\CinzelDecorative-",
+  Creep  = baseFontDir .. "Creepster\\Creepster-",
+  Elsie  = baseFontDir .. "Elsie_Swash_Caps\\ElsieSwashCaps-",
+  Flame  = baseFontDir .. "Flamenco\\Flamenco-",
+  FontDS = baseFontDir .. "Fontdiner_Swanky\\FontdinerSwanky-",
+  IMFell = baseFontDir .. "IM_Fell\\IMFell",
+  Lime   = baseFontDir .. "Limelight\\Limelight-",
+  Milton = baseFontDir .. "Miltonian\\Miltonian-",
+  MrsStD = baseFontDir .. "Mrs_Saint_Delafield\\MrsSaintDelafield-",
+  MtXmas = baseFontDir .. "Mountains_of_Christmas\\MountainsofChristmas-",
+  Nosif  = baseFontDir .. "Nosifer\\Nosifer-",
+  Oswald = baseFontDir .. "Oswald\\Oswald-",
+  Poppi  = baseFontDir .. "Poppins\\Poppins-",
+  Press  = baseFontDir .. "Press_Start_2P\\PressStart2P-",
+  Share  = baseFontDir .. "ShareTechMono\\ShareTechMono-",
+  Source = baseFontDir .. "Source_Code_Pro\\SourceCodePro-",
+  Synco  = baseFontDir .. "Syncopate\\Syncopate-",
+  Syne   = baseFontDir .. "Syne_Mono\\SyneMono-",
+  Tanger = baseFontDir .. "Tangerine\\Tangerine-",
+  Uncial = baseFontDir .. "Uncial_Antiqua\\UncialAntiqua-",
+};
+
+local BLK        = "Black.ttf";
+local BLK_ITA    = "BlackItalic.ttf";
+local BOLD       = "Bold.ttf";
+local BOLD_ITA   = "BoldItalic.ttf";
+local ITA        = "Italic.ttf";
+local LITE_ITA   = "LightItalic.ttf";
+local LITE       = "Light.ttf";
+local MED        = "Medium.ttf";
+local MED_ITA    = "MediumItalic.tff";
+local REG        = "Regular.ttf";
+local SEMIBD     = "SemiBold.tff";
+local SEMIBD_ITA = "SemiBoldItalic.tff";
+local TH         = "Thin.ttf";
+local TH_ITA     = "ThinItalic.ttf";
+local XB         = "ExtraBold.ttf";
+local XB_ITA     = "ExtraBoldItalic.ttf";
+local XL         = "ExtraLight.ttf";
+local XL_ITA     = "ExtraLightItalic.ttf";
+local ENG_REG    = "English-Regular.ttf";
+local GP_ITA     = "GreatPrimer-Italic.ttf";
+local GP_REG     = "GreatPrimer-Regular.ttf";
+local GPSC_REG   = "GreatPrimerSC-Regular.ttf";
+local BSSDB      = "Big Shoulders Stencil Display Black";
+
+local fontList=
+{ -- Code       = { Load = false, Name = "Human Readable     ",         Fam = "FAM",    File = REG      },
+  Almen_Reg     = { Load = false, Name = "Almendra Display",            Fam = "Almen",  File = REG      },
+  Amara_Reg     = { Load = false, Name = "Amarante",                    Fam = "Amara",  File = REG      },
+  Arima_Light   = { Load = false, Name = "Arima Madurai Light",         Fam = "Arima",  File = LITE     },
+  Arima_Reg     = { Load = false, Name = "Arima Madurai",               Fam = "Arima",  File = REG      },
+  Barlow_Light  = { Load = false, Name = "Barlow Condensed Light",      Fam = "Barlow", File = LITE     },
+  Belle_Reg     = { Load = true,  Name = "Bellefair",                   Fam = "Belle",  File = REG      },
+  Berk_Reg      = { Load = false, Name = "Berkshire Swash",             Fam = "Berk",   File = REG      },
+  BigSho_Black  = { Load = false, Name = BSSDB,                         Fam = "BigSho", File = BLK      },
+  Cinzel_Bold   = { Load = false, Name = "Cinzel Decorative Bold",      Fam = "Cinzel", File = BOLD     },
+  Cinzel_Reg    = { Load = true,  Name = "Cinzel Decorative",           Fam = "Cinzel", File = REG      },
+  Creep_Reg     = { Load = false, Name = "Creepster",                   Fam = "Creep",  File = REG      },
+  Elsie_Reg     = { Load = false, Name = "Elsie Swash Caps",            Fam = "Elsie",  File = REG      },
+  Flame_Reg     = { Load = false, Name = "Flamenco",                    Fam = "Flame",  File = REG      },
+  FontDS_Reg    = { Load = false, Name = "Fontdiner Swanky",            Fam = "FontDS", File = REG      },
+  IMFell_EngReg = { Load = false, Name = "IM Fell English",             Fam = "IMFell", File = ENG_REG  },
+  IMFell_GPIta  = { Load = false, Name = "IM Fell Great Primer Italic", Fam = "IMFell", File = GP_ITA   },
+  IMFell_GPSC   = { Load = false, Name = "IM Fell Great Primer SC",     Fam = "IMFell", File = GPSC_REG },
+  Lime_Reg      = { Load = false, Name = "Limelight",                   Fam = "Lime",   File = REG      },
+  Milton_Reg    = { Load = false, Name = "Miltonian",                   Fam = "Milton", File = REG      },
+  MrsStD_Reg    = { Load = true,  Name = "Mrs Saint Delafield",         Fam = "MrsStD", File = REG      },
+  MtXmas_Bold   = { Load = false, Name = "Mountains of Christmas Bold", Fam = "MtXmas", File = BOLD     },
+  Nosif_Reg     = { Load = false, Name = "Nosifer",                     Fam = "Nosif",  File = REG      },
+  Oswald_Reg    = { Load = false, Name = "Oswald",                      Fam = "Oswald", File = REG      },
+  Poppi_BlkIta  = { Load = false, Name = "Poppins Black Italic",        Fam = "Poppi",  File = BLK_ITA  },
+  Poppi_Reg     = { Load = false, Name = "Poppins",                     Fam = "Poppi",  File = REG      },
+  Press_Reg     = { Load = false, Name = "Press Start 2P",              Fam = "Press",  File = REG      },
+  Share_Reg     = { Load = true,  Name = "Share Tech Mono",             Fam = "Share",  File = REG      },
+  Source_Lig    = { Load = false, Name = "Source Code Pro Light",       Fam = "Source", File = LITE     },
+  Source_Reg    = { Load = true,  Name = "Source Code Pro",             Fam = "Source", File = REG      },
+  Synco_Reg     = { Load = false, Name = "Syncopate",                   Fam = "Synco",  File = REG      },
+  Syne_Reg      = { Load = false, Name = "Syne Mono",                   Fam = "Syne",   File = REG      },
+  Tanger_Bold   = { Load = false, Name = "Tangerine Bold",              Fam = "Tanger", File = BOLD     },
+  Uncial_Reg    = { Load = false, Name = "Uncial Antiqua",              Fam = "Uncial", File = REG      },
+ };
+
+local function loadOurFonts()
+  for fontCode, fontData in pairs(fontList)
+  do  local fontFile = family[fontData.Fam] .. fontData.File;
+      LibSharedMedia:Register( "font", fontData.Name, fontFile);
+      local font, addon, file = makeFont(fontData.name, fontFile);
+      addon:SetFlag( "loaded" );
+      file:SetFlag(  "loaded" );
+      if font:GetFlag("inactive") == nil and font:GetFlag("active") == nil
+      then font:SetFlag("active", fontData.Load);
+           font:SetFlag("inactive", not fontData.Load);
+      end;
+  end
+end;
+
 -- main --------------------------------------------------------------------------------------------------------------------------------
 --
 local function main()
   restoreSavedData();
   scanForFonts();
-  applyCachedData();
+  loadOurFonts();
   cycleThroughFonts();
   initializationDone();
   createOptionsTable();
