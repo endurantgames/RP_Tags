@@ -5,8 +5,8 @@
 
 local addOnName, ns = ...;
 
-
 local LSM               = LibStub("LibSharedMedia-3.0");
+local AceGUI            = LibStub("AceGUI-3.0", true)
 local AceConfig         = LibStub("AceConfig-3.0");
 local AceConfigDialog   = LibStub("AceConfigDialog-3.0");
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0");
@@ -81,6 +81,8 @@ local function initializeDatabase()
   PreviewText      = nil;
   Fonts            = {};
   Browsing         = Browsing or "Morpheus";
+
+  ns.RP_Fonts.Fonts = Fonts;
 
   Stats =
   { total    = 0, new      = 0, missing = 0, active  = 0,
@@ -1328,3 +1330,218 @@ waitingFrame:SetScript("OnEvent",
     end;
   end
 );
+
+--[[-----------------------------------------------------------------------------
+this section based on: EditBox Widget from AceGUI
+-------------------------------------------------------------------------------]]
+local widgetType, widgetVersion = "RPF_FontPreviewEditBox", 1
+
+-- Lua APIs
+local tostring, pairs = tostring, pairs
+
+-- WoW APIs
+local PlaySound = PlaySound
+local GetCursorInfo, ClearCursor, GetSpellInfo = GetCursorInfo, ClearCursor, GetSpellInfo
+local CreateFrame, UIParent = CreateFrame, UIParent
+
+-- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
+-- List them here for Mikk's FindGlobals script
+-- GLOBALS: AceGUIEditBoxInsertLink, ChatFontNormal, OKAY
+
+--[[-----------------------------------------------------------------------------
+Support functions
+-------------------------------------------------------------------------------]]
+if not AceGUIEditBoxInsertLink then
+        -- upgradeable hook
+        hooksecurefunc("ChatEdit_InsertLink", 
+          function(...) return _G.AceGUIEditBoxInsertLink(...) end)
+end
+
+function _G.AceGUIEditBoxInsertLink(text)
+        for i = 1, AceGUI:GetWidgetCount(widgetType) do
+                local editbox = _G["AceGUI-3.0EditBox"..i]
+                if editbox and editbox:IsVisible() and editbox:HasFocus() then
+                        editbox:Insert(text)
+                        return true
+                end
+        end
+end
+
+local function ShowButton(self) if not self.disablebutton then self.button:Show() self.editbox:SetTextInsets(0, 20, 3, 3) end end
+local function HideButton(self) self.button:Hide() self.editbox:SetTextInsets(0, 0, 3, 3) end
+
+--[[-----------------------------------------------------------------------------
+Scripts
+-------------------------------------------------------------------------------]]
+local function Control_OnEnter(frame) frame.obj:Fire("OnEnter") end
+local function Control_OnLeave(frame) frame.obj:Fire("OnLeave") end
+local function Frame_OnShowFocus(frame) frame.obj.editbox:SetFocus() frame:SetScript("OnShow", nil) end
+local function EditBox_OnEscapePressed(frame) AceGUI:ClearFocus() end
+
+local function EditBox_OnEnterPressed(frame)
+        local self = frame.obj
+        local value = frame:GetText()
+        local cancel = self:Fire("OnEnterPressed", value)
+        if not cancel then PlaySound(856) HideButton(self) end
+end
+
+local function EditBox_OnReceiveDrag(frame)
+        local self = frame.obj
+        local type, id, info = GetCursorInfo()
+        local name
+        if type == "item" then name = info
+        elseif type == "spell" then name = GetSpellInfo(id, info)
+        elseif type == "macro" then name = GetMacroInfo(id)
+        end
+        if name then
+                self:SetText(name)
+                self:Fire("OnEnterPressed", name)
+                ClearCursor()
+                HideButton(self)
+                AceGUI:ClearFocus()
+        end
+end
+
+local function EditBox_OnTextChanged(frame)
+        local self = frame.obj
+        local value = frame:GetText()
+        if tostring(value) ~= tostring(self.lasttext) then
+                self:Fire("OnTextChanged", value)
+                self.lasttext = value
+                ShowButton(self)
+        end
+end
+
+local function EditBox_OnFocusGained(frame) AceGUI:SetFocus(frame.obj) end
+
+local function Button_OnClick(frame)
+        local editbox = frame.obj.editbox
+        editbox:ClearFocus()
+        EditBox_OnEnterPressed(editbox)
+end
+
+--[[-----------------------------------------------------------------------------
+Methods
+-------------------------------------------------------------------------------]]
+local methods = {
+        ["OnAcquire"] = function(self)
+                -- height is controlled by SetLabel
+                self:SetWidth(200)
+                self:SetDisabled(false)
+                self:SetLabel()
+                self:SetText()
+                self:DisableButton(false)
+                self:SetMaxLetters(0)
+        end,
+
+        ["OnRelease"] = function(self) self:ClearFocus() end,
+
+        ["SetDisabled"] = function(self, disabled)
+                self.disabled = disabled
+                if disabled then
+                        self.editbox:EnableMouse(false)
+                        self.editbox:ClearFocus()
+                        self.editbox:SetTextColor(0.5,0.5,0.5)
+                        self.label:SetTextColor(0.5,0.5,0.5)
+                else
+                        self.editbox:EnableMouse(true)
+                        self.editbox:SetTextColor(1,1,1)
+                        self.label:SetTextColor(1,.82,0)
+                end
+        end,
+
+        ["SetText"] = function(self, text)
+                self.lasttext = text or ""
+                self.editbox:SetText(text or "")
+                self.editbox:SetCursorPosition(0)
+                HideButton(self)
+        end,
+
+        ["GetText"] = function(self, text) return self.editbox:GetText() end,
+
+        ["SetLabel"] = 
+          function(self, text)
+            self.label:SetText("")
+            self.label:Hide()
+            self.editbox:SetPoint("TOPLEFT",self.frame,"TOPLEFT",7,0)
+            self.alignoffset = 12
+            local file;
+            if   text and Fonts[text] and Fonts[text]:GetItems("file")
+            then for fileName, fileData in pairs(Fonts[text]:GetItems()) 
+                 do  if not fileData:HasFlag("missing") then file = fileName; break; end; 
+                 end; 
+            end;
+            file = file or GameFontNormal:GetFont();
+            self.editbox:SetFont(file, 30);
+            self:SetHeight(50);
+        end,
+
+        ["DisableButton"] = function(self, disabled) self.disablebutton = disabled if disabled then HideButton(self) end end,
+        ["SetMaxLetters"] = function(self, num) self.editbox:SetMaxLetters(num or 0) end,
+        ["ClearFocus"   ] = function(self) self.editbox:ClearFocus() self.frame:SetScript("OnShow", nil) end,
+
+        ["SetFocus"] = function(self)
+                self.editbox:SetFocus()
+                if not self.frame:IsShown() then self.frame:SetScript("OnShow", Frame_OnShowFocus) end
+        end,
+
+        ["HighlightText"] = function(self, from, to) self.editbox:HighlightText(from, to) end
+}
+
+--[[-----------------------------------------------------------------------------
+Constructor
+-------------------------------------------------------------------------------]]
+local function Constructor()
+        local num  = AceGUI:GetNextWidgetNum(widgetType)
+        local frame = CreateFrame("Frame", nil, UIParent)
+        frame:Hide()
+
+        local editbox = CreateFrame("EditBox", "AceGUI-3.0EditBox"..num, frame, "InputBoxTemplate")
+        editbox:SetAutoFocus(false)
+
+        editbox:SetFontObject(ChatFontNormal)
+        editbox:SetScript("OnEnter", Control_OnEnter)
+        editbox:SetScript("OnLeave", Control_OnLeave)
+        editbox:SetScript("OnEscapePressed", EditBox_OnEscapePressed)
+        editbox:SetScript("OnEnterPressed", EditBox_OnEnterPressed)
+        editbox:SetScript("OnTextChanged", EditBox_OnTextChanged)
+        editbox:SetScript("OnReceiveDrag", EditBox_OnReceiveDrag)
+        editbox:SetScript("OnMouseDown", EditBox_OnReceiveDrag)
+        editbox:SetScript("OnEditFocusGained", EditBox_OnFocusGained)
+        editbox:SetTextInsets(0, 0, 3, 3)
+        editbox:SetMaxLetters(256)
+        editbox:SetPoint("BOTTOMLEFT", 6, 0)
+        editbox:SetPoint("BOTTOMRIGHT")
+        editbox:SetHeight(50);
+        editbox.Left:SetVertexColor(1, 1, 1, 0);    -- make the backdrops transparent
+        editbox.Right:SetVertexColor(1, 1, 1, 0);
+        editbox.Middle:SetVertexColor(1, 1, 1, 0);
+
+        local label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        label:SetPoint("TOPLEFT", 0, -2)
+        label:SetPoint("TOPRIGHT", 0, -2)
+        label:SetJustifyH("LEFT")
+        label:SetHeight(18)
+
+        local button = CreateFrame("Button", nil, editbox, "UIPanelButtonTemplate")
+        button:SetWidth(40)
+        button:SetHeight(20)
+        button:SetPoint("RIGHT", -2, 0)
+        button:SetText(OKAY)
+        button:SetScript("OnClick", Button_OnClick)
+        button:Hide()
+
+        local widget = {
+                alignoffset = 30,
+                editbox     = editbox,
+                label       = label,
+                button      = button,
+                frame       = frame,
+                type        = widgetType
+        }
+        for method, func in pairs(methods) do widget[method] = func end
+        editbox.obj, button.obj = widget, widget
+        return AceGUI:RegisterAsWidget(widget)
+end
+
+AceGUI:RegisterWidgetType(widgetType, Constructor, widgetVersion)

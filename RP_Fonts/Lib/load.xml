@@ -12,6 +12,4 @@
         <Include file="LibSharedMedia-3.0\lib.xml"                  />
         <Include file="AceGUI-3.0-SharedMediaWidgets\widget.xml"    />
 
-        <Include file="widget\AceGUIWidget-FontPreviewEditBox.lua" />
-
 </Ui>
