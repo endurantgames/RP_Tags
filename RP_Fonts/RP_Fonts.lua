@@ -202,9 +202,9 @@ local col        = { 0.2, 1.5, 1.1, 0.5 };
 local BUILTIN    = "Built-in font";
 local POPUP      = "RPFONTS_CONFIRMATION_BUTTON";
 local TEST_STRIP = "This is a TEST STRIP for testing. We use it to detect if fonts are being applied.";
-local ORANGE_BALL = "|A:nameplates-icon-orb-orange|a";
-local PURPLE_BALL = "|A:nameplates-icon-orb-purple|a";
-local BLUE_BALL   = "|A:nameplates-icon-orb-blue|a";
+local ORANGE_BALL = "|A:nameplates-icon-orb-orange:0:0|a";
+local PURPLE_BALL = "|A:nameplates-icon-orb-purple:0:0|a";
+local BLUE_BALL   = "|A:nameplates-icon-orb-blue:0:0|a";
 
 -- general utilities -----------------------------------------------------------------------------------------------------------------------
 --
@@ -446,15 +446,13 @@ local methods =
           local verified = false;
           for fileName, file in pairs(self:GetList("file"))
           do  local result, baseline, diff = file:Verify();
-              if math.abs(diff) > 0.01 
+              if math.abs(diff) > db.Settings.VerifyTolerance or file:HasFlag("builtin")
               then file:SetFlag("verified"); 
                    verified = true 
-                   notify(self:GetName(), "|cff00ff00verified!|r");
               else file:SetFlag("unverified");
               end;
           end;
 
-          --print(self:GetName(), verified and "|cff00ff00verified!|r" or "|cffff0000not verified|r")
           self:SetFlag("verified",       verified);
           self:SetFlag("unverified", not verified);
         end,
@@ -761,7 +759,7 @@ local function makeFont(fontName, fontFile)
       then name = BLUE_BALL .. " " .. name
       elseif db.Settings.VerifyFonts and self:HasFlag("verified")
       then name = ORANGE_BALL .. " " .. name
-      elseif db.SettingsVerify and self:HasFlag("unverified")
+      elseif db.Settings.VerifyFonts
       then name = PURPLE_BALL .. " " .. name
       end;
       return name;
@@ -781,7 +779,7 @@ local function makeFont(fontName, fontFile)
 
       [name .. "_Name"]    =
         { type             = "description",
-          name             = function() return self:ColorName() .. (self:HasFlag("verified") and (" " .. orange("V")) or "") end,
+          name             = getFancyFontName,
           width            = col[2],
           fontSize         = "medium",
           hidden           = filter,
@@ -851,7 +849,6 @@ StaticPopupDialogs[POPUP] =
   timeout = 60,
   whileDead = 1,
   OnCancel = function(self) notify("Purge cancelled.") end,
-  OnHide   = function(self) notify("Purge cancelled.") end,
   OnShow   = 
     function(self) 
       self.text:SetJustifyH("LEFT"); 
@@ -1075,18 +1072,9 @@ local function buildFontBrowser()
             hidden        = function() return Browsing and not(Browsing:GetTimestamp("FirstSeen")) end,
           },
 
-       -- firstSeenBlank  =
-       -- { type          = "description",
-         -- name          = " ",
-         -- order         = 2555,
-         -- width         = "full",
-         -- fontSize      = "small",
-         -- hidden        = function() return Browsing and not(Browsing:GetTimestamp("FirstSeen")) end,
-       -- },
-
           lastSeenLeft   =
           { type          = "description",
-            name          = yellow("Last Loaded in LSM"),
+            name          = yellow("Last Active"),
             order         = 2580,
             width         = 1,
             fontSize      = "medium",
@@ -1106,16 +1094,6 @@ local function buildFontBrowser()
             fontSize      = "medium",
             hidden        = function() return Browsing and not(Browsing:GetTimestamp("LastSeen")) end,
           },
-
-       -- lastSeenBlank  =
-       -- { type          = "description",
-         -- name          = " ",
-         -- order         = 2585,
-         -- width         = "full",
-         -- fontSize      = "small",
-         -- hidden        = function() return Browsing and not(Browsing:GetTimestamp("LastSeen")) end,
-       -- },
-
 
         },
       },
@@ -1370,6 +1348,16 @@ local function buildSettingsPanel()
         order           = 9002,
         width           = "full",
       },
+
+      resetAll      =
+      { type            = "execute",
+        name            = "Clear all font records",
+        order           = 9005,
+        width           = 1.25,
+        desc            = "You can reset all font information stored by " .. rpFontsTitle .. ". (Not recommended.)",
+        func            = purgeEverything,
+      },
+
       verifyFonts       =
       { type            = "toggle",
         name            = "Verify fonts when loading",
@@ -1377,40 +1365,56 @@ local function buildSettingsPanel()
                           "loading time if you have a lot of fonts.",
         get             = function() return db.Settings.VerifyFonts end,
         set             = function(info, value) db.Settings.VerifyFonts = value end,
-        width           = 1,
+        width           = 1.50,
         order           = 9011,
       },
-      onlyVerifyActive  =
-      { type            = "toggle",
-        name            = "Active fonts only",
-        desc            = "Only attempt to verify active fonts.",
-        get             = function() return db.Settings.OnlyVerifyActive end,
-        set             = function(info, value) db.Settings.OnlyVerifyActive = value end,
-        order           = 9015,
-        width           = 1,
+    
+      verifyAdvanced =
+      { type = "group",
+        inline = true,
+        name = "Verification Settings",
+        order = 9013,
+        hidden = function() return not db.Settings.VerifyFonts end,
+        args =
+        { 
+          onlyVerifyActive  =
+          { type            = "toggle",
+            name            = "Active fonts only",
+            desc            = "Only attempt to verify active fonts.",
+            get             = function() return db.Settings.OnlyVerifyActive end,
+            set             = function(info, value) db.Settings.OnlyVerifyActive = value end,
+            order           = 9013,
+            width           = 1.00,
+          },
+    
+          verifyTolerance   =
+          { type            = "range",
+            name            = "Verification Tolerance",
+            desc            = "Choose how much tolerance there should be in the verification process.",
+            order           = 9015,
+            width           = 0.75,
+            min             = 0,
+            max             = 2.0,
+            step            = 0.01,
+            get             = function() return db.Settings.VerifyTolerance end,
+            set             = function(info, value) db.Settings.VerifyTolerance = value end,
+          },
+          spacer            =
+          { type            = "description",
+            name            = " ",
+            width           = 0.2,
+            order           = 9016,
+          },
+          verifyNow         =
+          { type            = "execute",
+            name            = "Verify Now",
+            desc            = "Run a verification check on all fonts.",
+            order           = 9017,
+            width           = 0.75,
+            func            = function() for _, font in pairs(Fonts) do font:Verify() end end,
+          },
+        },
       },
-      resetAllLeft      =
-      { type            = "execute",
-        name            = "Clear all font records",
-        order           = 9021,
-        width           = 1,
-        func            = purgeEverything,
-      },
-      resetAllMiddle    =
-      { type            = "description",
-        name            = " ",
-        order           = 9022,
-        width           = 0.2,
-      },
-      resetAllRight     =
-      { type            = "description",
-        name            = white("You can reset all font information stored by " .. rpFontsTitle),
-        order           = 9023,
-        width           = 2,
-        fontSize        = "medium",
-      },
-
-      blank0            = newline(9024),
 
       creditsHeadline   =
       { type            = "description",
