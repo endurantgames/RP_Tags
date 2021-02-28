@@ -5,7 +5,7 @@
 
 local addOnName, ns = ...;
 
-local LSM               = LibStub("LibSharedMedia-3.0");
+local LibSharedMedia    = LibStub("LibSharedMedia-3.0");
 local AceGUI            = LibStub("AceGUI-3.0", true)
 local AceConfig         = LibStub("AceConfig-3.0");
 local AceConfigDialog   = LibStub("AceConfigDialog-3.0");
@@ -14,12 +14,183 @@ local Interface         = InterfaceOptionsFrame;
 local Interface_Open    = InterfaceOptionsFrame_OpenToCategory;
 local rpFontsTitle      = GetAddOnMetadata(addOnName, "Title");
 local rpFontsDesc       = GetAddOnMetadata(addOnName, "Notes");
+local rpFontsVersion    = GetAddOnMetadata(addOnName, "Version");
 
 ns.RP_Fonts             = ns.RP_Fonts     or {};
 ns.RP_Fonts.tmp         = ns.RP_Fonts.tmp or {}; -- temporary cache
 
+local listOfIncludedFonts = [===[
+|cff00ffffAmarante|r
+Copyright (c) 2012 by Sorkin Type Co (www.sorkintype.com), with Reserved Font Name "Amarante".
+
+|cff00ffffArima Madruai|r
+Copyright 2015 The Arima Project Authors (info@ndiscovered.com)
+
+|cff00ffffBarlow Condensed|r
+Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)
+
+|cff00ffffBebas Neue|r
+Copyright © 2010 by Dharma Type.
+
+|cff00ffffBig Shoulders Stencil Display|r
+Copyright 2019 The Big Shoulders Project Authors (https://github.com/xotypeco/big_shoulders)
+
+|cff00ffffBitter|r
+Copyright 2011 The Bitter Project Authors (https://github.com/solmatas/BitterPro)
+
+|cff00ffffBree Serif|r
+Copyright (c) 2011, TypeTogether (www.type-together.com), 
+
+|cff00ffffCedarville Cursive|r
+Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com)
+
+|cff00ffffDotGothic16|r
+Copyright 2020 The DotGothic16 Project Authors (https://github.com/fontworks-fonts/DotGothic16)
+
+|cff00ffffEast Sea Dokdo|r
+Copyright (c) YoonDesign Inc. All Rights Reserved.
+
+|cff00ffffFlamenco|r
+Copyright (c) 2011 by LatinoType Limitada (luciano@latinotype.com), 
+
+|cff00ffffFondamento|r
+Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Names "Fondamento" and "Fondamento Italic"
+
+|cff00ffffIM_Fell Types|r
+Copyright (c) 2010, Igino Marini (mail@iginomarini.com)
+
+|cff00ffffKrona One|r
+Copyright (c) 2011 by Sorkin Type Co (www.sorkintype.com), with Reserved Font Names "Krona" and "Krona One".
+
+|cff00ffffMerriweather Sans|r
+Copyright 2019 The Merriweather Project Authors (https://github.com/SorkinType/Merriweather-Sans) with Reserved Font Name 'Merriweather'
+
+|cff00ffffMrs Saint Delafield|r
+Copyright (c) 2011 Alejandro Paul (sudtipos@sudtipos.com), with Reserved Font Name "Mrs Saint Delafield"
+
+|cff00ffffOswald|r
+Copyright 2016 The Oswald Project Authors (https://github.com/googlefonts/OswaldFont)
+
+|cff00ffffPoppins|r
+Copyright 2020 The Poppins Project Authors (https://github.com/itfoundry/Poppins)
+
+|cff00ffffPress Start 2P|r
+Copyright 2012 The Press Start 2P Project Authors (cody@zone38.net), with Reserved Font Name "Press Start 2P".
+
+|cff00ffffPrincess Sofia|r
+Copyright (c) 2011, Font Diner (www.fontdiner.com), with Reserved Font Name "Princess Sofia".
+
+|cff00ffffReggae_One|r
+Copyright 2020 The Reggae Project Authors (https://github.com/fontworks-fonts/Reggae)
+
+|cff00ffffShareTechMono|r
+Copyright (c) 2012, Carrois Type Design, Ralph du Carrois (post@carrois.com www.carrois.com), with Reserved Font Name 'Share'
+
+|cff00ffffSource Code Pro Copyright 2010, 2012 Adobe Systems Incorporated (http|r//www.adobe.com/), with Reserved Font Name 'Source'. All Rights Reserved. Source is a trademark of Adobe Systems Incorporated in the United States and/or other countries.
+
+|cff00ffffSyne_Mono|r
+Copyright 2017 The Syne Project Authors (https://gitlab.com/bonjour-monde/fonderie/syne-typeface)
+
+|cff00ffffUncial Antiqua|r
+Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Names "Uncial Antiqua"
+]===];
+
+local openFontLicense = [===[
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+|cffffff00SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007|r
+-----------------------------------------------------------
+
+|cff00ffffPREAMBLE|r
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+|cff00ffffDEFINITIONS|r
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+|cff00ffffPERMISSION & CONDITIONS|r
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+|cff00ffffTERMINATION|r
+This license becomes null and void if any of the above conditions are
+not met.
+
+|cff00ffffDISCLAIMER|r
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+]===];
+
 -- variables
-local options, db, Fonts, keys, Browsing, Stats, PreviewText, Filter, SandboxText, SandboxFont;
+local options, db, Fonts, keys, Browsing, Stats, PreviewText, PreviewSize, Filter, SandboxText, SandboxFont, ViewFontList, ViewLicense;
 
 -- constants
 local col        = { 0.2, 1.5, 1.1, 0.5 };
@@ -30,25 +201,28 @@ local POPUP      = "RPFONTS_CONFIRMATION_BUTTON";
 --
 local function strip(str) return str:gsub("|cff%x%x%x%x%x%x", ""):gsub("|r", "") end;
 
-local function     grey(  str) return  DISABLED_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function      red(  str) return       RED_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function   yellow(  str) return    YELLOW_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function    green(  str) return     GREEN_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function bluzzard(  str) return BATTLENET_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function   hilite(  str) return HIGHLIGHT_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function   normal(  str) return    NORMAL_FONT_COLOR_CODE .. strip(str) .. "|r" end;
-local function    white(  str) return              "|cffffffff" .. strip(str) .. "|r" end;
+local function colorize(color, str, remove) return color .. (remove and strip(str) or str) .. "|r"; end;
+
+local function     grey(str, r) return colorize( DISABLED_FONT_COLOR_CODE, str, r) end;
+local function      red(str, r) return colorize(      RED_FONT_COLOR_CODE, str, r) end;
+local function   yellow(str, r) return colorize(   YELLOW_FONT_COLOR_CODE, str, r) end;
+local function    green(str, r) return colorize(    GREEN_FONT_COLOR_CODE, str, r) end;
+local function bluzzard(str, r) return colorize(BATTLENET_FONT_COLOR_CODE, str, r) end;
+local function   hilite(str, r) return colorize(HIGHLIGHT_FONT_COLOR_CODE, str, r) end;
+local function   normal(str, r) return colorize(   NORMAL_FONT_COLOR_CODE, str, r) end;
+local function    white(str, r) return colorize(             "|cffffffff", str, r) end;
 
 local function notify(...) print("[" .. rpFontsTitle .. "]", ...) end;
 
 -- filters 
 local filters    =
-{ [ "none"     ] =         "Filter List..." ,
-  [ "active"   ] = hilite( "Active Fonts"   ),
-  [ "inactive" ] = normal( "Inactive Fonts" ),
-  [ "disabled" ] = grey(   "Disabled Fonts" ),
-  [ "missing"  ] = red(    "Missing Fonts"  ),
-  [ "new"      ] = green(  "New Fonts"      ),
+{ [ "none"     ] =           "Filter List..." ,
+  [ "active"   ] =   hilite(   "Active Fonts"   ),
+  [ "inactive" ] =   normal(   "Inactive Fonts" ),
+  [ "disabled" ] =     grey(     "Disabled Fonts" ),
+  [ "missing"  ] =      red(      "Missing Fonts"  ),
+  [ "new"      ] =    green(    "New Fonts"      ),
+  [ "builtin"  ] = bluzzard( "Built-In Fonts"),
 };
 
 local filter_desc =
@@ -63,13 +237,24 @@ local filter_desc =
                    "but you don't have that addon installed, so the font isn't available."   ,
   [ "new"      ] = "New fonts are fonts which are newly registered with LibSharedMedia "    .. 
                    "since the last time you logged on."                                      ,
+  [ "builtin"  ] = "Builtin fonts are supplied by Blizzard and registered automatically "   ..
+                   "by LibSharedMedia."                                                      ,
 };
 
-local filter_order = { "none", "new", "active", "inactive", "disabled", "missing", };
+local filter_order = { "none", "new", "active", "inactive", "disabled", "missing", "builtin"};
 
 -- addons and files ------------------------------------------------------------------------------------------------------------------------
 --
 -- database ------------------------------------------------------------------------------------------------------------------------------
+local function clearCounts() 
+  Stats =
+  { total    = 0, new      = 0, missing = 0, active  = 0,
+    inactive       = 0, disabled = 0, loaded  = 0, builtin = 0,
+    builtin_active = 0, new_active = 0,
+    now            = Stats.now, -- preserve original value
+  };
+end;
+
 local function initializeDatabase()
 
   _G["RP_FontsDB"] = _G["RP_FontsDB"] or {};
@@ -79,28 +264,24 @@ local function initializeDatabase()
 
   Filter           = "none";
   PreviewText      = nil;
+  PreviewSize      = 30;
+  SandboxSize      = 30;
   Fonts            = {};
-  Browsing         = Browsing or "Morpheus";
 
   ns.RP_Fonts.Fonts = Fonts;
 
-  Stats =
-  { total    = 0, new      = 0, missing = 0, active  = 0,
-    inactive = 0, disabled = 0, loaded  = 0, builtin = 0,
-    now      = time(),
-  };
+  Stats = { now = time() };
+  clearCounts();
 
   keys = {};
- end;
 
-local function clearCounts() 
-  Stats =
-  { total    = 0, new      = 0, missing = 0, active  = 0,
-    inactive = 0, disabled = 0, loaded  = 0, builtin = 0,
-    now      = Stats.now, -- preserve original value
-  };
 end;
 
+
+local function recount()
+  clearCounts();
+  for _, font in pairs(Fonts) do font:Count() end;
+end;
 -- options -----------------------------------------------------------------------------------------------------------------------
 --
 local function registerOptions()
@@ -116,8 +297,8 @@ local function newline(order) return { type = "description", name = "", width = 
 -- object methods
 
 local flags  = 
-{ font  = { "active", "loaded", "inactive", "disabled", "new", "missing", "builtin" },
-  addon = { "loaded", "disabled", "missing" }, 
+{ font  = { "active", "loaded",   "inactive", "disabled", "new", "missing", "builtin" },
+  addon = { "loaded", "disabled", "missing",  "builtin", }, 
   file  = { "loaded", "disabled", "missing" } 
 };
 
@@ -139,15 +320,14 @@ local objectTypes = { "font", "addon", "file" };
 local methods =
 { 
   ["WhatAmI"] = function(self) return tContains(objectTypes, self.what) and self.what or nil end,
-  ["GetData"] = function(self) return self.data end,
+  ["GetData"] = function(self) return self.db end,
   ["GetName"] = function(self) return self.name end,
 
   ["SetFlag"] = 
     function(self, flag, value) 
       if value == nil then value = true end;
-
       if   flag and tContains(flags[ self:WhatAmI()], flag)
-      then self.data.flag = value;
+      then self.db.flags[flag] = value;
       end;
     end,
 
@@ -155,103 +335,137 @@ local methods =
   ["GetFlag"] = 
     function(self, flag)
       if flag and tContains(flags[ self:WhatAmI()], flag)
-      then return self.data.flag;
+      then return self.db.flags[flag];
       end;
     end,
 
   ["ClearFlag"] =
     function(self, flag)
       if flag and tContains(flags[ self:WhatAmI()], flag)
-      then self.data.flag = false;
+      then self.db.flags[flag] = false;
       end;
     end,
 
   ["ColorName"] =
     function(self)
-      if     self:HasFlag( "builtin"  ) then return bluzzard( self.name ) 
-      elseif self:HasFlag( "missing"  ) then return      red( self.name ) 
-      elseif self:HasFlag( "new"      ) then return    green( self.name ) 
-      elseif self:HasFlag( "disabled" ) and  
-         not db.Settings.LoadDisabled   then return     grey( self.name ) 
-      elseif self:HasFlag( "active"   ) then return   yellow( self.name )
-      elseif self:HasFlag( "inactive" ) then return    white( self.name )
-      else                                            return  self.name
-      end;
+      local name = self.GetTitle and self:GetTitle() or self:GetName();
+      local _, status = Fonts[self:GetFont()]:GetStatus();
+
+      return status == "builtin"  and bluzzard(name, true  )
+          or status == "missing"  and red(name,      true  )
+          or status == "new"      and green(name,    false )
+          or status == "disabled" and grey(name,     true  )
+          or status == "active"   and yellow(name,   false )
+          or status == "white"    and white(name,    false )
+          or name;
+
     end,
 
   ["SetFont"] =
     function(self, font)
-      if     self:WhatAmI() == "font"
-      then   self.font = self; 
-      elseif type(font) == "table" and font.WhatAmI and font:WhatAmI() == "font"
-      then   self.font = font;
-      elseif type(font) == "string" 
-      then   font = getFontFromDatabase(font);
-             if font then self.font = font else error("Unknown font: " .. font) end;
+      if     self:WhatAmI() == "font" then self.font = self:GetName(); 
+      elseif type(font)     == "table" 
+        and  font.WhatAmI 
+        and  font:WhatAmI() == "font" then self.font      =  font:GetName();
+      elseif type(font)     == "string" 
+        and Fonts[font]               then self.font      =  font;
       else   error("Invalid font: " .. type(font));
       end;
     end,
 
+    ["InitData"] =
+      function(self)
+        local what = self:WhatAmI();
+        local name = self:GetName();
+
+        if not name then print("no name found") return end;
+
+        if    what == "font"
+        then db.Fonts[name]          = db.Fonts[name]        or {};
+             db.Fonts[name].flags    = db.Fonts[name].flags  or {};
+             db.Fonts[name].lists    = db.Fonts[name].lists  or {};
+             db.Fonts[name].stamps   = db.Fonts[name].lists  or {};
+             self.db                 = db.Fonts[name];
+        elseif tContains(objectTypes, what)
+        then local lists             = db.Fonts[self:GetFont()].lists
+             lists[what]             = lists[what]             or {};
+             lists[what][name]       = lists[what][name]       or {};
+             lists[what][name].flags = lists[what][name].flags or {};
+             self.db                 = lists[what][name];
+        end;
+        return self.db;
+      end,
+
   ["GetFont"] = function(self) return self.font; end,
 
-  ["InitData"] =
-    function(self)
-      local what = self:WhatAmI();
-      local name = self:GetName();
-
-      self.data = self.data or {};
-      self.data.what = "data";
-
-      if   what == "font"
-      then db.Fonts[name] = db.Fonts[name] or self.data;
-      else local fontData = self:GetFont():GetData();
-           fontData[what]       = fontData[what] or {};
-           fontData[what][name] = fontData[what][name] or self.data or {};
-      end;
-
-      return self.data;
-    end,
-
+  addon =
+    { ["GetTitle"] = function(self) return GetAddOnMetadata(self:GetName(), "Title"); end,
+    },
   font =
     { ["InitList"] =
         function(self, objType)
+
           if   type(objType) == "string" and tContains(objectTypes, objType)
-          then self.objType = self.objType or {};
-               self:GetData().objType = self:GetData().objType or {}
-          else error("Invalid objectType " .. (type(objType) == "string" and objType or type(objType)))
+          then self.lists             = self.lists             or {};
+               self.lists[objType]    = self.lists[objType]    or {};
+               self.db.lists          = self.db.lists          or {}
+               self.db.lists[objType] = self.db.lists[objType] or {};
           end;
+        end,
+      ["GetTitle"] =
+        function(self)
+          if self:HasFlag("builtin") and LibSharedMedia:GetDefault("font") == self:GetName()
+          then return self:GetName() .. " (LSM Default)"
+          else return self:GetName()
+          end
         end,
 
       ["HasItem"] = "GetItem",
       ["GetItem"] =
         function(self, objType, name)
-          if   tContains(objectTypes, objType)
-           and self[objType] and self[objType][name]
-          then return self[objType][name]
-          else return nil
+          if   tContains(objectTypes, objType) 
+           and self.lists[objType] 
+           and self.lists[objType][name]
+          then return self.lists[objType][name], self.db.lists[objType][name]
+          else return nil, nil
           end
         end,
 
       ["AddItem"] = "SetItem",
       ["SetItem"] =
         function(self, objType, item)
-          if   tContains(objectTypes, objType) and
-               type(item) == "table" and item.WhatAmI and item:WhatAmI() == objType
-          then if type(self:GetItem(item)) == "table"
-               then self[objType][item:GetName()] = item
-                    self:GetData()[objType] = item:GetData();
-               else self[objType] = item;
-                    self:GetData()[objType] = item:GetData();
-               end;
-          else error("Unknown file: " .. type(file));
+          local name = item:GetName();
+          if   tContains(objectTypes, objType) 
+           and type(item) == "table" 
+           and item.WhatAmI 
+           and item:WhatAmI() == objType
+          then self.lists[objType]        = self.lists[objType]        or {};
+               self.lists[objType][name]  = item;
+               local lists                = self.db.lists[objType]
+               lists[objType]             = lists[objType]             or {};
+               lists[objType][name]       = lists[objType][name]       or {};
+               lists[objType][name].flags = lists[objType][name].flags or {};
+               lists[objType][name].name  = lists[objType][name].name  or name;
           end;
+
         end,
 
+      ["SetTimestamp"] =
+        function(self, timeStamp)
+          if  type(timeStamp) == "string"
+          then self.db.stamps[timeStamp] = Stats.now; -- not the actual time()!
+          end;
+        end,
+      ["GetTimestamp"] =
+        function(self, timeStamp)
+          if type(timeStamp) == "string" then return self.db.stamps[timeStamp]; end
+        end,
+      ["HasList"] = "GetList",
       ["GetList"] =
         function(self, objType)
-          if   tContains(objectTypes) and type(self[objType]) == "table"
-          then return self[objType], self:getData()[objType]
-          end;
+          if   tContains(objectTypes, objType) and type(self.lists[objType]) == "table"
+          then return self.lists[objType], self.db.lists[objType];
+          end
         end,
     },
 };
@@ -297,43 +511,48 @@ local function makeFont(fontName, fontFile)
     if name and tContains(objectTypes, what)
     then 
 
-      local list = self:GetList(what) or self:InitList(what) and {};
-      local item = self:GetItem(what, name) or {};
+      local list = self:GetList(what)       or self:InitList(what) and {};
+      local item = self:GetItem(what, name) or                         {};
       item.name  = name;
 
       attachMethods(item, what, self);
       self:AddItem(what, item);
       local data = item:InitData();
 
-      return item, data;
+      return item
 
     end;
 
   end; 
 
   function font.NewAddon(self, name)
-    local addon, data = self:New("addon", name);
+    local addon = self:New("addon", name);
    
     function addon.IsLoaded(self)
       if self.name == BUILTIN then return true end;
       local _, _, _, isLoadable, reason = GetAddOnInfo(self.name);
-      if not isLoadable then return false, reason; else return true, nil; end;
+      self:SetFlag("loaded", isLoadable);
+      if not isLoadable 
+      then return false, reason; 
+      else return true, nil; end;
     end;
 
-    return addon, data
+    if name == BUILTIN then self:SetFlag("builtin", name == BUILTIN); end;
+
+    return addon
   end;
 
   function font.NewFile(self, name)
 
-    local file, data = self:New("file", name);
+    local file = self:New("file", name);
 
-    function file.IsLoaded(self) return self.addon and self.addon:IsLoaded() end;
+    function file.IsLoaded(self) return self.addon:IsLoaded(); end;
 
     function file.GetAddonFromPath(self) 
       return self.name:match("^[iI]nterface\\[aA]dd[oO]ns\\(.-)\\") or BUILTIN; 
     end;
 
-    return file, data
+    return file
 
   end;
 
@@ -346,62 +565,71 @@ local function makeFont(fontName, fontFile)
 
     local any = {};
 
-    for name, addon in pairs(self:GetAddons())
+    if   self:GetAddons()
+    then for name, addon in pairs(self:GetAddons())
+         do  for _, flag in ipairs(flags.addon)
+             do  if addon:GetFlag(flag) then any[flag] = true; end;
+             end;
+         end;
 
-    do  for _, flag in ipairs(flags.addon)
-        do  if addon:GetFlag(flag) then any[flag] = true; end;
-        end;
+         if     any.builtin  then self:SetFlag("builtin", true  ); end;
+
+         if     any.loaded   then self:SetFlag("loaded",   true );
+                                  self:SetFlag("disabled", false);
+                                  self:SetFlag("missing",  false);
+     
+         elseif any.disabled then self:SetFlag("loaded",   false);
+                                  self:SetFlag("disabled", true );
+                                  self:SetFlag("missing",  false);
+     
+         elseif any.missing  then self:SetFlag("loaded",   false);
+                                  self:SetFlag("disabled", false);
+                                  self:SetFlag("missing",  false);
+         end;
+
+         if   not self:GetFlag("active") and not self:GetFlag("inactive")
+         then self:SetFlag("active") 
+         end;
+
     end;
 
-    if     any.loaded   then self:SetFlag("loaded",   true );
-                             self:SetFlag("disabled", false);
-                             self:SetFlag("missing",  false);
-
-    elseif any.disabled then self:SetFlag("loaded",   false);
-                             self:SetFlag("disabled", true );
-                             self:SetFlag("missing",  false);
-
-    elseif any.missing  then self:SetFlag("loaded",   false);
-                             self:SetFlag("disabled", false);
-                             self:SetFlag("missing",  false);
-    end;
-
+    if not self:GetTimestamp("FirstSeen") then self:SetTimestamp("FirstSeen"); end;
+    self:SetTimestamp("LastSeen");
   end;
-
-  function font.FindPrimaryFile(self)
-
+     
+  function font.GetPrimaryFile(self)
     for  name, file in pairs( self:GetFiles() )
-    do   if file:IsLoaded() 
-         then self.primaryFile = file 
-              self.data.primaryFile = file.data;
-              return file, file.data;
+    do   if    file:HasFlag("loaded")
+         then  return name, file
          end;
     end; 
-    self.primaryFile = nil;
-    self.data.primaryFile = nil;
     return nil, nil;
-
   end;
 
-  function font.GetPrimaryFile(self) return self.primaryFile, self.data.primaryFile; end;
-  function font.IsLoaded(self) return self:GetFlag("loaded")                         end;
+  function font.IsLoaded(self) return self:GetFlag("loaded") end;
 
   function font.Register(self)
-    local primary = self:GetPrimaryFile()
-    if self.name and primary.name then  LSM:Register("font", self.name, primary.name); self:SetFlag("loaded"); end;
+    local fileName, _ = self:GetPrimaryFile()
+    if    fileName 
+    then  LibSharedMedia:Register("font", self:GetName(), fileName);
+          self:SetFlag("loaded"); 
+    end;
   end;
 
   function font.Deregister(self)
-    if self.name then LSM.MediaTable.font[self.name] = nil self:ClearFlag("loaded", false); end;
+    if   self:GetName()
+    then LibSharedMedia.MediaTable.font[self:GetName()] = nil 
+         self:ClearFlag("loaded"); 
+    end;
   end;
     
   function font.GetStatus(self)              -- returns true/false if it should be shown, and the primary status
 
     if     self:HasFlag( "missing"  ) then return false, "missing"
+    elseif self:HasFlag( "builtin"  ) then return true,  "builtin"
     elseif self:HasFlag( "inactive" ) then return false, "inactive"
     elseif self:HasFlag( "disabled" ) and  not db.Settings.LoadDisabled 
                                       then return false, "disabled"
-    elseif self:HasFlag( "builtin"  ) then return true,  "builtin"
     elseif self:HasFlag( "new"      ) then return true,  "new"
     elseif self:HasFlag( "active"   ) then return true,  "active"
     elseif self:HasFlag( "loaded"   ) then return true,  "loaded"
@@ -410,35 +638,63 @@ local function makeFont(fontName, fontFile)
   end;
 
   function font.SetRegistrationStatus(self, status)
-    if status == nil then status, _ = self:GetStatus() end;
-    if status then self:Register() else self:Deregister(); 
-    end;
+    status = (status ~= nil) and status or self:GetStatus();
+    if status then self:Register() else self:Deregister() end;
+    recount();
   end;
 
   function font.Count(self)
-    local _, primaryStatus = self:GetStatus();
-    if primaryStatus ~= "unknown"
-    then Stats[primaryStatus] = Stats[primaryStatus] + 1;
+    local function incr(category) Stats[category] = Stats[category] + 1 end;
+    local function have(category) return self:HasFlag(category) end;
+
+    if   self:GetTimestamp("FirstSeen") == Stats.now 
+    then self:SetFlag("new") 
+    else self:ClearFlag("new");
     end;
+
+    if have( "active"   )                           then incr( "active"         ) end;
+    if have( "builtin"  )                           then incr( "builtin"        ) end;
+    if have( "inactive" ) and not have( "missing" ) then incr( "inactive"       ) end;
+    if have( "missing"  )                           then incr( "missing"        ) end;
+    if have( "new"      )                           then incr( "new"            ) end;
+    if have( "new"      ) and     have( "active"  ) then incr( "new_active"     ) end;
+    if have( "builtin"  ) and     have( "active"  ) then incr( "builtin_active" ) end;
+
+    incr("total");
   end;
 
   function font.FormatListForDisplay(self, what, delim)
     if tContains(objectTypes, what) and self:HasList(what)
     then local text = {};
-         for _, item in pairs(self:GetItems("what")) do table.insert(text, item:ColorName()); end;
+         for _, item in pairs(self:GetList(what)) do table.insert(text, item:ColorName()); end;
          return table.concat(text, delim or ", ");
     end;
   end;
 
   function font.GetOptionsTableArgs(self)
 
-    local function filter() return false end;
-   -- not (Filter == "none") and not self:HasFlag(Filter); end;
+    local function filter() return not (Filter == "none") and not self:HasFlag(Filter); end;
 
     local function browseFont()
-      Browsing = self:GetName(); 
+      Browsing = self;
+      db.Browsing = self:GetName();
       AceConfigDialog:SelectGroup(addOnName, "fontBrowser") 
     end
+
+    local function disableToggle()
+      local _, status = self:GetStatus()
+      return (status == "missing") 
+          or (status == "disabled" and not db.Options.LoadDisabled)
+          or (LibSharedMedia:GetDefault("font") == self:GetName())
+          or (LibSharedMedia:GetGlobal("font")  == self:GetName())
+      ;
+    end;
+
+    local function changeRegistrationStatus(info, value)
+      self:SetFlag("active", value);
+      self:SetFlag("inactive", not value);
+      self:SetRegistrationStatus(value);
+    end;
 
     local name = self:GetName();
 
@@ -447,9 +703,9 @@ local function makeFont(fontName, fontFile)
         { type             = "toggle",
           name             = "",
           width            = col[1],
-          get              = function() return self:HasFlag("active")                      end,
-          set              = function(info, value) self:SetRegistrationStatus(value)       end,
-          disabled         = function() local disable, _ = self:GetStatus() return disable end,
+          get              = function() return self:HasFlag("active") end,
+          set              = changeRegistrationStatus,
+          disabled         = disableToggle,
           hidden           = filter,
         },
 
@@ -463,7 +719,7 @@ local function makeFont(fontName, fontFile)
 
       [name .. "_AddOn"]   =
         { type             = "description",
-          name             = function() return self:FormatListForDisplay("font", ", ") end,
+          name             = function() return self:FormatListForDisplay("addon", ", ") end,
           width            = col[3],
           fontSize         = "medium",
           hidden           = filter,
@@ -480,15 +736,19 @@ local function makeFont(fontName, fontFile)
     };
 
     table.insert(keys, font.name);
+
+    return args;
   end;
 
-  db.Fonts[fontName] = font;
+
+  Fonts[fontName] = font;
 
   if   fontFile 
-  then local  file,  fileData  = font:NewFile(fontFile)
-       local newAddonName = file:GetAddonFromPath();
-       local  addon, addonData = font:NewAddon( newAddonName );
-       return font, data, file, addon;
+  then local file = font:NewFile(fontFile)
+       local addon_name = file:GetAddonFromPath();
+
+       local addon = font:NewAddon( addon_name);
+       return font, file, addon;
   end;
        
   return font, data;
@@ -498,7 +758,7 @@ end;
 -- -------------------------------------------------------------------------------------------------------------------------------
 local function restoreSavedData()
   for fontName, data in pairs(db.Fonts)
-  do  local font, data = makeFont(fontName);
+  do  local font = makeFont(fontName);
 
       if   data and data.file 
       then for fileName, fileData in pairs(data.file)
@@ -521,6 +781,12 @@ StaticPopupDialogs[POPUP] =
   timeout = 60,
   whileDead = 1,
   OnCancel = function(self) notify("Purge cancelled.") end,
+  OnHide   = function(self) notify("Purge cancelled.") end,
+  OnShow   = 
+    function(self) 
+      self.text:SetJustifyH("LEFT"); 
+      self.text:SetSpacing(3); 
+    end,
 };
 
 local function scaryWarningMessage(fontState)
@@ -531,19 +797,17 @@ local function scaryWarningMessage(fontState)
          "\n\nIf you load addons that register those fonts with LibSharedMedia, " ..
          rpFontsTitle .. " will create new records for them, as it will no longer " ..
          "have stored records telling it to deactivate or activate the fonts." ..
-         "\n\nAre you sure this is what you want to do?";
+         "\n\nAre you |cffffff00sure|r this is what you want to do?";
 
 end;
 
-local function doPurge(fontState)
+local function doPurge(flag)
+
   local num = 0;
   for name, font in pairs(Fonts)
-  do  if font[fontState] 
-      then font.data   = nil; 
-           Fonts[name] = nil; 
-           num         = num + 1; 
-      end;
+  do  if flag == "all" or font:HasFlag(flag) then Fonts[name] = nil; num = num + 1; end;
   end;
+
   notify( (num > 0) and (num .. " font records deleted.") or "No font records deleted."); 
 end;
 
@@ -556,6 +820,12 @@ end;
 local function purgeDisabled()
   StaticPopupDialogs[POPUP].text = scaryWarningMessage(grey("disabled"));
   StaticPopupDialogs[POPUP].OnAccept = function() doPurge("disabled") end;
+  StaticPopup_Show(POPUP);  
+end;
+
+local function purgeEverything()
+  StaticPopupDialogs[POPUP].text = scaryWarningMessage(yellow("all"));
+  StaticPopupDialogs[POPUP].OnAccept = function() doPurge("all") end;
   StaticPopup_Show(POPUP);  
 end;
 
@@ -575,109 +845,6 @@ end;
 --
 local function buildFontBrowser()
 
-  --[[
-  local function buildLicenseSection()
-
-    local function licenseAuthorNotKnown() 
-    local font = db.Fonts[db.Browsing]; return not font.license.person and not font.license.company; end;
-  
-    local function licenseAuthorBrowser()
-      local license = db.Fonts[db.Browsing].license;
-      if not license then return "" end;
-      local text = "Copyright ";
-      if license.date then text = text .. license.date .. " " end;
-      if   license.person 
-      then text = text .. license.person .. " ";
-  
-           if   license.personEmail  
-           then text = text .. "<" .. license.personEmail .. ">" 
-                if license.personUrl then text = text .. ", " else text = text .. " "; end;
-           end;
-  
-           if   license.personUrl 
-           then text = text .. "<" .. license.personUrl .. "> " 
-           end;
-  
-           if license.company then text = text .. ", " end;
-      end;
-      if   license.company 
-      then text = text .. license.company .. " ";
-           if license.companyEmail then text = text .. "<" .. license.companyEmail .. ">" 
-              if license.companyUrl then text = text .. ", " else text = text .. " "; end;
-              end;
-           if license.companyUrl then text = text .. "<" .. license.companyUrl .. "> " end;
-      end;
-      return text;
-    end;
-
-    local function licenseName() 
-      if db.Fonts[db.Browsinged] and db.Fonts[db.Browsinged].license
-      then return db.Fonts[db.Browsinged].license.license or "Unknown"
-      else return "Unknown"
-      end;
-    end;
-
-    local function licenseReservedFontName()
-      if db.Fonts[db.Browsinged] and db.Fonts[db.Browsinged].license
-      then return db.Fonts[db.Browsinged].license.reservedFontName or db.Fonts[db.Browsinged].name or ""
-      else return db.Fonts[db.Browsinged] and db.Fonts[db.Browsinged].name or ""
-      end;
-    end;
-
-    return
-    { type = "group",
-      inline = true,
-      order = 2600,
-      name = "License",
-      args =
-      { licenseLicenseLeft =
-        { type = "description",
-          name = "License",
-          order = 2610,
-          width = 1,
-        },
-        
-        licenseLicenseRight =
-        { type = "description",
-          name = licenseName,
-          order = 2611,
-          width = 2,
-        },
-
-        licenseLicenseNewline = newline(2612),
-
-        licenseReservedFontNameLeft =
-        { type = "description",
-          name = "Official Font Name",
-          order = 2621,
-          width = 1,
-        },
-        licenseReservedFontNameRight =
-        { type = "description",
-          name = licenseReservedFontName,
-          order = 2622,
-          width = 2,
-        },
-        licenseReservedFontNameNewline = newline(2623),
-
-        licenseAuthorLeft =
-        { type = "description",
-          name = "Author",
-          order = 2631,
-          width = 1,
-        },
-        licenseAuthorRight =
-        { type = "description",
-          name = licenseAuthorBrowser,
-          order = 2632,
-          width = 2,
-        },
-        licenseAuthorNewline = newline(2633),
-      },
-    };
-  end;
-  --]]
-           
   local fontBrowser       =
   { name                  = "Font Browser",
     type                  = "group",
@@ -688,22 +855,22 @@ local function buildFontBrowser()
       selector            =
       { type              = "select",
         width             = 2,
-        name              = function() return Browsing and Browsing:GetName() or "" end,
+        name              = function() return Browsing and Browsing:GetName() or db.Browsing or "" end,
         order             = 2100,
         values            = generateHashTable,
-        get               = function() return Fonts[Browsing] and Browsing:GetName() or "Morpheus" end,
+        get               = function() return Browsing and Browsing:GetName() or db.Browsing or "Morpheus" end,
         set               = function(info, value) Browsing = Fonts[value] end,
       },
 
       spacer              = { type = "description", width = 0.1, name = " ", order = 2101, },
 
-      showPreview         =
+      hidePreview         =
       { type              = "toggle",
         width             = 0.75,
-        name              = "Show Preview",
+        name              = "Hide Preview",
         order             = 2102,
-        get               = function() return not db.HidePreview end,
-        set               = function(info, value) db.HidePreview = not value end,
+        get               = function() return db.Settings.HidePreview             end,
+        set               = function(info, value) db.Settings.HidePreview = value end,
         desc              = "Choose whether to show or hide the text preview.",
       },
 
@@ -711,17 +878,31 @@ local function buildFontBrowser()
       { type              = "group",
         inline            = true,
         name              = "Font Preview",
-        order             = 2200,
-        hidden            = function() return db.HidePreview end,
+        order             = 2220,
+        hidden            = function() return db.Settings.HidePreview end,
         args              =
-        { preview         =
+        { previewSize     =
+          { type          = "range",
+            min           = 1,
+            softMin       = 6,
+            max           = 128,
+            softMax       = 60,
+            order         = 2150,
+            step          = 1,
+            width         = "full",
+            name          = "Preview Size",
+            get           = function() return PreviewSize end,
+            set           = function(info, value) PreviewSize = value end,
+            desc          = "Set the size of the font preview text.",
+          },
+          preview         =
           { type          = "input",
             width         = "full",
             dialogControl = "RPF_FontPreviewEditBox",
-            get           = function() return PreviewText or (Browsing and Browsing:GetName()) end,
+            get           = function() return PreviewText or (Browsing and Browsing:GetName() or db.Browsing) or "" end,
             set           = function(info, value) PreviewText = value end,
-            name          = function() return Browsing:GetName() end,
-            order         = 2101,
+            name          = function() return Browsing and Browsing:GetName() or db.Browsing or "Morpheus" end,
+            order         = 2175,
             desc          = "Click to set custom sample text to display.",
           },
         },
@@ -776,13 +957,13 @@ local function buildFontBrowser()
 
           fontAddOnRight  =
           { type          = "description",
-            name          = function() return Browsing and Browsing:FormatListforDisplay("addon", "\n") or "" end,
+            name          = function() return Browsing and Browsing:FormatListForDisplay("addon", "\n") or "" end,
             order         = 2402,
-            width         = 1,
+            width         = 2,
             fontSize      = "medium",
           },
 
-          newline         = newline(2403),
+          -- newline         = newline(2403),
 
           fontFileLeft    =
           { type          = "description",
@@ -799,10 +980,76 @@ local function buildFontBrowser()
             width         = 2,
             fontSize      = "small",
           },
+          -- newline2        = newline(2503),
+         
+          firstSeenLeft   =
+          { type          = "description",
+            name          = yellow("Date Installed"),
+            order         = 2550,
+            width         = 1,
+            fontSize      = "medium",
+            hidden        = function() return Browsing and not(Browsing:GetTimestamp("FirstSeen"))  end,
+          },
+
+          firstSeenRight  = 
+          { type          = "description",
+            name          = function() 
+                              return 
+                                Browsing 
+                                and Browsing:GetTimestamp("FirstSeen")
+                                and white(date( "%c", Browsing:GetTimestamp("FirstSeen"))) or "" 
+                              end,
+            order         = 2551,
+            width         = 2,
+            fontSize      = "medium",
+            hidden        = function() return Browsing and not(Browsing:GetTimestamp("FirstSeen")) end,
+          },
+
+       -- firstSeenBlank  =
+       -- { type          = "description",
+         -- name          = " ",
+         -- order         = 2555,
+         -- width         = "full",
+         -- fontSize      = "small",
+         -- hidden        = function() return Browsing and not(Browsing:GetTimestamp("FirstSeen")) end,
+       -- },
+
+          lastSeenLeft   =
+          { type          = "description",
+            name          = yellow("Last Loaded in LSM"),
+            order         = 2580,
+            width         = 1,
+            fontSize      = "medium",
+            hidden        = function() return Browsing and not(Browsing:GetTimestamp("LastSeen")) end,
+          },
+
+          lastSeenRight  = 
+          { type          = "description",
+            name          = function() 
+                              return 
+                                Browsing 
+                                and Browsing:GetTimestamp("LastSeen")
+                                and white(date( "%c", Browsing:GetTimestamp("LastSeen"))) or "" 
+                            end,
+            order         = 2581,
+            width         = 2,
+            fontSize      = "medium",
+            hidden        = function() return Browsing and not(Browsing:GetTimestamp("LastSeen")) end,
+          },
+
+       -- lastSeenBlank  =
+       -- { type          = "description",
+         -- name          = " ",
+         -- order         = 2585,
+         -- width         = "full",
+         -- fontSize      = "small",
+         -- hidden        = function() return Browsing and not(Browsing:GetTimestamp("LastSeen")) end,
+       -- },
+
+
         },
       },
 
-      -- fontLicense         = buildLicenseSection(),
     },
   };
 
@@ -878,15 +1125,17 @@ local function buildDataTable()
     columnNewline      = newline(1005),
   };
 
-  for fontName, font in pairs(Fonts) 
-  do  local font_args = font:GetOptionsTableArgs()
-      for k, v in pairs(font_args) do args[k] = v end;
+  if   Fonts 
+  then for fontName, font in pairs(Fonts) 
+       do  local font_args = font:GetOptionsTableArgs()
+           for k, v in pairs(font_args) do args[k] = v end;
+       end;
   end;
 
   -- second pass, for displaying in order:
   table.sort(keys);
 
-  for i, keys in ipairs(keys)
+  for i, key in ipairs(keys)
   do args[key .. "_Active"   ].order = 1000 + i * 10 + 1;
      args[key .. "_Name"     ].order = 1000 + i * 10 + 2;
      args[key .. "_AddOn"    ].order = 1000 + i * 10 + 3;
@@ -904,7 +1153,7 @@ end;
 local function buildLibSharedMediaPanel()
 
   local function countLSM()
-    local num = 0; for _, _ in pairs(LSM:HashTable("font")) do num = num + 1; end; return num;
+    local num = 0; for _, _ in pairs(LibSharedMedia:HashTable("font")) do num = num + 1; end; return num;
   end;
 
   options.args.libSharedMedia =
@@ -945,7 +1194,7 @@ local function buildLibSharedMediaPanel()
         fontSize              = "medium",
         order                 = 8102,
         width                 = 2,
-        name                  = function() return yellow(LSM:GetDefault("font") or "none") end,
+        name                  = function() return yellow(LibSharedMedia:GetDefault("font") or "none") end,
       },
       globalOverrideLeft      =
       { type                  = "description",
@@ -957,7 +1206,7 @@ local function buildLibSharedMediaPanel()
       globalOverrideRight     =
       { type                  = "description",
         fontSize              = "medium",
-        name                  = function() return yellow(LSM:GetGlobal("font") or "none") end,
+        name                  = function() return yellow(LibSharedMedia:GetGlobal("font") or "none") end,
         fontSize              = "medium",
         order                 = 8202,
         width                 = 2
@@ -971,24 +1220,50 @@ local function buildLibSharedMediaPanel()
         { fontSelector        =
 
           { type              = "select",
-            values            = function() return LSM:HashTable("font") end,
+            values            = function() return LibSharedMedia:HashTable("font") end,
             dialogControl     = "LSM30_Font",
             name              = "Test Widget",
             order             = 8200,
             width             = 2,
-            get               = function() return SandboxFont or LSM:GetDefault("font") end,
-            set               = function(info, value) SandboxFont = value               end,
+            get               = function() 
+                                  return SandboxFont and SandboxFont:GetName() 
+                                      or LibSharedMedia:GetDefault("font") 
+                                end,
+            set               = function(info, value) SandboxFont = Fonts[value] end,
             desc              = "This doesn't really do anything, but it's here in case you " ..  
                                 "need to confirm whether fonts were added to or removed from " ..  
                                 "LibSharedMedia. Or you can just look at the fonts."
           },
+
+          fontSize            =
+          { type              = "range",
+            min               = 1,
+            softMin           = 6,
+            max               = 128,
+            softMax           = 60,
+            order             = 8201,
+            step              = 1,
+            width             = 1,
+            name              = "Sandbox Text Size",
+            get               = function() return PreviewSize end,
+            set               = function(info, value) PreviewSize = value end,
+            desc              = "Set the size of the font preview text.",
+          },
+
           previewBox          = 
           { type              = "input",
             width             = "full",
             dialogControl     = "RPF_FontPreviewEditBox",
-            get               = function() return     SandboxText or SandboxFont         end,
-            set               = function(info, value) SandboxText = value                   end,
-            name              = function() return     SandboxFont or LSM:GetDefault("font") end,
+            get               = function() 
+                                  return SandboxText 
+                                      or (SandboxFont and SandboxFont:GetName()) 
+                                      or LibSharedMedia:GetDefault("font") 
+                                end,
+            set               = function(info, value) SandboxText = value end,
+            name              = function() 
+                                  return (SandboxFont and SandboxFont:GetName())
+                                      or LibSharedMedia:GetDefault("font") 
+                                  end, 
             order             = 8202,
             desc              = "Click to set custom sample text to display.",
           },
@@ -1025,6 +1300,158 @@ local function buildSettingsPanel()
         order           = 9002,
         width           = "full",
       },
+      resetAllLeft      =
+      { type            = "execute",
+        name            = "Clear all font records",
+        order           = 9021,
+        width           = 1,
+        func            = purgeEverything,
+      },
+      resetAllMiddle    =
+      { type            = "description",
+        name            = " ",
+        order           = 9022,
+        width           = 0.2,
+      },
+      resetAllRight     =
+      { type            = "description",
+        name            = white("You can reset all font information stored by " .. rpFontsTitle),
+        order           = 9023,
+        width           = 2,
+        fontSize        = "medium",
+      },
+
+      blank0            = newline(9024),
+
+      creditsHeadline   =
+      { type            = "description",
+        name            = "\n" .. rpFontsTitle .. " Credits\n\n",
+        order           = 9100,
+        width           = "full",
+        fontSize        = "large",
+      },
+
+      creditsLeft       = 
+      { type            = "description",
+        name            = yellow("Created By"),
+        order           = 9101,
+        width           = 1,
+        fontSize        = "medium",
+      },
+
+      creditsRight      =
+
+      { type            = "description",
+        name            = "|cffff00ffOraibi-MoonGuard|r",
+        order           = 9102,
+        width           = 2,
+        fontSize        = "medium",
+      },
+
+      blank1            = newline(9103),
+      rpTagsLeft        = 
+      { type            = "description",
+        name            = white("rp|cffdd33aaTags|r Download"),
+        order           = 9151,
+        width           = 1,
+        fontSize        = "medium",
+      },
+      rpTagsRight       =
+      { type            = "input",
+        width           = 2,
+        order           = 9152,
+        name            = "",
+        get             = function() return "http://spindrift.games/rptags" end,
+      },
+
+      blank2            = newline(9153),
+      libsLeft          =
+      { type            = "description",
+        name            = yellow("Libraries Used"),
+        order           = 9200,
+        width           = 1,
+        fontSize        = "medium",
+      },
+
+      libsRight         = 
+      { type            = "description",
+        name            = table.concat( 
+                            { yellow("LibSharedMedia"), white("Ace3"),
+                              green("AceGUI-SharedMediaWidgets") },
+                            ", "),
+        order           = 9202,
+        width           = 2,
+        fontSize        = "medium",
+      },
+
+      blank3            = newline(9203),
+
+      fontsLeft         =
+      { type            = "description",
+        name            = yellow("Included Fonts"),
+        order           = 9400,
+        width           = 1,
+        fontSize        = "medium",
+      },
+      fontsToggle       = 
+      { type            = "toggle",
+        name            = "View font list",
+        order           = 9401,
+        width           = 2,
+        get             = function() return ViewFontList end,
+        set             = function(info, value) ViewFontList = value end,
+      },
+
+      fontsFull         = 
+      { type            = "group",
+        name            = "Included Fonts",
+        order           = 9402,
+        inline          = true,
+        hidden          = function() return not ViewFontList end,
+        args            =
+        { text = 
+          { type        = "description",
+            name        = listOfIncludedFonts,
+            order       = 9403,
+            width       = "full", 
+            fontSize    = "medium",
+          },
+        },
+      },
+      blank4            = newline(9404),
+
+      oflLeft           =
+      { type            = "description",
+        name            = yellow("Open Font License 1.1"),
+        order           = 9500,
+        width           = 1,
+        fontSize        = "medium",
+      },
+
+      oflToggle         = 
+      { type            = "toggle",
+        name            = "View font license",
+        order           = 9502,
+        width           = 2,
+        get             = function() return ViewLicense end,
+        set             = function(info, value) ViewLicense = value end,
+      },
+
+      oflFull           =
+      { type            = "group",
+        name            = "Open Font License, Version 1.1",
+        order           = 9550,
+        inline          = true,
+        hidden          = function() return not ViewLicense end,
+        args            =
+        { text          =
+          { type        = "description",
+            name        = openFontLicense,
+            fontSize    = "small",
+            width       = "full",
+          },
+        },
+      },
     },
   };
 
@@ -1033,203 +1460,247 @@ end;
 -- core options ---------------------------------------------------------------------------------------------------------------------
 local function buildCoreOptions()
 
-  options                  =
-  { type                   = "group",
-    name                   = rpFontsTitle,
-    order                  = 1,
-    childGroups            = "tab",
-    args                   =
-    { blurb                =
-      { type               = "description",
-        name               = rpFontsDesc,
-        width              = "full",
-        order              = 2,
-        fontSize           = "medium"
+  options                      =
+  { type                       = "group",
+    name                       = rpFontsTitle,
+    order                      = 1,
+    childGroups                = "tab",
+    args                       =
+    { blurb                    =
+      { type                   = "description",
+        name                   = rpFontsDesc,
+        width                  = "full",
+        order                  = 2,
+        fontSize               = "medium"
       },
 
-      newline              =
-      { type               = "description",
-        name               = " ",
-        width              = "full",
-        order              = 3,
-        fontSize           = "medium",
+      newline                  =
+      { type                   = "description",
+        name                   = " ",
+        width                  = "full",
+        order                  = 3,
+        fontSize               = "medium",
       },
 
-      StatsTotalLeft       =
-      { type               = "description",
-        name               = hilite("Total Fonts"),
-        width              = 1,
-        order              = 104,
-        fontSize           = "medium",
-      },
+      Stats                    =
+      { type                   = "group",
+        name                   = "Status (v. " .. rpFontsVersion .. ")",
+        inline                 = true,
+        order                  = 4,
+        args                   =
+        {
+          StatsTotalLeft       =
+          { type               = "description",
+            name               = white("Total Fonts"),
+            width              = 1,
+            order              = 104,
+            fontSize           = "medium",
+          },
 
-      StatsTotalRight      =
-      { type               = "description",
-        name               = function() return normal(Stats.total .. " known")    end,
-        width              = 1,
-        order              = 105,
-        fontSize           = "medium",
-      },
+          StatsTotalRight      =
+          { type               = "description",
+            name               = function() return white(Stats.total .. " known")    end,
+            width              = 1,
+            order              = 105,
+            fontSize           = "medium",
+          },
 
-      StatsTotalNewline    =
-      { type               = "description",
-        name               = "",
-        width              = "full",
-        order              = 106,
-        fontSize           = "small",
-      },
+          StatsTotalNewline    =
+          { type               = "description",
+            name               = "",
+            width              = "full",
+            order              = 106,
+            fontSize           = "small",
+          },
 
-      StatsNewLeft         =
-      { type               = "description",
-        name               = hilite("New Fonts"),
-        width              = 1,
-        order              = 201,
-        fontSize           = "medium",
-        hidden             = function() return (Stats.new == 0)                   end,
-      },
+          StatsNewLeft         =
+          { type               = "description",
+            name               = green("New Fonts"),
+            width              = 1,
+            order              = 201,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.new == 0)                   end,
+          },
 
-      StatsNewRight        =
-      { type               = "description",
-        name               = function() return green(Stats.new .. " fonts")       end,
-        width              = 1,
-        order              = 202,
-        fontSize           = "medium",
-        hidden             = function() return (Stats.new == 0)                   end,
-      },
+          StatsNewRight        =
+          { type               = "description",
+            name               = function() 
+                                   return 
+                                     white(Stats.new .. " (" ..
+                                     yellow(Stats.new_active .. " active") ..
+                                     ", " .. (Stats.new - Stats.new_active) .. " inactive)")
+                                 end,
+            width              = 2,
+            order              = 203,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.new == 0) end,
+          },
+                                         
+          StatsNewNewline      =
+          { type               = "description",
+            name               = "",
+            width              = "full",
+            order              = 204,
+            fontSize           = "small",
+            hidden             = function() return (Stats.new == 0)                   end,
+          },
 
-      StatsNewNewline      =
-      { type               = "description",
-        name               = "",
-        width              = "full",
-        order              = 203,
-        fontSize           = "small",
-        hidden             = function() return (Stats.new == 0)                   end,
-      },
+          StatsActiveLeft      =
+          { type               = "description",
+            name               = yellow("Active Fonts"),
+            width              = 1,
+            order              = 301,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.active == 0)                end,
+          },
 
-      StatsActiveLeft      =
-      { type               = "description",
-        name               = hilite("Active Fonts"),
-        width              = 1,
-        order              = 301,
-        fontSize           = "medium",
-        hidden             = function() return (Stats.active == 0)                end,
-      },
+          StatsActiveRight     =
+          { type               = "description",
+            name               = function() return white(Stats.active .. " fonts")   end,
+            width              = 1,
+            order              = 302,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.active == 0)                end,
+          },
 
-      StatsActiveRight     =
-      { type               = "description",
-        name               = function() return yellow(Stats.active .. " fonts")   end,
-        width              = 1,
-        order              = 302,
-        fontSize           = "medium",
-        hidden             = function() return (Stats.active == 0)                end,
-      },
+          StatsActiveNewline   =
+          { type               = "description",
+            name               = "",
+            width              = "full",
+            order              = 303,
+            fontSize           = "small",
+            hidden             = function() return (Stats.active == 0)                end,
+          },
 
-      StatsActiveNewline   =
-      { type               = "description",
-        name               = "",
-        width              = "full",
-        order              = 303,
-        fontSize           = "small",
-        hidden             = function() return (Stats.active == 0)                end,
-      },
+          StatsInactiveLeft    =
+          { type               = "description",
+            name               = white("Inactive Fonts"),
+            width              = 1,
+            order              = 401,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.inactive == 0)              end,
+          },
 
-      StatsInactiveLeft    =
-      { type               = "description",
-        name               = hilite("Inactive Fonts"),
-        width              = 1,
-        order              = 401,
-        fontSize           = "medium",
-        hidden             = function() return (Stats.inactive == 0)              end,
-      },
+          StatsInactiveRight   =
+          { type               = "description",
+            name               = function() return white(Stats.inactive .. " fonts") end,
+            width              = 1,
+            order              = 402,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.inactive == 0)              end,
+          },
 
-      StatsInactiveRight   =
-      { type               = "description",
-        name               = function() return yellow(Stats.inactive .. " fonts") end,
-        width              = 1,
-        order              = 402,
-        fontSize           = "medium",
-        hidden             = function() return (Stats.inactive == 0)              end,
-      },
+          StatsInactiveNewline =
+          { type               = "description",
+            name               = "",
+            width              = "full",
+            order              = 403,
+            fontSize           = "small",
+            hidden             = function() return (Stats.inactive == 0)              end,
+          },
 
-      StatsInactiveNewline =
-      { type               = "description",
-        name               = "",
-        width              = "full",
-        order              = 403,
-        fontSize           = "small",
-        hidden             = function() return (Stats.inactive == 0)              end,
-      },
+          StatsBuiltinLeft     =
+          { type               = "description",
+            name               = bluzzard("Built-In Fonts"),
+            width              = 1,
+            order              = 451,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.builtin == 0) end,
+          },
+          StatsBuiltinRight    =
+          { type               = "description",
+            name               = function() 
+                                   return 
+                                     white(Stats.builtin .. " (" ..
+                                     yellow(Stats.builtin_active .. " active") ..
+                                     ", " .. (Stats.builtin - Stats.builtin_active) .. " inactive)")
+                                 end,
+            width              = 2,
+            order              = 452,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.builtin == 0) end,
+          },
+                                         
+          StatsBuiltinNewline  =
+          { type               = "description",
+            name               = "",
+            width              = "full",
+            order              = 453,
+            fontSize           = "small",
+            hidden             = function() return (Stats.builtin == 0)              end,
+          },
+          StatsDisabledLeft    =
+          { type               = "description",
+            name               = grey("Disabled Fonts"),
+            width              = 1,
+            order              = 501,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.disabled == 0)              end,
+          },
 
-      StatsDisabledLeft    =
-      { type               = "description",
-        name               = hilite("Disabled Fonts"),
-        width              = 1,
-        order              = 501,
-        fontSize           = "medium",
-        hidden             = function() return (Stats.disabled == 0)              end,
-      },
+          StatsDisabledRight   =
+          { type               = "description",
+            name               = function() return white(Stats.disabled .. " fonts") end,
+            width              = 1,
+            order              = 502,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.disabled == 0)              end,
+          },
 
-      StatsDisabledRight   =
-      { type               = "description",
-        name               = function() return yellow(Stats.disabled .. " fonts") end,
-        width              = 1,
-        order              = 502,
-        fontSize           = "medium",
-        hidden             = function() return (Stats.disabled == 0)              end,
-      },
+          StatsDisabledPurge   =
+          { type               = "execute",
+            name               = "Purge",
+            width              = 0.5,
+            order              = 503,
+            hidden             = function() return (Stats.disabled == 0)              end,
+            func               = purgeDisabled,
+          },
 
-      StatsDisabledPurge   =
-      { type               = "execute",
-        name               = "Purge",
-        width              = 0.5,
-        order              = 503,
-        hidden             = function() return (Stats.disabled == 0)              end,
-        func               = purgeDisabled,
-      },
+          StatsDisabledNewline =
+          { type               = "description",
+            name               = "",
+            width              = "full",
+            order              = 504,
+            fontSize           = "small",
+            hidden             = function() return (Stats.disabled == 0)              end,
+          },
 
-      StatsDisabledNewline =
-      { type               = "description",
-        name               = "",
-        width              = "full",
-        order              = 504,
-        fontSize           = "small",
-        hidden             = function() return (Stats.disabled == 0)              end,
-      },
+          StatsMissingLeft     =
+          { type               = "description",
+            name               = red("Missing Fonts"),
+            width              = 1,
+            order              = 601,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.missing == 0)               end,
+          },
 
-      StatsMissingLeft     =
-      { type               = "description",
-        name               = hilite("Missing Fonts"),
-        width              = 1,
-        order              = 601,
-        fontSize           = "medium",
-        hidden             = function() return (Stats.missing == 0)               end,
-      },
+          StatsMissingRight    =
+          { type               = "description",
+            name               = function() return white(Stats.missing .. " fonts")  end,
+            width              = 1,
+            order              = 602,
+            fontSize           = "medium",
+            hidden             = function() return (Stats.missing == 0)               end,
+          },
 
-      StatsMissingRight    =
-      { type               = "description",
-        name               = function() return yellow(Stats.missing .. " fonts")  end,
-        width              = 1,
-        order              = 602,
-        fontSize           = "medium",
-        hidden             = function() return (Stats.missing == 0)               end,
-      },
+          StatsMissingNewline  =
+          { type               = "description",
+            name               = "",
+            width              = "full",
+            order              = 603,
+            fontSize           = "small",
+            hidden             = function() return (Stats.missing == 0)               end,
+          },
 
-      StatsMissingNewline  =
-      { type               = "description",
-        name               = "",
-        width              = "full",
-        order              = 603,
-        fontSize           = "small",
-        hidden             = function() return (Stats.missing == 0)               end,
-      },
-
-      StatsMissingPurge    =
-      { type               = "execute",
-        name               = "Purge",
-        width              = 0.5,
-        order              = 503,
-        hidden             = function() return (Stats.missing == 0)               end,
-        func               = purgeMissing,
+          StatsMissingPurge    =
+          { type               = "execute",
+            name               = "Purge",
+            width              = 0.5,
+            order              = 503,
+            hidden             = function() return (Stats.missing == 0)               end,
+            func               = purgeMissing,
+          },
+        },
       },
     },
   };
@@ -1251,8 +1722,8 @@ end;
 local function scanForFonts()
 
   -- Get existing fonts from LSM, store them in our master list
-  for fontName, fontFile in pairs(LSM:HashTable("font"))
-  do  local font, data, addon, file = makeFont(fontName, fontFile)
+  for fontName, fontFile in pairs(LibSharedMedia:HashTable("font"))
+  do  local font, addon, file = makeFont(fontName, fontFile)
       addon:SetFlag( "loaded" );
       file:SetFlag(  "loaded" );
   end;
@@ -1308,6 +1779,25 @@ local function cycleThroughFonts()
   end;
 end;
 
+local function initializationDone()
+  local LSM_Default = LibSharedMedia:GetDefault("font");
+  if    LSM_Default and Fonts[LSM_Default]:HasFlag("inactive") 
+  then  Fonts[LSM_Default]:SetFlag("active");
+        Fonts[LSM_Default]:ClearFlag("inactive");
+        Fonts[LSM_Default]:SetRegistrationStatus(true)
+  end;
+
+  local LSM_Global = LibSharedMedia:GetGlobal("font");
+  if    LSM_Global and Fonts[LSM_Global]:HasFlag("inactive") 
+  then  Fonts[LSM_Global]:SetFlag("active");
+        Fonts[LSM_Global]:ClearFlag("inactive");
+        Fonts[LSM_Global]:SetRegistrationStatus(true)
+  end;
+
+  Browsing = Fonts[db.Browsing] or Fonts[LSM_Default];
+  SandboxFont = Fonts[LSM_Default];
+end;
+
 -- main --------------------------------------------------------------------------------------------------------------------------------
 --
 local function main()
@@ -1315,6 +1805,7 @@ local function main()
   scanForFonts();
   applyCachedData();
   cycleThroughFonts();
+  initializationDone();
   createOptionsTable();
   registerSlashCommand();
 end;
@@ -1413,12 +1904,7 @@ local function EditBox_OnTextChanged(frame)
 end
 
 local function EditBox_OnFocusGained(frame) AceGUI:SetFocus(frame.obj) end
-
-local function Button_OnClick(frame)
-        local editbox = frame.obj.editbox
-        editbox:ClearFocus()
-        EditBox_OnEnterPressed(editbox)
-end
+local function Button_OnClick(frame) local editbox = frame.obj.editbox editbox:ClearFocus() EditBox_OnEnterPressed(editbox) end
 
 --[[-----------------------------------------------------------------------------
 Methods
@@ -1465,15 +1951,14 @@ local methods = {
             self.label:Hide()
             self.editbox:SetPoint("TOPLEFT",self.frame,"TOPLEFT",7,0)
             self.alignoffset = 12
-            local file;
-            if   text and Fonts[text] and Fonts[text]:GetItems("file")
-            then for fileName, fileData in pairs(Fonts[text]:GetItems()) 
-                 do  if not fileData:HasFlag("missing") then file = fileName; break; end; 
-                 end; 
+            local file, _, _ = GameFontNormal:GetFont();
+        
+            if   text and Fonts[text] 
+            then local fileName, _ = Fonts[text]:GetPrimaryFile();
+                 file = fileName;
             end;
-            file = file or GameFontNormal:GetFont();
-            self.editbox:SetFont(file, 30);
-            self:SetHeight(50);
+            self.editbox:SetFont(file, PreviewSize);
+            self:SetHeight(math.max(60, PreviewSize + 10));
         end,
 
         ["DisableButton"] = function(self, disabled) self.disablebutton = disabled if disabled then HideButton(self) end end,
