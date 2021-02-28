@@ -15,15 +15,11 @@ local Interface_Open    = InterfaceOptionsFrame_OpenToCategory;
 local rpFontsTitle      = GetAddOnMetadata(addOnName, "Title");
 local rpFontsDesc       = GetAddOnMetadata(addOnName, "Notes");
 local rpFontsVersion    = GetAddOnMetadata(addOnName, "Version");
-local baseFontDir = "Interface\\AddOns\\" .. addOn     .. "\\Fonts\\";
+local baseFontDir       = "Interface\\AddOns\\" .. addOnName .. "\\Fonts\\";
 
 local rpFontsFrame = CreateFrame("Frame");
       rpFontsFrame:RegisterEvent("ADDON_LOADED");
       rpFontsFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
-
-
-ns.RP_Fonts             = ns.RP_Fonts     or {};
-ns.RP_Fonts.tmp         = ns.RP_Fonts.tmp or {}; -- temporary cache
 
 local listOfIncludedFonts = [===[
 |cff00ffffAmarante|r
@@ -286,8 +282,6 @@ local function initializeDatabase()
   SandboxSize      = 30;
   Fonts            = {};
 
-  ns.RP_Fonts.Fonts = Fonts;
-
   Stats = { now = time() };
   clearCounts();
 
@@ -448,7 +442,7 @@ local methods =
           local verified = false;
           for fileName, file in pairs(self:GetList("file"))
           do  local result, baseline, diff = file:Verify();
-              if math.abs(diff) > (db.Settings.VerifyTolerance or 0.01) or file:HasFlag("builtin")
+              if math.abs(diff) > (db.Settings.VerifyTolerance or 0.05) or file:HasFlag("builtin")
               then file:SetFlag("verified"); 
                    verified = true 
               else file:SetFlag("unverified");
@@ -735,7 +729,10 @@ local function makeFont(fontName, fontFile)
   function font.GetOptionsTableArgs(self)
 
     local function filter() 
-      return self:HasFlag("deleted") or (not (Filter == "none") and not self:HasFlag(Filter)); 
+      local condition1 = self:HasFlag("deleted");
+      local condition2 = Filter ~= "none" and not self:HasFlag(Filter);
+      local condition3 = SearchTerms and not self:GetName():lower():match(SearchTerms:lower())
+      return condition1 or condition2 or condition3;
     end;
 
     local function browseFont()
@@ -1216,7 +1213,7 @@ local function buildDataTable()
         name = "",
         width = col[1] + col[2] + col[3] - 0.2,
         get = function() return SearchTerms end,
-        set = executeSearch,
+        set = function(info, value) SearchTerms = value end,
         hidden = function() return not db.Settings.DataTools end,
         order = 940,
       },
@@ -1494,7 +1491,7 @@ local function buildSettingsPanel()
             min             = 0,
             max             = 2.0,
             step            = 0.01,
-            get             = function() return db.Settings.VerifyTolerance end,
+            get             = function() return db.Settings.VerifyTolerance or 0.05 end,
             set             = function(info, value) db.Settings.VerifyTolerance = value end,
           },
           spacer            =
@@ -1921,7 +1918,6 @@ local function scanForFonts()
 
 end;
 
-
 local function registerSlashCommand()
 
   _G[ "SLASH_RPFONTS1"  ] = "/rpfonts";
@@ -1931,7 +1927,6 @@ local function registerSlashCommand()
 end;
 
 local function markDatabaseInitialized() db.initialized = true; end;
-
 
 local function cycleThroughFonts()
   clearCounts();
@@ -2058,14 +2053,16 @@ local fontList=
  };
 
 local function loadOurFonts()
+
   for fontCode, fontData in pairs(fontList)
   do  local fontFile = family[fontData.Fam] .. fontData.File;
+      local fontName = fontData.Name;
       LibSharedMedia:Register( "font", fontData.Name, fontFile);
-      local font, addon, file = makeFont(fontData.name, fontFile);
+      local font, addon, file = makeFont(fontName, fontFile);
       addon:SetFlag( "loaded" );
       file:SetFlag(  "loaded" );
       if font:GetFlag("inactive") == nil and font:GetFlag("active") == nil
-      then font:SetFlag("active", fontData.Load);
+      then font:SetFlag("active",       fontData.Load);
            font:SetFlag("inactive", not fontData.Load);
       end;
   end
