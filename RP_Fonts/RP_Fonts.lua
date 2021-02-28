@@ -16,6 +16,11 @@ local rpFontsTitle      = GetAddOnMetadata(addOnName, "Title");
 local rpFontsDesc       = GetAddOnMetadata(addOnName, "Notes");
 local rpFontsVersion    = GetAddOnMetadata(addOnName, "Version");
 
+local rpFontsFrame = CreateFrame("Frame");
+      rpFontsFrame:RegisterEvent("ADDON_LOADED");
+      rpFontsFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+
+
 ns.RP_Fonts             = ns.RP_Fonts     or {};
 ns.RP_Fonts.tmp         = ns.RP_Fonts.tmp or {}; -- temporary cache
 
@@ -196,6 +201,10 @@ local options, db, Fonts, keys, Browsing, Stats, PreviewText, PreviewSize, Filte
 local col        = { 0.2, 1.5, 1.1, 0.5 };
 local BUILTIN    = "Built-in font";
 local POPUP      = "RPFONTS_CONFIRMATION_BUTTON";
+local TEST_STRIP = "This is a TEST STRIP for testing. We use it to detect if fonts are being applied.";
+local ORANGE_BALL = "|A:nameplates-icon-orb-orange|a";
+local PURPLE_BALL = "|A:nameplates-icon-orb-purple|a";
+local BLUE_BALL   = "|A:nameplates-icon-orb-blue|a";
 
 -- general utilities -----------------------------------------------------------------------------------------------------------------------
 --
@@ -209,8 +218,10 @@ local function   yellow(str, r) return colorize(   YELLOW_FONT_COLOR_CODE, str, 
 local function    green(str, r) return colorize(    GREEN_FONT_COLOR_CODE, str, r) end;
 local function bluzzard(str, r) return colorize(BATTLENET_FONT_COLOR_CODE, str, r) end;
 local function   hilite(str, r) return colorize(HIGHLIGHT_FONT_COLOR_CODE, str, r) end;
+local function   orange(str, r) return colorize(   ORANGE_FONT_COLOR_CODE, str, r) end;
 local function   normal(str, r) return colorize(   NORMAL_FONT_COLOR_CODE, str, r) end;
 local function    white(str, r) return colorize(             "|cffffffff", str, r) end;
+local function   purple(str, r) return colorize(             "|cffc745f9", str, r) end;
 
 local function notify(...) print("[" .. rpFontsTitle .. "]", ...) end;
 
@@ -222,6 +233,8 @@ local filters    =
   [ "disabled" ] =     grey( "Disabled Fonts" ),
   [ "missing"  ] =      red( "Missing Fonts"  ),
   [ "new"      ] =    green( "New Fonts"      ),
+  [ "verified" ] =   orange( "Verified Fonts" ),
+  [ "unverified"] = purple( "Unverified Fonts" ),
   [ "builtin"  ] = bluzzard( "Built-In Fonts" ),
 };
 
@@ -239,9 +252,13 @@ local filter_desc =
                    "since the last time you logged on."                                      ,
   [ "builtin"  ] = "Builtin fonts are supplied by Blizzard and registered automatically "   ..
                    "by LibSharedMedia."                                                      ,
+  [ "verified" ] = "A verified font has been automatically tested by checked by "           .. 
+                   rpFontsTitle .. " to see if it can be used successfully."                 ,
+  [ "unverified"] = "An unverified font is one that was tested by " .. rpFontsTitle         ..
+                    " and could not be successfully applied in-game."                        ,
 };
 
-local filter_order = { "none", "new", "active", "inactive", "disabled", "missing", "builtin"};
+local filter_order = { "none", "new", "active", "inactive", "disabled", "missing", "builtin", "verified", "unverified"};
 
 -- addons and files ------------------------------------------------------------------------------------------------------------------------
 --
@@ -250,7 +267,7 @@ local function clearCounts()
   Stats =
   { total    = 0, new      = 0, missing = 0, active  = 0,
     inactive       = 0, disabled = 0, loaded  = 0, builtin = 0,
-    builtin_active = 0, new_active = 0,
+    builtin_active = 0, new_active = 0, unverified = 0,
     now            = Stats.now, -- preserve original value
   };
 end;
@@ -277,6 +294,17 @@ local function initializeDatabase()
 
 end;
 
+local testStrip = rpFontsFrame:CreateFontString();
+testStrip.file, _ = GameFontNormal:GetFont();
+testStrip.size = 10;
+function testStrip.Reset(self) self:SetFont(self.file, self.size); self:SetText(TEST_STRIP) end;
+function testStrip.TestFile(self, file)
+  self:SetFont( file:GetName(), self.size);
+  return self:GetUnboundedStringWidth(), self.baseline, self:GetUnboundedStringWidth() - self.baseline
+end;
+
+testStrip:Reset();
+testStrip.baseline = testStrip:GetUnboundedStringWidth()
 
 local function recount()
   clearCounts();
@@ -297,9 +325,9 @@ local function newline(order) return { type = "description", name = "", width = 
 -- object methods
 
 local flags  = 
-{ font  = { "active", "loaded",   "inactive", "disabled", "new", "missing", "builtin" },
+{ font  = { "active", "loaded",   "inactive", "disabled", "new", "missing", "builtin", "verified", "unverified" },
   addon = { "loaded", "disabled", "missing",  "builtin", }, 
-  file  = { "loaded", "disabled", "missing" } 
+  file  = { "loaded", "disabled", "missing", "verified", "unverified" } 
 };
 
 --[[ Flag definitions:
@@ -311,6 +339,8 @@ local flags  =
      "new"      = added since the last login; implies not("missing")
      "missing"  = is part of an addon that is no longer installed; implies, not("disabled"), not("new")
      "builtin"  = a built-in font; implies not("missing")
+     "verified" = the font has been tested and has proven to load correctly
+     "unverified" = the opposite of verified
 
 --]]
 
@@ -401,8 +431,35 @@ local methods =
     { 
       ["GetTitle"] = function(self) return GetAddOnMetadata(self:GetName(), "Title"); end,
     },
+  file =
+    { ["Verify"] =
+        function(self)
+          
+          testStrip:Reset();
+          local result, baseline, diff = testStrip:TestFile( self );
+          return result, baseline, diff
+        end,
+    },
   font =
-    { ["InitList"] =
+    { ["Verify"] =
+        function(self)
+          local verified = false;
+          for fileName, file in pairs(self:GetList("file"))
+          do  local result, baseline, diff = file:Verify();
+              if math.abs(diff) > 0.01 
+              then file:SetFlag("verified"); 
+                   verified = true 
+                   notify(self:GetName(), "|cff00ff00verified!|r");
+              else file:SetFlag("unverified");
+              end;
+          end;
+
+          --print(self:GetName(), verified and "|cff00ff00verified!|r" or "|cffff0000not verified|r")
+          self:SetFlag("verified",       verified);
+          self:SetFlag("unverified", not verified);
+        end,
+
+      ["InitList"] =
         function(self, objType)
 
           if   type(objType) == "string" and tContains(objectTypes, objType)
@@ -467,6 +524,7 @@ local methods =
           then return self.lists[objType], self.db.lists[objType];
           end
         end,
+
     },
 };
 
@@ -652,13 +710,14 @@ local function makeFont(fontName, fontFile)
     else self:ClearFlag("new");
     end;
 
-    if have( "active"   )                           then incr( "active"         ) end;
-    if have( "builtin"  )                           then incr( "builtin"        ) end;
-    if have( "inactive" ) and not have( "missing" ) then incr( "inactive"       ) end;
-    if have( "missing"  )                           then incr( "missing"        ) end;
-    if have( "new"      )                           then incr( "new"            ) end;
-    if have( "new"      ) and     have( "active"  ) then incr( "new_active"     ) end;
-    if have( "builtin"  ) and     have( "active"  ) then incr( "builtin_active" ) end;
+    if have( "unverified" )                           then incr( "unverified"     ) end;
+    if have( "active"     )                           then incr( "active"         ) end;
+    if have( "builtin"    )                           then incr( "builtin"        ) end;
+    if have( "inactive"   ) and not have( "missing" ) then incr( "inactive"       ) end;
+    if have( "missing"    )                           then incr( "missing"        ) end;
+    if have( "new"        )                           then incr( "new"            ) end;
+    if have( "new"        ) and     have( "active"  ) then incr( "new_active"     ) end;
+    if have( "builtin"    ) and     have( "active"  ) then incr( "builtin_active" ) end;
 
     incr("total");
   end;
@@ -696,6 +755,17 @@ local function makeFont(fontName, fontFile)
       self:SetRegistrationStatus(value);
     end;
 
+    local function getFancyFontName()
+      local name = self:ColorName();
+      if   db.Settings.VerifyFonts and self:HasFlag("builtin")
+      then name = BLUE_BALL .. " " .. name
+      elseif db.Settings.VerifyFonts and self:HasFlag("verified")
+      then name = ORANGE_BALL .. " " .. name
+      elseif db.SettingsVerify and self:HasFlag("unverified")
+      then name = PURPLE_BALL .. " " .. name
+      end;
+      return name;
+    end;
     local name = self:GetName();
 
     local args = 
@@ -711,7 +781,7 @@ local function makeFont(fontName, fontFile)
 
       [name .. "_Name"]    =
         { type             = "description",
-          name             = function() return self:ColorName() end,
+          name             = function() return self:ColorName() .. (self:HasFlag("verified") and (" " .. orange("V")) or "") end,
           width            = col[2],
           fontSize         = "medium",
           hidden           = filter,
@@ -1300,6 +1370,25 @@ local function buildSettingsPanel()
         order           = 9002,
         width           = "full",
       },
+      verifyFonts       =
+      { type            = "toggle",
+        name            = "Verify fonts when loading",
+        desc            = rpFontsTitle .. " can try to verify that a given font is valid. This may slow down your " ..
+                          "loading time if you have a lot of fonts.",
+        get             = function() return db.Settings.VerifyFonts end,
+        set             = function(info, value) db.Settings.VerifyFonts = value end,
+        width           = 1,
+        order           = 9011,
+      },
+      onlyVerifyActive  =
+      { type            = "toggle",
+        name            = "Active fonts only",
+        desc            = "Only attempt to verify active fonts.",
+        get             = function() return db.Settings.OnlyVerifyActive end,
+        set             = function(info, value) db.Settings.OnlyVerifyActive = value end,
+        order           = 9015,
+        width           = 1,
+      },
       resetAllLeft      =
       { type            = "execute",
         name            = "Clear all font records",
@@ -1776,6 +1865,7 @@ local function cycleThroughFonts()
       font:SetFlagsFromAddons();
       font:SetRegistrationStatus();
       font:Count();
+      font:Verify();
   end;
 end;
 
@@ -1810,11 +1900,7 @@ local function main()
   registerSlashCommand();
 end;
 
-local waitingFrame = CreateFrame("Frame");
-      waitingFrame:RegisterEvent("ADDON_LOADED");
-      waitingFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
-
-waitingFrame:SetScript("OnEvent", 
+rpFontsFrame:SetScript("OnEvent", 
   function(self, event, addOnLoaded, ...)
     if     event == "ADDON_LOADED"          and addOnLoaded == addOnName then initializeDatabase();
     elseif event == "PLAYER_ENTERING_WORLD"                              then main();
