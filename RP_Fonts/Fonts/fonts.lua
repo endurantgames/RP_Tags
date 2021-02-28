@@ -10,8 +10,7 @@ ns.RP_Fonts.tmp = ns.RP_Fonts.tmp or {};
 local family = { 
   Amara  = baseFontDir .. "Amarante\\Amarante-",
   Arima  = baseFontDir .. "Arima_Madurai\\ArimaMadurai-",
-  Brlow = baseFontDir .. "Barlow_Condensed\\BarlowCondensed-",
-  Bddebas  = baseFontDir .. "Bebas_Neue\\BebasNeue-",
+  Barlow = baseFontDir .. "Barlow_Condensed\\BarlowCondensed-",
   BigSho = baseFontDir .. "Big_Shoulders_Stencil_Display\\BigShouldersStencilDisplay-",
   Bree   = baseFontDir .. "Bree_Serif\\BreeSerif-",
   DotG16 = baseFontDir .. "DotGothic16\\DotGothic16-",
@@ -30,6 +29,20 @@ local family = {
   Source = baseFontDir .. "Source_Code_Pro\\SourceCodePro-",
   Syne   = baseFontDir .. "Syne_Mono\\SyneMono-",
   Uncial = baseFontDir .. "Uncial_Antiqua\\UncialAntiqua-",
+
+  Almen  = baseFontDir .. "Almendra_Display\\AlmendraDisplay-",
+  Belle  = baseFontDir .. "Bellefair\\Bellefair-",
+  Berk   = baseFontDir .. "Berkshire_Swash\\BerkshireSwash-",
+  Cinzel = baseFontDir .. "Cinzel_Decorative\\CinzelDecorative-",
+  Creep  = baseFontDir .. "Creepster\\Creepster-",
+  Elsie  = baseFontDir .. "Elsie_Swash_Caps\\ElsieSwashCaps-",
+  Gold   = baseFontDir .. "Goldman\\Goldman-",
+  Lime   = baseFontDir .. "Limelight\\Limelight-",
+  Megrim = baseFontDir .. "Megrim\\Megrim-",
+  Milton = baseFontDir .. "Miltonian\\Miltonian-",
+  Nosif  = baseFontDir .. "Nosifer\\Nosifer-",
+  Synco  = baseFontDir .. "Syncopate\\Syncopate-",
+  Tanger = baseFontDir .. "Tangerine\\Tangerine-",
 };
 
 
@@ -54,6 +67,23 @@ local XL_ITA     = "ExtraLightItalic.ttf";
 
 local fontList=
 { -- Code       = { Load = false, Name = "Human Readable     ",                      Fam  = "FAM", File = REG                     },
+  Almen_Reg     = { Load = false, Name = "Almendra Display",                         Fam = "Almen", File = REG                     },
+  Belle_Reg     = { Load = false, Name = "Bellefair",                                Fam = "Belle", File = REG                     },
+  Berk_Reg      = { Load = false, Name = "Berkshire Swash",                          Fam = "Berk", File = REG                     },
+  Cinzel_Reg     = { Load = false, Name = "Cinzel Decorative",                   Fam = "Cinzel", File = REG                     },
+  Cinzel_Bold    = { Load = false, Name = "Cinzel Decorative Bold",           Fam = "Cinzel", File = BOLD                    },
+  Creep_Reg     = { Load = false, Name = "Creepster",                               Fam = "Creep", File = REG                     },
+  Elsie_Reg     = { Load = false, Name = "Elsie Swash Caps",                         Fam = "Elsie", File = REG                     },
+  Elsie_Black   = { Load = false, Name = "Elsie Swash Caps Black",                         Fam = "Elsie", File = BLK                     },
+  Gold_Reg     = { Load = false, Name = "Goldman",                                  Fam = "Gold", File = REG                     },
+  Lime_Reg     = { Load = false, Name = "Limelight",                                Fam = "Lime", File = REG                     },
+  Megrim_Reg     = { Load = false, Name = "Megrim",                                   Fam = "Megrim", File = REG                     },
+  Milton_Reg    = { Load = false, Name = "Miltonian",                                Fam = "Milton", File = REG                     },
+  Nosif_Reg    = { Load = false, Name = "Nosifer",                                  Fam = "Nosif", File = REG                     },
+  Synco_Reg    = { Load = false, Name = "Syncopate",                                Fam = "Synco", File = REG                     },
+  Tanger_Reg    = { Load = false, Name = "Tangerine",                                Fam = "Tanger", File = REG                     },
+  Tanger_Bold   = { Load = false, Name = "Tangerine Bold",                                Fam = "Tanger", File = BOLD                    },
+
   Amara_Reg     = { Load = false, Name = "Amarante",                                 Fam = "Amara", File = REG                     },
   Arima_Black   = { Load = false, Name = "Arima Madurai Black",                      Fam = "Arima", File = BLK                     },
   Arima_Light   = { Load = false, Name = "Arima Madurai Light",                      Fam = "Arima", File = LITE                    },
@@ -92,10 +122,12 @@ local fontList=
   Source_Reg    = { Load = true, Name = "Source Code Pro",                          Fam = "Source", File = REG                     },
   Syne_Reg      = { Load = false, Name = "Syne Mono",                                Fam = "Syne", File = REG                     },
   Uncial_Reg    = { Load = false, Name = "Uncial Antiqua",                           Fam = "Uncial", File = REG                     },
+
  };
 
 for fontCode, fontData in pairs(fontList)
-do  LibSharedMedia:Register( "font", fontData.Name, family[fontData.Fam] .. fontData.File); 
+do  print(fontCode);
+    LibSharedMedia:Register( "font", fontData.Name, family[fontData.Fam] .. fontData.File); 
     ns.RP_Fonts.tmp[fontData.Name] = { active = fontData.Load };
 end;
 
