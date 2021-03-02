@@ -16,6 +16,7 @@ local rpFontsTitle      = GetAddOnMetadata(addOnName, "Title");
 local rpFontsDesc       = GetAddOnMetadata(addOnName, "Notes");
 local rpFontsVersion    = GetAddOnMetadata(addOnName, "Version");
 local baseFontDir       = "Interface\\AddOns\\" .. addOnName .. "\\Fonts\\";
+local newFontsFound     = 0;
 
 local rpFontsFrame = CreateFrame("Frame");
       rpFontsFrame:RegisterEvent("ADDON_LOADED");
@@ -218,6 +219,7 @@ local function   orange(str, r) return colorize(   ORANGE_FONT_COLOR_CODE, str, 
 local function   normal(str, r) return colorize(   NORMAL_FONT_COLOR_CODE, str, r) end;
 local function    white(str, r) return colorize(             "|cffffffff", str, r) end;
 local function   purple(str, r) return colorize(             "|cffc745f9", str, r) end;
+local function     cyan(str, r) return colorize(             "|cff00ffff", str, r) end;
 
 local function notify(...) print("[" .. rpFontsTitle .. "]", ...) end;
 
@@ -291,10 +293,25 @@ end;
 local testStrip = rpFontsFrame:CreateFontString();
 testStrip.file, _ = GameFontNormal:GetFont();
 testStrip.size = 10;
-function testStrip.Reset(self) self:SetFont(self.file, self.size); self:SetText(TEST_STRIP) end;
+testStrip.sampleText = TEST_STRIP;
+local fixedStrip = rpFontsFrame:CreateFontString()
+testStrip.fixed = fixedStrip;
+testStrip.fixed.sampleText = TEST_STRIP:gsub("%w", "X");
+
+function testStrip.Reset(self) 
+  self:SetFont(self.file, self.size); 
+  self:SetText(self.sampleText) 
+  self.fixed:SetFont(self.file, self.size)
+  self.fixed:SetText(self.fixed.sampleText);
+end;
+
 function testStrip.TestFile(self, file)
   self:SetFont( file:GetName(), self.size);
-  return self:GetUnboundedStringWidth(), self.baseline, self:GetUnboundedStringWidth() - self.baseline
+  self.fixed:SetFont( file:GetName(), self.size);
+  local stripWidth = self:GetUnboundedStringWidth();
+  local fixedWidth = self.fixed:GetUnboundedStringWidth();
+  -- return self:GetUnboundedStringWidth(), self.baseline, self:GetUnboundedStringWidth() - self.baseline, 
+  return stripWidth, self.baseline, stripWidth - self.baseline, stripWidth - fixedWith;
 end;
 
 testStrip:Reset();
@@ -320,7 +337,7 @@ local function newline(order) return { type = "description", name = "", width = 
 
 local flags  = 
 { font  = { "active", "loaded",   "inactive", "disabled", "new", "missing", "builtin", "verified", "unverified", "deleted" },
-  addon = { "loaded", "disabled", "missing",  "builtin", }, 
+  addon = { "loaded", "disabled", "missing",  "builtin", "initialized" }, 
   file  = { "loaded", "disabled", "missing", "verified", "unverified" } 
 };
 
@@ -330,6 +347,7 @@ local flags  =
      "inactive" = deactivated by the user; implies not("active")
      "loaded"   = the addon associated with the font file has been loaded into WoW
      "disabled" = is part of an addon that exists but is disabled; implies not("missing")
+     "registered" = the font has been registered with LSM
      "new"      = added since the last login; implies not("missing")
      "missing"  = is part of an addon that is no longer installed; implies, not("disabled"), not("new")
      "builtin"  = a built-in font; implies not("missing")
@@ -338,6 +356,128 @@ local flags  =
      "deleted"  = a victim of a purge
 
 --]]
+
+local function attachMethods(object, objType, font) 
+  if tContains(objectTypes, objType) and not object.initialized
+  then object.what = objType
+    for funcName, func in pairs(methods) 
+    do  if type(func) == "function"
+        then object[funcName] = func; 
+        elseif type(func) == "string" and methods[func] and type(methods[func]) == "function"
+        then object[funcName] = methods[func]
+        end; 
+    end;
+
+    if type(methods[objType]) == "table"
+    then for funcName, func in pairs(methods[objType]) 
+         do  if     type(func) == "function"
+             then   object[funcName] = func; 
+             elseif type(func) == "string" and methods[objType][func] and type(methods[objType][func]) == "function"
+             then   object[funcName] = methods[objType][func]
+             end; 
+         end;
+    end;
+    object.initialized = true;
+  elseif object.initialized
+  then -- nothing really here
+  else error("Unknown object type " .. (objType or type(objType)));
+  end;
+end;
+
+-- this one's too big/complex to make a tidy entry on the methods table
+    
+local function getOptionsTableArgs(self)
+
+  local function filter() 
+    local condition1 = self:HasFlag("deleted");
+    local condition2 = Filter ~= "none" and not self:HasFlag(Filter);
+    local condition3 = SearchTerms and not self:GetName():lower():match(SearchTerms:lower())
+    return condition1 or condition2 or condition3;
+  end;
+
+  local function browseFont()
+    Browsing = self;
+    db.Browsing = self:GetName();
+    AceConfigDialog:SelectGroup(addOnName, "fontBrowser") 
+  end
+
+  local function disableToggle()
+    local _, status = self:GetStatus()
+    return (status == "missing") 
+        or (status == "disabled" and not db.Options.LoadDisabled)
+        or (LibSharedMedia:GetDefault("font") == self:GetName())
+        or (LibSharedMedia:GetGlobal("font")  == self:GetName())
+    ;
+  end;
+
+  local function changeRegistrationStatus(info, value)
+    self:SetFlag("active", value);
+    self:SetFlag("inactive", not value);
+    self:SetRegistrationStatus(value);
+  end;
+
+  local function getFancyFontName()
+    local name = self:ColorName();
+    if   db.Settings.VerifyFonts and self:HasFlag("builtin")
+    then name = BLUE_BALL .. " " .. name
+    elseif db.Settings.VerifyFonts and self:HasFlag("verified")
+    then name = ORANGE_BALL .. " " .. name
+    elseif db.Settings.VerifyFonts
+    then name = PURPLE_BALL .. " " .. name
+    end;
+    return name;
+  end;
+  local name = self:GetName();
+
+  local args = 
+  { [name .. "_Active"]  =
+      { type             = "toggle",
+        name             = "",
+        width            = col[1],
+        get              = function() return self:HasFlag("active") end,
+        set              = changeRegistrationStatus,
+        disabled         = disableToggle,
+        hidden           = filter,
+      },
+
+    [name .. "_Name"]    =
+      { type             = "description",
+        name             = getFancyFontName,
+        width            = col[2],
+        fontSize         = "medium",
+        hidden           = filter,
+      },
+
+    [name .. "_AddOn"]   =
+      { type             = "description",
+        name             = function() return self:FormatListForDisplay("addon", ", ") end,
+        width            = col[3],
+        fontSize         = "medium",
+        hidden           = filter,
+      },
+
+    [name .. "_Details"] =
+      { type             = "execute",
+        name             = "Details",
+        desc             = "Click to view details about the font " .. self:ColorName() .. " in the font browser.",
+        width            = col[4],
+        func             = browseFont,
+        hidden           = filter,
+    },
+
+    [name .. "_Newline"] =
+      { type = "description",
+        width = "full",
+        fontSize = "small",
+        name = "",
+        hidden           = filter,
+      },
+  };
+
+  table.insert(keys, font.name);
+
+  return args;
+end;
 
 local objectTypes = { "font", "addon", "file" };
 
@@ -356,18 +496,14 @@ local methods =
     end,
 
   ["HasFlag"] = "GetFlag",
-  ["GetFlag"] = 
-    function(self, flag)
-      if flag and tContains(flags[ self:WhatAmI()], flag)
-      then return self.db.flags[flag];
-      end;
-    end,
+  ["GetFlag"] = function(self, flag) if tContains(flags[ self:WhatAmI()], flag) then return self.db.flags[flag]; end; end,
+  ["ClearFlag"] = function(self, flag) if tContains(flags[ self:WhatAmI()], flag) then self.db.flags[flag] = false; end; end,
 
-  ["ClearFlag"] =
-    function(self, flag)
-      if flag and tContains(flags[ self:WhatAmI()], flag)
-      then self.db.flags[flag] = false;
-      end;
+  ["ClearAllFlags"] = 
+    function(self) 
+      for _, flag in ipairs(objectTypes[self:WhatAmI())
+      do  self.db.flags[flag] = nil;
+      end,
     end,
 
   ["ColorName"] =
@@ -382,59 +518,37 @@ local methods =
           or status == "active"   and yellow(name,   false )
           or status == "white"    and white(name,    false )
           or name;
-
     end,
-
-  ["SetFont"] =
-    function(self, font)
-      if     self:WhatAmI() == "font" then self.font = self:GetName(); 
-      elseif type(font)     == "table" 
-        and  font.WhatAmI 
-        and  font:WhatAmI() == "font" then self.font      =  font:GetName();
-      elseif type(font)     == "string" 
-        and Fonts[font]               then self.font      =  font;
-      else   error("Invalid font: " .. type(font));
-      end;
-    end,
-
-    ["InitData"] =
-      function(self)
-        local what = self:WhatAmI();
-        local name = self:GetName();
-
-        if not name then print("no name found") return end;
-
-        if    what == "font"
-        then db.Fonts[name]          = db.Fonts[name]        or {};
-             db.Fonts[name].flags    = db.Fonts[name].flags  or {};
-             db.Fonts[name].lists    = db.Fonts[name].lists  or {};
-             db.Fonts[name].stamps   = db.Fonts[name].lists  or {};
-             self.db                 = db.Fonts[name];
-        elseif tContains(objectTypes, what)
-        then local lists             = db.Fonts[self:GetFont()].lists
-             lists[what]             = lists[what]             or {};
-             lists[what][name]       = lists[what][name]       or {};
-             lists[what][name].flags = lists[what][name].flags or {};
-             self.db                 = lists[what][name];
-        end;
-        return self.db;
-      end,
 
   ["GetFont"] = function(self) return self.font; end,
 
-  addon =
+  addon = 
     { 
       ["GetTitle"] = function(self) return GetAddOnMetadata(self:GetName(), "Title"); end,
+      ["IsLoaded"] = 
+        function addon.IsLoaded(self)
+          if self.name == BUILTIN then return true end;
+          local _, _, _, isLoadable, reason = GetAddOnInfo(self.name);
+          self:SetFlag("loaded", isLoadable);
+          if not isLoadable then return false, reason; else return true, nil; end;
+        end,
     },
   file =
     { ["Verify"] =
         function(self)
-          
           testStrip:Reset();
-          local result, baseline, diff = testStrip:TestFile( self );
-          return result, baseline, diff
+          local result, baseline, diff, fixed = testStrip:TestFile( self );
+          return result, baseline, diff, fixed
+        end,
+      ["IsLoaded"] = function(self) return self.addon:IsLoaded(); end,
+      ["GetAddonFromPath"] =
+        function(self) 
+          return self and self.addon and self.addon.name 
+              or self.name:match("^[iI]nterface\\[aA]dd[oO]ns\\(.-)\\") 
+              or BUILTIN; 
         end,
     },
+
   font =
     { ["Verify"] =
         function(self)
@@ -452,16 +566,6 @@ local methods =
           self:SetFlag("unverified", not verified);
         end,
 
-      ["InitList"] =
-        function(self, objType)
-
-          if   type(objType) == "string" and tContains(objectTypes, objType)
-          then self.lists             = self.lists             or {};
-               self.lists[objType]    = self.lists[objType]    or {};
-               self.db.lists          = self.db.lists          or {}
-               self.db.lists[objType] = self.db.lists[objType] or {};
-          end;
-        end,
       ["GetTitle"] =
         function(self)
           if self:HasFlag("builtin") and LibSharedMedia:GetDefault("font") == self:GetName()
@@ -470,381 +574,176 @@ local methods =
           end
         end,
 
+      ["New"] = 
+        function(self, what, name)
+          local item = self[what][item] or {};
+          item.name = name;
+          item.font = self;
+          attachMethods(item, what, self);
+          self.db[what][self] = self.db[what][self] or {};
+          item.db = self.db[what][self];
+          self:AddItem(what, item);
+        end,
+      ["IsLoaded"] = function(self) return self:GetFlag("loaded") end, 
+      ["NewAddon"] = 
+        function(self, name)
+          local addon = self:New("addon", name);
+          if name == BUILTIN then self:SetFlag("builtin", name == BUILTIN); end;
+        end,
+
+      ["GetPrimaryFile"] =
+        function(self)
+          for name, file in pairs( self:GetFiles() ) 
+          do  if file:HasFlag("loaded") then return file end;
+          end;
+          return nil;
+        end, 
+      ["NewFile"] = function(self, name) return self:New("file", name); end,
       ["HasItem"] = "GetItem",
-      ["GetItem"] =
-        function(self, objType, name)
-          if   tContains(objectTypes, objType) 
-           and self.lists[objType] 
-           and self.lists[objType][name]
-          then return self.lists[objType][name], self.db.lists[objType][name]
-          else return nil, nil
-          end
-        end,
-
+      ["GetItem"] = function(self, objType, name) return self[objType] and self[objType][name] or nil end,
       ["AddItem"] = "SetItem",
-      ["SetItem"] =
-        function(self, objType, item)
-          local name = item:GetName();
-          if   tContains(objectTypes, objType) 
-           and type(item) == "table" 
-           and item.WhatAmI 
-           and item:WhatAmI() == objType
-          then self.lists[objType]        = self.lists[objType]        or {};
-               self.lists[objType][name]  = item;
-               local lists                = self.db.lists[objType]
-               lists[objType]             = lists[objType]             or {};
-               lists[objType][name]       = lists[objType][name]       or {};
-               lists[objType][name].flags = lists[objType][name].flags or {};
-               lists[objType][name].name  = lists[objType][name].name  or name;
-          end;
+      ["SetItem"] = function(self, objType, item) local name = item:GetName(); self[objType][name] = item; end,
+      ["SetTimestamp"] = function(self, timeStamp) self.db.stamp[timeStamp] = Stats.now end, -- note: not the current time()
+      ["GetTimestamp"] = function(self, timeStamp) return self.db.stamp[timeStamp]; end,
+      ["GetList"] = function(self, objType) if type(self[objType]) == "table" then return self[objType] else return nil; end; end,
 
+      ["GetAddons"] = function(self) return self:GetList("addon") end,
+      ["GetFiles"] = function(self) return self:GetList("file") end,
+      ["GetAddon"] = function (self, name) return self:GetItem("addon", name) end,
+      ["GetFile"]=  function(self, name) return self:GetItem("file",  name) end,
+
+      ["Register"] = 
+        function(self)
+          local file, _ = self:GetPrimaryFile();
+          if file then LibSharedMedia:Register("font", self:GetName(), file:GetName()); end;
+          self.primaryFile = file;
+          self:SetFlag("registered"); 
         end,
 
-      ["SetTimestamp"] =
-        function(self, timeStamp)
-          if  type(timeStamp) == "string"
-          then self.db.stamps[timeStamp] = Stats.now; -- not the actual time()!
-          end;
+      ["Deregister"] 
+        function(self)
+          LibSharedMedia.MediaTable.font[self:GetName()] = nil 
+          self:ClearFlag("registered"); 
         end,
-      ["GetTimestamp"] =
-        function(self, timeStamp)
-          if type(timeStamp) == "string" then return self.db.stamps[timeStamp]; end
-        end,
-      ["HasList"] = "GetList",
-      ["GetList"] =
-        function(self, objType)
-          if   tContains(objectTypes, objType) and type(self.lists[objType]) == "table"
-          then return self.lists[objType], self.db.lists[objType];
+      ["GetStatus"] =
+        function(self)              -- returns true/false if it should be shown, and the primary status
+
+          if     self:HasFlag( "missing"  ) then return false, "missing"
+          elseif self:HasFlag( "builtin"  ) then return true,  "builtin"
+          elseif self:HasFlag( "inactive" ) then return false, "inactive"
+          elseif self:HasFlag( "disabled" ) and  not db.Settings.LoadDisabled 
+                                            then return false, "disabled"
+          elseif self:HasFlag( "new"      ) then return true,  "new"
+          elseif self:HasFlag( "active"   ) then return true,  "active"
+          elseif self:HasFlag( "loaded"   ) then return true,  "loaded"
+          else                                   return false, "unknown"
           end
         end,
 
-    },
+      ["SetRegistrationStatus"] =
+        function(self, status)
+          status = (status ~= nil) and status or self:GetStatus();
+          if status then self:Register() else self:Deregister() end;
+          recount();
+        end,
+      ["Count"] = -- this the font walking up and saying "count me! count me!"
+        function(self)
+          -- two helpers
+          local function incr(category) Stats[category] = Stats[category] + 1 end;
+          local function have(category) return self:HasFlag(category) end;
+          
+          if self:HasFlag("deleted") then self:ClearAllFlags(); return end;
+          if self:GetTimestamp("FirstSeen") == Stats.now then self:SetFlag("new") else self:ClearFlag("new"); end;
+
+          if have( "unverified" )                           then incr( "unverified"     ) end;
+          if have( "active"     )                           then incr( "active"         ) end;
+          if have( "builtin"    )                           then incr( "builtin"        ) end;
+          if have( "inactive"   ) and not have( "missing" ) then incr( "inactive"       ) end;
+          if have( "missing"    )                           then incr( "missing"        ) end;
+          if have( "new"        )                           then incr( "new"            ) end;
+          if have( "new"        ) and     have( "active"  ) then incr( "new_active"     ) end;
+          if have( "builtin"    ) and     have( "active"  ) then incr( "builtin_active" ) end;
+
+          incr("total");
+        end,
+      ["GetOptionsTableArgs" = getOptionsTableArgs,
+      ["SetFlagsFromAddons"] =
+        function(self)
+          local any = {};
+
+          for name, addon in pairs(self:GetAddons())
+          do  
+            for  _, flag in ipairs(flags.addon) 
+            do   if addon:HasFlag(flag) then any[flag] = true; end; -- make a composite value of all the flags
+            end;  -- for _, flag
+      
+            if     any.builtin  then self:SetFlag("builtin", true  ); end;
+
+            if     any.loaded   then self:SetFlag("loaded",   true );
+                                     self:SetFlag("disabled", false);
+                                     self:SetFlag("missing",  false);
+            elseif any.disabled then self:SetFlag("loaded",   false);
+                                     self:SetFlag("disabled", true );
+                                     self:SetFlag("missing",  false);
+            elseif any.missing  then self:SetFlag("loaded",   false);
+                                     self:SetFlag("disabled", false);
+                                     self:SetFlag("missing",  false);
+            end;
+      
+            if not self:GetFlag("active") and not self:GetFlag("inactive") then self:SetFlag("active") end;
+          
+            if not self:GetTimestamp("FirstSeen") then self:SetTimestamp("FirstSeen"); end;
+            self:SetTimestamp("LastSeen");
+          end; -- for name, addon
+        end, -- method
+      ["FormatListForDisplay" =
+        function(self, what, delim)
+          local text = {};
+          for _, item in pairs(self:GetList(what)) 
+          do  table.insert(text, item:ColorName()); 
+          end;
+          return table.concat(text, delim or ", ");
+        end,
+   },
 };
 
-local function attachMethods(object, objType, font) 
-  if tContains(objectTypes, objType)
-  then object.what = objType
-       for funcName, func in pairs(methods) 
-       do  if type(func) == "function"
-           then object[funcName] = func; 
-           elseif type(func) == "string" and methods[func] and type(methods[func]) == "function"
-           then object[funcName] = methods[func]
-           end; 
-       end;
-       if font then object:SetFont(font) end;
 
-       if type(methods[objType]) == "table"
-       then for funcName, func in pairs(methods[objType]) 
-            do  if     type(func) == "function"
-                then   object[funcName] = func; 
-                elseif type(func) == "string" and methods[objType][func] and type(methods[objType][func]) == "function"
-                then   object[funcName] = methods[objType][func]
-                end; 
-            end;
-       end;
-  else error("Unknown object type " .. (objType or type(objType)));
-  end;
-end;
-
+  -- 
 -- font object --------------------------------------------------------------------------------------------------------------------
-local function makeFont(fontName, fontFile)
-  if not fontName then return end;
-
+  --
+local function makeFontRecord(fontName, fontFile)
+  if not fontName or not fontFile then return end;
   local font = Fonts[fontName] or {};
+
   font.name  = fontName;
   attachMethods(font, "font", font);
-  local data = font:InitData();
-  font:InitList("addon");
-  font:InitList("file");
 
-  function font.New(self, what, name)
+  db.Fonts[name] = db.Fonts[name] or {};
+  font.db = db.Fonts[name];
 
-    if name and tContains(objectTypes, what)
-    then 
-
-      local list = self:GetList(what)       or self:InitList(what) and {};
-      local item = self:GetItem(what, name) or                         {};
-      item.name  = name;
-
-      attachMethods(item, what, self);
-      self:AddItem(what, item);
-      local data = item:InitData();
-
-      return item
-
-    end;
-
-  end; 
-
-  function font.NewAddon(self, name)
-    local addon = self:New("addon", name);
-   
-    function addon.IsLoaded(self)
-      if self.name == BUILTIN then return true end;
-      local _, _, _, isLoadable, reason = GetAddOnInfo(self.name);
-      self:SetFlag("loaded", isLoadable);
-      if not isLoadable 
-      then return false, reason; 
-      else return true, nil; end;
-    end;
-
-    if name == BUILTIN then self:SetFlag("builtin", name == BUILTIN); end;
-
-    return addon
+  for _, subDir in ipairs({ "flag", "file", "addon", "stamp" })
+  do  font[subDir] = font[subDir] or {};           -- this stores objects
+      font.db[subDir] = font.db[subDir] or {};     -- this stores data
   end;
-
-  function font.NewFile(self, name)
-
-    local file = self:New("file", name);
-
-    function file.IsLoaded(self) return self.addon:IsLoaded(); end;
-
-    function file.GetAddonFromPath(self) 
-      return self.name:match("^[iI]nterface\\[aA]dd[oO]ns\\(.-)\\") or BUILTIN; 
-    end;
-
-    return file
-
-  end;
-
-  function font.GetAddons(self)       return self:GetList("addon")       end;
-  function font.GetFiles( self)       return self:GetList("file")        end;
-  function font.GetAddon( self, name) return self:GetItem("addon", name) end;
-  function font.GetFile(  self, name) return self:GetItem("file",  name) end;
-
-  function font.SetFlagsFromAddons(self)
-
-    local any = {};
-
-    if   self:GetAddons()
-    then for name, addon in pairs(self:GetAddons())
-         do  for _, flag in ipairs(flags.addon)
-             do  if addon:GetFlag(flag) then any[flag] = true; end;
-             end;
-         end;
-
-         if     any.builtin  then self:SetFlag("builtin", true  ); end;
-
-         if     any.loaded   then self:SetFlag("loaded",   true );
-                                  self:SetFlag("disabled", false);
-                                  self:SetFlag("missing",  false);
-     
-         elseif any.disabled then self:SetFlag("loaded",   false);
-                                  self:SetFlag("disabled", true );
-                                  self:SetFlag("missing",  false);
-     
-         elseif any.missing  then self:SetFlag("loaded",   false);
-                                  self:SetFlag("disabled", false);
-                                  self:SetFlag("missing",  false);
-         end;
-
-         if   not self:GetFlag("active") and not self:GetFlag("inactive")
-         then self:SetFlag("active") 
-         end;
-
-    end;
-
-    if not self:GetTimestamp("FirstSeen") then self:SetTimestamp("FirstSeen"); end;
-    self:SetTimestamp("LastSeen");
-  end;
-     
-  function font.GetPrimaryFile(self)
-    for  name, file in pairs( self:GetFiles() )
-    do   if    file:HasFlag("loaded")
-         then  return name, file
-         end;
-    end; 
-    return nil, nil;
-  end;
-
-  function font.IsLoaded(self) return self:GetFlag("loaded") end;
-
-  function font.Register(self)
-    local fileName, _ = self:GetPrimaryFile()
-    if    fileName 
-    then  LibSharedMedia:Register("font", self:GetName(), fileName);
-          self:SetFlag("loaded"); 
-    end;
-  end;
-
-  function font.Deregister(self)
-    if   self:GetName()
-    then LibSharedMedia.MediaTable.font[self:GetName()] = nil 
-         self:ClearFlag("loaded"); 
-    end;
-  end;
-    
-  function font.GetStatus(self)              -- returns true/false if it should be shown, and the primary status
-
-    if     self:HasFlag( "missing"  ) then return false, "missing"
-    elseif self:HasFlag( "builtin"  ) then return true,  "builtin"
-    elseif self:HasFlag( "inactive" ) then return false, "inactive"
-    elseif self:HasFlag( "disabled" ) and  not db.Settings.LoadDisabled 
-                                      then return false, "disabled"
-    elseif self:HasFlag( "new"      ) then return true,  "new"
-    elseif self:HasFlag( "active"   ) then return true,  "active"
-    elseif self:HasFlag( "loaded"   ) then return true,  "loaded"
-    else                                   return false, "unknown"
-    end
-  end;
-
-  function font.SetRegistrationStatus(self, status)
-    status = (status ~= nil) and status or self:GetStatus();
-    if status then self:Register() else self:Deregister() end;
-    recount();
-  end;
-
-  function font.Count(self)
-    local function incr(category) Stats[category] = Stats[category] + 1 end;
-    local function have(category) return self:HasFlag(category) end;
-
-    if self:HasFlag("deleted") then return end;
-
-    if   self:GetTimestamp("FirstSeen") == Stats.now 
-    then self:SetFlag("new") 
-    else self:ClearFlag("new");
-    end;
-
-    if have( "unverified" )                           then incr( "unverified"     ) end;
-    if have( "active"     )                           then incr( "active"         ) end;
-    if have( "builtin"    )                           then incr( "builtin"        ) end;
-    if have( "inactive"   ) and not have( "missing" ) then incr( "inactive"       ) end;
-    if have( "missing"    )                           then incr( "missing"        ) end;
-    if have( "new"        )                           then incr( "new"            ) end;
-    if have( "new"        ) and     have( "active"  ) then incr( "new_active"     ) end;
-    if have( "builtin"    ) and     have( "active"  ) then incr( "builtin_active" ) end;
-
-    incr("total");
-  end;
-
-  function font.FormatListForDisplay(self, what, delim)
-    if tContains(objectTypes, what) and self:HasList(what)
-    then local text = {};
-         for _, item in pairs(self:GetList(what)) do table.insert(text, item:ColorName()); end;
-         return table.concat(text, delim or ", ");
-    end;
-  end;
-
-  function font.GetOptionsTableArgs(self)
-
-    local function filter() 
-      local condition1 = self:HasFlag("deleted");
-      local condition2 = Filter ~= "none" and not self:HasFlag(Filter);
-      local condition3 = SearchTerms and not self:GetName():lower():match(SearchTerms:lower())
-      return condition1 or condition2 or condition3;
-    end;
-
-    local function browseFont()
-      Browsing = self;
-      db.Browsing = self:GetName();
-      AceConfigDialog:SelectGroup(addOnName, "fontBrowser") 
-    end
-
-    local function disableToggle()
-      local _, status = self:GetStatus()
-      return (status == "missing") 
-          or (status == "disabled" and not db.Options.LoadDisabled)
-          or (LibSharedMedia:GetDefault("font") == self:GetName())
-          or (LibSharedMedia:GetGlobal("font")  == self:GetName())
-      ;
-    end;
-
-    local function changeRegistrationStatus(info, value)
-      self:SetFlag("active", value);
-      self:SetFlag("inactive", not value);
-      self:SetRegistrationStatus(value);
-    end;
-
-    local function getFancyFontName()
-      local name = self:ColorName();
-      if   db.Settings.VerifyFonts and self:HasFlag("builtin")
-      then name = BLUE_BALL .. " " .. name
-      elseif db.Settings.VerifyFonts and self:HasFlag("verified")
-      then name = ORANGE_BALL .. " " .. name
-      elseif db.Settings.VerifyFonts
-      then name = PURPLE_BALL .. " " .. name
-      end;
-      return name;
-    end;
-    local name = self:GetName();
-
-    local args = 
-    { [name .. "_Active"]  =
-        { type             = "toggle",
-          name             = "",
-          width            = col[1],
-          get              = function() return self:HasFlag("active") end,
-          set              = changeRegistrationStatus,
-          disabled         = disableToggle,
-          hidden           = filter,
-        },
-
-      [name .. "_Name"]    =
-        { type             = "description",
-          name             = getFancyFontName,
-          width            = col[2],
-          fontSize         = "medium",
-          hidden           = filter,
-        },
-
-      [name .. "_AddOn"]   =
-        { type             = "description",
-          name             = function() return self:FormatListForDisplay("addon", ", ") end,
-          width            = col[3],
-          fontSize         = "medium",
-          hidden           = filter,
-        },
-
-      [name .. "_Details"] =
-        { type             = "execute",
-          name             = "Details",
-          desc             = "Click to view details about the font " .. self:ColorName() .. " in the font browser.",
-          width            = col[4],
-          func             = browseFont,
-          hidden           = filter,
-      },
-
-      [name .. "_Newline"] =
-        { type = "description",
-          width = "full",
-          fontSize = "small",
-          name = "",
-          hidden           = filter,
-        },
-    };
-
-    table.insert(keys, font.name);
-
-    return args;
-  end;
-
 
   Fonts[fontName] = font;
 
-  if   fontFile 
-  then local file = font:NewFile(fontFile)
-       local addon_name = file:GetAddonFromPath();
-
-       local addon = font:NewAddon( addon_name);
-       return font, file, addon;
-  end;
-       
-  return font, data;
-  
+  return font, fontFile and font:NewFile(fontFile), fontFile and font:NewAddon( file:GetAddonFromPath());
 end;
   
 -- -------------------------------------------------------------------------------------------------------------------------------
 local function restoreSavedData()
-  for fontName, data in pairs(db.Fonts)
-  do  if data and data.db and data.db.flags and data.db.flags.deleted
+  for fontName, info in pairs(db.Fonts)
+  do  if    info and info.flags and info.flags.deleted
       then  db.Fonts[fontName] = nil;
-      else local font = makeFont(fontName);
-           if   data and data.file 
-           then for fileName, fileData in pairs(data.file)
-                do  local file  = font:NewFile(fileName)
-                    local addon = font:NewAddon( file:GetAddonFromPath() );
-                end;
-           end;
+      else 
+        local font = makeFont(fontName);
+        if   info.file
+        then for fileName, fileData in pairs(info.file)
+             do  local file  = font:NewFile(fileName)
+                 local addon = font:NewAddon( file:GetAddonFromPath() );
+             end;
+        end;
       end;
   end;
 end;
@@ -869,15 +768,14 @@ StaticPopupDialogs[POPUP] =
 };
 
 local function scaryWarningMessage(fontState)
-
-  return "This will permanently delete information on " .. fontState .. " from " .. 
-         rpFontsTitle .. "'s records. It can't be undone. " ..
-         "Your font files themselves won't be harmed." .. 
-         "\n\nIf you load addons that register those fonts with LibSharedMedia, " ..
-         rpFontsTitle .. " will create new records for them, as it will no longer " ..
-         "have stored records telling it to deactivate or activate the fonts." ..
-         "\n\nAre you |cffffff00sure|r this is what you want to do?";
-
+  return 
+    "This will permanently delete information on " .. fontState .. " from " .. 
+    rpFontsTitle .. "'s records. It can't be undone. " ..
+    "Your font files themselves won't be harmed." .. 
+    "\n\nIf you load addons that register those fonts with LibSharedMedia, " ..
+    rpFontsTitle .. " will create new records for them, as it will no longer " ..
+    "have stored records telling it to deactivate or activate the fonts." ..
+    "\n\nAre you |cffffff00sure|r this is what you want to do?";
 end;
 
 local function doPurge(flag)
@@ -937,7 +835,9 @@ end;
 -- --------------------------------------------------------------------------------------------------------------------------------------
 local function applyLoadDisabled(info, value)
   db.Settings.LoadDisabled = value;
-  for _, font in pairs(Fonts) do if font:HasFlag("disabled") then font:SetRegistrationStatus() end; end;
+  for _, font in pairs(Fonts) 
+  do if font:HasFlag("disabled") then font:SetRegistrationStatus() end; 
+  end;
 end;
 
 -- browser ----------------------------------------------------------------------------------------------------------------------------
@@ -1994,6 +1894,13 @@ local function cycleThroughFonts()
       if db.Settings.VerifyFonts and not db.Settings.VerifyOnlyActive
       then font:Verify();
       end;
+  end;
+  if Stats.new > 0 
+  then notify( 
+         green( Stats.new .. " new fonts found!") .. 
+         " Type " .. 
+         cyan("/rpfonts")..
+         " to manage fonts.")
   end;
 end;
 
