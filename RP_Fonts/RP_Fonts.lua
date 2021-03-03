@@ -23,6 +23,147 @@ local rpFontsFrame = CreateFrame("Frame");
       rpFontsFrame:RegisterEvent("ADDON_LOADED");
       rpFontsFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
 
+-- our fonts -------------------------------------------------------------------------------
+local family = {
+  Almen  = baseFontDir .. "Almendra_Display\\AlmendraDisplay-",
+  Amara  = baseFontDir .. "Amarante\\Amarante-",
+  Arima  = baseFontDir .. "Arima_Madurai\\ArimaMadurai-",
+  Barlow = baseFontDir .. "Barlow_Condensed\\BarlowCondensed-",
+  Belle  = baseFontDir .. "Bellefair\\Bellefair-",
+  Berk   = baseFontDir .. "Berkshire_Swash\\BerkshireSwash-",
+  BigSho = baseFontDir .. "Big_Shoulders_Stencil_Display\\BigShouldersStencilDisplay-",
+  Cinzel = baseFontDir .. "Cinzel_Decorative\\CinzelDecorative-",
+  Creep  = baseFontDir .. "Creepster\\Creepster-",
+  Elsie  = baseFontDir .. "Elsie_Swash_Caps\\ElsieSwashCaps-",
+  Flame  = baseFontDir .. "Flamenco\\Flamenco-",
+  FontDS = baseFontDir .. "Fontdiner_Swanky\\FontdinerSwanky-",
+  IMFell = baseFontDir .. "IM_Fell\\IMFell",
+  Lime   = baseFontDir .. "Limelight\\Limelight-",
+  Milton = baseFontDir .. "Miltonian\\Miltonian-",
+  MrsStD = baseFontDir .. "Mrs_Saint_Delafield\\MrsSaintDelafield-",
+  MtXmas = baseFontDir .. "Mountains_of_Christmas\\MountainsofChristmas-",
+  Nosif  = baseFontDir .. "Nosifer\\Nosifer-",
+  Oswald = baseFontDir .. "Oswald\\Oswald-",
+  Poppi  = baseFontDir .. "Poppins\\Poppins-",
+  Press  = baseFontDir .. "Press_Start_2P\\PressStart2P-",
+  Share  = baseFontDir .. "ShareTechMono\\ShareTechMono-",
+  Source = baseFontDir .. "Source_Code_Pro\\SourceCodePro-",
+  Synco  = baseFontDir .. "Syncopate\\Syncopate-",
+  Syne   = baseFontDir .. "Syne_Mono\\SyneMono-",
+  Tanger = baseFontDir .. "Tangerine\\Tangerine-",
+  Uncial = baseFontDir .. "Uncial_Antiqua\\UncialAntiqua-",
+};
+
+local BLK        = "Black.ttf";
+local BLK_ITA    = "BlackItalic.ttf";
+local BOLD       = "Bold.ttf";
+local BOLD_ITA   = "BoldItalic.ttf";
+local ITA        = "Italic.ttf";
+local LITE_ITA   = "LightItalic.ttf";
+local LITE       = "Light.ttf";
+local MED        = "Medium.ttf";
+local MED_ITA    = "MediumItalic.tff";
+local REG        = "Regular.ttf";
+local SEMIBD     = "SemiBold.tff";
+local SEMIBD_ITA = "SemiBoldItalic.tff";
+local TH         = "Thin.ttf";
+local TH_ITA     = "ThinItalic.ttf";
+local XB         = "ExtraBold.ttf";
+local XB_ITA     = "ExtraBoldItalic.ttf";
+local XL         = "ExtraLight.ttf";
+local XL_ITA     = "ExtraLightItalic.ttf";
+local ENG_REG    = "English-Regular.ttf";
+local GP_ITA     = "GreatPrimer-Italic.ttf";
+local GP_REG     = "GreatPrimer-Regular.ttf";
+local GPSC_REG   = "GreatPrimerSC-Regular.ttf";
+local BSSDB      = "Big Shoulders Stencil Display Black";
+
+local fontList=
+{ -- Code       = { Load = false, Name = "Human Readable     ",         Fam = "FAM",    File = REG      },
+  Almen_Reg     = { Load = false, Name = "Almendra Display",            Fam = "Almen",  File = REG,     },
+  Amara_Reg     = { Load = false, Name = "Amarante",                    Fam = "Amara",  File = REG,     },
+  Arima_Light   = { Load = false, Name = "Arima Madurai Light",         Fam = "Arima",  File = LITE,    },
+  Arima_Reg     = { Load = false, Name = "Arima Madurai",               Fam = "Arima",  File = REG,     },
+  Barlow_Light  = { Load = false, Name = "Barlow Condensed Light",      Fam = "Barlow", File = LITE,    },
+  Belle_Reg     = { Load = true,  Name = "Bellefair",                   Fam = "Belle",  File = REG,     },
+  Berk_Reg      = { Load = false, Name = "Berkshire Swash",             Fam = "Berk",   File = REG      },
+  BigSho_Black  = { Load = false, Name = BSSDB,                         Fam = "BigSho", File = BLK      },
+  Cinzel_Bold   = { Load = false, Name = "Cinzel Decorative Bold",      Fam = "Cinzel", File = BOLD     },
+  Cinzel_Reg    = { Load = true,  Name = "Cinzel Decorative",           Fam = "Cinzel", File = REG      },
+  Creep_Reg     = { Load = false, Name = "Creepster",                   Fam = "Creep",  File = REG      },
+  Elsie_Reg     = { Load = false, Name = "Elsie Swash Caps",            Fam = "Elsie",  File = REG      },
+  Flame_Reg     = { Load = false, Name = "Flamenco",                    Fam = "Flame",  File = REG      },
+  FontDS_Reg    = { Load = false, Name = "Fontdiner Swanky",            Fam = "FontDS", File = REG      },
+  IMFell_EngReg = { Load = false, Name = "IM Fell English",             Fam = "IMFell", File = ENG_REG  },
+  IMFell_GPIta  = { Load = false, Name = "IM Fell Great Primer Italic", Fam = "IMFell", File = GP_ITA   },
+  IMFell_GPSC   = { Load = false, Name = "IM Fell Great Primer SC",     Fam = "IMFell", File = GPSC_REG },
+  Lime_Reg      = { Load = false, Name = "Limelight",                   Fam = "Lime",   File = REG      },
+  Milton_Reg    = { Load = false, Name = "Miltonian",                   Fam = "Milton", File = REG      },
+  MrsStD_Reg    = { Load = true,  Name = "Mrs Saint Delafield",         Fam = "MrsStD", File = REG      },
+  MtXmas_Bold   = { Load = false, Name = "Mountains of Christmas Bold", Fam = "MtXmas", File = BOLD     },
+  Nosif_Reg     = { Load = false, Name = "Nosifer",                     Fam = "Nosif",  File = REG      },
+  Oswald_Reg    = { Load = false, Name = "Oswald",                      Fam = "Oswald", File = REG      },
+  Poppi_BlkIta  = { Load = false, Name = "Poppins Black Italic",        Fam = "Poppi",  File = BLK_ITA  },
+  Poppi_Reg     = { Load = false, Name = "Poppins",                     Fam = "Poppi",  File = REG      },
+  Press_Reg     = { Load = false, Name = "Press Start 2P",              Fam = "Press",  File = REG      },
+  Share_Reg     = { Load = true,  Name = "Share Tech Mono",             Fam = "Share",  File = REG      },
+  Source_Lig    = { Load = false, Name = "Source Code Pro Light",       Fam = "Source", File = LITE     },
+  Source_Reg    = { Load = true,  Name = "Source Code Pro",             Fam = "Source", File = REG      },
+  Synco_Reg     = { Load = false, Name = "Syncopate",                   Fam = "Synco",  File = REG      },
+  Syne_Reg      = { Load = false, Name = "Syne Mono",                   Fam = "Syne",   File = REG      },
+  Tanger_Reg    = { Load = false, Name = "Tangerine",                   Fam = "Tanger", File = REG      },
+  Uncial_Reg    = { Load = false, Name = "Uncial Antiqua",              Fam = "Uncial", File = REG      },
+};
+
+local typeFlagData =
+{ 
+  [ fontList.Almen_Reg.Name          ] = { "400", "serif"             },
+  [ fontList.Amara_Reg.Name          ] = { "400", "display"           },
+  [ fontList.Arima_Light.Name        ] = { "300", "display"           },
+  [ fontList.Arima_Reg.Name          ] = { "400", "display"           },
+  [ fontList.Barlow_Light.Name       ] = { "300", "condensed", "sans" },
+  [ fontList.Belle_Reg.Name          ] = { "400", "serif"             },
+  [ fontList.Berk_Reg.Name           ] = { "400", "display"           },
+  [ fontList.BigSho_Black.Name       ] = { "900", "display"           },
+  [ fontList.Cinzel_Bold.Name        ] = { "700", "display"           },
+  [ fontList.Cinzel_Reg.Name         ] = { "400", "display"           },
+  [ fontList.Creep_Reg.Name          ] = { "400", "display"           },
+  [ fontList.Elsie_Reg.Name          ] = { "400", "serif",            },
+  [ fontList.Flame_Reg.Name          ] = { "400", "serif",            },
+  [ fontList.FontDS_Reg.Name         ] = { "400", "display"           },
+  [ fontList.IMFell_EngReg.Name      ] = { "400", "serif",            },
+  [ fontList.IMFell_GPIta.Name       ] = { "400", "serif", "italic"   },
+  [ fontList.IMFell_GPSC.Name        ] = { "400", "smallcaps"         },
+  [ fontList.Lime_Reg.Name           ] = { "400", "sans",             },
+  [ fontList.Milton_Reg.Name         ] = { "400", "display"           },
+  [ fontList.MrsStD_Reg.Name         ] = { "400", "handwriting"       },
+  [ fontList.MtXmas_Bold.Name        ] = { "700", "display"           },
+  [ fontList.Nosif_Reg.Name          ] = { "400", "display"           },
+  [ fontList.Oswald_Reg.Name         ] = { "400", "sans"              },
+  [ fontList.Poppi_BlkIta.Name       ] = { "900", "italic", "sans"    },
+  [ fontList.Poppi_Reg.Name          ] = { "400", "sans"              },
+  [ fontList.Press_Reg.Name          ] = { "400", "display"           },
+  [ fontList.Share_Reg.Name          ] = { "400", "monospace",        },
+  [ fontList.Source_Lig.Name         ] = { "300", "monospace",        },
+  [ fontList.Source_Reg.Name         ] = { "400", "monospace",        },
+  [ fontList.Synco_Reg.Name          ] = { "400", "display",          },
+  [ fontList.Syne_Reg.Name           ] = { "400", "monospace",        },
+  [ fontList.Tanger_Reg.Name         ] = { "700", "handwriting",      },
+  [ fontList.Uncial_Reg.Name         ] = { "400", "display"           },
+  [ "2002"                           ] = { "400", "serif"             },
+  [ "2002 Bold"                      ] = { "700", "serif"             },
+  [ "AR CrystalzcuheiGBK Demibold"   ] = { "600", "serif"             },
+  [ "AR ZhongkaiGBK Medium"          ] = { "500", "serif"             },
+  [ "AR ZhongkaiGBK Medium (Combat)" ] = { "500", "serif"             },
+  [ "Arial Narrow"                   ] = { "400", "sans", "condensed" },
+  [ "Friz Quadrata TT"               ] = { "400", "serif"             },
+  [ "MoK"                            ] = { "400", "handwriting"       },
+  [ "Morpheus"                       ] = { "400", "display"           },
+  [ "Nimrod MT"                      ] = { "400", "serif"             },
+  [ "Skurri"                         ] = { "400", "display"           },
+
+};
+-- 
 local listOfIncludedFonts = [===[
 |cff00ffffAmarante|r
 Copyright (c) 2012 by Sorkin Type Co (www.sorkintype.com), with Reserved Font Name "Amarante".
@@ -195,7 +336,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 -- variables
 local options, db, Fonts, keys, SearchTerms, SearchResults, Browsing,
       Stats, PreviewText, PreviewSize, Filter, SandboxText, SandboxFont,
-      ViewFontList, ViewLicense, Initialized, HashTable;
+      ViewFontList, ViewLicense, Initialized, HashTable, EditingTypeFlags;
 
 -- constants
 local col        = { 0.2, 1.5, 0.9, 0.5 };
@@ -237,6 +378,13 @@ local filters    =
   [ "verified" ] =   orange( "Verified Fonts" ),
   [ "unverified"] = purple( "Unverified Fonts" ),
   [ "builtin"  ] = bluzzard( "Built-In Fonts" ),
+  [ "type_handwriting" ] = white("Handwriting Fonts"),
+  [ "type_serif" ] = white("Serif Fonts"),
+  [ "type_sans" ] = white("Sans-Serif Fonts"),
+  [ "type_italic" ] = white("Italic Fonts"),
+  [ "type_display" ] = white("Display Fonts"),
+  [ "type_smallcaps" ] = white("Small-Caps Fonts"),
+  [ "type_monospace" ] = white("Monospace Fonts"),
 };
 
 local filter_desc =
@@ -257,9 +405,16 @@ local filter_desc =
                    rpFontsTitle .. " to see if it can be used successfully."                 ,
   [ "unverified"] = "An unverified font is one that was tested by " .. rpFontsTitle         ..
                     " and could not be successfully applied in-game."                        ,
+  [ "type_handwriting" ] = "Fonts that look like something you write, if you have really neat handwriting.",
+  [ "type_serif" ] = "Fonts with serifs.",
+  [ "type_sans" ] = "Fonts lacking serifs.",
+  [ "type_monospace" ] = "Fonts where each character is the same width.",
+  [ "type_italic" ] = "Fonts that are italicized.",
+  [ "type_smallcaps" ] = "Fonts that have uppercase letters as large capitals, and lowercase letters as smaller capitals.",
+  [ "type_display" ] = "Fonts that are suited for headlines or short pieces of text, not reading in a block.",
 };
 
-local filter_order = { "none", "new", "active", "inactive", "disabled", "missing", "builtin", "verified", "unverified"};
+local filter_order = { "none", "new", "active", "inactive", "disabled", "missing", "builtin", "verified", "unverified", "type_seric", "type_sans", "type_display", "type_handwriting", "type_monospace", "type_italic", "type_smallcaps" };
 
 -- addons and files ------------------------------------------------------------------------------------------------------------------------
 --
@@ -279,6 +434,7 @@ local function initializeDatabase()
   db               = _G["RP_FontsDB"];
   db.Fonts         = db.Fonts or {};
   db.Settings      = db.Settings or {};
+  db.Settings.PreviewColor = db.Settings.PreviewColor or { r = 1, g = 1, b = 1 };
 
   Filter           = "none";
   PreviewText      = nil;
@@ -342,10 +498,23 @@ local function newline(order) return { type = "description", name = "", width = 
 -- object methods
 local objectTypes = { "font", "addon", "file" };
 local flags  =
-{ font  = { "active", "loaded",   "inactive", "disabled", "new", "missing", "builtin", "verified", "unverified", "deleted" },
+{ font  = { "active", "loaded",   "inactive", "disabled", "new", "missing", "builtin", 
+            "verified", "unverified", "deleted" 
+          },
   addon = { "loaded", "disabled", "missing",  "builtin", "initialized" },
   file  = { "loaded", "disabled", "missing", "verified", "unverified" }
 };
+
+local fontTypeFlags = 
+      { "monospace", "handwriting", "sans", "serif", "smallcaps", "italic", "display",
+        "100", "200", "300", "400", "500", "600", "700", "800", "900",
+        "condensed", "wide", 
+      };
+
+for _, flag in pairs(fontTypeFlags)
+do  table.insert(flags.font, "type_" .. flag);
+    table.insert(flags.font, "type_" .. flag .. "_playerset")
+end;
 
 --[[ Flag definitions:
 
@@ -389,7 +558,6 @@ local function getOptionsTableArgs(self)
   end;
 
   local function changeRegistrationStatus(info, value)
-    print("change registration value", value);
     self:Uncount();
     self:SetFlag("active",       value);
     self:SetFlag("inactive", not value);
@@ -489,6 +657,20 @@ local methods =
       end;
     end,
 
+  ["NameMatch"] =
+    function(self, ...)
+      local patterns = { ... };
+      local name = self:GetName():lower();
+      for _, pat in ipairs(patterns)
+      do 
+         if name:match(pat) 
+         then print(green(name .. ":" .. pat)) return true; 
+         else print(red(name .. ":" .. pat))
+         end;
+      end;
+      return false;
+    end,
+
   ["ColorName"] =
     function(self)
       local name = self.GetTitle and self:GetTitle() or self:GetName();
@@ -536,7 +718,10 @@ local methods =
         function(self)
           local verified = false;
           for fileName, file in pairs(self:GetList("file"))
-          do  local result, baseline, diff = file:Verify();
+          do  local result, baseline, diff, fixed = file:Verify();
+              if math.abs(fixed) > db.Settings.VerifyTolerance or 0.05
+              then self:SetTypeFlag("monospace");
+              end;
               if math.abs(diff) > (db.Settings.VerifyTolerance or 0.05) or self:HasFlag("builtin")
               then file:SetFlag("verified");
                    verified = true
@@ -546,6 +731,113 @@ local methods =
 
           self:SetFlag("verified",       verified);
           self:SetFlag("unverified", not verified);
+        end,
+
+      ["Classify"] =
+        function(self)
+          local file = self:GetPrimaryFile();
+          if not file then return end;
+          if   not db.Settings.DontClassifyMono
+          then 
+            if self:HasTypeFlag("monospace") or self:HasTypeFlag("monospace", true)
+            then --
+            else 
+              local _, _, _, fixed = file:Verify();
+              if math.abs(fixed or 100) < (db.Settings.VerifyTolerance or 0.05)
+              then self:SetTypeFlag("monospace")
+              elseif self:NameMatch("mono", "code", "fixed") or
+                     file:NameMatch("mono", "code", "fixed")
+              then self:SetTypeFlag("monospace")
+              end;
+            end;
+          end;
+          if   not db.Settings.DontClassifyHandwriting and 
+               ( self:NameMatch("script", "hand", "comic") or
+               file:NameMatch("script", "hand", "comic"))
+          then self:SetTypeFlag("handwriting")
+          end;
+          if   not db.Settings.DontClassifyItalic and
+               ( self:NameMatch("italic", "oblique") or
+                 file:NameMatch("italic", "oblique"))
+          then self:SetTypeFlag("italic")
+          end;
+
+          if   not db.Settings.DontClassifyWeight 
+          then if     self:NameMatch("thin", "hairline") or
+                      file:NameMatch("thin", "hairline") 
+               then   self:SetTypeFlag("100")
+               elseif self:NameMatch("extra[%-?%s]light", "ultra[%-?%s]light") or
+                      file:NameMatch("extra[%-?%s]light", "ultra[%-?%s]light") 
+               then   self:SetTypeFlag("200")
+               elseif self:NameMatch("light") or file:NameMatch("light")
+               then   self:SetTypeFlag("300")
+               elseif self:NameMatch("normal", "regular") or
+                      file:NameMatch("normal", "regular")
+               then   self:SetTypeFlag("400")
+               elseif self:NameMatch("medium") or file:NameMatch("medium")
+               then   self:SetTypeFlag("500")
+               elseif self:NameMatch("semi[%-%s]?bold", "demi[%-%s]?bold") or
+                      file:NameMatch("semi[%-%s]?bold", "demi[%-%s]?bold")
+               then   self:SetTypeFlag("600")
+               elseif self:NameMatch("extra[%-%s]?bold", "ultra[%-%s]?bold") or
+                      file:NameMatch("extra[%-%s]?bold", "ultra[%-%s]?bold") 
+               then   self:SetTypeFlag("800")
+               elseif self:NameMatch("black", "heavy") or
+                      file:NameMatch("black", "heavy") 
+               then   self:SetTypeFlag("900")
+               elseif self:NameMatch("bold") or file:NameMatch("bold")
+               then   self:SetTypeFlag("700")
+               end;
+          end;
+
+          if not db.Settings.DontClassifySerif
+          then if self:NameMatch("sans") or file:NameMatch("sans")
+               then self:SetTypeFlag("sans")
+               elseif self:NameMatch("serif") or file:NameMatch("serif")
+               then self:SetTypeFlag("serif")
+               end;
+          end;
+
+          if not db.Settings.DontClassifySmallCaps
+          then if self:NameMatch("small[%-%s]?caps", "sc$") or
+                  self:NameMatch("small[%-%s]?caps", "sc$")
+               then self:SetTypeFlag("smallcaps")
+               end;
+          end;
+          
+          if not db.Settings.DontClassifyWidth
+          then if self:NameMatch("narrow", "condensed") or
+                  file:NameMatch("narrow", "condensed")
+               then self:SetTypeFlag("condensed")
+               elseif self:NameMatch("wide") or file:NameMatch("wide")
+               then self:SetTypeFlag("wide")
+               end;
+          end;
+        end,
+
+      ["FormatTypeFlagList"] =
+        function(self)
+          local list = {};
+          if self:HasTypeFlag("monospace") then table.insert(list, "Monospace") end;
+          if self:HasTypeFlag("handwriting") then table.insert(list, "Handwriting") end;
+          if self:HasTypeFlag("serif") then table.insert(list, "Serif")
+          elseif self:HasTypeFlag("sans") then table.insert(list, "Sans-Serif")
+          end;
+          if self:HasTypeFlag("italic") then table.insert(list, "Italic") end;
+          if self:HasTypeFlag("smallcaps") then table.insert(list, "Small Caps") end;
+          if self:HasTypeFlag("display") then table.insert(list, "Display") end;
+          if self:HasTypeFlag("condensed") then table.insert(list, "Condensed") 
+          elseif self:HasTypeFlag("wide") then table.insert(list, "Wide")
+          end;
+          local weights =
+            { ["100"] = "Thin", ["200"] = "Extra-Light", ["300"] = "Light",
+              ["500"] = "Medium", ["600"] = "Semi-Bold", ["700"] = "Bold",
+              ["800"] = "Extra-Bold", ["900"] = "Black" };
+          for flag, name in ipairs(weights)
+          do if self:HasTypeFlag(flag) then table.insert(list, name) break; end;
+          end;
+
+          if #list > 0 then table.sort(list); return table.concat(list, ", "); else return "(none)" end;
         end,
 
       ["GetTitle"] =
@@ -594,14 +886,12 @@ local methods =
       ["Register"] =
         function(self)
           local file = self:GetPrimaryFile();
-          print("registering", self:GetName());
           if file then LibSharedMedia:Register("font", self:GetName(), file:GetName()); end;
           self.primaryFile = file;
         end,
 
       ["Deregister"] =
         function(self)
-          print("deregistering", self:GetName());
           LibSharedMedia.MediaTable.font[self:GetName()] = nil
         end,
       ["GetStatus"] =
@@ -694,6 +984,23 @@ local methods =
           do  table.insert(text, item:ColorName());
           end;
           return table.concat(text, delim or ", ");
+        end,
+
+      ["HasTypeFlag"] = "GetTypeFlag",
+      ["GetTypeFlag"] =
+        function(self, flag, playerset)
+          return self:GetFlag("type_" .. flag .. (playerset and "_playerset" or ""))
+        end,
+
+      ["SetTypeFlag"] =
+        function(self, flag, value, playerset)
+          if value == nil then value = true; end;
+
+          if self:GetTypeFlag(flag) ~= nil and self:GetTypeFlag(flag, true) and not playerset
+          then -- we can't update the flag
+          else self:SetFlag("type_" .. flag, value);
+               self:SetFlag("type_" .. flag .. "_playerset", playerset);
+          end
         end,
    },
 };
@@ -882,6 +1189,16 @@ end;
 --
 local function buildFontBrowser()
 
+  local weightList =  { "100", "200", "300", "400", "500", "600", "700", "800", "900" };
+
+  local function confirm(str, flag)
+    local confirmed = Browsing:GetTypeFlag(flag, true);
+    if confirmed then 
+    return yellow(str) .. " |A:common-icon-checkmark:0:0|a";
+    else return white(str)
+    end
+  end;
+
   local fontBrowser       =
   { name                  = "Font Browser",
     type                  = "group",
@@ -891,7 +1208,7 @@ local function buildFontBrowser()
     {
       selector            =
       { type              = "select",
-        width             = 2,
+        width             = 1.5,
         name              = "Font Selector", -- function() return Browsing and Browsing:GetName() or db.Browsing or "" end,
         order             = 2100,
         values            = generateHashTable,
@@ -901,15 +1218,41 @@ local function buildFontBrowser()
 
       spacer              = { type = "description", width = 0.1, name = " ", order = 2101, },
 
+      colorPicker         =
+      { type = "color",
+        name = "Preview Color",
+        width = 0.75,
+        order = 2110,
+        get = function() 
+                return 
+                  db.Settings.PreviewColor.r, 
+                  db.Settings.PreviewColor.g, 
+                  db.Settings.PreviewColor.b 
+              end,
+        set = function(info, r, g, b, a) 
+                  db.Settings.PreviewColor.r = r
+                  db.Settings.PreviewColor.g = g
+                  db.Settings.PreviewColor.b = b
+              end,
+        hidden = function() return db.Settings.HidePreview end,
+      },
+      colorPickerHiding =
+      { type = "description",
+        name = " ",
+        width = 0.75,
+        order = 2111,
+        hidden = function() return not db.Settings.HidePreview end,
+      },
       hidePreview         =
       { type              = "toggle",
         width             = 0.75,
         name              = "Hide Preview",
-        order             = 2102,
+        order             = 2150,
         get               = function() return db.Settings.HidePreview             end,
         set               = function(info, value) db.Settings.HidePreview = value end,
         desc              = "Choose whether to show or hide the text preview.",
       },
+
 
       previewBox          =
       { type              = "group",
@@ -935,7 +1278,14 @@ local function buildFontBrowser()
           { type          = "input",
             width         = "full",
             dialogControl = "RPF_FontPreviewEditBox",
-            get           = function() return PreviewText or (Browsing and Browsing:GetName() or db.Browsing) or "" end,
+            get           = function() 
+                              return
+                                string.format("|cff%02x%02x%02x", 
+                                  math.floor(db.Settings.PreviewColor.r * 255),
+                                  math.floor(db.Settings.PreviewColor.g * 255),
+                                  math.floor(db.Settings.PreviewColor.b * 255))
+                               ..
+                               ( PreviewText or (Browsing and Browsing:GetName() or db.Browsing) or "" ) end,
             set           = function(info, value) PreviewText = value end,
             name          = function() return Browsing and Browsing:GetName() or db.Browsing or "Morpheus" end,
             order         = 2175,
@@ -1070,10 +1420,150 @@ local function buildFontBrowser()
             fontSize      = "medium",
             hidden        = function() return Browsing and not(Browsing:GetTimestamp("LastSeen")) end,
           },
+          typeFlagsLeft =
+          { type = "description",
+            name = yellow("Font Type Properties"),
+            order = 2600,
+            width = 1,
+            fontSize = "medium",
+          },
 
+          typeFlagsRight =
+          { type = "description",
+            name = function() return Browsing:FormatTypeFlagList() end,
+            order = 2610,
+            width = 1.5,
+            fontSize = "medium",
+          },
+
+          typeFlagsEdit =
+          { type = "execute",
+            name = "Edit",
+            order = 2620,
+            width = 0.5,
+            func = function() db.Settings.EditingTypeFlags = not db.Settings.EditingTypeFlags end,
+            hidden = function() return db.Settings.EditingTypeFlags end,
+          },
+          typeFlagsEditDone =
+          { type = "execute",
+            name = "Done",
+            order = 2621,
+            width = 0.5,
+            func = function() db.Settings.EditingTypeFlags = not db.Settings.EditingTypeFlags end,
+            hidden = function() return not db.Settings.EditingTypeFlags end,
+          },
+          typeFlagsAdvanced =
+          { type = "group",
+            inline = true,
+            name = "Font Type Characteristics",
+            order = 2630,
+            hidden = function() return not db.Settings.EditingTypeFlags end,
+            args =
+            { typeType = 
+              { type = "select",
+                name = function() return confirm("Font Type", "handwriting") end,
+                order = 2361,
+                width = 1,
+                get = function() 
+                       return Browsing:GetTypeFlag("monospace") and "monospace" or
+                              Browsing:GetTypeFlag("handwriting") and "handwriting" or
+                              Browsing:GetTypeFlag("display") and "display" or
+                              Browsing:GetTypeFlag("sans") and "sans" or
+                              Browsing:GetTypeFlag("serif") and "serif" or
+                              "none"
+                     end,
+                set = function(info, value)
+                        for _, flag in ipairs({ "monospace", "handwriting", "display", "sans", "serif" })
+                        do Browsing:SetTypeFlag(flag, false, true)
+                        end;
+                        Browsing:SetTypeFlag(value, true, true)
+                     end,
+                sorting = { "none", "serif", "sans", "display", "handwriting", "monospace" },
+                values = { none = "", serif = "Serif font", sans = "Sans-serif font", display = "Display font",
+                           handwriting = "Handwriting font", monospace = "Monospace font", },
+              },
+
+              italic =
+              { type = "select",
+                name =function() return confirm("Italic", "italic") end,
+                order = 2364,
+                width = 1,
+                get = function() return Browsing:GetTypeFlag("italic") and "italic" or "none" end,
+                set = function(info, value) Browsing:SetTypeFlag("italic", value == "italic", true) end,
+                values = { italic = "Italic", none = "" },
+                sorting = { "none", "italic" },
+              },
+              smallcaps =
+              { type = "select",
+                name =function() return confirm("Small Caps", "smallcaps") end,
+                order = 2365,
+                width = 1,
+                get = function() return Browsing:GetTypeFlag("smallcaps") and "smallcaps" or "none" end,
+                set = function(info, value) Browsing:SetTypeFlag("smallcaps", value == "smallcaps", true) end,
+                values = { smallcaps = "Small Caps", none = "" },
+                sorting = { "none", "smallcaps" },
+              },
+              width =
+              { type = "select",
+                name =function() return confirm("Width", "condensed") end,
+                order = 2366,
+                width = 1,
+                values = { condensed = "Condensed", normal = "Normal", wide = "Wide" },
+                sorting = { "condensed", "normal", "wide" },
+                get = function() return Browsing:GetTypeFlag("condensed") and "condensed" 
+                                     or Browsing:GetTypeFlag("wide") and "wide"
+                                     or "normal" end,
+                set = function(info, value) 
+                        Browsing:SetTypeFlag("condensed", value == "condensed", true)
+                        Browsing:SetTypeFlag("wide", value == "condensed", true)
+                      end,
+              },
+              weight =
+              { type = "select",
+                name =function() return confirm("Weight", "100") end,
+                order = 2367,
+                width = 1,
+                values = { ["100"] = "Thin (100)", ["200"] = "Extra Light (200)", ["300"] = "Light (300)",
+                           ["400"] = "Normal (400)", ["500"] = "Medium (500)", ["600"] = "Semi-Bold (600)",
+                           ["700"] = "Bold (700)", ["800"] = "Extra Bold (800)", ["900"] = "Black (900)",
+                         },
+                sorting = weightList,
+                get = function()
+                        for _, weight in ipairs(weightList)
+                        do  if Browsing:HasTypeFlag(weight) then return weight end;
+                        end;
+                        return "400"
+                      end,
+                set = function(info, value) 
+                        for _, weight in ipairs(weightList)
+                        do Browsing:SetTypeFlag(weight, false, true);
+                        end;
+                        Browsing:SetTypeFlag(value, true, true);
+                      end,
+              },
+              confirmAll =
+              { type = "execute",
+                name = "Confirm All",
+                order = 2380,
+                width = 1,
+                func = function() 
+                         for _, flag in ipairs(fontTypeFlags)
+                         do  local value = Browsing:GetTypeFlag(flag);
+                             Browsing:SetTypeFlag( flag, value == nil and false or true, true)
+                         end
+                       end,
+              },
+              instruct =
+              { type = "description",
+                name = "Items marked with a |A:common-icon-checkmark:0:0|a checkmark have been " ..
+                       "confirmed by you.",
+                order = 2400,
+                width = "full",
+              },
+            },
+          },
         },
       },
-
     },
   };
 
@@ -1436,9 +1926,14 @@ local function buildLibSharedMediaPanel()
             dialogControl     = "RPF_FontPreviewEditBox",
             get               = function()
                                   return
-                                    SandboxText or
+                                    string.format("|cff%02%02x%02x", 
+                                      math.floor(db.Settings.PreviewColor.r * 255),
+                                      math.floor(db.Settings.PreviewColor.g * 255),
+                                      math.floor(db.Settings.PreviewColor.g * 255))
+                                    ..
+                                    (SandboxText or
                                     (SandboxFont and SandboxFont:GetName()) or
-                                    LibSharedMedia:GetDefault("font")
+                                    LibSharedMedia:GetDefault("font"))
                                   end,
             set               = function(info, value) SandboxText = value end,
             name              = function() return (SandboxFont and SandboxFont:GetName()) or LibSharedMedia:GetDefault("font") end,
@@ -1476,7 +1971,7 @@ local function buildSettingsPanel()
         get             = function() return db.Settings.LoadDisabled end,
         set             = applyLoadDisabled,
         order           = 9002,
-        width           = 1.5,
+        width           = "full",
       },
 
       resetAll      =
@@ -1499,20 +1994,13 @@ local function buildSettingsPanel()
         set = function(info, value) db.Settings.NewFontsStartDisabled = (value == "disabled") end,
       },
 
-      spacerDefault    =
-      { type = "description",
-        name = " ",
-        width = 0.25,
-        order = 9008,
-      },
-
       overrideProtect =
       { type = "toggle",
         name = "Override the long list failsafe",
         desc = "By default, " .. rpFontsTitle .. " will disable the font list whenever you have more " ..
                "than " .. failsafeThreshold .. " fonts, because this can lead to poor performance. Check this box to override " ..
                "that behavior.",
-        width = 1.5,
+        width = "full",
         order = 9009,
         get = function() return db.Settings.OverrideFailsafe end,
         set = function(info, value) db.Settings.OverrideFailsafe = value end,
@@ -1559,7 +2047,7 @@ local function buildSettingsPanel()
                           "loading time if you have a lot of fonts.",
         get             = function() return db.Settings.VerifyFonts end,
         set             = function(info, value) db.Settings.VerifyFonts = value end,
-        width           = 1.50,
+        width           = "full",
         order           = 9011,
       },
 
@@ -1613,11 +2101,79 @@ local function buildSettingsPanel()
         },
       },
 
+      classifyType      = 
+      { type            = "toggle",
+        name            = "Automatically classify fonts",
+        desc            = "Using a variety of methods, " .. rpFontsTitle .. " can try to auto-classify " ..
+                          "your fonts when they load.",
+        order           = 9200,
+        width           = "full",
+        get             = function() return db.Settings.ClassifyType end,
+        set             = function(info, value) db.Settings.ClassifyType = value end,
+      },
 
+      classifyAdvanced  =
+      { type = "group",
+        name = "Automatically classify fonts",
+        order = 9201,
+        inline = true,
+        hidden = function() return not db.Settings.ClassifyType end,
+        args =
+        { classifyType =
+          { type = "toggle",
+            name = "Font Category",
+            order = 9202,
+            get = function() return not db.Settings.DontClassifyCategory end,
+            set = function(info, value) db.Settings.DontClassifyCategory = not value end,
+            width = 0.75,
+          },
+          classifyItalic =
+          { type = "toggle",
+            name = "Italic",
+            order = 9203,
+            get = function() return not db.Settings.DontClassifyItalic end,
+            set = function(info, value) db.Settings.DontClassifyItalic = not value end,
+            width = 0.75,
+          },
+          classifyWeight =
+          { type = "toggle",
+            name = "Weight",
+            order = 9204, 
+            get = function() return not db.Settings.DontClassifyWeight end,
+            set = function(info, value) db.Settings.DontClassifyWeight = not value end,
+            width = 0.75,
+          },
+          classifySmallCaps =
+          { type = "toggle",
+            name = "Small Caps",
+            order = 9207,
+            get = function() return not db.Settings.DontClassifySmallCaps end,
+            set = function(info, value) db.Settings.DontClassifySmallCaps = not value end,
+            width = 0.75,
+          },
+          classifyWidth =
+          { type = "toggle",
+            name = "Width",
+            order = 9208,
+            get = function() return not db.Settings.DontClassifyWidth end,
+            set = function(info, value) db.Settings.DontClassifyWidth = not value end,
+            width = 0.75,
+          },
+
+          newline = newline(9250),
+          classifyNow =
+          { type = "execute",
+            name = "Classify Now",
+            width = 1.5,
+            order = 9251,
+            func = function() for fontName, font in pairs(Fonts) do font:Classify() end return end,
+          },
+        },
+      },
       creditsHeadline   =
       { type            = "description",
         name            = "\n" .. rpFontsTitle .. " Credits\n\n",
-        order           = 9100,
+        order           = 9800,
         width           = "full",
         fontSize        = "large",
       },
@@ -1625,7 +2181,7 @@ local function buildSettingsPanel()
       creditsLeft       =
       { type            = "description",
         name            = yellow("Created By"),
-        order           = 9101,
+        order           = 9801,
         width           = 1,
         fontSize        = "medium",
       },
@@ -1634,32 +2190,32 @@ local function buildSettingsPanel()
 
       { type            = "description",
         name            = "|cffff00ffOraibi-MoonGuard|r",
-        order           = 9102,
+        order           = 9802,
         width           = 2,
         fontSize        = "medium",
       },
 
-      blank1            = newline(9103),
+      blank1            = newline(9803),
       rpTagsLeft        =
       { type            = "description",
         name            = white("rp|cffdd33aaTags|r Download"),
-        order           = 9151,
+        order           = 9851,
         width           = 1,
         fontSize        = "medium",
       },
       rpTagsRight       =
       { type            = "input",
         width           = 2,
-        order           = 9152,
+        order           = 9852,
         name            = "",
         get             = function() return "http://spindrift.games/rptags" end,
       },
 
-      blank2            = newline(9153),
+      blank2            = newline(9853),
       libsLeft          =
       { type            = "description",
         name            = yellow("Libraries Used"),
-        order           = 9200,
+        order           = 9900,
         width           = 1,
         fontSize        = "medium",
       },
@@ -1670,24 +2226,24 @@ local function buildSettingsPanel()
                             { yellow("LibSharedMedia"), white("Ace3"),
                               green("AceGUI-SharedMediaWidgets") },
                             ", "),
-        order           = 9202,
+        order           = 9902,
         width           = 2,
         fontSize        = "medium",
       },
 
-      blank3            = newline(9203),
+      blank3            = newline(9903),
 
       fontsLeft         =
       { type            = "description",
         name            = yellow("Included Fonts"),
-        order           = 9400,
+        order           = 9950,
         width           = 1,
         fontSize        = "medium",
       },
       fontsToggle       =
       { type            = "toggle",
         name            = "View font list",
-        order           = 9401,
+        order           = 9951,
         width           = 2,
         get             = function() return ViewFontList end,
         set             = function(info, value) ViewFontList = value end,
@@ -1696,25 +2252,25 @@ local function buildSettingsPanel()
       fontsFull         =
       { type            = "group",
         name            = "Included Fonts",
-        order           = 9402,
+        order           = 9952,
         inline          = true,
         hidden          = function() return not ViewFontList end,
         args            =
         { text =
           { type        = "description",
             name        = listOfIncludedFonts,
-            order       = 9403,
+            order       = 9953,
             width       = "full",
             fontSize    = "medium",
           },
         },
       },
-      blank4            = newline(9404),
+      blank4            = newline(9954),
 
       oflLeft           =
       { type            = "description",
         name            = yellow("Open Font License 1.1"),
-        order           = 9500,
+        order           = 9960,
         width           = 1,
         fontSize        = "medium",
       },
@@ -1722,7 +2278,7 @@ local function buildSettingsPanel()
       oflToggle         =
       { type            = "toggle",
         name            = "View font license",
-        order           = 9502,
+        order           = 9962,
         width           = 2,
         get             = function() return ViewLicense end,
         set             = function(info, value) ViewLicense = value end,
@@ -1731,7 +2287,7 @@ local function buildSettingsPanel()
       oflFull           =
       { type            = "group",
         name            = "Open Font License, Version 1.1",
-        order           = 9550,
+        order           = 9960,
         inline          = true,
         hidden          = function() return not ViewLicense end,
         args            =
@@ -1760,16 +2316,30 @@ local function buildCoreOptions()
     { blurb                    =
       { type                   = "description",
         name                   = rpFontsDesc,
-        width                  = "full",
+        width                  = 2.25,
         order                  = 2,
         fontSize               = "medium"
       },
 
+      spacer = 
+      { type = "description",
+        name = " ",
+        width = 0.25,
+        order = 5,
+      },
+      hideStatus               =
+      { type = "toggle",
+        name = "Hide Status",
+        width = 0.75,
+        order = 10,
+        get = function() return db.Settings.HideStatus end,
+        set = function(info, value) db.Settings.HideStatus = value end,
+      },
       newline                  =
       { type                   = "description",
         name                   = " ",
         width                  = "full",
-        order                  = 3,
+        order                  = 30,
         fontSize               = "medium",
       },
 
@@ -1777,7 +2347,8 @@ local function buildCoreOptions()
       { type                   = "group",
         name                   = "Status (v. " .. rpFontsVersion .. ")",
         inline                 = true,
-        order                  = 4,
+        hidden                 = function() return db.Settings.HideStatus end,
+        order                  = 40,
         args                   =
         {
           StatsTotalLeft       =
@@ -2038,6 +2609,16 @@ local function cycleThroughFonts()
       if db.Settings.VerifyFonts and not db.Settings.VerifyOnlyActive
       then font:Verify();
       end;
+      if db.Settings.ClassifyType
+      then font:Classify();
+      end;
+      if typeFlagData[fontName]
+      then for _, flag in ipairs( typeFlagData[fontName] )
+           do  if font:GetTypeFlag(flag) == nil
+               then font:SetTypeFlag(flag, true);
+               end;
+           end;
+      end;
       font:SetFlag("new", font:GetTimestamp("FirstSeen") == Stats.now);
   end;
   if Stats.new > 0
@@ -2065,98 +2646,6 @@ local function initializationDone()
 
   Initialized = true;
 end;
-
--- our fonts -------------------------------------------------------------------------------
-local family = {
-  Almen  = baseFontDir .. "Almendra_Display\\AlmendraDisplay-",
-  Amara  = baseFontDir .. "Amarante\\Amarante-",
-  Arima  = baseFontDir .. "Arima_Madurai\\ArimaMadurai-",
-  Barlow = baseFontDir .. "Barlow_Condensed\\BarlowCondensed-",
-  Belle  = baseFontDir .. "Bellefair\\Bellefair-",
-  Berk   = baseFontDir .. "Berkshire_Swash\\BerkshireSwash-",
-  BigSho = baseFontDir .. "Big_Shoulders_Stencil_Display\\BigShouldersStencilDisplay-",
-  Cinzel = baseFontDir .. "Cinzel_Decorative\\CinzelDecorative-",
-  Creep  = baseFontDir .. "Creepster\\Creepster-",
-  Elsie  = baseFontDir .. "Elsie_Swash_Caps\\ElsieSwashCaps-",
-  Flame  = baseFontDir .. "Flamenco\\Flamenco-",
-  FontDS = baseFontDir .. "Fontdiner_Swanky\\FontdinerSwanky-",
-  IMFell = baseFontDir .. "IM_Fell\\IMFell",
-  Lime   = baseFontDir .. "Limelight\\Limelight-",
-  Milton = baseFontDir .. "Miltonian\\Miltonian-",
-  MrsStD = baseFontDir .. "Mrs_Saint_Delafield\\MrsSaintDelafield-",
-  MtXmas = baseFontDir .. "Mountains_of_Christmas\\MountainsofChristmas-",
-  Nosif  = baseFontDir .. "Nosifer\\Nosifer-",
-  Oswald = baseFontDir .. "Oswald\\Oswald-",
-  Poppi  = baseFontDir .. "Poppins\\Poppins-",
-  Press  = baseFontDir .. "Press_Start_2P\\PressStart2P-",
-  Share  = baseFontDir .. "ShareTechMono\\ShareTechMono-",
-  Source = baseFontDir .. "Source_Code_Pro\\SourceCodePro-",
-  Synco  = baseFontDir .. "Syncopate\\Syncopate-",
-  Syne   = baseFontDir .. "Syne_Mono\\SyneMono-",
-  Tanger = baseFontDir .. "Tangerine\\Tangerine-",
-  Uncial = baseFontDir .. "Uncial_Antiqua\\UncialAntiqua-",
-};
-
-local BLK        = "Black.ttf";
-local BLK_ITA    = "BlackItalic.ttf";
-local BOLD       = "Bold.ttf";
-local BOLD_ITA   = "BoldItalic.ttf";
-local ITA        = "Italic.ttf";
-local LITE_ITA   = "LightItalic.ttf";
-local LITE       = "Light.ttf";
-local MED        = "Medium.ttf";
-local MED_ITA    = "MediumItalic.tff";
-local REG        = "Regular.ttf";
-local SEMIBD     = "SemiBold.tff";
-local SEMIBD_ITA = "SemiBoldItalic.tff";
-local TH         = "Thin.ttf";
-local TH_ITA     = "ThinItalic.ttf";
-local XB         = "ExtraBold.ttf";
-local XB_ITA     = "ExtraBoldItalic.ttf";
-local XL         = "ExtraLight.ttf";
-local XL_ITA     = "ExtraLightItalic.ttf";
-local ENG_REG    = "English-Regular.ttf";
-local GP_ITA     = "GreatPrimer-Italic.ttf";
-local GP_REG     = "GreatPrimer-Regular.ttf";
-local GPSC_REG   = "GreatPrimerSC-Regular.ttf";
-local BSSDB      = "Big Shoulders Stencil Display Black";
-
-local fontList=
-{ -- Code       = { Load = false, Name = "Human Readable     ",         Fam = "FAM",    File = REG      },
-  Almen_Reg     = { Load = false, Name = "Almendra Display",            Fam = "Almen",  File = REG      },
-  Amara_Reg     = { Load = false, Name = "Amarante",                    Fam = "Amara",  File = REG      },
-  Arima_Light   = { Load = false, Name = "Arima Madurai Light",         Fam = "Arima",  File = LITE     },
-  Arima_Reg     = { Load = false, Name = "Arima Madurai",               Fam = "Arima",  File = REG      },
-  Barlow_Light  = { Load = false, Name = "Barlow Condensed Light",      Fam = "Barlow", File = LITE     },
-  Belle_Reg     = { Load = true,  Name = "Bellefair",                   Fam = "Belle",  File = REG      },
-  Berk_Reg      = { Load = false, Name = "Berkshire Swash",             Fam = "Berk",   File = REG      },
-  BigSho_Black  = { Load = false, Name = BSSDB,                         Fam = "BigSho", File = BLK      },
-  Cinzel_Bold   = { Load = false, Name = "Cinzel Decorative Bold",      Fam = "Cinzel", File = BOLD     },
-  Cinzel_Reg    = { Load = true,  Name = "Cinzel Decorative",           Fam = "Cinzel", File = REG      },
-  Creep_Reg     = { Load = false, Name = "Creepster",                   Fam = "Creep",  File = REG      },
-  Elsie_Reg     = { Load = false, Name = "Elsie Swash Caps",            Fam = "Elsie",  File = REG      },
-  Flame_Reg     = { Load = false, Name = "Flamenco",                    Fam = "Flame",  File = REG      },
-  FontDS_Reg    = { Load = false, Name = "Fontdiner Swanky",            Fam = "FontDS", File = REG      },
-  IMFell_EngReg = { Load = false, Name = "IM Fell English",             Fam = "IMFell", File = ENG_REG  },
-  IMFell_GPIta  = { Load = false, Name = "IM Fell Great Primer Italic", Fam = "IMFell", File = GP_ITA   },
-  IMFell_GPSC   = { Load = false, Name = "IM Fell Great Primer SC",     Fam = "IMFell", File = GPSC_REG },
-  Lime_Reg      = { Load = false, Name = "Limelight",                   Fam = "Lime",   File = REG      },
-  Milton_Reg    = { Load = false, Name = "Miltonian",                   Fam = "Milton", File = REG      },
-  MrsStD_Reg    = { Load = true,  Name = "Mrs Saint Delafield",         Fam = "MrsStD", File = REG      },
-  MtXmas_Bold   = { Load = false, Name = "Mountains of Christmas Bold", Fam = "MtXmas", File = BOLD     },
-  Nosif_Reg     = { Load = false, Name = "Nosifer",                     Fam = "Nosif",  File = REG      },
-  Oswald_Reg    = { Load = false, Name = "Oswald",                      Fam = "Oswald", File = REG      },
-  Poppi_BlkIta  = { Load = false, Name = "Poppins Black Italic",        Fam = "Poppi",  File = BLK_ITA  },
-  Poppi_Reg     = { Load = false, Name = "Poppins",                     Fam = "Poppi",  File = REG      },
-  Press_Reg     = { Load = false, Name = "Press Start 2P",              Fam = "Press",  File = REG      },
-  Share_Reg     = { Load = true,  Name = "Share Tech Mono",             Fam = "Share",  File = REG      },
-  Source_Lig    = { Load = false, Name = "Source Code Pro Light",       Fam = "Source", File = LITE     },
-  Source_Reg    = { Load = true,  Name = "Source Code Pro",             Fam = "Source", File = REG      },
-  Synco_Reg     = { Load = false, Name = "Syncopate",                   Fam = "Synco",  File = REG      },
-  Syne_Reg      = { Load = false, Name = "Syne Mono",                   Fam = "Syne",   File = REG      },
-  Tanger_Bold   = { Load = false, Name = "Tangerine Bold",              Fam = "Tanger", File = BOLD     },
-  Uncial_Reg    = { Load = false, Name = "Uncial Antiqua",              Fam = "Uncial", File = REG      },
- };
 
 local function loadOurFonts()
 
@@ -2326,7 +2815,7 @@ local methods = {
             end;
 
             self.editbox:SetFont(fontFile, PreviewSize or 30);
-            self:SetHeight(math.max(60, PreviewSize + 15));
+            self:SetHeight(math.max(65, PreviewSize + 15));
         end,
 
         ["DisableButton"] = function(self, disabled) self.disablebutton = disabled if disabled then HideButton(self) end end,
