@@ -1,6 +1,6 @@
 ## Interface: 90002
-## Version: 9.0.2.1 alpha 6
-## Title: rp|cff33ddffFonts|r
+## Version: 9.0.2.1 alpha 8
+## Title: rp|cff997c27Fonts|r
 ## Author: Oraibi-MoonGuard
 ## Notes: LibSharedMedia-compatible fonts for roleplayers, plus an LSM font manager!
 ## OptionalDeps: RP_Tags
