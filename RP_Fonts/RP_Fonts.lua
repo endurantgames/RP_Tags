@@ -17,6 +17,7 @@ local rpFontsDesc       = GetAddOnMetadata(addOnName, "Notes");
 local rpFontsVersion    = GetAddOnMetadata(addOnName, "Version");
 local baseFontDir       = "Interface\\AddOns\\" .. addOnName .. "\\Fonts\\";
 local newFontsFound     = 0;
+local failsafeThreshold = 50;
 
 local rpFontsFrame = CreateFrame("Frame");
       rpFontsFrame:RegisterEvent("ADDON_LOADED");
@@ -55,7 +56,7 @@ with Reserved Font Names "Creepster"
 Copyright (c) 2010-2012, Alejandro Inler (alejandroinler@gmail.com), with Reserved Font Name 'Elsie'
 
 |cff00ffffFlamenco|r
-Copyright (c) 2011 by LatinoType Limitada (luciano@latinotype.com), 
+Copyright (c) 2011 by LatinoType Limitada (luciano@latinotype.com),
 
 |cff00ffffIM_Fell Types|r
 Copyright (c) 2010, Igino Marini (mail@iginomarini.com)
@@ -116,7 +117,7 @@ with others.
 
 The OFL allows the licensed fonts to be used, studied, modified and
 redistributed freely as long as they are not sold by themselves. The
-fonts, including any derivative works, can be bundled, embedded, 
+fonts, including any derivative works, can be bundled, embedded,
 redistributed and/or sold with any software provided that any reserved
 names are not used by derivative works. The fonts and derivatives,
 however, cannot be released under any other type of license. The
@@ -192,7 +193,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 ]===];
 
 -- variables
-local options, db, Fonts, keys, SearchTerms, SearchResults, Browsing, Stats, PreviewText, PreviewSize, Filter, SandboxText, SandboxFont, ViewFontList, ViewLicense;
+local options, db, Fonts, keys, SearchTerms, SearchResults, Browsing,
+      Stats, PreviewText, PreviewSize, Filter, SandboxText, SandboxFont,
+      ViewFontList, ViewLicense, Initialized, HashTable;
 
 -- constants
 local col        = { 0.2, 1.5, 0.9, 0.5 };
@@ -223,7 +226,7 @@ local function     cyan(str, r) return colorize(             "|cff00ffff", str, 
 
 local function notify(...) print("[" .. rpFontsTitle .. "]", ...) end;
 
--- filters 
+-- filters
 local filters    =
 { [ "none"     ] =           "Filter List..." ,
   [ "active"   ] =   yellow( "Active Fonts"   ),
@@ -238,19 +241,19 @@ local filters    =
 
 local filter_desc =
 { [ "none"     ] = "",
-  [ "active"   ] = "Active fonts are those which are loaded into LibSharedMedia "           .. 
+  [ "active"   ] = "Active fonts are those which are loaded into LibSharedMedia "           ..
                    "and which you can use in any addon that uses LibSharedMedia."            ,
-  [ "inactive" ] = "Inactive fonts are fonts which could be loaded, but at some point you " .. 
+  [ "inactive" ] = "Inactive fonts are fonts which could be loaded, but at some point you " ..
                    "chose to disable them. You can re-enable them at any time."              ,
-  [ "disabled" ] = "A disabled font was originally registered with LibSharedMedia by an "   .. 
+  [ "disabled" ] = "A disabled font was originally registered with LibSharedMedia by an "   ..
                    "addon that you still have installed, but is currently disabled."         ,
-  [ "missing"  ] = "A missing font was registered with LibSharedMedia by another addon, "   .. 
+  [ "missing"  ] = "A missing font was registered with LibSharedMedia by another addon, "   ..
                    "but you don't have that addon installed, so the font isn't available."   ,
-  [ "new"      ] = "New fonts are fonts which are newly registered with LibSharedMedia "    .. 
+  [ "new"      ] = "New fonts are fonts which are newly registered with LibSharedMedia "    ..
                    "since the last time you logged on."                                      ,
   [ "builtin"  ] = "Builtin fonts are supplied by Blizzard and registered automatically "   ..
                    "by LibSharedMedia."                                                      ,
-  [ "verified" ] = "A verified font has been automatically tested by checked by "           .. 
+  [ "verified" ] = "A verified font has been automatically tested by checked by "           ..
                    rpFontsTitle .. " to see if it can be used successfully."                 ,
   [ "unverified"] = "An unverified font is one that was tested by " .. rpFontsTitle         ..
                     " and could not be successfully applied in-game."                        ,
@@ -261,9 +264,9 @@ local filter_order = { "none", "new", "active", "inactive", "disabled", "missing
 -- addons and files ------------------------------------------------------------------------------------------------------------------------
 --
 -- database ------------------------------------------------------------------------------------------------------------------------------
-local function clearCounts() 
+local function clearCounts()
   Stats =
-  { total    = 0, new      = 0, missing = 0, active  = 0,
+  { total          = 0, new      = 0, missing = 0, active  = 0,
     inactive       = 0, disabled = 0, loaded  = 0, builtin = 0,
     builtin_active = 0, new_active = 0, unverified = 0,
     now            = Stats.now, -- preserve original value
@@ -298,9 +301,9 @@ local fixedStrip = rpFontsFrame:CreateFontString()
 testStrip.fixed = fixedStrip;
 testStrip.fixed.sampleText = TEST_STRIP:gsub("%w", "X");
 
-function testStrip.Reset(self) 
-  self:SetFont(self.file, self.size); 
-  self:SetText(self.sampleText) 
+function testStrip.Reset(self)
+  self:SetFont(self.file, self.size);
+  self:SetText(self.sampleText)
   self.fixed:SetFont(self.file, self.size)
   self.fixed:SetText(self.fixed.sampleText);
 end;
@@ -310,14 +313,20 @@ function testStrip.TestFile(self, file)
   self.fixed:SetFont( file:GetName(), self.size);
   local stripWidth = self:GetUnboundedStringWidth();
   local fixedWidth = self.fixed:GetUnboundedStringWidth();
-  -- return self:GetUnboundedStringWidth(), self.baseline, self:GetUnboundedStringWidth() - self.baseline, 
-  return stripWidth, self.baseline, stripWidth - self.baseline, stripWidth - fixedWith;
+  -- return self:GetUnboundedStringWidth(), self.baseline, self:GetUnboundedStringWidth() - self.baseline,
+  return stripWidth, self.baseline, stripWidth - self.baseline, stripWidth - fixedWidth;
 end;
 
 testStrip:Reset();
 testStrip.baseline = testStrip:GetUnboundedStringWidth()
 
-local function recount() clearCounts(); for _, font in pairs(Fonts) do font:Count() end; end;
+local countRecount = 0
+local function recount()
+  clearCounts();
+  countRecount = countRecount + 1;
+  notify(green("countRecount"), green(countRecount), grey("ah ah ah"));
+  for _, font in pairs(Fonts) do font:Count() end;
+end;
 
 -- options -----------------------------------------------------------------------------------------------------------------------
 --
@@ -332,19 +341,18 @@ local function newline(order) return { type = "description", name = "", width = 
 
 -- object methods
 local objectTypes = { "font", "addon", "file" };
-local flags  = 
+local flags  =
 { font  = { "active", "loaded",   "inactive", "disabled", "new", "missing", "builtin", "verified", "unverified", "deleted" },
-  addon = { "loaded", "disabled", "missing",  "builtin", "initialized" }, 
-  file  = { "loaded", "disabled", "missing", "verified", "unverified" } 
+  addon = { "loaded", "disabled", "missing",  "builtin", "initialized" },
+  file  = { "loaded", "disabled", "missing", "verified", "unverified" }
 };
 
 --[[ Flag definitions:
-            
+
      "active"   = not deactivated by the user; implies not("inactive"), not("missing")
      "inactive" = deactivated by the user; implies not("active")
      "loaded"   = the addon associated with the font file has been loaded into WoW
      "disabled" = is part of an addon that exists but is disabled; implies not("missing")
-     "registered" = the font has been registered with LSM
      "new"      = added since the last login; implies not("missing")
      "missing"  = is part of an addon that is no longer installed; implies, not("disabled"), not("new")
      "builtin"  = a built-in font; implies not("missing")
@@ -354,27 +362,26 @@ local flags  =
 
 --]]
 
-
 -- this one's too big/complex to make a tidy entry on the methods table
-    
+
 local function getOptionsTableArgs(self)
 
-  local function filter() 
-    local condition1 = self:HasFlag("deleted");
-    local condition2 = Filter ~= "none" and not self:HasFlag(Filter);
-    local condition3 = SearchTerms and not self:GetName():lower():match(SearchTerms:lower())
-    return condition1 or condition2 or condition3;
+  local function filter()
+    local  condition1 = self:HasFlag("deleted");
+    return self.db.flags.deleted
+        or Filter ~= "none" and not self.db.flags[Filter]
+        or SearchTerms and not self.match[SearchTerms]
   end;
 
   local function browseFont()
     Browsing = self;
     db.Browsing = self:GetName();
-    AceConfigDialog:SelectGroup(addOnName, "fontBrowser") 
+    AceConfigDialog:SelectGroup(addOnName, "fontBrowser")
   end
 
   local function disableToggle()
     local _, status = self:GetStatus()
-    return (status == "missing") 
+    return (status == "missing")
         or (status == "disabled" and not db.Options.LoadDisabled)
         or (LibSharedMedia:GetDefault("font") == self:GetName())
         or (LibSharedMedia:GetGlobal("font")  == self:GetName())
@@ -382,25 +389,38 @@ local function getOptionsTableArgs(self)
   end;
 
   local function changeRegistrationStatus(info, value)
-    self:SetFlag("active", value);
+    print("change registration value", value);
+    self:Uncount();
+    self:SetFlag("active",       value);
     self:SetFlag("inactive", not value);
-    self:SetRegistrationStatus(value);
+    self:DoRegistration(  value);
+    self:Count();
   end;
 
   local function getFancyFontName()
     local  name = self:ColorName();
-    if     db.Settings.VerifyFonts and self:HasFlag("builtin")
-    then   name = BLUE_BALL .. " " .. name
-    elseif db.Settings.VerifyFonts and self:HasFlag("verified")
-    then   name = ORANGE_BALL .. " " .. name
-    elseif db.Settings.VerifyFonts
-    then   name = PURPLE_BALL .. " " .. name
-    end;
-    return name;
+    return (db.Settings.VerifyFonts
+            and
+            ( (self.db.flags.builtin and BLUE_BALL
+                 or
+                 self.db.flags.verified and ORANGE_BALL
+                 or
+                 PURPLE_BALL) .. " ")
+            or " ") .. name
+
+    -- if     db.Settings.VerifyFonts and self:HasFlag("builtin")
+    -- then   name = BLUE_BALL .. " " .. name
+    -- elseif db.Settings.VerifyFonts and self:HasFlag("verified")
+    -- then   name = ORANGE_BALL .. " " .. name
+    -- elseif db.Settings.VerifyFonts
+    -- then   name = PURPLE_BALL .. " " .. name
+    -- end;
+    -- return name;
+
   end;
   local name = self:GetName();
 
-  local args = 
+  local args =
   { [name .. "_Active"]  =
       { type             = "toggle",
         name             = "",
@@ -452,7 +472,7 @@ end;
 
 
 local methods =
-{ 
+{
   ["WhatAmI"]   = function(self) return tContains(objectTypes, self.what) and self.what or nil end,
   ["GetData"]   = function(self) return self.db end,
   ["GetName"]   = function(self) return self.name end,
@@ -460,11 +480,11 @@ local methods =
   ["GetFlag"]   = function(self, flag) if tContains(flags[ self:WhatAmI()], flag) then return self.db.flags[flag]; end; end,
   ["ClearFlag"] = function(self, flag) if tContains(flags[ self:WhatAmI()], flag) then self.db.flags[flag] = false; end; end,
   ["ClearAllFlags"] = function(self) for _, flag in ipairs(objectTypes[self.what]) do  self.db.flags[flag] = nil; end; end,
-  ["GetFont"] = function(self) return self.font; end, 
-  ["SetFlag"] = 
-    function(self, flag, value) 
+  ["GetFont"] = function(self) return self.font; end,
+  ["SetFlag"] =
+    function(self, flag, value)
       if value == nil then value = true end;
-      if   flag and tContains(flags[ self:WhatAmI()], flag) 
+      if   flag and tContains(flags[ self:WhatAmI()], flag)
       then self.db.flags[flag] = value;
       end;
     end,
@@ -483,9 +503,9 @@ local methods =
           or name;
     end,
   addon =  -- methods for addons only
-    { 
+    {
       ["GetTitle"] = function(self) return GetAddOnMetadata(self:GetName(), "Title"); end,
-      ["IsLoaded"] = 
+      ["IsLoaded"] =
         function(self)
           if self.name == BUILTIN then return true end;
           local _, _, _, isLoadable, reason = GetAddOnInfo(self.name);
@@ -503,23 +523,23 @@ local methods =
         end,
       ["IsLoaded"] = function(self) return self.addon:IsLoaded(); end,
       ["GetAddonFromPath"] =
-        function(self) 
-          return self and self.addon and self.addon.name 
-              or self.name:match("^[iI]nterface\\[aA]dd[oO]ns\\(.-)\\") 
-              or BUILTIN; 
+        function(self)
+          return self and self.addon and self.addon.name
+              or self.name:match("^[iI]nterface\\[aA]dd[oO]ns\\(.-)\\")
+              or BUILTIN;
         end,
     },
- 
+
   font = -- methods for fonts only
-    { 
+    {
       ["Verify"] =
         function(self)
           local verified = false;
           for fileName, file in pairs(self:GetList("file"))
           do  local result, baseline, diff = file:Verify();
               if math.abs(diff) > (db.Settings.VerifyTolerance or 0.05) or self:HasFlag("builtin")
-              then file:SetFlag("verified"); 
-                   verified = true 
+              then file:SetFlag("verified");
+                   verified = true
               else file:SetFlag("unverified");
               end;
           end;
@@ -536,8 +556,8 @@ local methods =
           end
         end,
 
-      ["IsLoaded"] = function(self) return self:GetFlag("loaded") end, 
-      ["NewAddon"] = 
+      ["IsLoaded"] = function(self) return self:GetFlag("loaded") end,
+      ["NewAddon"] =
         function(self, name)
           local addon = self:New("addon", name);
           self:SetFlag("builtin", name == BUILTIN);
@@ -546,11 +566,11 @@ local methods =
 
       ["GetPrimaryFile"] =
         function(self)
-          for name, file in pairs( self:GetFiles() ) 
+          for name, file in pairs( self:GetFiles() )
           do  if file:HasFlag("loaded") then return file end;
           end;
           return nil;
-        end, 
+        end,
       ["NewFile"] = function(self, name) return self:New("file", name); end,
       ["HasItem"] = "GetItem",
       ["GetItem"] = function(self, objType, name) return self[objType] and self[objType][name] or nil end,
@@ -559,85 +579,90 @@ local methods =
       ["SetTimestamp"] = function(self, timeStamp) self.db.stamp[timeStamp] = Stats.now end, -- note: not the current time()
       ["GetTimestamp"] = function(self, timeStamp) return self.db.stamp[timeStamp]; end,
 
-      ["GetList"] = 
-        function(self, objType) 
-          if   type(self[objType]) == "table" 
-          then return self[objType] 
-          else return nil; 
-          end; 
+      ["GetList"] =
+        function(self, objType)
+          if   type(self[objType]) == "table"
+          then return self[objType]
+          else return nil;
+          end;
         end,
       ["GetAddons"] = function(self) return self:GetList("addon") end,
       ["GetFiles"] = function(self) return self:GetList("file") end,
       ["GetAddon"] = function (self, name) return self:GetItem("addon", name) end,
       ["GetFile"]=  function(self, name) return self:GetItem("file",  name) end,
 
-      ["Register"] = 
+      ["Register"] =
         function(self)
-          local file, _ = self:GetPrimaryFile();
+          local file = self:GetPrimaryFile();
+          print("registering", self:GetName());
           if file then LibSharedMedia:Register("font", self:GetName(), file:GetName()); end;
           self.primaryFile = file;
-          self:SetFlag("registered"); 
         end,
 
       ["Deregister"] =
         function(self)
-          LibSharedMedia.MediaTable.font[self:GetName()] = nil 
-          self:ClearFlag("registered"); 
+          print("deregistering", self:GetName());
+          LibSharedMedia.MediaTable.font[self:GetName()] = nil
         end,
       ["GetStatus"] =
-        function(self)              -- returns true/false if it should be shown, and the primary status
+        function(self) -- returns true/false if it should be shown, and the primary status
 
           if     self:HasFlag( "missing"  ) then return false, "missing"
           elseif self:HasFlag( "builtin"  ) then return true,  "builtin"
           elseif self:HasFlag( "inactive" ) then return false, "inactive"
-          elseif self:HasFlag( "disabled" ) and  not db.Settings.LoadDisabled 
+          elseif self:HasFlag( "disabled" ) and  not db.Settings.LoadDisabled
                                             then return false, "disabled"
           elseif self:HasFlag( "new"      ) then return true,  "new"
           elseif self:HasFlag( "active"   ) then return true,  "active"
           elseif self:HasFlag( "loaded"   ) then return true,  "loaded"
           else                                   return false, "unknown"
-          end
+           end
+
         end,
 
-      ["SetRegistrationStatus"] =
+      ["DoRegistration"] =
         function(self, status)
-          status = (status ~= nil) and status or self:GetStatus();
+          self:Uncount();
+          if status == nil then status, _ = self:GetStatus() end;
           if status then self:Register() else self:Deregister() end;
-          recount();
+          self:Count();
         end,
 
       ["Count"] = -- this the font walking up and saying "count me! count me!"
-        function(self)
-          -- two helpers
-          local function incr(category) Stats[category] = Stats[category] + 1 end;
-          local function have(category) return self:HasFlag(category) end;
-          
-          if self:HasFlag("deleted") then self:ClearAllFlags(); return end;
-          if self:GetTimestamp("FirstSeen") == Stats.now then self:SetFlag("new") else self:ClearFlag("new"); end;
+        function(self, uncount)
+          -- helpers
+          local function incr(cat) Stats[cat] = Stats[cat] + (uncount and -1 or 1) end;
 
-          if have( "unverified" )                           then incr( "unverified"     ) end;
-          if have( "active"     )                           then incr( "active"         ) end;
-          if have( "builtin"    )                           then incr( "builtin"        ) end;
-          if have( "inactive"   ) and not have( "missing" ) then incr( "inactive"       ) end;
-          if have( "missing"    )                           then incr( "missing"        ) end;
-          if have( "new"        )                           then incr( "new"            ) end;
-          if have( "new"        ) and     have( "active"  ) then incr( "new_active"     ) end;
-          if have( "builtin"    ) and     have( "active"  ) then incr( "builtin_active" ) end;
-
+          if self.db.flags.unverified then incr("unverified") end;
+          if self.db.flags.active     then incr("active")     end;
+          if self.db.flags.builtin    
+            then incr("builtin")
+                 if self.db.flags.active then incr("builtin_active") end
+            end;
+          if self.db.flags.unverified then incr("unverified") end;
+          if self.db.flags.verified   then incr("verified") end;
+          if self.db.flags.inactive and not self.db.flags.missing 
+            then incr("inactive") end;
+          if self.db.flags.missing    then incr("missing") end;
+          if self.db.flags.new        
+            then incr("new")
+              if self.db.flags.active then incr("new_active") end;
+          end;
           incr("total");
         end,
 
+      ["Uncount"] = function(self) self:Count(true) end,
       ["GetOptionsTableArgs"] = getOptionsTableArgs,
       ["SetFlagsFromAddons"] =
         function(self)
           local any = {};
 
           for name, addon in pairs(self:GetAddons())
-          do  
-            for  _, flag in ipairs(flags.addon) 
+          do
+            for  _, flag in ipairs(flags.addon)
             do   if addon:HasFlag(flag) then any[flag] = true; end; -- make a composite value of all the flags
             end;  -- for _, flag
-      
+
             if     any.builtin  then self:SetFlag("builtin", true  ); end;
 
             if     any.loaded   then self:SetFlag("loaded",   true );
@@ -648,12 +673,16 @@ local methods =
                                      self:SetFlag("missing",  false);
             elseif any.missing  then self:SetFlag("loaded",   false);
                                      self:SetFlag("disabled", false);
-                                     self:SetFlag("missing",  false);
+                                     self:SetFlag("missing",  true);
             end;
-      
-            if not self:GetFlag("active") and not self:GetFlag("inactive") then self:SetFlag("active") end;
-          
-            if not self:GetTimestamp("FirstSeen") then self:SetTimestamp("FirstSeen"); end;
+
+            if not self:GetFlag("active") and not self:GetFlag("inactive")
+            then   self:SetFlag("active")
+            end;
+
+            if self:GetFlag("active") and self:GetFlag("inactive") then self:ClearFlag("active") end;
+
+            _ = self:GetTimestamp("FirstSeen") or self:SetTimestamp("FirstSeen");
             self:SetTimestamp("LastSeen");
           end; -- for name, addon
         end, -- method
@@ -661,8 +690,8 @@ local methods =
       ["FormatListForDisplay"] =
         function(self, what, delim)
           local text = {};
-          for _, item in pairs(self:GetList(what)) 
-          do  table.insert(text, item:ColorName()); 
+          for _, item in pairs(self:GetList(what))
+          do  table.insert(text, item:ColorName());
           end;
           return table.concat(text, delim or ", ");
         end,
@@ -670,24 +699,24 @@ local methods =
 };
 
 
-local function attachMethods(object, objType) 
+local function attachMethods(object, objType)
   if tContains(objectTypes, objType) and not object.initialized
   then object.what = objType
-    for funcName, func in pairs(methods) 
+    for funcName, func in pairs(methods)
     do  if type(func) == "function"
-        then object[funcName] = func; 
+        then object[funcName] = func;
         elseif type(func) == "string" and methods[func] and type(methods[func]) == "function"
         then object[funcName] = methods[func]
-        end; 
+        end;
     end;
 
     if type(methods[objType]) == "table"
-    then for funcName, func in pairs(methods[objType]) 
+    then for funcName, func in pairs(methods[objType])
          do  if     type(func) == "function"
-             then   object[funcName] = func; 
+             then   object[funcName] = func;
              elseif type(func) == "string" and methods[objType][func] and type(methods[objType][func]) == "function"
              then   object[funcName] = methods[objType][func]
-             end; 
+             end;
          end;
     end;
     object.initialized = true;
@@ -697,7 +726,7 @@ local function attachMethods(object, objType)
   end;
 end;
 
-methods["New"] = 
+methods["New"] =
   function(self, what, name)
     local item = self[what][name] or {};
     item.name = name;
@@ -732,24 +761,25 @@ local function makeFontRecord(fontName, fontFile)
 
   Fonts[fontName] = font;
 
-  if   fontFile 
+  if   fontFile
   then local file = font:NewFile(fontFile);
        return font, file, font:NewAddon( file:GetAddonFromPath() );
   else return font;
   end;
 end;
-  
+
 -- -------------------------------------------------------------------------------------------------------------------------------
 local function restoreSavedData()
   for fontName, info in pairs(db.Fonts)
-  do  if    info and info.flags and info.flags.deleted
-      then  db.Fonts[fontName] = nil;
-      else 
+  do  if info and info.flags and info.flags.deleted then db.Fonts[fontName] = nil;
+      else
         local font = makeFontRecord(fontName);
         if   info.file
         then for fileName, fileData in pairs(info.file)
              do  local file  = font:NewFile(fileName)
                  local addon = font:NewAddon( file:GetAddonFromPath() );
+                       file:SetFlag("loaded", addon:IsLoaded());
+                       addon:SetFlag("loaded", addon:IsLoaded());
              end;
         end;
       end;
@@ -768,18 +798,18 @@ StaticPopupDialogs[POPUP] =
   timeout = 60,
   whileDead = 1,
   OnCancel = function(self) notify("Purge cancelled.") end,
-  OnShow   = 
-    function(self) 
-      self.text:SetJustifyH("LEFT"); 
-      self.text:SetSpacing(3); 
+  OnShow   =
+    function(self)
+      self.text:SetJustifyH("LEFT");
+      self.text:SetSpacing(3);
     end,
 };
 
 local function scaryWarningMessage(fontState)
-  return 
-    "This will permanently delete information on " .. fontState .. " from " .. 
+  return
+    "This will permanently delete information on " .. fontState .. " from " ..
     rpFontsTitle .. "'s records. It can't be undone. " ..
-    "Your font files themselves won't be harmed." .. 
+    "Your font files themselves won't be harmed." ..
     "\n\nIf you load addons that register those fonts with LibSharedMedia, " ..
     rpFontsTitle .. " will create new records for them, as it will no longer " ..
     "have stored records telling it to deactivate or activate the fonts." ..
@@ -790,7 +820,7 @@ local function doPurge(flag)
 
   local num = 0;
   for name, font in pairs(Fonts)
-  do  if flag == "all" or font:HasFlag(flag) 
+  do  if flag == "all" or font:HasFlag(flag)
       then font:SetFlag("deleted")
       num = num + 1; end;
   end;
@@ -806,45 +836,45 @@ end;
 local function purgeMissing()
   StaticPopupDialogs[POPUP].text = scaryWarningMessage(red("missing fonts"));
   StaticPopupDialogs[POPUP].OnAccept = function() doPurge("missing") end;
-  StaticPopup_Show(POPUP);  
+  StaticPopup_Show(POPUP);
 end;
 
 local function purgeDisabled()
   StaticPopupDialogs[POPUP].text = scaryWarningMessage(grey("disabled fonts"));
   StaticPopupDialogs[POPUP].OnAccept = function() doPurge("disabled") end;
-  StaticPopup_Show(POPUP);  
+  StaticPopup_Show(POPUP);
 end;
 
 local function purgeEverything()
   StaticPopupDialogs[POPUP].text = scaryWarningMessage(yellow("all fonts"));
   StaticPopupDialogs[POPUP].OnAccept = function() doPurge("all") end;
-  StaticPopup_Show(POPUP);  
+  StaticPopup_Show(POPUP);
 end;
 
 --[[
 local function purgeBrowsingFont()
   StaticPopupDialogs[POPUP].text = scaryWarningMessage(Browsing:ColorName());
-  StaticPopupDialogs[POPUP].OnAccept = 
-    function() 
+  StaticPopupDialogs[POPUP].OnAccept =
+    function()
       Browsing:SetFlag("deleted");
       Browsing = Fonts[ LibSharedMedia:GetDefault("font") ];
     end;
-  StaticPopup_Show(POPUP);  
+  StaticPopup_Show(POPUP);
 end;
 --]]
 
 local function generateHashTable()
   local list = {};
-  for fontName, font in pairs(Fonts) 
-  do list[fontName] = font:ColorName(); end;
+  for fontName, font in pairs(Fonts) do list[fontName] = font:ColorName() end;
+  HashTable = list;
   return list
 end;
 
 -- --------------------------------------------------------------------------------------------------------------------------------------
 local function applyLoadDisabled(info, value)
   db.Settings.LoadDisabled = value;
-  for _, font in pairs(Fonts) 
-  do if font:HasFlag("disabled") then font:SetRegistrationStatus() end; 
+  for _, font in pairs(Fonts)
+  do if font:HasFlag("disabled") then font:DoRegistration() end;
   end;
 end;
 
@@ -855,18 +885,18 @@ local function buildFontBrowser()
   local fontBrowser       =
   { name                  = "Font Browser",
     type                  = "group",
-    order                 = 2000,
+    order                 = 1000,
 
     args                  =
     {
       selector            =
       { type              = "select",
         width             = 2,
-        name              = function() return Browsing and Browsing:GetName() or db.Browsing or "" end,
+        name              = "Font Selector", -- function() return Browsing and Browsing:GetName() or db.Browsing or "" end,
         order             = 2100,
         values            = generateHashTable,
         get               = function() return Browsing and Browsing:GetName() or db.Browsing or "Morpheus" end,
-        set               = function(info, value) Browsing = Fonts[value] end,
+        set               = function(info, value) db.Browsing = Fonts[value]; Browsing = Fonts[value] end,
       },
 
       spacer              = { type = "description", width = 0.1, name = " ", order = 2101, },
@@ -900,7 +930,6 @@ local function buildFontBrowser()
             name          = "Preview Size",
             get           = function() return PreviewSize end,
             set           = function(info, value) PreviewSize = value end,
-            desc          = "Set the size of the font preview text.",
           },
           preview         =
           { type          = "input",
@@ -927,7 +956,7 @@ local function buildFontBrowser()
             hidden        = function() return Browsing and not Browsing:HasFlag("active") end,
             name          = "Set Inactive",
             width         = 0.75,
-            func          = function() Browsing:SetRegistrationStatus(false) end,
+            func          = function() Browsing:DoRegistration(false) end,
             disabled      = function() return Browsing and LibSharedMedia:GetDefault("font") == Browsing:GetName() end,
           },
           active          =
@@ -936,7 +965,7 @@ local function buildFontBrowser()
             hidden        = function() return Browsing and not Browsing:HasFlag("inactive") end,
             name          = "Set Active",
             width         = 0.75,
-            func          = function() Browsing:SetRegistrationStatus(true) end,
+            func          = function() Browsing:DoRegistration(true) end,
           },
           --[[
           deleteRecord    =
@@ -995,7 +1024,7 @@ local function buildFontBrowser()
             fontSize      = "small",
           },
           -- newline2        = newline(2503),
-         
+
           firstSeenLeft   =
           { type          = "description",
             name          = yellow("Date Installed"),
@@ -1005,13 +1034,13 @@ local function buildFontBrowser()
             hidden        = function() return Browsing and not(Browsing:GetTimestamp("FirstSeen"))  end,
           },
 
-          firstSeenRight  = 
+          firstSeenRight  =
           { type          = "description",
-            name          = function() 
-                              return 
-                                Browsing 
+            name          = function()
+                              return
+                                Browsing
                                 and Browsing:GetTimestamp("FirstSeen")
-                                and white(date( "%c", Browsing:GetTimestamp("FirstSeen"))) or "" 
+                                and white(date( "%c", Browsing:GetTimestamp("FirstSeen"))) or ""
                               end,
             order         = 2551,
             width         = 2,
@@ -1028,13 +1057,13 @@ local function buildFontBrowser()
             hidden        = function() return Browsing and not(Browsing:GetTimestamp("LastSeen")) end,
           },
 
-          lastSeenRight  = 
+          lastSeenRight  =
           { type          = "description",
-            name          = function() 
-                              return 
-                                Browsing 
+            name          = function()
+                              return
+                                Browsing
                                 and Browsing:GetTimestamp("LastSeen")
-                                and white(date( "%c", Browsing:GetTimestamp("LastSeen"))) or "" 
+                                and white(date( "%c", Browsing:GetTimestamp("LastSeen"))) or ""
                             end,
             order         = 2581,
             width         = 2,
@@ -1054,20 +1083,26 @@ end;
 -- font list -----------------------------------------------------------------------------------------------------------------------------
 
 local function buildDataTable()
+  local function showFontList()
+    return (db.Settings.OverrideFailsafe and db.Settings.ShowHugeList)
+        or (db.Settings.OverrideFailsafe and Stats.total <= (db.Settings.FailsafeThreshold or failsafeThreshold))
+        or ((not db.SettingsOverrideThreshold) and Stats.total <= failsafeThreshold);
+  end;
 
-  local function showCurrentFilter() 
-    if not Filter or Filter == "none" 
-    then return "All Fonts" 
-    else return filters[Filter] 
-    end 
+  local function showCurrentFilter()
+    if not Filter or Filter == "none"
+    then return "All Fonts"
+    else return filters[Filter]
+    end
   end;
 
   local dataTable      =
   { name               = "Font List",
     type               = "group",
-    order              = 700,
-      args           =
-    { 
+    order              = 1900,
+    hidden             = function() return not showFontList() end,
+    args           =
+    {
       shadowHeadline     =
       { type = "description",
         name = " ",
@@ -1076,7 +1111,7 @@ local function buildDataTable()
         fontSize = "small",
         hidden = function() return db.Settings.DataTools end,
       },
-      
+
       headline           =
       { type             = "description",
         name             = showCurrentFilter,
@@ -1085,7 +1120,7 @@ local function buildDataTable()
         fontSize         = "large",
         hidden           = function() return not db.Settings.DataTools end,
       },
-  
+
       filters            =
       { type             = "select",
         values           = filters,
@@ -1112,8 +1147,8 @@ local function buildDataTable()
         width            = col[4],
         order            = 908,
         get              = function() return db.Settings.DataTools end,
-        set              = function(info, value) 
-                             db.Settings.DataTools = value 
+        set              = function(info, value)
+                             db.Settings.DataTools = value
                              if not value then Filter = "none"; SearchTerms = nil; SearchResults = nil; end;
                            end,
         desc             = "You can turn off or on tools for working with the table here.",
@@ -1126,7 +1161,7 @@ local function buildDataTable()
         width            = col[1] + col[2] + col[3],
         hidden           = function() return not db.Settings.DataTools end,
       },
-      filtersSpacer = 
+      filtersSpacer =
       { type = "description",
         fontSize = "large",
         name = "\n\n\n",
@@ -1155,8 +1190,8 @@ local function buildDataTable()
         name = "",
         width = col[1] + col[2] + col[3] - 0.5,
         get = function() return SearchTerms end,
-        set = function(info, value) 
-                SearchTerms = value 
+        set = function(info, value)
+                SearchTerms = value
                 if   SearchTerms
                 then local count = 0;
                      for _, font in pairs(Fonts)
@@ -1189,13 +1224,13 @@ local function buildDataTable()
         disabled = function() return not SearchTerms end,
         func = function() SearchTerms = nil; SearchResults = nil; end,
       },
-      columns = 
-      { 
+      columns =
+      {
         type = "group",
         inline = true,
         name = function() return SearchResults and (SearchResults .. " |4match:matches;") or " " end,
         order = 950,
-        args = 
+        args =
         {
           columnActive       =
           { type             = "description",
@@ -1203,7 +1238,7 @@ local function buildDataTable()
             width            = col[1],
             order            = 1001,
           },
-      
+
           columnName         =
           { type             = "description",
             name             = "|cffffff00Font Name|r",
@@ -1211,7 +1246,7 @@ local function buildDataTable()
             order            = 1002,
             fontSize         = "medium",
           },
-      
+
           columnAddOn        =
           { type             = "description",
             name             = "|cffffff00Source AddOn(s)|r",
@@ -1233,8 +1268,9 @@ local function buildDataTable()
     },
   };
 
-  if   Fonts 
-  then for fontName, font in pairs(Fonts) 
+  if   Fonts
+  then
+       for fontName, font in pairs(Fonts)
        do  local font_args = font:GetOptionsTableArgs()
            for k, v in pairs(font_args) do dataTable.args.columns.args[k] = v end;
        end;
@@ -1252,7 +1288,47 @@ local function buildDataTable()
   end;
 
   options.args.dataTable = dataTable;
-
+  options.args.dataTableHidden =
+  { name               = "Font List",
+    type               = "group",
+    order              = 1901,
+    hidden = function() return showFontList() end ,
+    args           =
+    {
+      whereIsTheTable =
+      { type = "description",
+        name = "Where's the Font List?",
+        order = 710,
+        fontSize = "large",
+        width = "full",
+      },
+      tableIsHidden =
+      { type = "description",
+        name = "The font list is currently hidden because you have more than " ..
+               (db.Settings.FailsafeThreshold or failsafeThreshold) ..
+               " fonts registered. \n\nIn order to prevent possible slowdown whenever you open " ..
+               "the options panel, " .. rpFontsTitle .. " isn't showing the font list.\n\n" ..
+               "You can disable this behavior in settings.",
+        order = 720,
+        fontSize = "medium",
+        width = col[1] + col[2] + col[3],
+      },
+      hiddenNewline = newline(725),
+      spacer =
+      { type = "description",
+        width = col[1] + col[2] - 0.5,
+        name = " ",
+        order = 727,
+      },
+      goToOptions =
+      { type = "execute",
+        name = "Settings",
+        order = 730,
+        width = col[3],
+        func = function() AceConfigDialog:SelectGroup(addOnName, "settings") end,
+      },
+    },
+  };
 end;
 
 
@@ -1332,13 +1408,10 @@ local function buildLibSharedMediaPanel()
             name              = "Test Widget",
             order             = 8200,
             width             = 2,
-            get               = function() 
-                                  return SandboxFont and SandboxFont:GetName() 
-                                      or LibSharedMedia:GetDefault("font") 
-                                end,
-            set               = function(info, value) SandboxFont = Fonts[value] end,
-            desc              = "This doesn't really do anything, but it's here in case you " ..  
-                                "need to confirm whether fonts were added to or removed from " ..  
+            get               = function() return SandboxFont or LibSharedMedia:GetDefault("font") end,
+            set               = function(info, value) SandboxFont = value end,
+            desc              = "This doesn't really do anything, but it's here in case you " ..
+                                "need to confirm whether fonts were added to or removed from " ..
                                 "LibSharedMedia. Or you can just look at the fonts."
           },
 
@@ -1357,20 +1430,18 @@ local function buildLibSharedMediaPanel()
             desc              = "Set the size of the font preview text.",
           },
 
-          previewBox          = 
+          previewBox          =
           { type              = "input",
             width             = "full",
             dialogControl     = "RPF_FontPreviewEditBox",
-            get               = function() 
-                                  return SandboxText 
-                                      or (SandboxFont and SandboxFont:GetName()) 
-                                      or LibSharedMedia:GetDefault("font") 
-                                end,
+            get               = function()
+                                  return
+                                    SandboxText or
+                                    (SandboxFont and SandboxFont:GetName()) or
+                                    LibSharedMedia:GetDefault("font")
+                                  end,
             set               = function(info, value) SandboxText = value end,
-            name              = function() 
-                                  return (SandboxFont and SandboxFont:GetName())
-                                      or LibSharedMedia:GetDefault("font") 
-                                  end, 
+            name              = function() return (SandboxFont and SandboxFont:GetName()) or LibSharedMedia:GetDefault("font") end,
             order             = 8202,
             desc              = "Click to set custom sample text to display.",
           },
@@ -1383,7 +1454,7 @@ end;
 -- settings --------------------------------------------------------------------------------------------------------------------------
 local function buildSettingsPanel()
 
-  options.args.settings = 
+  options.args.settings =
   { name                = "Settings",
     type                = "group",
     order               = 9000,
@@ -1400,7 +1471,7 @@ local function buildSettingsPanel()
       loadDisabledFonts =
       { type            = "toggle",
         name            = "Load fonts from disabled addons",
-        desc            = "If " .. rpFontsTitle .. " has recorded a font from another addon and " ..  
+        desc            = "If " .. rpFontsTitle .. " has recorded a font from another addon and " ..
                           "the addon is still installed, it can load the font even if the addon itself is disabled.",
         get             = function() return db.Settings.LoadDisabled end,
         set             = applyLoadDisabled,
@@ -1417,6 +1488,70 @@ local function buildSettingsPanel()
         func            = purgeEverything,
       },
 
+      defaultForNewFonts =
+      { type = "select",
+        name = "Default status for new fonts",
+        order = 9007,
+        width = 1.25,
+        desc = "Should new fonts start out as enabled or disabled?",
+        values = { enabled = "Enabled", disabled = "Disabled" },
+        get = function() return db.Settings.NewFontsStartDisabled and "disabled" or "enabled" end,
+        set = function(info, value) db.Settings.NewFontsStartDisabled = (value == "disabled") end,
+      },
+
+      spacerDefault    =
+      { type = "description",
+        name = " ",
+        width = 0.25,
+        order = 9008,
+      },
+
+      overrideProtect =
+      { type = "toggle",
+        name = "Override the long list failsafe",
+        desc = "By default, " .. rpFontsTitle .. " will disable the font list whenever you have more " ..
+               "than " .. failsafeThreshold .. " fonts, because this can lead to poor performance. Check this box to override " ..
+               "that behavior.",
+        width = 1.5,
+        order = 9009,
+        get = function() return db.Settings.OverrideFailsafe end,
+        set = function(info, value) db.Settings.OverrideFailsafe = value end,
+      },
+      overrideAdvanced =
+      { type = "group",
+        name = "Override the Failsafe",
+        width = "full",
+        order = 9010,
+        inline = true,
+        hidden = function() return not db.Settings.OverrideFailsafe end,
+        args =
+        { showHugeListList =
+          { type = "toggle",
+            name = "No limits on the list size",
+            desc = "Remove all safeguards against displaying a long list. " .. red("Not recommended!"),
+            width = 1.5,
+            order = 9100,
+            get = function() return db.Settings.ShowHugeList end,
+            set = function(info, value) db.Settings.ShowHugeList = value end,
+          },
+          threshold =
+          { type = "range",
+            width = 1.5,
+            order = 9120,
+            name = "Failsafe Threshold",
+            desc = "Set the number of fonts that will trigger the failsafe.",
+            min = 10,
+            max = 200,
+            softMin = 20,
+            softMax = 100,
+            step = 10,
+            get = function() return db.Settings.FailsafeThreshold or failsafeThreshold end,
+            set = function(info, value) db.Settings.FailsafeThreshold = value end,
+            disabled = function() return db.Settings.ShowHugeList end,
+          },
+        },
+      },
+
       verifyFonts       =
       { type            = "toggle",
         name            = "Verify fonts when loading",
@@ -1427,7 +1562,7 @@ local function buildSettingsPanel()
         width           = 1.50,
         order           = 9011,
       },
-    
+
       verifyAdvanced =
       { type = "group",
         inline = true,
@@ -1435,7 +1570,7 @@ local function buildSettingsPanel()
         order = 9013,
         hidden = function() return not db.Settings.VerifyFonts end,
         args =
-        { 
+        {
           onlyVerifyActive  =
           { type            = "toggle",
             name            = "Active fonts only",
@@ -1445,7 +1580,7 @@ local function buildSettingsPanel()
             order           = 9013,
             width           = 1.00,
           },
-    
+
           verifyTolerance   =
           { type            = "range",
             name            = "Verification Tolerance",
@@ -1458,12 +1593,14 @@ local function buildSettingsPanel()
             get             = function() return db.Settings.VerifyTolerance or 0.05 end,
             set             = function(info, value) db.Settings.VerifyTolerance = value end,
           },
+
           spacer            =
           { type            = "description",
             name            = " ",
             width           = 0.2,
             order           = 9016,
           },
+
           verifyNow         =
           { type            = "execute",
             name            = "Verify Now",
@@ -1472,8 +1609,10 @@ local function buildSettingsPanel()
             width           = 0.75,
             func            = function() for _, font in pairs(Fonts) do font:Verify() end end,
           },
+
         },
       },
+
 
       creditsHeadline   =
       { type            = "description",
@@ -1483,7 +1622,7 @@ local function buildSettingsPanel()
         fontSize        = "large",
       },
 
-      creditsLeft       = 
+      creditsLeft       =
       { type            = "description",
         name            = yellow("Created By"),
         order           = 9101,
@@ -1501,7 +1640,7 @@ local function buildSettingsPanel()
       },
 
       blank1            = newline(9103),
-      rpTagsLeft        = 
+      rpTagsLeft        =
       { type            = "description",
         name            = white("rp|cffdd33aaTags|r Download"),
         order           = 9151,
@@ -1525,9 +1664,9 @@ local function buildSettingsPanel()
         fontSize        = "medium",
       },
 
-      libsRight         = 
+      libsRight         =
       { type            = "description",
-        name            = table.concat( 
+        name            = table.concat(
                             { yellow("LibSharedMedia"), white("Ace3"),
                               green("AceGUI-SharedMediaWidgets") },
                             ", "),
@@ -1545,7 +1684,7 @@ local function buildSettingsPanel()
         width           = 1,
         fontSize        = "medium",
       },
-      fontsToggle       = 
+      fontsToggle       =
       { type            = "toggle",
         name            = "View font list",
         order           = 9401,
@@ -1554,18 +1693,18 @@ local function buildSettingsPanel()
         set             = function(info, value) ViewFontList = value end,
       },
 
-      fontsFull         = 
+      fontsFull         =
       { type            = "group",
         name            = "Included Fonts",
         order           = 9402,
         inline          = true,
         hidden          = function() return not ViewFontList end,
         args            =
-        { text = 
+        { text =
           { type        = "description",
             name        = listOfIncludedFonts,
             order       = 9403,
-            width       = "full", 
+            width       = "full",
             fontSize    = "medium",
           },
         },
@@ -1580,7 +1719,7 @@ local function buildSettingsPanel()
         fontSize        = "medium",
       },
 
-      oflToggle         = 
+      oflToggle         =
       { type            = "toggle",
         name            = "View font license",
         order           = 9502,
@@ -1676,8 +1815,8 @@ local function buildCoreOptions()
 
           StatsNewRight        =
           { type               = "description",
-            name               = function() 
-                                   return 
+            name               = function()
+                                   return
                                      white(Stats.new .. " (" ..
                                      yellow(Stats.new_active .. " active") ..
                                      ", " .. (Stats.new - Stats.new_active) .. " inactive)")
@@ -1687,7 +1826,7 @@ local function buildCoreOptions()
             fontSize           = "medium",
             hidden             = function() return (Stats.new == 0) end,
           },
-                                         
+
           StatsNewNewline      =
           { type               = "description",
             name               = "",
@@ -1761,8 +1900,8 @@ local function buildCoreOptions()
           },
           StatsBuiltinRight    =
           { type               = "description",
-            name               = function() 
-                                   return 
+            name               = function()
+                                   return
                                      white(Stats.builtin .. " (" ..
                                      yellow(Stats.builtin_active .. " active") ..
                                      ", " .. (Stats.builtin - Stats.builtin_active) .. " inactive)")
@@ -1772,7 +1911,7 @@ local function buildCoreOptions()
             fontSize           = "medium",
             hidden             = function() return (Stats.builtin == 0) end,
           },
-                                         
+
           StatsBuiltinNewline  =
           { type               = "description",
             name               = "",
@@ -1890,49 +2029,45 @@ local function registerSlashCommand()
 
 end;
 
-local function markDatabaseInitialized() db.initialized = true; end;
-
 local function cycleThroughFonts()
   clearCounts();
   for fontName, font in pairs(Fonts)
-  do  for k,v in pairs(font.db) do print(green(k), cyan(type(v))) end;
-      font:SetFlagsFromAddons();
-      font:SetRegistrationStatus();
+  do  font:SetFlagsFromAddons();
+      font:DoRegistration();
       font:Count();
       if db.Settings.VerifyFonts and not db.Settings.VerifyOnlyActive
       then font:Verify();
       end;
+      font:SetFlag("new", font:GetTimestamp("FirstSeen") == Stats.now);
   end;
-  if Stats.new > 0 
-  then notify( 
-         green( Stats.new .. " new fonts found!") .. 
-         " Type " .. 
-         cyan("/rpfonts")..
-         " to manage fonts.")
+  if Stats.new > 0
+  then notify(green(Stats.new .. " new fonts found!"), "Type", cyan("/rpfonts"),  "to manage fonts.")
   end;
 end;
 
 local function initializationDone()
   local LSM_Default = LibSharedMedia:GetDefault("font");
-  if    LSM_Default and Fonts[LSM_Default]:HasFlag("inactive") 
+  if    LSM_Default and Fonts[LSM_Default]:HasFlag("inactive")
   then  Fonts[LSM_Default]:SetFlag("active");
         Fonts[LSM_Default]:ClearFlag("inactive");
-        Fonts[LSM_Default]:SetRegistrationStatus(true)
+        Fonts[LSM_Default]:DoRegistration(true)
   end;
 
   local LSM_Global = LibSharedMedia:GetGlobal("font");
-  if    LSM_Global and Fonts[LSM_Global]:HasFlag("inactive") 
+  if    LSM_Global and Fonts[LSM_Global]:HasFlag("inactive")
   then  Fonts[LSM_Global]:SetFlag("active");
         Fonts[LSM_Global]:ClearFlag("inactive");
-        Fonts[LSM_Global]:SetRegistrationStatus(true)
+        Fonts[LSM_Global]:DoRegistration(true)
   end;
 
   Browsing = Fonts[db.Browsing] or Fonts[LSM_Default];
   SandboxFont = Fonts[LSM_Default];
+
+  Initialized = true;
 end;
 
 -- our fonts -------------------------------------------------------------------------------
-local family = { 
+local family = {
   Almen  = baseFontDir .. "Almendra_Display\\AlmendraDisplay-",
   Amara  = baseFontDir .. "Amarante\\Amarante-",
   Arima  = baseFontDir .. "Arima_Madurai\\ArimaMadurai-",
@@ -2026,7 +2161,9 @@ local fontList=
 local function loadOurFonts()
 
   for fontCode, fontData in pairs(fontList)
-  do  LibSharedMedia:Register( "font", fontData.Name, fontFile);
+  do  local fontName = fontData.Name
+      local fontFile = family[ fontData.Fam ] .. fontData.File;
+      LibSharedMedia:Register( "font", fontName, fontFile);
   end
 end;
 
@@ -2042,7 +2179,7 @@ local function main()
   registerSlashCommand();
 end;
 
-rpFontsFrame:SetScript("OnEvent", 
+rpFontsFrame:SetScript("OnEvent",
   function(self, event, addOnLoaded, ...)
     if     event == "ADDON_LOADED"          and addOnLoaded == addOnName then initializeDatabase();
     elseif event == "PLAYER_ENTERING_WORLD"                              then main();
@@ -2053,7 +2190,7 @@ rpFontsFrame:SetScript("OnEvent",
 --[[-----------------------------------------------------------------------------
 this section based on: EditBox Widget from AceGUI
 -------------------------------------------------------------------------------]]
-local widgetType, widgetVersion = "RPF_FontPreviewEditBox", 1
+local widgetType, widgetVersion = "RPF_FontPreviewEditBox", 2
 
 -- Lua APIs
 local tostring, pairs = tostring, pairs
@@ -2072,7 +2209,7 @@ Support functions
 -------------------------------------------------------------------------------]]
 if not AceGUIEditBoxInsertLink then
         -- upgradeable hook
-        hooksecurefunc("ChatEdit_InsertLink", 
+        hooksecurefunc("ChatEdit_InsertLink",
           function(...) return _G.AceGUIEditBoxInsertLink(...) end)
 end
 
@@ -2173,30 +2310,34 @@ local methods = {
 
         ["GetText"] = function(self, text) return self.editbox:GetText() end,
 
-        ["SetLabel"] = 
+        ["SetLabel"] =
           function(self, text)
             self.label:SetText("")
             self.label:Hide()
             self.editbox:SetPoint("TOPLEFT",self.frame,"TOPLEFT",7,0)
             self.alignoffset = 12
-            local file, _, _ = GameFontNormal:GetFont();
-        
-            if   text and Fonts[text] 
-            then local fileName, _ = Fonts[text]:GetPrimaryFile();
-                 file = fileName;
+            local fontFile;
+
+            if text and Fonts[text]
+            then local file = Fonts[text]:GetPrimaryFile();
+                  fontFile = file:GetName();
+             else
+                  fontFile, _, _ = text or GameFontNormal:GetFont();
             end;
-            self.editbox:SetFont(file, PreviewSize);
-            self:SetHeight(math.max(60, PreviewSize + 10));
+
+            self.editbox:SetFont(fontFile, PreviewSize or 30);
+            self:SetHeight(math.max(60, PreviewSize + 15));
         end,
 
         ["DisableButton"] = function(self, disabled) self.disablebutton = disabled if disabled then HideButton(self) end end,
         ["SetMaxLetters"] = function(self, num) self.editbox:SetMaxLetters(num or 0) end,
         ["ClearFocus"   ] = function(self) self.editbox:ClearFocus() self.frame:SetScript("OnShow", nil) end,
 
-        ["SetFocus"] = function(self)
-                self.editbox:SetFocus()
-                if not self.frame:IsShown() then self.frame:SetScript("OnShow", Frame_OnShowFocus) end
-        end,
+        ["SetFocus"] =
+          function(self)
+            self.editbox:SetFocus()
+            if not self.frame:IsShown() then self.frame:SetScript("OnShow", Frame_OnShowFocus) end
+          end,
 
         ["HighlightText"] = function(self, from, to) self.editbox:HighlightText(from, to) end
 }
