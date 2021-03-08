@@ -78,7 +78,7 @@ Module:WaitUntil("UTILS_GET",
                                                if not profile.characteristics    then return "", false; end;
                                                if not profile.characteristics.MI then return "", false; end;
            for _, t in pairs(profile.characteristics.MI) 
-           do  if   string.find(string.lower(t["NA"]):gsub(" ",""), fieldName) == 1
+           do  if   string.find(string.lower(t["NA"] or ""):gsub(" ",""), fieldName) == 1
                then return t["VA"], true; -- found a match!
                end; -- if
            end -- for
