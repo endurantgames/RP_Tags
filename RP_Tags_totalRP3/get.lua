@@ -114,7 +114,7 @@ Module:WaitUntil("UTILS_GET",
            return table.concat(allGlances, delimiter or "")
       else local path    = "misc/PE/" .. slot;
            local unitID  = getUnitID(u);
-           local profile = getProfile(unitID);
+           local profile = getProfile(unitID or u);
 
            local active = getData( path .. "/AC", profile); if not active then return "" end;
            local title  = getField(path .. "/TI", u);       local text =  getField(path .. "/TX", u)
