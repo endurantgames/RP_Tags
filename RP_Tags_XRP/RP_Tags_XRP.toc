@@ -1,5 +1,5 @@
-## Interface: 90002
-## Version: 9.0.2.1 alpha 1
+## Interface: 90005
+## Version: 9.0.5.0 alpha 1
 ## Title: rp|cffdd33aaTags|r RP Module: XRP
 ## Author: Oraibi-MoonGuard
 ## Notes: rp|cffdd33aarpTags|r integration module for xrp
