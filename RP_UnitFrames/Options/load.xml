@@ -7,7 +7,7 @@
     <Script file="frames.lua"    />
     <Script file="keybind.lua"    />
     <Script file="keybind.lua"    />
-    <!-- Script file="main.lua"    / -->
+    <Script file="main.lua"    />
     <Script file="panels.lua"    />
     <Script file="utils.lua"    />
 </Ui>

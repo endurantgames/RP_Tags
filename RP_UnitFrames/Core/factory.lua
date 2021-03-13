@@ -10,7 +10,9 @@ function(self, event, ...)
   local frameNames  = CONST.RPUF.FRAME_NAMES;
   local oUF_style   = CONST.RPUF.OUF_STYLE;
 
-  function oUF:DisableBlizzard() end; -- this prevents oUF from disabling oUF
+  if not RPTAGS.utils.config.get("DISABLE_BLIZZARD")
+  then function oUF:DisableBlizzard() end; -- this prevents oUF from disabling oUF
+  end;
 
   oUF:Factory(
     function(self)
@@ -19,6 +21,7 @@ function(self, event, ...)
       for unit, frameName in pairs(frameNames)
       do  local u = unit:lower();
           local frame = self:Spawn(u, frameName);
+          UnregisterUnitWatch(frame);
           frame:SetPoint("CENTER");
           RPTAGS.cache.UnitFrames[u] = _G[frameName];
           frame:Public("UpdateEverything");
@@ -183,10 +186,17 @@ function(self, event, ...)
     end;
   end;
 
+  local function RPUF_EnableOrDisableBlizzard()
+    local blizzFrames = { player = PlayerFrame, target = TargetFrame, focus = FocusFrame, targetTarget = TargetTargetFrame };
+    for _, frame in pairs(blizzFrames) 
+    do  if RPTAGS.utils.config.get("DISABLE_BLIZZARD") then UnregisterUnitWatch(frame); else RegisterUnitWatch(frame) end; end;
+  end;
+
   RPTAGS.utils.frames.RPUF_Refresh        = RPUF_Refresh;
   RPTAGS.utils.frames.RPUF_RegisterLayout = RPUF_RegisterLayout;
   RPTAGS.utils.frames.RPUF_GetLayout      = RPUF_GetLayout;
   RPTAGS.utils.frames.RPUF_NewLayout      = RPUF_NewLayout;
+  RPTAGS.utils.frames.RPUF_EnableOrDisableBlizzard = RPUF_EnableOrDisableBlizzard;
 
 end);
 

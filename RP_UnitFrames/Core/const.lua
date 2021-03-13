@@ -164,7 +164,7 @@ function(self, event, ...)
   local ourConfig = 
   { SHOW_FRAME_TARGETTARGET = false,
     -- disable
-    DISABLE_RPUF            = false,
+    DISABLE_RPUF            = true,
     DISABLE_BLIZZARD        = false,
 
     -- scale

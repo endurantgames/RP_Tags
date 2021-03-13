@@ -605,34 +605,6 @@ local function set(setting)    return function(info, value) Set(setting, value);
     args                      = {},
   };
 
-  panelGroup.args.instruct    =
-  { type                      = "description",
-    dialogControl             = "LMD30_Description",
-    name                      = loc("PANEL_RPUF_MAIN"),
-    order                     = source_order(),
-  };
-
-  panelGroup.args.disableUF   =
-  { type                      = "toggle",
-    order                     = source_order(),
-    name                      = loc("CONFIG_DISABLE_RPUF"),
-    desc                      = loc("CONFIG_DISABLE_RPUF_TT"),
-    get                       = get("DISABLE_RPUF"),
-    set                       = function(info, value) Set("DISABLE_RPUF", value); Refresh("hiding"); end,
-    width                     = 1.5,
-  };
-
-  panelGroup.args.disableBliz =
-  { type                      = "toggle",
-    order                     = source_order(),
-    name                      = cloc("DISABLE_BLIZZARD"),
-    desc                      = tloc("DISABLE_BLIZZARD"),
-    get                       = get("DISABLE_BLIZZARD"),
-    set                       = function(info, value) Set("DISABLE_BLIZZARD", value); Refresh("hiding"); end,
-    width                     = 1.5,
-  };
-
-
   local statusGroup = 
   { type = "group",
     order = source_order(),
@@ -660,6 +632,6 @@ local function set(setting)    return function(info, value) Set(setting, value);
       panelGroup.args[name:lower()] = build_frame_group(name, small);
   end;
 
-  addOptionsPanel("RPUF_Main", panelGroup);
+  addOptionsPanel("RPUF_Frames", panelGroup);
 
 end);

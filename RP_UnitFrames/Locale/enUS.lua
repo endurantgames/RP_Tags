@@ -298,9 +298,10 @@ function(self, event, ...)
   L["CONFIG_DETAILPANEL"                ] = "Details Panel";
   L["CONFIG_DETAILPANEL_TT"             ] = "Set the tags for the 'details' panel.";
   L["CONFIG_DISABLE_BLIZZARD"           ] = "Disable Blizzard Unit Frames";
-  L["CONFIG_DISABLE_BLIZZARD_TT"        ] = "You can disable Blizzard's unit frames. Don't worry, you can get them back by unchecking this button! |cffdd0000Warning:|r Changing this option will load the game.";
+  L["CONFIG_DISABLE_BLIZZARD_TT"        ] = "You can disable Blizzard's unit frames. Don't worry, you can get them back by unchecking this button! |cffdd0000Warning:|r Changing this option will reload your user interface.";
   L["CONFIG_DISABLE_RPUF"               ] = "Disable RPUF";
-  L["CONFIG_DISABLE_RPUF_TT"            ] = "You can disable RPUF without disabling all of RPTAGS. One reason you might want to do this would be if you are running [[Elvui                                                                               ]      ] and don't need to use RPUF to display RPTAGS.";
+  L["CONFIG_DISABLE_RPUF_TT"            ] = "You can disable RPUF without disabling all of RPTAGS. One reason you might want to do this would be if you are running ElvUI and don't need to use RPUF to display RPTAGS.";
+  L["RELOAD_UI_WARNING_RPUF"            ] = "Because you have disabled the default Blizzard frames, turning off " .. RPUF_NAME .. " will re-enable the default frames and reload your user interface. Are you sure you want to do that?";
   L["CONFIG_ICON_1"                     ] = "Icon Slot 1";
   L["CONFIG_ICON_1_TOOLTIP"             ] = "Icon Slot 1 Tooltip";
   L["CONFIG_ICON_1_TOOLTIP_TT"          ] = "Set the tags for the first icon slot tooltip.";

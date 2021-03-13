@@ -95,8 +95,7 @@ function(self, event, ...)
     end;
 
     local function updateFrameVisibility()
-      UnregisterStateDriver(self, "visibility");
-      RegisterStateDriver(self,   "visibility", generateSSDString());
+      RegisterStateDriver(self, "visibility", generateSSDString());
     end;
 
     -- -- unit frame appearance -------------------------------------------------------------------------------------------------
@@ -254,7 +253,6 @@ function(self, event, ...)
     end;
 
     local function updatePortrait()
-      print("updating portrait");
       local portraitPanel = panels["portrait"];
       local border     = LibSharedMedia:Fetch("border", Config.get("PORTRAIT_BORDER"))
       local background = LibSharedMedia:Fetch("background", Config.get("PORTRAIT_BG"))

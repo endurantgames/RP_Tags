@@ -2,3 +2,5 @@
 old/
 *.swp
 *.sh
+zip.sh
+*.zip
