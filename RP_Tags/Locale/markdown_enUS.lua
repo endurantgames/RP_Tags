@@ -189,15 +189,20 @@ L["CHANGES_MD"] =
 
 # Changes
 
-## |cffff0000Important Note:|r RP\_UnitFrames support is *not* enabled
-  
-This alpha version of RP\_Tags will only run with ElvUI at the present.
+## |cffff0000Note:|r RP\_UnitFrames in Alpha Testing
+   
+RP\_UnitFrames are currently disabled by default. To enable them,
+follow these instructions:
 
-## 9.0.2.1 alpha 1
+- First, change your addons in WoW so that RP\_UnitFrames is set to load.
+- Second, reload your UI (e.g. with `/reload`)
+- Third, go to RP_Tags options (e.g. with `/rptags`) and uncheck "Disable RPUF"
+
+## 9.0.5.0 beta 1
 
 Major updates including:
 
-- Updated for WoW 9.0.2
+- Updated for WoW 9.0.5
 - Version numbers now aligned with WoW's version numbers
 - Many behind-the-scenes changes
 - Added tag sizing `(xs)`, `(large)`, '(8)` etc
@@ -205,7 +210,7 @@ Major updates including:
 - Updated [Help](opt://help)
 - Revamped [About](opt://about)
 - Redid [Options](opt://general)
-- Restored USE_REAL_ELLIPSES
+- Restored USE\_REAL\_ELLIPSES
 - Libraries updated
 - Other bug fixes
 

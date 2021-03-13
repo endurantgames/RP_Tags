@@ -20,7 +20,7 @@ function(self, event, ...)
   local tc          = Utils.text.titlecase;
   local linkHandler = Utils.links.handler;
   local slashes     = split(loc("APP_SLASH"), "|");
-  local default     = "opt://about";
+  local default     = "opt://about/changes";
 
   for   i, slash_cmd in ipairs(slashes) 
   do    _G["SLASH_RPTAGS" .. i] = "/" .. slash_cmd 

@@ -86,6 +86,7 @@ function(self, event, ...)
   { name                = loc("OPT_EDITOR"),
     order               = source_order(),
     type                = "group",
+    hidden              = function() return Get("DISABLE_RPUF") end,
     args                = 
     { -- panel             = Header("editor", nil, reqRPUF ),
       instruct          = Instruct("editor", nil, reqRPUF ),

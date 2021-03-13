@@ -602,6 +602,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
   { name                      = loc("RPUF_NAME"),
     order                     = source_order(),
     type                      = "group",
+    hidden                    = function() return Get("DISABLE_RPUF") end,
     args                      = {},
   };
 

@@ -201,6 +201,7 @@ function(self, event, ...)
   { name                = loc("OPT_RPUF_PANELS"),
     order               = source_order(),
     type                = "group",
+    hidden              = function() return Get("DISABLE_RPUF") end,
     args                =
     { -- panel             = Header("rpuf panels", nil, reqRPUF ),
       instruct          = Instruct("rpuf panels", nil, reqRPUF ),
