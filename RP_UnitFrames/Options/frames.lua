@@ -74,6 +74,8 @@ local function set(setting)    return function(info, value) Set(setting, value);
     { alpha           = "RPUFALPHA"           .. ul_str,
       background      = "RPUF_BACKDROP"       .. ul_str,
       border          = "RPUF_BORDER"         .. ul_str,
+      borderWidth     = "RPUF_BORDER_WIDTH"   .. ul_str,
+      borderInsets    = "RPUF_BORDER_INSETS"  .. ul_str,
       detailHeight    = "DETAILHEIGHT"        .. ul_str,
       fontName        = "FONTNAME"            .. ul_str,
       fontSize        = "FONTSIZE"            .. ul_str,
@@ -93,6 +95,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       portWidth       = "PORTWIDTH"           .. ul_str,
       statusAlign     = "STATUS_ALIGN"        .. ul_str,
       statusHeight    = "STATUSHEIGHT"        .. ul_str,
+      statusAlpha     = "STATUS_ALPHA"        .. ul_str,
       statusTexture   = "STATUS_TEXTURE"      .. ul_str,
       scale           = str                   .. "FRAME_SCALE",
       show            = "SHOW_FRAME"          .. ul_str,
@@ -143,7 +146,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.layout),
       desc                      = tloc(f.layout),
       get                       = get(f.layout),
-      set                       = function(info, value) Set(f.layout, value); Refresh(frameName, "framesize", "sizes", "vis"); end,
+      set                       = function(info, value) Set(f.layout, value); Refresh(frameName, "layout", "framesize", "sizes", "vis"); end,
       values                    = small and menu.small or menu.large,
       order                     = source_order(),
       hidden                    = not_show(),
@@ -303,19 +306,48 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    lookSG.args.border          =
-    { type                      = "select",
-      dialogControl             = "LSM30_Background",
-      values                    = LibSharedMedia:HashTable("border"),
-      width                     = 1.5,
-      get                       = get(f.border),
-      set                       = function(info, value) Set(f.border, value); Refresh(frameName, "backdrop"); end,
-      name                      = cloc(f.border),
-      desc                      = tloc(f.background),
-      order                     = source_order(),
-    };
+    lookSG.args.spbg = Spacer(); 
+
+    lookSG.args.borderInsets = 
+        { type                      = "range",
+          width                     = 0.75,
+          get                       = get(f.borderInsets),
+          set                       = function(info, value) Set(f.borderInsets, value); Refresh(frameName, "style", "statusbar"); end,
+          name                      = cloc(f.borderInsets),
+          desc                      = tloc(f.borderInsets),
+          order                     = source_order(),
+          min                       = 1,
+          max                       = 32,
+          step                      = 1
+        };
+
+    lookSG.args.border =
+        { type                      = "select",
+          dialogControl             = "LSM30_Background",
+          values                    = LibSharedMedia:HashTable("border"),
+          width                     = 1.5,
+          get                       = get(f.border),
+          set                       = function(info, value) Set(f.border, value); Refresh(frameName, "style"); end,
+          name                      = cloc(f.border),
+          desc                      = tloc(f.border),
+          order                     = source_order(),
+        };
 
     lookSG.args.spb             = Spacer();
+
+    lookSG.args.borderWidth =
+        { type                      = "range",
+          width                     = 0.75,
+          get                       = get(f.borderWidth),
+          set                       = function(info, value) Set(f.borderWidth, value); Refresh(frameName, "style", "statusbar"); end,
+          name                      = cloc(f.borderWidth),
+          desc                      = tloc(f.borderWidth),
+          order                     = source_order(),
+          min                       = 1,
+          max                       = 32,
+          step                      = 1
+        };
+
 
     lookSG.args.alpha           =
     { type                      = "range",
@@ -407,6 +439,22 @@ local function set(setting)    return function(info, value) Set(setting, value);
     };
 
     statSSG.args.spt            = Spacer();
+
+    statSSG.args.alpha          =
+    { type = "range",
+      name = cloc(f.statusAlpha),
+      desc = tloc(f.statusAlpha),
+      get = get(f.statusAlpha),
+      set = function(info, value) Set(f.statusAlpha, value); Refresh(frameName, "statusbar") end,
+      order = source_order(),
+      step                      = 0.01,
+      bigStep                   = 0.05,
+      isPercent                 = true,
+      min = 0,
+      max = 1,
+    };
+
+    statSSG.args.spal = Spacer();
 
     statSSG.args.height         =
     { type                      = "range",
@@ -557,34 +605,6 @@ local function set(setting)    return function(info, value) Set(setting, value);
     args                      = {},
   };
 
-  panelGroup.args.instruct    =
-  { type                      = "description",
-    dialogControl             = "LMD30_Description",
-    name                      = loc("PANEL_RPUF_MAIN"),
-    order                     = source_order(),
-  };
-
-  panelGroup.args.disableUF   =
-  { type                      = "toggle",
-    order                     = source_order(),
-    name                      = loc("CONFIG_DISABLE_RPUF"),
-    desc                      = loc("CONFIG_DISABLE_RPUF_TT"),
-    get                       = get("DISABLE_RPUF"),
-    set                       = function(info, value) Set("DISABLE_RPUF", value); Refresh("hiding"); end,
-    width                     = 1.5,
-  };
-
-  panelGroup.args.disableBliz =
-  { type                      = "toggle",
-    order                     = source_order(),
-    name                      = cloc("DISABLE_BLIZZARD"),
-    desc                      = tloc("DISABLE_BLIZZARD"),
-    get                       = get("DISABLE_BLIZZARD"),
-    set                       = function(info, value) Set("DISABLE_BLIZZARD", value); Refresh("hiding"); end,
-    width                     = 1.5,
-  };
-
-
   local statusGroup = 
   { type = "group",
     order = source_order(),
@@ -612,6 +632,6 @@ local function set(setting)    return function(info, value) Set(setting, value);
       panelGroup.args[name:lower()] = build_frame_group(name, small);
   end;
 
-  addOptionsPanel("RPUF_Main", panelGroup);
+  addOptionsPanel("RPUF_Frames", panelGroup);
 
 end);

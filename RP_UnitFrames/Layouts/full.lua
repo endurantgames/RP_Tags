@@ -18,16 +18,16 @@ function(self, event, ...)
 
   local function get_frame_dimensions(self)
     return
-      self:Gap(4) + self:ConfGet("ICONWIDTH") + self:ConfGet("INFOWIDTH") + self:ConfGet("PORTWIDTH"),
+      self:Public("Gap", 4) + self:Public("ConfGet", "ICONWIDTH") + self:Public("ConfGet", "INFOWIDTH") + self:Public("ConfGet", "PORTWIDTH"),
       math.max(
-        self:Gap(7) + self:ConfGet("ICONWIDTH") * 6 + self:ConfGet("STATUSHEIGHT"),
-        self:Gap(4) + self:PanelGet("Height", "name") + self:ConfGet("DETAILHEIGHT") + self:ConfGet("STATUSHEIGHT") + self:PanelGet("Height", "info"),
-        self:Gap(1) + self:ConfGet("PORTWIDTH") * 1.5 + self:ConfGet("STATUSHEIGHT")
+        self:Public("Gap", 7) + self:Public("ConfGet", "ICONWIDTH") * 6 + self:Public("ConfGet", "STATUSHEIGHT"),
+        self:Public("Gap", 4) + self:Public("PanelGet", "Height", "name") + self:Public("ConfGet", "DETAILHEIGHT") + self:Public("ConfGet", "STATUSHEIGHT") + self:Public("PanelGet", "Height", "info"),
+        self:Public("Gap", 1) + self:Public("ConfGet", "PORTWIDTH") * 1.5 + self:Public("ConfGet", "STATUSHEIGHT")
       )
   end;
 
   layout:Register_Panel_Method_Hash("GetPanelLeft",
-    { [ "portrait"  ] = function(self) return self:Gap(2) + self:PanelGet("Width", "icon") end,
+    { [ "portrait"  ] = function(self) return self:Gap(2) + self:PanelGet("Width", "icon1") end,
       [ "icon1"     ] = function(self) return self:Gap(1) end,
       [ "icon2"     ] = "icon1",
       [ "icon3"     ] = "icon1",
@@ -37,20 +37,20 @@ function(self, event, ...)
       [ "name"      ] = function(self) return self:Gap(3) + self:PanelGet("Width", "portrait") + self:PanelGet("Width", "icon1") end,
       [ "info"      ] = "name",
       [ "details"   ] = "name",
-      [ "statusBar" ] = 0,
+      [ "statusBar" ] = function(self) return (self:Public("ConfGet", "RPUF_BORDER") ~= "None" and self:Public("ConfGet", "RPUF_BORDER_INSETS") or 0) * 2 end,
     });
 
   layout:Register_Panel_Method_Hash("GetPanelTop",
     { [ "portrait"  ] = function(self) return self:Gap(1) end,
       [ "icon1"     ] = function(self) return self:Gap(1) end,
-      [ "icon2"     ] = function(self) return self:Gap(2) + self:ConfGet("ICONWIDTH") * 1, end,
-      [ "icon3"     ] = function(self) return self:Gap(3) + self:ConfGet("ICONWIDTH") * 2, end,
-      [ "icon4"     ] = function(self) return self:Gap(4) + self:ConfGet("ICONWIDTH") * 3, end,
-      [ "icon5"     ] = function(self) return self:Gap(5) + self:ConfGet("ICONWIDTH") * 4, end,
-      [ "icon6"     ] = function(self) return self:Gap(6) + self:ConfGet("ICONWIDTH") * 5, end,
+      [ "icon2"     ] = function(self) return self:Gap(2) + self:ConfGet("ICONWIDTH") * 1 end,
+      [ "icon3"     ] = function(self) return self:Gap(3) + self:ConfGet("ICONWIDTH") * 2 end,
+      [ "icon4"     ] = function(self) return self:Gap(4) + self:ConfGet("ICONWIDTH") * 3 end,
+      [ "icon5"     ] = function(self) return self:Gap(5) + self:ConfGet("ICONWIDTH") * 4 end,
+      [ "icon6"     ] = function(self) return self:Gap(6) + self:ConfGet("ICONWIDTH") * 5 end,
       [ "name"      ] =  "portrait",
       [ "info"      ] = function(self) return self:Gap(2) + self:PanelGet("Height", "name") end,
-      [ "details"   ] = function(self) return self:PanelGet("Top", "info") + Gap(1) + self:PanelGet("Height", "info") end,
+      [ "details"   ] = function(self) return self:PanelGet("Top", "info") + self:Gap(1) + self:PanelGet("Height", "info") end,
       [ "statusBar" ] = get_statusBar_top,
     });
 
@@ -79,7 +79,8 @@ function(self, event, ...)
       [ "name"      ] = "info",
       [ "info"      ] = function(self) return self:ConfGet("INFOWIDTH") end,
       [ "details"   ] = "info",
-      [ "statusBar" ] = function(self) return self:ConfGet("PORTWIDTH") + self:Gap(4) + self:ConfGet("ICONWIDTH") end,
+      [ "statusBar" ] = function(self) return self:ConfGet("PORTWIDTH") + self:Gap(4) + self:ConfGet("ICONWIDTH") 
+      - (self:Public("ConfGet", "RPUF_BORDER") ~= "None" and self:Public("ConfGet", "RPUF_BORDER_INSETS") or 0) end,
     });
 
   layout:Register_Panel_Method_Hash("GetPanelVis",

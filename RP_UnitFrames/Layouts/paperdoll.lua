@@ -15,7 +15,7 @@ function(self, event, ...)
       [ "icon1"    ] = "name",
       [ "icon2"    ] = "name",
       [ "icon3"    ] = "name",
-      [ "icon4"    ] = function(self) return self:GetConf("PORTWIDTH") - self:Gap(1) - self:GetConf("ICONWIDTH") end,
+      [ "icon4"    ] = function(self) return self:ConfGet("PORTWIDTH") - self:Gap(1) - self:ConfGet("ICONWIDTH") end,
       [ "icon5"    ] = "icon4",
       [ "icon6"    ] = "icon4",
   });
@@ -27,7 +27,7 @@ function(self, event, ...)
       [ "portrait" ] = function(self) return self:PanelGet("Top", "info") + self:PanelGet("Height", "info") + self:Gap(1) end,
       [ "icon1"    ] = function(self) return self:PanelGet("Top", "portrait") + self:Gap(1);                             end,
       [ "icon2"    ] = function(self) return self:PanelGet("Top", "icon1") + self:ConfGet("ICONWIDTH") + self:Gap(2); end,
-      [ "icon3"    ] = function(self) return self:PanelGet("Top", "icon2") + self:ConfGet("ICONWIDTH") + self:Gap(2)  end.
+      [ "icon3"    ] = function(self) return self:PanelGet("Top", "icon2") + self:ConfGet("ICONWIDTH") + self:Gap(2)  end,
       [ "icon4"    ] = "icon1",
       [ "icon5"    ] = "icon3",
       [ "icon6"    ] = "icon3",
@@ -89,12 +89,12 @@ function(self, event, ...)
   "GetFrameDimensions",
 
     function(self)
-      return self:Gap(3) + self:ConfGet("ICONWIDTH") * 2
-             + self:ConfGet("PORTWIDTH") * 1.5,
+      return self:Public("Gap", 3) + self:Public("ConfGet", "ICONWIDTH") * 2
+             + self:Public("ConfGet", "PORTWIDTH") * 1.5,
 
            math.max(
-             self:ConfGet("PORTWIDTH") * 2,
-             self:Gap(5) + self:ConfGet("ICONWIDTH") * 3
+             self:Public("ConfGet", "PORTWIDTH") * 2,
+             self:Public("Gap", 5) + self:Public("ConfGet", "ICONWIDTH") * 3
 
            );
     end

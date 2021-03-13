@@ -8,13 +8,17 @@ function(self, event, ...)
   local layout = RPTAGS.utils.frames.RPUF_NewLayout("compact", "small");
 
   local function get_frame_dimensions(self)
+    local a = self:Public("Gap", 0.5) + 0;
+    local b = self:Public("PanelGet", "Height", "name") + 0;
+    local c = self:Public("PanelGet", "Height", "info") + 0;
+    local d = self:Public("ConfGet", "ICONWIDTH") + 0;
     return 
-      self:Gap(1.5) + self:ConfGet("ICONWIDTH") + self:ConfGet("INFOWIDTH"),
+      self:Public("Gap", 1.5) + self:Public("ConfGet", "ICONWIDTH") + self:Public("ConfGet", "INFOWIDTH"),
 
-      self:Gap(1) +
+      self:Public("Gap", 1) +
       math.max( 
-        self:Gap(0.5) + self:PanelGet("Height", "name") + self:PanelGet("Height", "info"),
-        self:ConfGet("ICONWIDTH")
+        self:Public("Gap", 0.5) + self:Public("PanelGet", "Height", "name") + self:Public("PanelGet", "Height", "info"),
+        self:Public("ConfGet", "ICONWIDTH")
       )
   end;
 

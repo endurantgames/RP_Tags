@@ -17,32 +17,34 @@ function(self, event, ...)
 
   local function get_icon_top(self)
     return
-      self:Gap(3) + self:GetPanelHeight("statusBar") +
+      self:Gap(3) + 
+        self:PanelGet("Height", "statusBar") +
       math.max( 
         self:ConfGet("ICONWIDTH"),
-        self:GetPanelHeight("name") + self:GetPanelHeight("info") + self:Gap(1)
+        self:PanelGet("Height", "name") + self:PanelGet("Height", "info") + self:Gap(1)
       )
   end;
 
   local function get_statusBar_width(self)
     return
-      self:ConfGet("ICONWIDTH") + self:Gap(3.5) +
-      math.max(self:ConfGet("INFOWIDTH"), self:ConfGet("ICONWIDTH") * 5 + self:Gap(2.5))
+      self:Public("ConfGet", "ICONWIDTH") + self:Public("Gap", 3.5) +
+      math.max(self:Public("ConfGet", "INFOWIDTH"), self:Public("ConfGet", "ICONWIDTH") * 5 + self:Public("Gap", 2.5))
+      - 2 * self:Public("ConfGet", "RPUF_BORDER_INSETS")
   end;
 
   local function get_frame_dimensions(self)
     return
       math.max(
-        self:Gap(3) + self:ConfGet("ICONWIDTH") + self:PanelGet("Width", "name"),
-        self:Gap(3) + self:ConfGet("ICONWIDTH") + self:PanelGet("Width", "info"),
-        get_statusBar_width(),
-        self:Gap(6) + self:ConfGet("ICONWIDTH") * 5
+        self:Public("Gap", 3) + self:Public("ConfGet", "ICONWIDTH") + self:Public("PanelGet", "Width", "name"),
+        self:Public("Gap", 3) + self:Public("ConfGet", "ICONWIDTH") + self:Public("PanelGet", "Width", "info"),
+        get_statusBar_width(self) + 2 * self:Public("ConfGet", "RPUF_BORDER_INSETS"),
+        self:Public("Gap", 6) + self:Public("ConfGet", "ICONWIDTH") * 5
       ),
 
-      self:ConfGet("ICONWIDTH") + self:Gap(4) + self:ConfGet("STATUSHEIGHT") +
+      self:Public("ConfGet", "ICONWIDTH") + self:Public("Gap", 4) + self:Public("ConfGet", "STATUSHEIGHT") +
       math.max(
-        self:ConfGet("ICONWIDTH"),
-        self:Gap(1) + self:PanelGet("Height", "name") + self:PanelGet("Height", "info")
+        self:Public("ConfGet", "ICONWIDTH"),
+        self:Public("Gap", 1) + self:Public("PanelGet", "Height", "name") + self:Public("PanelGet", "Height", "info")
       );
   end;
 
@@ -50,7 +52,7 @@ function(self, event, ...)
     { [ "name"      ] = function(self) return self:Gap(2) + self:ConfGet("ICONWIDTH") end,
       [ "info"      ] = "name",
       [ "icon1"     ] = function(self) return self:Gap(1) end,
-      [ "statusBar" ] =  0,
+      [ "statusBar" ] = function(self) return self:Public("ConfGet", "RPUF_BORDER_INSETS") end,
       [ "icon2"     ] = "icon1",
       [ "icon3"     ] = "name",
       [ "icon4"     ] = function(self) return self:Gap(3) + self:ConfGet("ICONWIDTH") * 2 end,
@@ -74,7 +76,7 @@ function(self, event, ...)
   layout:Register_Panel_Method_Hash("GetPanelHeight",
     { [ "name"      ] = function(self) return self:GetActualFontSize() + 4 end,
       [ "info"      ] = function(self) return self:GetActualFontSize() + 2 end,
-      [ "icon1"     ] = function(self) return self:ConfGet("ICONHEIGHT") end,
+      [ "icon1"     ] = function(self) return self:ConfGet("ICONWIDTH") end,
       [ "statusBar" ] = function(self) return self:ConfGet("STATUSHEIGHT") end,
       [ "icon2"     ] = "icon1",
       [ "icon3"     ] = "icon1",
@@ -86,7 +88,7 @@ function(self, event, ...)
   layout:Register_Panel_Method_Hash("GetPanelWidth",
     { [ "name"      ] = "info",
       [ "info"      ] = function(self) return self:ConfGet("INFOWIDTH") end,
-      [ "icon1"     ] = function(self) return self:ConfGet("ICONHEIGHT") end,
+      [ "icon1"     ] = function(self) return self:ConfGet("ICONWIDTH") end,
       [ "statusBar" ] = get_statusBar_width,
       [ "icon2"     ] = "icon1",
       [ "icon3"     ] = "icon1",
@@ -107,8 +109,8 @@ function(self, event, ...)
       [ "icon6"     ] = true,
     });
 
-  layout:Register_Panel_Method_Hash("GetPanelJustifyH", function() return "LEFT" end);
-  layout:Register_Panel_Method_Hash("GetPanelJustifyV", function() return "TOP"  end);
+  layout:Register_Panel_Method("GetPanelJustifyH", function() return "LEFT" end);
+  layout:Register_Panel_Method("GetPanelJustifyV", function() return "TOP"  end);
 
   layout:Register_Frame_Method("GetFrameDimensions", get_frame_dimensions);
 
