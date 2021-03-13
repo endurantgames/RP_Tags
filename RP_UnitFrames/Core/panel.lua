@@ -12,6 +12,7 @@ function(self, event, ...)
   local FRAME_NAMES        = CONST.RPUF.FRAME_NAMES;
   local eval               = Utils.tags.eval;
   local split              = Utils.text.split;
+  local notify             = Utils.text.notify;
 
   local getLeft            = frameUtils.panels.layout.getLeft;
   local getTop             = frameUtils.panels.layout.getTop;
@@ -25,43 +26,46 @@ function(self, event, ...)
   local scaleFrame         = frameUtils.size.scale.set;
   local toRGB              = Utils.color.hexaToNumber;
 
-  local function initialize_panel(panel, panelName, opt)
+  local function initialize_panel(self, opt)
 
-    function self.Public(self, ...) return self:GetParent().Public(funcName, ...) end;
     --   -- passthrough ---------------------------------------------------------------------------------------
-    
-    
-    function self.Gap(       self, ... ) return self:GetParent():Public("Gap",       ... ) end;
-    function self.GetUnit(   self, ... ) return self:GetParent():Public("GetUnit",   ... ) end;
-    function self.GetLayout( self, ... ) return self:GetParent():Public("GetLayout", ... ) end;
-    function self.ConfGet(   self, ... ) return self:GetParent():Public("ConfGet",   ... ) end;
-    function self.ConfSet(   self, ... ) return self:GetParent():Public("ConfSet",   ... ) end;
-    function self.PanelGet(  self, ... ) return self:GetParent():Public("PanelGet",  ... ) end;
+   
+    function self.Public(self, funcName, ... ) return self:GetParent():Public(funcName,        ... ) end;
+    function self.Gap(       self,     ... ) return self:GetParent():Public("Gap",           ... ) end;
+    function self.GetUnit(   self,     ... ) return self:GetParent():Public("GetUnit",       ... ) end;
+    function self.GetLayoutName( self, ... ) return self:GetParent():Public("GetLayoutName", ... ) end;
+    function self.ConfGet(   self,     ... ) return self:GetParent():Public("ConfGet",       ... ) end;
+    function self.ConfSet(   self,     ... ) return self:GetParent():Public("ConfSet",       ... ) end;
+    function self.PanelGet(  self,     ... ) return self:GetParent():Public("PanelGet",      ... ) end;
 
     --   -- general -------------------------------------------------------------------------------------------
     
     function self.Place(self)
-      local layout = self:GetLayout();
-      local left   = self:GetPanelLeft();   -- getLeft(   self.name, layout);
-      local top    = self:GetPanelTop();    -- getTop(    self.name, layout);
-      local height = self:GetPanelHeight(); -- getHeight( self.name, layout);
-      local width  = xelf:GetPanelWidth();  -- getWidth(  self.name, layout);
-
-      if top and left
+      -- local layout = self:GetLayoutName();
+      if self.GetPanelLeft and self.GetPanelTop and self.GetPanelHeight and self.GetPanelWidth
       then 
+        local left   = self:GetPanelLeft();   -- getLeft(   self.name, layout);
+        local top    = self:GetPanelTop();    -- getTop(    self.name, layout);
+        local height = self:GetPanelHeight(); -- getHeight( self.name, layout);
+        local width  = self:GetPanelWidth();  -- getWidth(  self.name, layout);
+
         self:ClearAllPoints();
-        self:SetPoint("TOPLEFT", self:GetParent(), "TOPLEFT", left, top);
+        self:SetPoint("TOPLEFT", self:GetParent(), "TOPLEFT", left, top * -1);
         self:SetSize(width, height);
+      else
+        self:Hide();
       end;
     end;
 
-    function self.SetVis(self) self:SetShown( self:GetPanelVis() ) end;
+    function self.SetVis(self) self:SetShown( self.GetPanelVis and self:GetPanelVis() ) end;
+
+    opt = opt or {};
 
     --   ---- has_statusBar -----------------------------------------------------------------------------------
     if   opt["has_statusBar"]
     then 
 
-      self.statusBar = panel:CreateTexture();
+      self.statusBar = self:CreateTexture();
       self.statusBar:SetColorTexture(1, 1, 1, 0.5);
       self.statusBar:SetAllPoints();
 
@@ -74,11 +78,11 @@ function(self, event, ...)
     if not opt["no_tag_string"]
     then 
 
-      self.text = panel:CreateFontString(self:GetParent():GetName() .. 
-                  panel.name .. "Tag", "OVERLAY", "GameFontNormal");
+      self.text = self:CreateFontString(self:GetParent():GetName() .. 
+                  self.name .. "Tag", "OVERLAY", "GameFontNormal");
 
       self.text:SetAllPoints();
-      self.text:SetText(panel.name);
+      self.text:SetText(self.name);
 
       function self.SetTagString( self) self:GetParent():Tag(self.text, Config.get(self.setting)) end;
       function self.SetTextColor( self, r, g, b) self.text:SetTextColor(r, g, b)                end;
@@ -88,7 +92,7 @@ function(self, event, ...)
         then   return self:ConfGet("STATUS_ALIGN"), "CENTER";
         elseif (self.name == "name" or self.name == "info") 
                  and
-               (self:GetLayout() == "PAPERDOLL" or self:GetLayout() == "THUMBNAIL")
+               (self:GetLayoutName() == "PAPERDOLL" or self:GetLayout() == "THUMBNAIL")
         then   return "CENTER", "CENTER";
         else   return "LEFT", "TOP";
         end;
@@ -105,15 +109,15 @@ function(self, event, ...)
       function self.GetFont(self, ...) return self:GetParent():Public("GetFont", ...) end;
 
       function self.AdjustFont(self, size)
-        return size + (font_size_hash[ Config.get( self.setting .. "_FONTSIZE" ) or 0]);
+        return size + (font_size_hash[ Config.get( self.setting .. "_FONTSIZE" )] or 0);
       end;
 
       function self.GetFontSize(self, ...)
         local _, fontSize = self:GetFont(...);
-        return fontSize;
+        return fontSize or 10;
       end;
 
-      function self:GetActualFontSize(self) return self:AdjustFont( self:GetFontSize() ); end;
+      function self.GetActualFontSize(self) return self:AdjustFont( self:GetFontSize() ); end;
 
       if opt["use_font"]
       then 
@@ -121,10 +125,10 @@ function(self, event, ...)
         function self.SetFont(self, fontFile, fontSize)
 
           if not fontSize then _, fontSize = self:GetFont(); end;
-          local  fontName = self:ConfGet( opt["use_font"] .. "_FONTNAME")
+          local  fontName = self:ConfGet( opt["use_font"] )
           self.text:SetFont( LibSharedMedia:Fetch("font", fontName  ) or
                              LibSharedMedia:Fetch("font", "Morpheus"),
-                             fontSize);
+                             self:AdjustFont(fontSize));
 
         end;
 
@@ -132,7 +136,8 @@ function(self, event, ...)
 
         function self.SetFont(self, fontFile, fontSize)
 
-          if not fontFile and fontSize then fontFile, fontSize = self:GetFont(); end;
+          if not fontFile then fontFile, _ = self:GetFont(); end;
+          if not fontSize then _, fontSize = self:GetFont(); end;
           self.text:SetFont(fontFile, self:AdjustFont(fontSize));
 
         end;
@@ -144,16 +149,20 @@ function(self, event, ...)
     --   ---- portrait ----------------------------------------------------------------------------------------
     if   opt["portrait"]
     then 
+      local portrait3D = CreateFrame("PlayerModel", nil, self, "ModelWithControlsTemplate");
+      local portrait2D = self:CreateTexture(nil, "OVERLAY");
 
-      local portrait = CreateFrame("PlayerModel", nil, self);
-      self:GetParent().Portrait = portrait;
-      self.portrait = portrait;
+      portrait3D:SetPoint("TOPRIGHT", self, "TOPRIGHT", -5, -5);
+      portrait3D:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 5, 5);
+      portrait3D:Show();
 
-      portrait:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-      portrait:Show();
+      portrait2D:SetPoint("LEFT", 5, 0);
+      portrait2D:SetPoint("RIGHT", -5, 0);
+      portrait2D:SetHeight( portrait2D:GetWidth() );
+
+      portrait2D:Show();
 
       self.pictureFrame = CreateFrame("Frame", nil, self, BackdropTemplateMixin and "BackdropTemplate");
-
       self.pictureFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 5, 5);
       self.pictureFrame:SetPoint("TOPRIGHT",   self, "TOPRIGHT", -5, -5);
 
@@ -162,17 +171,24 @@ function(self, event, ...)
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border" 
       });
 
+      self.portrait3D = portrait3D;
+      self.portrait2D = portrait2D;
+
+      self:GetParent().Portrait = portrait3D;
+      self:GetParent().Portrait3D = portrait3D;
+      self:GetParent().Portrait2D = portrait2D;
+
     end;
  
     --   -- tooltips ------------------------------------------------------------------------------------------
     if not opt["no_tooltip"]
     then 
 
-      panel:EnableMouse();
-      panel:SetScript("OnEnter", showTooltip );
-      panel:SetScript("OnLeave", hideTooltip );
-      panel.tooltip = tooltip;
-       
+      self:EnableMouse();
+      self:SetScript("OnEnter", showTooltip );
+      self:SetScript("OnLeave", hideTooltip );
+      self.tooltip = tooltip;
+      
       function self.GetTooltipColor(self, ...) return self:GetParent():Public("GetTooltipColor", ...) end;
 
       function self.showTooltip(self, event, ...) 
@@ -208,7 +224,7 @@ function(self, event, ...)
     then 
 
       -- obvious placeholder is obvious
-      function showContextMenu(self, event, ...) print("context menu for", self.name); end;
+      function showContextMenu(self, event, ...) notify("context menu for", self.name); end;
   
       self:SetScript("OnMouseUp",
         function(self, button, ...) 
@@ -219,26 +235,31 @@ function(self, event, ...)
   
     --   -- layouts -------------------------------------------------------------------------------------------
     function self.SetLayout(self, layoutName)
-      layoutName = layoutName or self:GetLayout();
+      layoutName = layoutName or self:GetLayoutName();
 
-      local  layout = RPTAGS.utils.frames.RPUF_GetLayout(layoutName);
-      if not layout then return end;
+      local  layoutStruct = RPTAGS.utils.frames.RPUF_GetLayout(layoutName);
+      if not layoutStruct then return end;
 
-      for key, func in pairs(layoutStruct.panel_methods) do self[k] = func; end; 
+      for key, func in pairs(layoutStruct.panel_methods) do self[key] = func; end; 
 
       for hashName, hashTable in pairs(layoutStruct.panel_method_hash)
-      do  self[key] =
-            function(self)
-              local  item = hash[panel:GetName()];
+      do  
+          local  item = hashTable[self.name];
 
-              if     type(item) == "boolean" or  type(item)       == "number"   then return item 
-              elseif type(item) == "string"  and type(hash[item]) == "function" then return hash[item](panel);
-              elseif type(item) == "string"  and type(hash[item]) == "boolean"  then return hash[item]
-              elseif type(item) == "string"  and type(hash[item]) == "number"   then return hash[item]
-              elseif type(item) == "function"                                   then return item(panel);
-              else   error("unknown function type " .. (k or "nil"));
-              end;
-            end;
+          if     type(item) == "boolean" or type(item) == "number" 
+          then   self[hashName] = function(self) return item end;
+
+          elseif type(item) == "string" and type(hashTable[item]) == "function" 
+          then   self[hashName] = hashTable[item];
+
+          elseif type(item) == "string" and (type(hashTable[item]) == "boolean" or type(hashTable[item]) == "number")
+          then   self[hashName] = function(self) return hashTable[item] end;
+
+          elseif type(item) == "function" 
+          then   self[hashName] = item;
+
+          else   self[hashName] = nil;
+          end;
       end;
     end;
  

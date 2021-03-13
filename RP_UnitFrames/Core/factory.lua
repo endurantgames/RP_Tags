@@ -21,7 +21,7 @@ function(self, event, ...)
           local frame = self:Spawn(u, frameName);
           frame:SetPoint("CENTER");
           RPTAGS.cache.UnitFrames[u] = _G[frameName];
-          frame:UpdateEverything();
+          frame:Public("UpdateEverything");
           frame:SetFrameStrata("MEDIUM");
           RPTAGS.utils.frames.scale(frame);
       end;
@@ -35,7 +35,7 @@ function(self, event, ...)
   local Config = RPTAGS.utils.config;
   local Get    = Config.get;
 
-  local function scale_of(frameName) return Get( frameName:upper() .. "FRAME_SCALE"); end;
+  local function scale_of(frame) return Get( frame.unit:upper() .. "FRAME_SCALE"); end;
 
   local function scaleFrame(frame)
 
@@ -60,15 +60,17 @@ function(self, event, ...)
 
 end);
 
-Module:WaitUntil("before MODULE_G",
+Module:WaitUntil("before MODULE_F",
 function(self, event, ...)
 
   RPTAGS.cache.layouts         = RPTAGS.cache.layouts         or {};
   RPTAGS.cache.layouts.known   = RPTAGS.cache.layouts.known   or {}
   RPTAGS.cache.layouts.by_size = RPTAGS.cache.layouts.by_size or {};
 
+  local loc = RPTAGS.utils.locale.loc;
+
   local function RPUF_GetLayout(layoutName) 
-    return RPTAGS.cache.layouts.known[layoutName]; 
+    return RPTAGS.cache.layouts.known[layoutName:lower()]; 
   end;
 
   local function RPUF_RegisterLayout(layoutName, layout)
@@ -102,9 +104,9 @@ function(self, event, ...)
     end;
 
     if   #missing_panel_methods + #missing_frame_methods == 0
-    then layoutsCache.known[layoutName] = layout;
-         layoutsCache.by_size[layout.size] = layoutsCache.by_size[layout.size] or {};
-         table.insert(layoutsCache.by_size[layout.size], layoutName);
+    then layoutCache.known[layoutName] = layout;
+         layoutCache.by_size[layout.size] = layoutCache.by_size[layout.size] or {};
+         table.insert(layoutCache.by_size[layout.size], layoutName);
     else print("Error: layout " .. layoutName .. "  is incomplete")
          for _, method in ipairs(missing_panel_methods)
          do print(" - Missing required panel method " .. method)
@@ -120,16 +122,16 @@ function(self, event, ...)
   local function RPUF_NewLayout(layoutName, layoutSize, layoutVersion)
 
     return 
-    { name                       = loc("LAYOUT_" .. layoutName:upper()),
+    { name                       = loc("RPUF_" .. layoutName:upper()),
       key                        = layoutName,
       panel_methods              = {},
       frame_methods              = {},
       panel_method_hash          = {},
       size                       = layoutSize,
       version                    = layoutVersion or GetAddOnMetadata(addOnName, "Version"),
-      Register_Panel_Method      = function(self, hashName, hashTable) self.panel_method_hash[hashName] = hashTable; end,
-      Register_Panel_Method_Hash = function(self, hashName, func)      self.panel_methods[hash] = func;              end,
-      Register_Frame_Method      = function(self, func)                self.frame_methods[hash] = func;              end,
+      Register_Panel_Method_Hash = function(self, hashName, hashTable) self.panel_method_hash[hashName] = hashTable; end,
+      Register_Panel_Method      = function(self, funcName, func)      self.panel_methods[funcName]     = func;      end,
+      Register_Frame_Method      = function(self, funcName, func)      self.frame_methods[funcName]     = func;      end,
       RegisterLayout             = function(self)                      RPUF_RegisterLayout(layoutName, self)         end,
     };
 
@@ -143,28 +145,29 @@ function(self, event, ...)
   };
 
   local refreshFuncs =
-  { framesize        = "SetUF_Size",
-    layout           = "PlacePanels",
-    fonts            = "SetFont",
-    textcolor        = "SetTextColor",
-    tags             = "SetTagStrings",
-    hiding           = "Start_SSD",
-    lock             = "ApplyFrameLock",
-    statusbar        = "StyleStatusBar",
-    style            = "StyleFrame",
-    location         = "SetCoords",
-    vis              = "SetPanelVis",
-    sizes            = "PlacePanels",
-    backdrop         = "StyleFrame",
-    content          = "RefreshContentNow",
+  { framesize        = "UpdateFrameSize",
+    layout           = "UpdateLayout",
+    fonts            = "UpdateFont",
+    textcolor        = "UpdateTextColor",
+    tags             = "UpdateTagStrings",
+    hiding           = "UpdateFrameVisibility",
+    lock             = "UpdateFrameLock",
+    statusbar        = "UpdateStatusBar",
+    style            = "UpdateFrameAppearance",
+    -- location         = "SetCoords",
+    vis              = "UpdatePanelVisibility",
+    sizes            = "UpdatePanelPlacement",
+    backdrop         = "UpdateFrameApparance",
+    content          = "UpdateContent",
     portrait         = "UpdatePortrait",
   };
 
   local function RPUF_Refresh(frameName, ...)
 
     local function helper(funcName, frame) -- takes a name of a method (from the list above)
-      local func = frame[funcName];        -- and a frame, and calls the func if possible
-      if func and type(func) == "function" then func(frame) end;
+      if frame:HasPublicFunction(funcName)
+      then frame:Public(funcName);
+      end;
     end;
 
     for _, param in ipairs({ ... })

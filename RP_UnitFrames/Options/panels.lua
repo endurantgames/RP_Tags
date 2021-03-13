@@ -72,11 +72,11 @@ function(self, event, ...)
     },
     portraitStyle =
     { STANDARD = "Standard 3D model",
-      FROZEN = "Non-animated model",
+      -- FROZEN = "Non-animated model",
       FLAT = "Standard 2D model",
     },
     portraitFrameColor =
-    { RPCOLOR = "Use the unit's custom [rp:color].",
+    { -- RPCOLOR = "Use the unit's custom [rp:color].",
       FRAMECOLOR = "Use the same border color as the unit frame.",
       NOCOLOR = "Don't change the color of the frame.",
     }
@@ -113,7 +113,7 @@ function(self, event, ...)
       values = menu.portraitStyle,
       get = function() return Get("PORTRAIT_STYLE") end,
       set = function(info, value) Set("PORTRAIT_STYLE", value);
-             RPUF_Refresh("portrait") end,
+             RPUF_Refresh("all", "portrait") end,
       width = "full",
     };
 
@@ -126,7 +126,7 @@ function(self, event, ...)
       values = LibSharedMedia:HashTable("background"),
       get = function() return Get("PORTRAIT_BG") end,
       set = function(info, value) Set("PORTRAIT_BG", value);
-              RPUF_Refresh("portrait") end,
+              RPUF_Refresh("all", "portrait") end,
     };
 
     w.args.spaPort = Spacer();
@@ -140,7 +140,7 @@ function(self, event, ...)
       values = LibSharedMedia:HashTable("border"),
       get = function() return Get("PORTRAIT_BORDER") end,
       set = function(info, value) Set("PORTRAIT_BORDER", value);
-              RPUF_Refresh("portrait") end,
+              RPUF_Refresh("all", "portrait") end,
     };
 
     w.args.portraitFrameColor =
@@ -152,7 +152,7 @@ function(self, event, ...)
       values = menu.portraitFrameColor,
       get = function() return Get("PORTRAIT_BORDER_STYLE") end,
       set = function(info, value) Set("PORTRAIT_BORDER_STYLE", value);
-              RPUF_Refresh("portrait") end,
+              RPUF_Refresh("all", "portrait") end,
     };
 
     w.args.header2 =

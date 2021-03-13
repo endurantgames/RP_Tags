@@ -12,12 +12,10 @@ function(self, event, ...)
   local TEAL                     = "006060";
 
   local frameNames =
-  { NAMES = 
-    { PLAYER       = addOnName .. "_PlayerUnitFrame",
-      TARGET       = addOnName .. "_TargetUnitFrame",
-      FOCUS        = addOnName .. "_FocusUnitFrame",
-      TARGETTARGET = addOnName .. "_TargetTargetUnitFrame",
-    },
+  { PLAYER       = addOnName .. "_PlayerUnitFrame",
+    TARGET       = addOnName .. "_TargetUnitFrame",
+    FOCUS        = addOnName .. "_FocusUnitFrame",
+    TARGETTARGET = addOnName .. "_TargetTargetUnitFrame",
   };
 
   local ourConstants = 
@@ -143,11 +141,13 @@ function(self, event, ...)
     MOUSEOVER_CURSOR    = true,
     PORTRAIT_BG         = "None",
     PORTRAIT_BORDER     = "None",
-    PORTRAIT_STYLE      = "Standard",
+    PORTRAIT_STYLE      = "STANDARD",
     PORTWIDTH           = 100,
-    RPUFALPHA           = 65,
+    RPUFALPHA           = 0.65,
     RPUF_BACKDROP       = "Blizzard Parchment 2",
     RPUF_BORDER         = "Blizzard Tooltip",
+    RPUF_BORDER_WIDTH   = 12,
+    RPUF_BORDER_INSETS  = 4,
     RPUF_HIDE_COMBAT    = true,
     RPUF_HIDE_DEAD      = false,
     RPUF_HIDE_PARTY     = false,
@@ -158,6 +158,7 @@ function(self, event, ...)
     STATUSHEIGHT        = 35,
     STATUS_ALIGN        = "CENTER",
     STATUS_TEXTURE      = "Blizzard Character Skills Bar",
+    STATUS_ALPHA        = 0.65,
   };
 
   local ourConfig = 

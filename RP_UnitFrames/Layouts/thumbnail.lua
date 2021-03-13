@@ -10,23 +10,23 @@ function(self, event, ...)
   local function get_name_top(self)
     return 
       math.max( 
-        self:GetPanelHeight("name") + self:ConfGet("PORTHEIGHT") * 1.5,
-        self:ConfGet("ICONWIDTH"),
+        self:PanelGet("Height", "name") + self:ConfGet("PORTWIDTH") * 1.5,
+        self:ConfGet("ICONWIDTH")
       ); 
   end;
 
-  function get_Frame_dimensions(self)
+  function get_frame_dimensions(self)
     return 
-      math.max(self:ConfGet("PORTWIDTH") * 2/3, self:ConfGet("ICONWIDTH")),
+      math.max(self:Public("ConfGet", "PORTWIDTH") * 2/3, self:Public("ConfGet", "ICONWIDTH")),
 
-      math.max(self:ConfGet("ICONWIDTH") + self:PanelGet("Height", "name"),
-               self:ConfGet("PORTWIDTH") * 1.5)
+      math.max(self:Public("ConfGet", "ICONWIDTH") + self:Public("PanelGet", "Height", "name"),
+               self:Public("ConfGet", "PORTWIDTH") * 1.5)
   end
 
   layout:Register_Panel_Method_Hash( "GetPanelLeft",
     { [ "portrait" ] = 0,
       [ "icon1"    ] = 0,
-      [ "name"     ] = function() return self:Gap(1/3) end,
+      [ "name"     ] = function(self) return self:Gap(1/3) end,
     });
 
   layout:Register_Panel_Method_Hash( "GetPanelTop",
@@ -62,7 +62,7 @@ function(self, event, ...)
       [ "name"     ] = true, 
     });
        
-  layout:Register_Frame_Method( "GetFrameDimensions", get_frame-dimensions);
+  layout:Register_Frame_Method( "GetFrameDimensions", get_frame_dimensions);
   
   layout:RegisterLayout();
   

@@ -162,12 +162,16 @@ function(self, event, ...)
     CONFIG_PORTWIDTH_TT           = "Choose how wide you want the portrait to be.",
 
 
-    CONFIG_RPUFALPHA              = "Background Transparency",
-    CONFIG_RPUFALPHA_TT           = "Set the transparency of the background. 0 is completely invisible, while 100 is completely opaque.",
+    CONFIG_RPUFALPHA              = "Background Opacity",
+    CONFIG_RPUFALPHA_TT           = "Set the opacity of the background. 0 is completely invisible, while 100 is completely opaque.",
     CONFIG_RPUF_BACKDROP          = "Frame Background",
     CONFIG_RPUF_BACKDROP_TT       = "Choose what kind of background, if any, you want.",
     CONFIG_RPUF_BORDER            = "Frame Border",
     CONFIG_RPUF_BORDER_TT         = "Choose what kind of border, if any, you want.",
+    CONFIG_RPUF_BORDER_WIDTH      = "Border Thickness",
+    CONFIG_RPUF_BORDER_WIDTH_TT   = "Choose how thick the border should be.",
+    CONFIG_RPUF_BORDER_INSETS     = "Background Inset",
+    CONFIG_RPUF_BORDER_INSETS_TT  = "Choose how much the background should be inset relative to the border. You probably don't need to change this, unless the background is extending beyond the edge of the borders, or there's a gap between the border and the background.",
     CONFIG_RPUF_HIDE_COMBAT       = "Hide in Combat",
     CONFIG_RPUF_HIDE_COMBAT_TT    = "Check this to hide RPUF when you are in combat.",
     CONFIG_RPUF_HIDE_DEAD         = "Hide when Dead",
@@ -190,6 +194,8 @@ function(self, event, ...)
     CONFIG_STATUS_ALIGN_TT        = "Choose how you want the text on the status bar to be aligned.",
     CONFIG_STATUS_TEXTURE         = "Appearance",
     CONFIG_STATUS_TEXTURE_TT      = "Choose how you want the status bar to appear.",
+    CONFIG_STATUS_ALPHA           = "Background Opacity",
+    CONFIG_STATUS_ALPHA_TT        = "Set the opacity of the background. 0 is completely invisible, while 100 is completely opaque.",
   };
 
   for k, v in pairs(perFrame)
@@ -354,12 +360,12 @@ function(self, event, ...)
   L["CONFIG_EDITOR_BUTTONS"             ] = "Buttons";
   L["CONFIG_EDITOR_BUTTONS_TT"          ] = "Choose which buttons to show in the " .. EDITOR .. ".";
     -- --- layouts
-  L["RPUF_ABRIDGED"                     ] = "Standard";
-  L["RPUF_COMPACT"                      ] = "Compact";
-  L["RPUF_FULL"                         ] = "Detailed";
-  L["RPUF_HIDDEN"                       ] = "Do not display";
-  L["RPUF_PAPERDOLL"                    ] = "Portrait";
-  L["RPUF_THUMBNAIL"                    ] = "Thumbnail";
+  L["RPUF_ABRIDGED"                   ] = "Standard";
+  L["RPUF_COMPACT"                    ] = "Compact";
+  L["RPUF_FULL"                       ] = "Detailed";
+  L["RPUF_HIDDEN"                     ] = "Do not display";
+  L["RPUF_PAPERDOLL"                  ] = "Portrait";
+  L["RPUF_THUMBNAIL"                  ] = "Thumbnail";
     -- --- alignments
   L["BOTTOM"                            ] = "Bottom";
   L["BOTTOMLEFT"                        ] = "Bottom Left";

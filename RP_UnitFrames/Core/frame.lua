@@ -65,7 +65,7 @@ function(self, event, ...)
 
     -- -- frame size ------------------------------------------------------------------------------------------------------------
     local function updateFrameSize()
-      local width, height = self:GetDimensions();
+      local width, height = self:GetFrameDimensions();
       self:SetSize( width, height);
     end;
 
@@ -94,7 +94,7 @@ function(self, event, ...)
       return table.concat(conditions, ";")
     end;
 
-    local function updateFrameVisibility(self)
+    local function updateFrameVisibility()
       UnregisterStateDriver(self, "visibility");
       RegisterStateDriver(self,   "visibility", generateSSDString());
     end;
@@ -102,50 +102,64 @@ function(self, event, ...)
     -- -- unit frame appearance -------------------------------------------------------------------------------------------------
     local function updateFrameAppearance()
 
-      local border     = LibSharedMedia:Fetch("border",     confGet("RPUF_BORDER")) or
-                         LibSharedMedia:Fetch("border",     "Blizzard Tooltip");
-      local background = LibSharedMedia:Fetch("background", confGet("RPUF_BACKDROP")) or
-                         LibSharedMedia:Fetch("background", "Blizzard Tooltip");
+      local border     = LibSharedMedia:Fetch("border",     confGet("RPUF_BORDER")) 
+                         -- or LibSharedMedia:Fetch("border",     "Blizzard Tooltip");
+      local background = LibSharedMedia:Fetch("background", confGet("RPUF_BACKDROP")) 
+                         -- or LibSharedMedia:Fetch("background", "Blizzard Tooltip");
 
       local a = confGet( "RPUFALPHA" );
       if a > 1 then a = a / 100; confSet( "RPUFALPHA") end;
 
+      local borderWidth = confGet("RPUF_BORDER_WIDTH");
+      local inset = confGet("RPUF_BORDER_INSETS");
+
+      backdrop:SetBackdrop(
+        { bgFile   = background, 
+          edgeFile = border, 
+          edgeSize = borderWidth,
+          insets   = { left = inset, right = inset, top = inset, bottom = inset }
+        }
+      );
+
       local r, g, b      = toRGB(confGet("COLOR_RPUF"))
+      backdrop:SetBackdropColor(r / 255, g / 255, b / 255, a);
 
-      local insent = 5;
-
-      backdrop:SetBackdrop({ bgFile = background, edgeFile = border, edgeSize = 10, insets = { left = inset, right = inset, top = inset, bottom = 5 }});
-      backdrop:SetBackdropColor( r / 255, g / 255, b / 255, a );
+      r, g, b = toRGB(confGet("COLOR_RPUF_BORDER"));
+    
+      backdrop:SetBackdropBorderColor(r / 255, g / 255, b / 255, 1);
 
     end;
 
     -- -- panels ----------------------------------------------------------------------------------------------------------------
     local function createPanel(panelName, info)
-      local panel = CreateFrame("Frame", frameName .. titlecase(panelName), self);
+      local panel = CreateFrame("Frame", frameName .. panelName, self);
+          -- titlecase(panelName), self);
 
       panel.unit       = unit;
       panel.name       = panelName;
       panel.frameName  = frameName .. titlecase(panelName);
       panel.setting    = info.setting;
-      panel.info = info;
+      panel.info       = info;
+      panel.initialize = initializePanel;
 
-      initializePanel(panel);
+      panel:initialize(info);
       panels[panelName] = panel;
     end; -- create panel
 
     -- collective functions, i.e. they iterate through the panels
 
     local function for_each_panel(func, ...)
-      for _, panel in pairs(panels)
-      do  if   panel[func] and type(panel[func]) ~= "function"
+      for panelName, panel in pairs(panels)
+      do  
+          if   panel[func] and type(panel[func]) == "function"
           then panel[func](panel, ...);
           end;
       end;
     end;
 
-    local function updatePanelPlacement() for_each_panel("Place"  ); end;
-    local function updatePanelVisibility() for_each_panel("SetVis" ); end;
-    local function updateFont()     for_each_panel("SetFont"); end;
+    local function updatePanelPlacement() for_each_panel("Place"); end;
+    local function updatePanelVisibility() for_each_panel("SetVis"); end;
+    local function updateFont() for_each_panel("SetFont"); end;
 
     local function updateTagStrings() for_each_panel("SetTagString"); end;
 
@@ -154,19 +168,19 @@ function(self, event, ...)
       for_each_panel("SetTextColor", r / 255, g / 255, b / 255);
     end;
 
-    local function panelGet(funcName, panel)
-      panel = (type(panel) == "string") and self:GetPanel(panel);
+    local function panelGet(funcName, panel, ...)
+      if type(panel) == "string" then panel = getPanel(panel) end;
       funcName = funcName:match("^GetPanel") and funcName or ("GetPanel" .. funcName);
 
       if     not panel
-      then   error("width requested for unknown panel")
+      then   error(funcName .. " requested for unknown panel")
       elseif type(funcName) ~= "string"
       then   error("no funcName given")
       elseif type(panel[funcName]) ~= "function"
-      then   error("unknown function")
+      then   error("unknown function" .. (funcName or "nil") .. " for " .. panel:GetName())
       end;
 
-      return panel[funcName](self);
+      return panel[funcName](panel, ...);
     end;
 
     local function gap(num) return confGet("GAPSIZE") * (num or 1) end;
@@ -226,34 +240,39 @@ function(self, event, ...)
 
       statusBar:SetStatusbar(textureFile);
 
-      local a = confGet( "RPUFALPHA" );
-
-      if a > 1 then a = a / 100; confSet( "RPUFALPHA", a) end;
-
       local r, g, b = toRGB(confGet("COLOR_STATUS"))
-      statusBar:SetVertexColor( r / 255, g / 255, b / 255, a );
+      statusBar:SetVertexColor( r / 255, g / 255, b / 255, confGet("STATUS_ALPHA" ));
 
       statusBar.text:SetJustifyH( confGet("STATUS_ALIGN" ))
       statusBar.text:SetJustifyV("CENTER");
       statusBar:SetHeight( confGet("STATUSHEIGHT"));
 
+      statusBar:Place();
       r, g, b = toRGB(confGet("COLOR_STATUS_TEXT"));
       statusBar:SetTextColor(r / 255, g / 255, b / 255);
 
     end;
 
     local function updatePortrait()
-      print (unit .. " portrait updating now");
+      print("updating portrait");
       local portraitPanel = panels["portrait"];
-      self.Portrait:SetUnit(unit);
       local border     = LibSharedMedia:Fetch("border", Config.get("PORTRAIT_BORDER"))
-                         or LibSharedMedia:Fetch("border", "Blizzard Achievement Wood");
       local background = LibSharedMedia:Fetch("background", Config.get("PORTRAIT_BG"))
-                         or LibSharedMedia:Fetch("Blizzard Rock");
+
+      if Config.get("PORTRAIT_STYLE") == "STANDARD"
+      then portraitPanel.portrait2D:Hide();
+           self.Portrait = portraitPanel.portrait3D;
+           self.Portrait:SetUnit(unit);
+           self.Portrait:Show();
+      else portraitPanel.portrait3D:Hide();
+           self.Portrait = portraitPanel.portrait2D;
+           self.Portrait:Show();
+      end;
+
       portraitPanel.pictureFrame:SetBackdrop(
       { bgFile   = background,
         edgeFile = border,
-        edgeSize = 8,
+        edgeSize = 16,
         insets   = { left = 3, right = 3, top = 3, bottom = 3 }
       });
     end;
@@ -265,7 +284,7 @@ function(self, event, ...)
     local function updateLayout()
       local layoutName = getLayoutName()
       local layout = RPUF_GetLayout(layoutName);
-      if not layout then error("Unknown layout in updateLayout"); end;
+      if not layout then error("Unknown layout in updateLayout: " .. (layoutName or "nil")); end;
 
       for funcName, func in pairs(layout.frame_methods)
       do  self[funcName] = func;
@@ -280,7 +299,7 @@ function(self, event, ...)
       updatePortrait();
       updatePanelVisibility();
       updateFrameVisibility();
-      updateFonts();
+      updateFont();
       updateTextColor();
       updateStatusBar();
       updateFrameLock();
@@ -312,10 +331,14 @@ function(self, event, ...)
     public.UpdateTagStrings      = updateTagStrings;
     public.UpdateTextColor       = updateTextColor;
 
+    function self.HasPublicFunction(self, funcName)
+       return type(public[funcName]) == "function"
+    end;
+
     function self.Public(self, funcName, ...)
       if   public[funcName]
       then return public[funcName](...)
-      else error("No public function " .. funcName)
+      else error("No public function ", funcName)
       end;
     end;
 
@@ -323,7 +346,7 @@ function(self, event, ...)
     self:SetMovable(true);
     self:SetClampedToScreen(true);
     setCoords(getSavedCoords());
-    for name, info in pairs( panelInfo ) do createPanel( name, info); end;
+    for name, info in pairs( panelInfo ) do createPanel(name, info); end;
     self:SetScript("OnDragStart", onDragStart);
     self:SetScript("OnDragStop",  onDragStop);
 
