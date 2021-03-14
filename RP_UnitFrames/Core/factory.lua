@@ -22,7 +22,7 @@ function(self, event, ...)
       do  local u = unit:lower();
           local frame = self:Spawn(u, frameName);
           UnregisterUnitWatch(frame);
-          frame:SetPoint("CENTER");
+          -- frame:SetPoint("CENTER");
           RPTAGS.cache.UnitFrames[u] = _G[frameName];
           frame:Public("UpdateEverything");
           frame:SetFrameStrata("MEDIUM");
@@ -157,7 +157,7 @@ function(self, event, ...)
     lock             = "UpdateFrameLock",
     statusbar        = "UpdateStatusBar",
     style            = "UpdateFrameAppearance",
-    -- location         = "SetCoords",
+    location         = "ResetCoords",
     vis              = "UpdatePanelVisibility",
     sizes            = "UpdatePanelPlacement",
     backdrop         = "UpdateFrameApparance",

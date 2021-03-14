@@ -37,7 +37,7 @@ function(self, event, ...)
       [ "name"      ] = function(self) return self:Gap(3) + self:PanelGet("Width", "portrait") + self:PanelGet("Width", "icon1") end,
       [ "info"      ] = "name",
       [ "details"   ] = "name",
-      [ "statusBar" ] = function(self) return (self:Public("ConfGet", "RPUF_BORDER") ~= "None" and self:Public("ConfGet", "RPUF_BORDER_INSETS") or 0) * 2 end,
+      [ "statusBar" ] = function(self) return self:Public("ConfGet", "RPUF_BORDER_INSETS") end,
     });
 
   layout:Register_Panel_Method_Hash("GetPanelTop",
@@ -79,8 +79,10 @@ function(self, event, ...)
       [ "name"      ] = "info",
       [ "info"      ] = function(self) return self:ConfGet("INFOWIDTH") end,
       [ "details"   ] = "info",
-      [ "statusBar" ] = function(self) return self:ConfGet("PORTWIDTH") + self:Gap(4) + self:ConfGet("ICONWIDTH") 
-      - (self:Public("ConfGet", "RPUF_BORDER") ~= "None" and self:Public("ConfGet", "RPUF_BORDER_INSETS") or 0) end,
+      [ "statusBar" ] = 
+        function(self) 
+          return self:ConfGet("PORTWIDTH") + self:Gap(4) + self:ConfGet("ICONWIDTH") 
+            - 2 * self:Public("ConfGet", "RPUF_BORDER_INSETS") end,
     });
 
   layout:Register_Panel_Method_Hash("GetPanelVis",

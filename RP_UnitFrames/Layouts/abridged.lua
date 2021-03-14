@@ -58,7 +58,6 @@ function(self, event, ...)
       [ "icon4"     ] = function(self) return self:Gap(3) + self:ConfGet("ICONWIDTH") * 2 end,
       [ "icon5"     ] = function(self) return self:Gap(4) + self:ConfGet("ICONWIDTH") * 3 end,
       [ "icon6"     ] = function(self) return self:Gap(5) + self:ConfGet("ICONWIDTH") * 4 end,
-
     });
 
   layout:Register_Panel_Method_Hash("GetPanelTop",

@@ -31,12 +31,12 @@ function(self, event, ...)
     --   -- passthrough ---------------------------------------------------------------------------------------
    
     function self.Public(self, funcName, ... ) return self:GetParent():Public(funcName,        ... ) end;
-    function self.Gap(       self,     ... ) return self:GetParent():Public("Gap",           ... ) end;
-    function self.GetUnit(   self,     ... ) return self:GetParent():Public("GetUnit",       ... ) end;
-    function self.GetLayoutName( self, ... ) return self:GetParent():Public("GetLayoutName", ... ) end;
-    function self.ConfGet(   self,     ... ) return self:GetParent():Public("ConfGet",       ... ) end;
-    function self.ConfSet(   self,     ... ) return self:GetParent():Public("ConfSet",       ... ) end;
-    function self.PanelGet(  self,     ... ) return self:GetParent():Public("PanelGet",      ... ) end;
+    function self.Gap(       self,       ... ) return self:GetParent():Public("Gap",           ... ) end;
+    function self.GetUnit(   self,       ... ) return self:GetParent():Public("GetUnit",       ... ) end;
+    function self.GetLayoutName( self,   ... ) return self:GetParent():Public("GetLayoutName", ... ) end;
+    function self.ConfGet(   self,       ... ) return self:GetParent():Public("ConfGet",       ... ) end;
+    function self.ConfSet(   self,       ... ) return self:GetParent():Public("ConfSet",       ... ) end;
+    function self.PanelGet(  self,       ... ) return self:GetParent():Public("PanelGet",      ... ) end;
 
     --   -- general -------------------------------------------------------------------------------------------
     
@@ -185,14 +185,14 @@ function(self, event, ...)
     then 
 
       self:EnableMouse();
-      self:SetScript("OnEnter", showTooltip );
-      self:SetScript("OnLeave", hideTooltip );
-      self.tooltip = tooltip;
+      self:SetScript("OnEnter", function(self, ...) self:showTooltip(...) end );
+      self:SetScript("OnLeave", function(self, ...) self:hideTooltip(...) end );
+      self.tooltip = opt.tooltip;
       
       function self.GetTooltipColor(self, ...) return self:GetParent():Public("GetTooltipColor", ...) end;
 
       function self.showTooltip(self, event, ...) 
-        local tooltip = eval(Config.get(self.tooltip), self:GetUnit(), self:GetUnit());
+        local tooltip = eval(Config.get(self.tooltip), self.unit, self.unit, RPTAGS.oUF);
         local r, g, b = self:GetTooltipColor();
     
         if   self:ConfGet("MOUSEOVER_CURSOR")
@@ -211,7 +211,7 @@ function(self, event, ...)
         end;
       end; 
   
-      function hideTooltip(self, ...) 
+      function self.hideTooltip(self, ...) 
         GameTooltip:FadeOut(); 
         ResetCursor(); 
         return self, ... 
@@ -224,11 +224,13 @@ function(self, event, ...)
     then 
 
       -- obvious placeholder is obvious
-      function showContextMenu(self, event, ...) notify("context menu for", self.name); end;
+      function self.showContextMenu(self, event, ...) 
+        print("This is a context menu")
+      end;
   
-      self:SetScript("OnMouseUp",
+      self:SetScript("OnMouseDown",
         function(self, button, ...) 
-          if   button == "RightButton" then showContextMenu(self, button, ...) end; 
+          if   button == "RightButton" then self:showContextMenu(button, ...) end; 
         end);
 
     end;

@@ -101,21 +101,8 @@ function(self, event, ...)
     return tagName, tagMethod, tagExtraEvents;
   end;
   
-  local function registerTagLabel(tagName, tagMethod, tagExtraEvents, label)
-    local split = RPTAGS.utils.text.split;
-    local lab = split(label, "|");
-    local prefix, suffix = lab[1] or "", lab[2] or "";
-    RPTAGS.utils.tags.registerTag( 
-      prefix .. "$>" .. tagName .. "-label<$" .. suffix,
-      tagMethod, 
-      tagExtraEvents
-    );
-    return tagName, tagMethod, tagExtraEvents, label;
-  end;
-
   RPTAGS.utils.modules.extend(
   { [ "tags.registerTag"   ] = registerTag, 
-    [ "tags.registerLabel" ] = registerTagLabel,
     [ "tags.sizeVariants"  ] = registerTagSizeVariants,
   });
 

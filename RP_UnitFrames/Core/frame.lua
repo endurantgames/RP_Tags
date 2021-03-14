@@ -16,6 +16,7 @@ function(self, event, ...)
   local RPUF_GetLayout  = Utils.frames.RPUF_GetLayout;
   local titlecase       = Utils.text.titlecase;
   local toRGB           = Utils.color.hexaToNumber;
+  local AceGUI          = LibStub("AceGUI-3.0");
 
   local panelInfo   = CONST.RPUF.PANEL_INFO;
   -- rpuf "style" for oUF -----------------------------------------------------------------------------------------------------
@@ -94,9 +95,7 @@ function(self, event, ...)
       return table.concat(conditions, ";")
     end;
 
-    local function updateFrameVisibility()
-      RegisterStateDriver(self, "visibility", generateSSDString());
-    end;
+    local function updateFrameVisibility() RegisterStateDriver(self, "visibility", generateSSDString()); end;
 
     -- -- unit frame appearance -------------------------------------------------------------------------------------------------
     local function updateFrameAppearance()
@@ -120,7 +119,7 @@ function(self, event, ...)
         }
       );
 
-      local r, g, b      = toRGB(confGet("COLOR_RPUF"))
+      local r, g, b = toRGB(confGet("COLOR_RPUF"))
       backdrop:SetBackdropColor(r / 255, g / 255, b / 255, a);
 
       r, g, b = toRGB(confGet("COLOR_RPUF_BORDER"));
@@ -186,7 +185,7 @@ function(self, event, ...)
 
     -- -- frame locking ---------------------------------------------------------------------------------------------------------
     local function isFrameLocked()     return Config.get("LOCK_FRAMES_" .. unit:upper()) end;
-    local function setFrameLock(value) confSet("LOCK_FRAMES", value); end;
+    local function setFrameLock(value) Config.set("LOCK_FRAMES_" .. unit:upper(), value); end;
     local function toggleFrameLock()   setFrameLock(not isFrameLocked() ); end;
 
     local padlock = CreateFrame("Button", nil, self);
@@ -194,7 +193,7 @@ function(self, event, ...)
     padlock:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT");
     padlock:SetNormalTexture("Interface\\PetBattles\\PetBattle-LockIcon.PNG");
     padlock:SetClampedToScreen(true);
-
+  
     local function updateFrameLock()
       if   isFrameLocked()
       then padlock:Hide() self:RegisterForDrag(nil);
@@ -202,7 +201,30 @@ function(self, event, ...)
       end;
     end;
 
-    padlock:SetScript("OnClick", function() setFrameLock(true); end);
+    padlock:RegisterForClicks("LeftButtonUp");
+    padlock:SetScript("OnClick", 
+      function() 
+        print("click!"); 
+        PlaySound(8939); 
+        setFrameLock(true); 
+        updateFrameLock(); 
+      end);
+    padlock:SetScript("OnEnter", 
+      function() 
+        SetCursor("Interface\\CURSOR\\PickLock.PNG") 
+        GameTooltip:ClearLines();
+        GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+        GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+        GameTooltip:AddLine("Lock this frame");
+        GameTooltip:AddLine("Locking the frame prevents it from being moved.",
+                      1, 1, 1, true);
+        GameTooltip:Show();
+      end);
+    padlock:SetScript("OnLeave", 
+      function() 
+        GameTooltip:FadeOut();
+        ResetCursor() 
+      end);
 
     -- -- frame moving ----------------------------------------------------------------------------------------------------------
 
@@ -211,8 +233,13 @@ function(self, event, ...)
       if x and y then RP_UnitFramesDB.coords[unit] = { x, y }; end;
     end;
 
-    local function getDefaultCoords() return RPTAGS.CONST.RPUF.COORDS[unit] end;
-    local function getSavedCoords() return RP_UnitFramesDB.coords[unit] or getDefaultCoords() end;
+    local function getDefaultCoords() 
+      return RPTAGS.CONST.RPUF.COORDS[unit] 
+    end;
+
+    local function getSavedCoords() 
+      return RP_UnitFramesDB.coords[unit] or getDefaultCoords() 
+    end;
 
     local function setCoords(coords)
       coords = coords or getSavedCoords();
@@ -222,6 +249,8 @@ function(self, event, ...)
       self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y);
       saveCoords();
     end
+
+    local function resetCoords() setCoords(); end;
 
     local function onDragStart(self, button)
       if button == "LeftButton" then self:StartMoving() end;
@@ -314,6 +343,7 @@ function(self, event, ...)
     public.GetTooltipColor       = getTooltipColor;
     public.GetUnit               = getUnit;
     public.PanelGet              = panelGet;
+    public.ResetCoords           = resetCoordse
     public.UpdateContent         = updateContent;
     public.UpdateEverything      = updateEverything;
     public.UpdateFont            = updateFont;

@@ -263,11 +263,12 @@ local function set(setting)    return function(info, value) Set(setting, value);
       desc                      = tloc(f.lockFrame),
       width                     = 1.5,
       get                       = get(f.lockFrame),
-      set                       = function(info, value) Set(f.lockFrame, value); 
+      set                       = function(info, value) 
+                                    Set(f.lockFrame, value); 
                                     if not frameName 
-                                    then   for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
-                                           do  frame:SetFrameLock(value)
-                                           end;
+                                    then for frameName, _ in pairs(RPTAGS.cache.UnitFrames)
+                                         do Set(f.lockFrame .. "_" .. frameName:upper(), value);
+                                         end;
                                            Refresh("all", "lock"); 
                                     else   Refresh(frameName, "lock");
                                     end;

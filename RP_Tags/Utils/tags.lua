@@ -129,13 +129,29 @@ function(self, event, ...)
     return tag, group; -- pass these values through in case a module needs it
     -- and that tag is done!
   end;
-  
+
+  local function registerTagLabel(tagName, tagMethod, tagExtraEvents, label)
+    local split = RPTAGS.utils.text.split;
+    local lab = split(label, "|");
+    local prefix, suffix = lab[1] or "", lab[2] or "";
+    RPTAGS.utils.tags.registerTag(
+      tagName .. "-label",
+      function(...)
+        local result = tagMethod( ... );
+        if result and result ~= ""
+        then return prefix .. ": " .. result .. suffix;
+        else return result
+        end;
+      end,
+      tagExtraEvents
+    );
+  end;
+
   -- this will be extended by UF-specific functions
   local function registerTag(             ... ) return ... end;
   local function refreshFrame(            ... ) return ... end;
   local function refreshAll(              ... ) return ... end;
   local function registerTagSizeVariants( ... ) return ... end;
-  local function registerTagLabel(        ... ) return ... end;
    
   local function evalTagString(tagstr, unit, realUnit, use_oUF) -- adapted from oUF/elements/tags.lua
     if not tagstr then return "" end;
