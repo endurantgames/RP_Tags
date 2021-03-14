@@ -21,16 +21,16 @@ function(self, event, ...)
 --                   Fam  = "SCP", File = "Black.ttf" }, 
 --  SCPBlaIta    = { Load = 0,     Name = "Source Code Pro Black Italic",             
 --                   Fam  = "SCP", File = "BlackItalic.ttf" }, 
-    SCPBol       = { Load = 1,     Name = "Source Code Pro Bold",               
-                     Fam  = "SCP", File = "Bold.ttf" }, 
+--  SCPBol       = { Load = 1,     Name = "Source Code Pro Bold",               
+--                   Fam  = "SCP", File = "Bold.ttf" }, 
 --  SCPBolIta    = { Load = 0,     Name = "Source Code Pro Bold Italic",        
 --                   Fam  = "SCP", File = "BoldItalic.ttf" }, 
 --  SCPExtLig    = { Load = 0,     Name = "Source Code Pro Extra Light",        
 --                   Fam  = "SCP", File = "ExtraLight.ttf" }, 
 --  SCPExtLigIta = { Load = 0,     Name = "Source Code Pro Extra Light Italic", 
 --                   Fam  = "SCP", File = "ExtraLightItalic.ttf" }, 
-    SCPIta       = { Load = 1,     Name = "Source Code Pro Italic",             
-                     Fam  = "SCP", File = "Italic.ttf" }, 
+--  SCPIta       = { Load = 1,     Name = "Source Code Pro Italic",             
+--                   Fam  = "SCP", File = "Italic.ttf" }, 
 --  SCPLig       = { Load = 0,     Name = "Source Code Pro Light",              
 --                   Fam  = "SCP", File = "Light.ttf" }, 
 --  SCPLigIta    = { Load = 0,     Name = "Source Code Pro Light Italic",       
@@ -49,8 +49,8 @@ function(self, event, ...)
     STMReg       = { Load = 1,     Name = "ShareTechMono",                        
                      Fam  = "STM", File = "Regular.ttf" }, 
 
-    SYNReg       = { Load = 1,     Name = "Syne Mono",                            
-                     Fam  = "SYN", File = "Regular.ttf" }, 
+--  SYNReg       = { Load = 1,     Name = "Syne Mono",                            
+--                   Fam  = "SYN", File = "Regular.ttf" }, 
  };
 
   for fontCode, font in pairs(fontList)
