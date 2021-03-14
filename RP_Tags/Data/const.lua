@@ -402,6 +402,7 @@ function(self, event, ...)
     trp3           = { url = "URL_TRP3",           name = "URL_TRP3_TT",           },
     twitter        = { url = "URL_TWITTER",        name = "URL_TWITTER_TT",        },
     xrp            = { url = "URL_XRP",            name = "URL_XRP_TT",            },
+    rpfonts        = { url = "URL_RPFONTS",        name = "URL_RPFONTS_TT",        },
   };
   C.UNSUP = {};
   

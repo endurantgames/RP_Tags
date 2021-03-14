@@ -198,6 +198,15 @@ follow these instructions:
 - Second, reload your UI (e.g. with `/reload`)
 - Third, go to RP_Tags options (e.g. with `/rptags`) and uncheck "Disable RPUF"
 
+## 9.0.5.0 beta 3
+
+Minor fixes:
+
+- RP\_UnitFrames less broken
+- Labels work (again)
+- Various other bug fixes
+- Removed all but one font; font collection moved to [rpFonts](urldb://rpfonts)
+
 ## 9.0.5.0 beta 1
 
 Major updates including:

@@ -18,8 +18,8 @@ function(self, event, ...)
   -- US English localization ==========================================================================================================================================
   -- ------------------ - core app strings
   
-  local RP             = CONST.APP_COLOR .. "rp:" .. "|r";
-  local APP_NAME       = RP .. "tags";
+  local RP             = CONST.APP_COLOR .. "rp" .. "|r";
+  local APP_NAME       = RP .. "Tags";
   local RAINBOW_COLORS = "|cffff0000" .. "C" .. "|r" ..  -- presented like this so we can figure out what it actually says!
    "|cffff9900" .. "o" .. "|r" ..
    "|cffffff00" .. "l" .. "|r" ..
@@ -130,6 +130,8 @@ function(self, event, ...)
   -- --- urls
   L["URL_DISCORD"]        = "https://discord.gg/zGPP9x9";
   L["URL_DISCORD_TT"]     = "The " .. APP_NAME .. " Discord Server";
+  L["URL_RPFONTS"]        = "https://spindrift.games/rpFonts";
+  L["URL_RPFONTS_TT"]     = "Download " .. RP .. "|cff997e27Fonts|r";
   L["URL_DOWNLOAD_CURSE"] = "https://www.curseforge.com/wow/addons/rp-tags";
   L["URL_DOWNLOAD_CURSE_TT"] = APP_NAME .. " on CurseForge";
   L["URL_DOWNLOAD_TUKUI"] = "https://www.tukui.org/addons.php?id                                                                                                                                     = 98";
