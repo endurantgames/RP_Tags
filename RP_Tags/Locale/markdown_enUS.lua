@@ -197,6 +197,7 @@ follow these instructions:
 - First, change your addons in WoW so that RP\_UnitFrames is set to load.
 - Second, reload your UI (e.g. with `/reload`)
 - Third, go to RP_Tags options (e.g. with `/rptags`) and uncheck "Disable RPUF"
+- Send bug reports to the [GitHub project page](https://github.com/caderaspindrift/RP_Tags/issues) please!
 
 ## 9.0.5.0 beta 3
 
