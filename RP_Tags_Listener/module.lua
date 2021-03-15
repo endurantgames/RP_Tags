@@ -25,33 +25,20 @@ function(self, event, ...)
   local Config = RPTAGS.utils.config;
 
   local function isParty(line)
-     return line.e == "PARTY" or line.e == "PARTY_LEADER"
-         or line.e == "RAID" or line.e == "RAID_LEADER"
-         or line.e == "RAID_LEADER"
+     return line.e == "PARTY"         or line.e == "PARTY_LEADER"
+         or line.e == "INSTANCE_CHAT" or line.e == "INSTANCE_CHAT_LEADER"
+         or line.e == "RAID"          or line.e == "RAID_LEADER"
+         or line.e == "RAID_WARNING"
   end;
 
-  local function isEmote(line)
-     return line.e == "EMOTE" or line.e == "TEXT_EMOTE"
-  end;
-
-  local function isSay(line)
-    return line.e == "SAY" or line.e == "EMOTE" and line.m:find("\".-\"")
-  end;
-
-  local function isNamelessEmote(line)
-    return line.e == "EMOTE"; 
-  end;
-
-  local function isWhisper(line)
-    return line.e == "WHISPER"
-  end;
+  local function isEmote(line)         return line.e == "EMOTE" or  line.e == "TEXT_EMOTE" end;
+  local function isEmotedSay(line)     return line.e == "EMOTE" and line.e:find("\".-\""); end;
+  local function isSay(line)           return line.e == "SAY"   or  isEmotedSay(line)      end;
+  local function isNamelessEmote(line) return line.e == "EMOTE";                           end;
+  local function isWhisper(line)       return line.e == "WHISPER"                          end;
 
   local function isAnyOfTheAbove(line)
     return isWhisper(line) or isParty(line) or isSay(line) or isEmote(line)
-  end;
-
-  local function isEmotedSay(line)
-    return line.e == "EMOTE" and line.e:find("\".-\"");
   end;
 
   local function isToMe(line)
