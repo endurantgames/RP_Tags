@@ -73,6 +73,7 @@ function(self, event, ...)
           note1            = Wide(Textbox("note 1 string")),
           note2            = Wide(Textbox("note 2 string")),
           note3            = Wide(Textbox("note 3 string")),
+          me               = Textbox("me")
         },
       },
       formats              =

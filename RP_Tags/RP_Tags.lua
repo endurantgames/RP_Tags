@@ -72,10 +72,10 @@ Queue:OnError(
 
 RPTAGS.queue = Queue;
 
-local StartupFrame = CreateFrame("Frame");
-StartupFrame:RegisterEvent("PLAYER_LOGIN");
-StartupFrame:SetScript("OnEvent", function(self, event, ...) RPTAGS.queue:FireAll(); end);
-RPTAGS.StartupFrame = StartupFrame;
+local EventsFrame = CreateFrame("Frame");
+EventsFrame:RegisterEvent("PLAYER_LOGIN");
+EventsFrame:SetScript("OnEvent", function(self, event, ...) RPTAGS.queue:FireAll(); end);
+RPTAGS.EventsFrame = EventsFrame;
 
 _G["RPTAGS"] = RPTAGS;
 

@@ -38,6 +38,7 @@ function(self, event, ...)
           colorIC          = Color_Picker("ic"),
           colorOOC         = Color_Picker("ooc"),
           colorNPC         = Color_Picker("npc"),
+          colorMe          = Color_Picker("ME"),
         },
       },
       gender               =

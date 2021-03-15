@@ -176,6 +176,8 @@ local function targetMeta(u, request) if not u or not UnitIsPlayer(u) then retur
     status      = RPTAGS.utils.get.text.status,
     statuscolor = RPTAGS.utils.get.color.status,
     statusicon  = RPTAGS.utils.get.icon.status,
+    me          = RPTAGS.utils.get.shared.me,
+    mecolor     = RPTAGS.utils.get.shared.meColor,
     title       = RPTAGS.utils.get.text.fulltitle, };
   if request == "details"
   then return (tmap.icon(tot)       or "") .. " " .. (tmap.color(tot)       or "") ..        (tmap.name(tot)  or "") .. "|r\n" ..
@@ -183,6 +185,18 @@ local function targetMeta(u, request) if not u or not UnitIsPlayer(u) then retur
               (tmap.gendericon(tot) or "") .. " " .. (tmap.race(tot)        or "") .. " " .. (tmap.class(tot) or "");
   elseif tmap[request] then return tmap[request](tot) 
   else return "" 
+  end;
+end;
+
+local function meColor(u)
+  if UnitGUID(u) == UnitGUID('player')
+  then return "|cff" .. Config.get("COLOR_ME");
+  end;
+end;
+
+local function meName(u)
+  if UnitGUID(u) == UnitGUID('player')
+  then return "|cff" .. Config.Get("COLOR_ME") .. Config.get("ME") .. "|r";
   end;
 end;
 
@@ -197,5 +211,7 @@ RPTAGS.utils.get.shared.server       = getServerInfo;
 RPTAGS.utils.get.shared.sizebuff     = getSizeBuff;
 RPTAGS.utils.get.shared.sizebuffIcon = getSizeBuffIcon;
 RPTAGS.utils.get.shared.target       = targetMeta;
+RPTAGS.utils.get.shared.meColor      = meColor;
+RPTAGS.utils.get.shared.me           = meName;
 
 end);
