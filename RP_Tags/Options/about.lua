@@ -187,6 +187,33 @@ function(self, event, ...)
          end;
        end;
    
+       local function tagList()
+         local tagHeader = "| rp:tag | Displays |\n" ..
+                           "| :---------------------- | :-------------------------- |";
+
+         table.insert(details, "# Tag List");
+         addB();
+         table.insert(details, "Current as of " .. RPTAGS.metadata.Version);
+
+         for _, tagGroup in pairs(RPTAGS.CONST.TAG_DATA)
+         do  addB(); 
+             table.insert(details, "## " .. tagGroup.title);
+             addB();
+             table.insert(details, tagGroup.help);
+             addB();
+             table.insert(details, tagHeader);
+             for _, tag in pairs(tagGroup.tags)
+             do  if tag.title
+                 then addB();
+                      table.insert(details, "### " .. tag.title);
+                      addB();
+                      table.insert(details, tagHeader);
+                 else table.insert(details, "| `[" .. tag.name .. "]` | " .. tag.desc .. " |");
+                 end;
+             end;
+         end;
+       end;
+
        local sections = { strsplit(" ", value:gsub("^debug ", "")) };
        for i = 1, math.min(#sections, 2)
        do  local sec = sections[i];
@@ -201,6 +228,8 @@ function(self, event, ...)
           elseif sec:match("^config")
           then addH("Config", 0); 
                walk(db, 1); 
+          elseif sec:match("^tags")
+          then tagList();
           else addH("Unknown Parameter", 0);
                addP("debug", sec);
           end;
