@@ -193,7 +193,12 @@ function(self, event, ...)
 
          table.insert(details, "# Tag List");
          addB();
-         table.insert(details, "Current as of " .. RPTAGS.metadata.Version);
+         table.insert(details, string.format("Current as of %s (%s).",
+                        RPTAGS.metadata.Version, 
+                        GetAddOnMetadata("RP_Tags", "X-VersionDate")));
+
+         local allTags = {};
+         local function add(tag) table.insert(allTags, "`[" .. tag .. "]`"); end;
 
          for _, tagGroup in pairs(RPTAGS.CONST.TAG_DATA)
          do  addB(); 
@@ -209,9 +214,25 @@ function(self, event, ...)
                       addB();
                       table.insert(details, tagHeader);
                  else table.insert(details, "| `[" .. tag.name .. "]` | " .. tag.desc .. " |");
+                      if not tag.external and not tagGroup.external
+                      then add(tag.name);
+                           if tag.label then add(tag.name .. "-label") end;
+                           if tag.alias 
+                           then for _, aka in ipairs(tag.alias)
+                                do add(aka);
+                                   if tag.label then add(aka .. "-label") end;
+                                end;
+                           end;
+                      end;
                  end;
              end;
          end;
+
+         table.sort(allTags, function(a, b) return a:lower() < b:lower() end);
+         table.insert(details, "# All Tags (" .. #allTags .. ")" )
+         addB();
+         table.insert(details, "\n - " .. table.concat(allTags, "\n - ") );
+         
        end;
 
        local sections = { strsplit(" ", value:gsub("^debug ", "")) };
