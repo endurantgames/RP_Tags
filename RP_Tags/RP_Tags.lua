@@ -12,6 +12,9 @@ local RPQ = _G["RP_ADDON_QUEUE"];
 if not RPQ then error(addOnName .. " requires RPQ"); end;
 
 local Queue = RPQ:New(addOnName);
+Queue:NewModuleType("rpClient");
+Queue:NewModuleType("unitFrames");
+Queue:NewModuleType("dataSource");
 
 local RPQ_EVENTS = 
 { "ADDON_INIT",        

@@ -23,6 +23,35 @@ local rpFontsFrame = CreateFrame("Frame");
       rpFontsFrame:RegisterEvent("ADDON_LOADED");
       rpFontsFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
 
+if   RPTAGS
+then RPTAGS.queue:NewModuleType("fontManager");
+     local Module = RPTAGS.queue:NewModule(addOnName, "fontManager");
+     Module:WaitUntil("DATA_LOCALE",
+       function(self, event, ...)
+         local L = LibStub("AceLocale-3.0"):NewLocale(RPTAGS.CONST.APP_ID, "enUS", true);
+         L["RPQ_TYPE_FONTMANAGER"] = "|cff997c27Font Manager|r";
+       end
+     );
+
+     Module:WaitUntil("MODULE_C",
+       function(self, event, ...)
+         local registerFunction = RPTAGS.utils.modules.registerFunction;
+
+         registerFunction("RP_Fonts", "open", 
+           function()
+             InterfaceOptionsFrame:Show();
+             InterfaceOptionsFrame_OpenToCategory(rpFontsTitle);
+           end);
+         registerFunction("RP_Fonts", "options",
+           function()
+             InterfaceOptionsFrame:Show();
+             InterfaceOptionsFrame_OpenToCategory(rpFontsTitle);
+             AceConfigDialog:SelectGroup(addOnName, "settings");
+           end);
+       end
+     );
+end;
+
 -- our fonts -------------------------------------------------------------------------------
 local family = {
   Almen  = baseFontDir .. "Almendra_Display\\AlmendraDisplay-",

@@ -51,7 +51,7 @@ function(self, event, ...)
     local rpqType = addOn.rpqType and loc("RPQ_TYPE_" .. addOn.rpqType:upper()) or "";
     local desc    = addOn.desc or "";
 
-    if rpqType:match("Module") then name = RPTAGS.CONST.NBSP .. name; end;
+    if rpqType ~= loc("RPQ_TYPE_CORE") and addOn.rpqId then name = RPTAGS.CONST.NBSP .. name; end;
 
     local links = {};
     for i, func in pairs({ "open", "options", "help"})
@@ -133,10 +133,10 @@ function(self, event, ...)
 
  end;
 
- for _, category in ipairs({ "rpClient", "rpClient_0", "unitFrames", "unitFrames_0"})
- do  if   RPTAGS.cache.addOns[category]
-     then build_category(category);
-     end;
+ for category, _ in pairs( RPTAGS.queue:GetModuleTypes())
+ do  local category_0 = category .. "_0";
+     if RPTAGS.cache.addOns[category  ] then build_category(category  ); end;
+     if RPTAGS.cache.addOns[category_0] then build_category(category_0); end;
  end;
 
  if   RPTAGS.cache.addOns.targets ~= {}

@@ -1,0 +1,14 @@
+## Interface: 90005
+## Version: 9.0.5.0 alpha 1
+## Title: rp|cffdd33aaTags|r Data Module: Listener
+## Author: Oraibi-MoonGuard
+## Notes: rp|cffdd33aarpTags|r integration module for Listener
+## RequiredDeps: RP_Tags, Listener
+## DefaultState: Enabled
+## X-URL: http://spindrift.games/rptags
+## X-RPQVersion: 1
+## X-RPQModuleId: listener
+## X-RPQModuleType: dataSource
+## X-RPQModuleTarget: Listener
+
+load.xml

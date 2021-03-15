@@ -196,7 +196,7 @@ end;
 
 local function meName(u)
   if UnitGUID(u) == UnitGUID('player')
-  then return "|cff" .. Config.Get("COLOR_ME") .. Config.get("ME") .. "|r";
+  then return "|cff" .. Config.get("COLOR_ME") .. Config.get("ME") .. "|r";
   end;
 end;
 

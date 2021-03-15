@@ -31,24 +31,27 @@ function(self, event, ...)
       then   addOns.other[a.name] = a;
       else   addOns[a.rpqType] = addOns[a.rpqType]                 or {};
              addOns[a.rpqType .. "_0"] = addOns[a.rpqType .. "_0"] or {};
-             if not a.rpqTarget
-             then   a.reason = "unknown-target"
-                    addOns[a.rpqType .. "_0"][a.name] = a;
-             elseif not a.enabled
+
+             -- if not a.rpqTarget
+             -- then   a.reason = "unknown-target"
+             --        addOns[a.rpqType .. "_0"][a.name] = a;
+             -- elseif not a.enabled
+             if not a.enabled
              then   a.reason = "disabled";
                     addOns[a.rpqType .. "_0"][a.name] = a;
-                    targets[a.rpqTarget] = a.name;
+                    -- targets[a.rpqTarget] = a.name;
              elseif tonumber(a.rpq) < rpqRequired
              then   a.reason = "rpq-version";
                     addOns[a.rpqType .. "_0"][a.name] = a;
-                    targets[a.rpqTarget] = a.name;
+                    -- targets[a.rpqTarget] = a.name;
              elseif not RPTAGS.queue:GetModule(a.name)
              then   a.reason = "no-module"
                     addOns[a.rpqType .. "_0"][a.name] = a;
-                    targets[a.rpqTarget] = a.name;
+                    -- targets[a.rpqTarget] = a.name;
              else   addOns[a.rpqType][a.name] = a;
-                    targets[a.rpqTarget] = a.name;
+                    -- targets[a.rpqTarget] = a.name;
              end;
+             if a.rpqTarget then targets[a.rpqTarget] = a.name; end;
       end;
   end;
 
@@ -73,8 +76,10 @@ function(self, event, ...)
         if addOns[rpqType]
         then for name, values in pairs(addOns[rpqType])
              do  local  target = values.rpqTarget;
+                 if     not target
+                 then   count = count + 1;
 
-                 if not addOns.other[target]
+                 elseif not addOns.other[target]
                  then   addOns[rpqType_0][name]         = values;
                         addOns[rpqType_0][name].reason  = "missing-target";
                         addOns[rpqType][name]           = nil;
@@ -107,14 +112,19 @@ function(self, event, ...)
 
   addOns.targets = {};
 
-  local countRpClient,   countRpClient_0   = check_targets(addOns, "rpClient"  );
-  local countUnitFrames, countUnitFrames_0 = check_targets(addOns, "unitFrames");
+  local count = {};
+
+  for rpqType, _ in pairs(addOns)
+  do if rpqType ~= "other" and rpqType ~= "targets" and not rpqType:match("_0$")
+     then count[rpqType], count[rpqType .. "_0"] = check_targets(addOns, rpqType);
+     end;
+  end;
 
   RPTAGS.cache.addOns = addOns
 
-  if     countRpClient == 0 and countRpClient_0 == 0
+  if     count.rpClient == 0 and count.rpClient_0 == 0
   then   return { error = true, errorMessage = "You don't have any RP addon modules that work with " .. RPTAGS.metadata.Title .. "." };
-  elseif countRpClient == 0 and countRpClient_0 > 1
+  elseif count.rpClient == 0 and count.rpClient_0 > 1
   then   local reasons = {};
          for name, a in pairs(addOns.rpClient_0)
          do  local changeAddOns;
@@ -133,9 +143,9 @@ function(self, event, ...)
              return { error = true, changeAddons = changeAddOns,
                       errorMessage = RPTAGS.metadata.Title .. " needs a compatible RP addon module to work.\n\n" .. table.concat(reasons, "\n") } 
          end;
-  elseif countUnitFrames == 0 and countUnitFrames_0 == 0
+  elseif count.unitFrames == 0 and count.unitFrames_0 == 0
   then   return { error = true, errorMessage = "You don't have any unit frame addon modules that work with " .. RPTAGS.metadata.Title .. "." };
-  elseif countUnitFrames == 0 and countUnitFrames_0 > 1
+  elseif count.unitFrames == 0 and count.unitFrames_0 > 1
   then   local reasons = {};
          for name, a in pairs(addOns.unitFrames_0)
          do  local changeAddOns;

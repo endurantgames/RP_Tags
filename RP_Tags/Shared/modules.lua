@@ -112,6 +112,26 @@ function(self, event, ...)
     end;
   end;
 
+  local function insertTagGroup(tagGroup, location)
+    location = location or "before OUF";
+    local when, where = strsplit(" ", location);
+    if not where then where = when; when = "after"; end;
+
+    local data = RPTAGS.CONST.TAG_DATA;
+
+    local position;
+
+    for i, group in pairs(data)
+    do  if group.key == where then position = i; break; end;
+    end;
+
+    if position 
+    then table.insert(data, position + (when == "after" and 1 or 0), tagGroup)
+    else data[position + 1] = tagGroup;
+    end;    
+    
+  end;
+
   RPTAGS.utils.modules                  = RPTAGS.utils.modules or {};
   RPTAGS.utils.modules.registerFunction = registerAddOnFunction;
   RPTAGS.utils.modules.getFunction      = getAddOnFunction;
@@ -122,5 +142,6 @@ function(self, event, ...)
   RPTAGS.utils.modules.addSlashAlias    = addSlashAlias;
   RPTAGS.utils.modules.getAddOn         = getAddOnData;
   RPTAGS.utils.modules.plugOptions      = applyOptionsPlugins;
+  RPTAGS.utils.modules.insertTagGroup   = insertTagGroup;
 end);
 
