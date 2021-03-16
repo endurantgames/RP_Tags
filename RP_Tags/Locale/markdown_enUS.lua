@@ -190,6 +190,10 @@ L["CHANGES_MD"] =
 
 # Changes
 
+## 9.0.5.2
+
+- Removed a pair of debugging statements that were left in. Oops!
+
 ## 9.0.5.1
 
 - First release for WoW 9
