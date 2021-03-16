@@ -342,7 +342,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     lookSubGroup.args.background      =
     { type                      = "select",
       dialogControl             = "LSM30_Background",
-      values                    = LibSharedMedia:HashTable("background"),
+      values                    = function() return LibSharedMedia:HashTable("background") end,
       width                     = 1.5,
       get                       = get(f.background),
       set                       = function(info, value) Set(f.background, value); Refresh(frameName, "style"); end,
@@ -369,7 +369,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     lookSubGroup.args.border =
         { type                      = "select",
           dialogControl             = "LSM30_Background",
-          values                    = LibSharedMedia:HashTable("border"),
+          values                    = function() return LibSharedMedia:HashTable("border") end,
           width                     = 1.5,
           get                       = get(f.border),
           set                       = function(info, value) Set(f.border, value); Refresh(frameName, "style"); end,
@@ -436,7 +436,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       width                     = 1.40,
       get                       = get(f.statusTexture),
       set                       = function(info, value) Set(f.statusTexture, value); Refresh(frameName, "statusbar") end,
-      values                    = LibSharedMedia:HashTable("statusbar"),
+      values                    = function() return LibSharedMedia:HashTable("statusbar") end,
       order                     = source_order(),
     };
 
@@ -500,7 +500,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.iconWidth),
       desc                      = cloc(f.iconWidth),
       get                       = get(f.iconWidth),
-      set                       = function(info, value) Set(f.iconWidth, value); Refresh(frameName, "framesize", "sizes") end,
+      set                       = function(info, value) Set(f.iconWidth, value); Refresh(frameName, "fonts", "framesize", "sizes") end,
       min                       = 5,
       softMin                   = 10,
       softMax                   = 50,
@@ -614,7 +614,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
           args =
           { nameFontName  =
             { type                      = "select",
-              values                    = LibSharedMedia:HashTable("font"),
+              values                    = function() return LibSharedMedia:HashTable("font") end,
               width                     = 1.25,
               dialogControl             = "LSM30_Font",
               name                      = cloc(f.nameFont),
@@ -646,7 +646,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
           {
             statusFontName  =
             { type                      = "select",
-              values                    = LibSharedMedia:HashTable("font"),
+              values                    = function() return LibSharedMedia:HashTable("font") end,
               width                     = 1.25,
               dialogControl             = "LSM30_Font",
               name                      = cloc(f.statusFont),
@@ -678,7 +678,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
           {
             detailFontName  =
             { type                      = "select",
-              values                    = LibSharedMedia:HashTable("font"),
+              values                    = function() return LibSharedMedia:HashTable("font") end,
               width                     = 1.25,
               dialogControl             = "LSM30_Font",
               name                      = cloc(f.detailFont),
@@ -710,7 +710,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
           {
             infoFontName  =
             { type                      = "select",
-              values                    = LibSharedMedia:HashTable("font"),
+              values                    = function() return LibSharedMedia:HashTable("font") end,
               width                     = 1.25,
               dialogControl             = "LSM30_Font",
               name                      = cloc(f.infoFont),

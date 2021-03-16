@@ -5,7 +5,7 @@
     <Include file="abridged.lua"        />
     <Include file="compact.lua"         />
     <Include file="full.lua"            />
-    <Include file="paperdoll.lua"       />
-    <Include file="thumbnail.lua"       />
+    <!-- Include file="paperdoll.lua"       / -->
+    <!-- Include file="thumbnail.lua"       / -->
 
 </Ui>
