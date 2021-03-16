@@ -38,12 +38,12 @@ function(self, event, ...)
   layout:Register_Panel_Method_Hash( "GetPanelHeight",
     { [ "portrait" ] = function(self) return self:ConfGet("PORTWIDTH") * 1.5 end,
       [ "icon1"    ] = function(self) return self:ConfGet("ICONWIDTH") end, 
-      [ "name"     ] = function(self) return self:GetActualFontSize() + 4; end,
+      [ "name"     ] = function(self) return self:CalculateFontSize() + 4; end,
     });
 
   layout:Register_Panel_Method_Hash( "GetPanelWidth",
     { [ "portrait" ] = function(self) return self:ConfGet("PORTWIDTH") * 2/3 end,
-      [ "icon1"    ] = function(self) return self:ConfGet("ICONWIDTH") end, 
+      [ "icon1"    ] = function(self) return self:ConfGet("ICONWIDTH") + 0.5 end, 
       [ "name"     ] = function(self) return math.max(self:ConfGet("PORTWIDTH"), 
                                                       self:ConfGet("ICONWIDTH")) - self:Gap(2/3); end,
     });

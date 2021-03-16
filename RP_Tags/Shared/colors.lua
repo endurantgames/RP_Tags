@@ -102,7 +102,7 @@ end;
 local function integerToHex(number) return string.format("%02", math.floor(number));   end;
 local function colorCode(r, g, b)   return string.format("|cff%02x%02x%02x", r, g, b); end;
 
-local function integersToColor(r, g, b) return string.format("%02%02%02", r, g, b); end;
+local function integersToColor(r, g, b) return string.format("%02x%02x%02x", r, g, b); end;
 
 local function decimalsToColor(r, g, b)
       return string.format("%02x%02x%02x", 

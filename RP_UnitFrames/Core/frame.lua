@@ -14,6 +14,7 @@ function(self, event, ...)
   local Config          = Utils.config;
   local initializePanel = Utils.frames.initialize_panel;
   local RPUF_GetLayout  = Utils.frames.RPUF_GetLayout;
+  local linkHandler     = Utils.links.handler;
   local titlecase       = Utils.text.titlecase;
   local toRGB           = Utils.color.hexaToNumber;
   local AceGUI          = LibStub("AceGUI-3.0");
@@ -78,8 +79,11 @@ function(self, event, ...)
 
     -- -- state driver registration ---------------------------------------------------------------------------------------------
     local function generateSSDString()
+      if     Config.get("DISABLE_RPUF") 
+      or not Config.get("SHOW_FRAME_" .. unit:upper()) then return "hide" end;
+
       local conditions = {};
-      if confGet("DISABLE_RPUF") then return "hide" end;
+
       local hash =
       { ["RPUF_HIDE_DEAD"     ] = "[dead] hide",
         ["RPUF_HIDE_PETBATTLE"] = "[petbattle] hide",
@@ -88,6 +92,7 @@ function(self, event, ...)
         ["RPUF_HIDE_RAID"     ] = "[group:raid] hide",
         ["RPUF_HIDE_COMBAT"   ] = "[combat] hide",
       };
+
       for k, v in pairs(hash) do if confGet(k) then table.insert(conditions, v) end; end;
 
       table.insert(conditions, "[@" .. self.unit .. ",exists] show");
@@ -155,9 +160,9 @@ function(self, event, ...)
       end;
     end;
 
-    local function updatePanelPlacement() for_each_panel("Place"); end;
-    local function updatePanelVisibility() for_each_panel("SetVis"); end;
-    local function updateFont() for_each_panel("SetFont"); end;
+    local function updatePanelPlacement()  for_each_panel("Place");   end;
+    local function updatePanelVisibility() for_each_panel("SetVis");  end;
+    local function updateFont()            for_each_panel("SetFont"); end;
 
     local function updateTagStrings() for_each_panel("SetTagString"); end;
 
@@ -184,9 +189,16 @@ function(self, event, ...)
     local function gap(num) return confGet("GAPSIZE") * (num or 1) end;
 
     -- -- frame locking ---------------------------------------------------------------------------------------------------------
-    local function isFrameLocked()     return Config.get("LOCK_FRAMES_" .. unit:upper()) end;
-    local function setFrameLock(value) Config.set("LOCK_FRAMES_" .. unit:upper(), value); end;
+    local function isFrameLocked()     return Config.get("LOCK_FRAME_" .. unit:upper()) end;
+    local function setFrameLock(value) Config.set("LOCK_FRAME_" .. unit:upper(), value); end;
     local function toggleFrameLock()   setFrameLock(not isFrameLocked() ); end;
+
+    local mover = CreateFrame("Button", nil, self);
+    mover:SetSize(24, 24);
+    mover:SetPoint("BOTTOMLEFT", self, "TOPLEFT");
+    mover:SetNormalTexture("Interface\\CURSOR\\UI-Cursor-Move.PNG");
+    mover:SetClampedToScreen(true);
+    mover:RegisterForDrag("LeftButton");
 
     local padlock = CreateFrame("Button", nil, self);
     padlock:SetSize(24, 24);
@@ -196,19 +208,19 @@ function(self, event, ...)
   
     local function updateFrameLock()
       if   isFrameLocked()
-      then padlock:Hide() self:RegisterForDrag(nil);
-      else padlock:Show() self:RegisterForDrag("LeftButton");
+      then padlock:Hide() mover:Hide(); self:RegisterForDrag(nil);
+      else padlock:Show() mover:Show(); self:RegisterForDrag("LeftButton");
       end;
     end;
 
     padlock:RegisterForClicks("LeftButtonUp");
     padlock:SetScript("OnClick", 
       function() 
-        print("click!"); 
         PlaySound(8939); 
         setFrameLock(true); 
         updateFrameLock(); 
       end);
+
     padlock:SetScript("OnEnter", 
       function() 
         SetCursor("Interface\\CURSOR\\PickLock.PNG") 
@@ -233,9 +245,7 @@ function(self, event, ...)
       if x and y then RP_UnitFramesDB.coords[unit] = { x, y }; end;
     end;
 
-    local function getDefaultCoords() 
-      return RPTAGS.CONST.RPUF.COORDS[unit] 
-    end;
+    local function getDefaultCoords() return RPTAGS.CONST.RPUF.COORDS[unit] end;
 
     local function getSavedCoords() 
       return RP_UnitFramesDB.coords[unit] or getDefaultCoords() 
@@ -250,16 +260,24 @@ function(self, event, ...)
       saveCoords();
     end
 
-    local function resetCoords() setCoords(); end;
+    local function resetCoords() setCoords(getDefaultCoords()); end;
 
     local function onDragStart(self, button)
       if button == "LeftButton" then self:StartMoving() end;
     end;
 
-    local function onDragStop(self)
-      self:StopMovingOrSizing();
-      saveCoords();
-    end;
+    local function onDragStop(self) self:StopMovingOrSizing(); saveCoords(); end;
+
+    mover:SetScript("OnDragStart", 
+      function(this, button)
+        if button == "LeftButton" then self:StartMoving() end;
+      end);
+
+    mover:SetScript("OnDragStop",
+      function(this, button)
+        self:StopMovingOrSizing(); 
+        saveCoords(); 
+      end);
 
     local function updateStatusBar()
       local statusBar = panels["statusBar"];
@@ -273,9 +291,14 @@ function(self, event, ...)
 
       statusBar.text:SetJustifyH( confGet("STATUS_ALIGN" ))
       statusBar.text:SetJustifyV("CENTER");
+
+      statusBar.text:ClearAllPoints();
+      statusBar.text:SetPoint("BOTTOMLEFT", gap(1), gap(1));
+      statusBar.text:SetPoint("TOPRIGHT", gap(-1), gap(-1));
       statusBar:SetHeight( confGet("STATUSHEIGHT"));
 
       statusBar:Place();
+
       r, g, b = toRGB(confGet("COLOR_STATUS_TEXT"));
       statusBar:SetTextColor(r / 255, g / 255, b / 255);
 
@@ -302,6 +325,12 @@ function(self, event, ...)
         edgeSize = 16,
         insets   = { left = 3, right = 3, top = 3, bottom = 3 }
       });
+    end;
+
+    local function openFrameOptions(self, button)
+      if button == "RightButton"
+      then linkHandler("opt://RPUF_Frames/");
+      end;
     end;
 
     local function updateContent()
@@ -338,12 +367,11 @@ function(self, event, ...)
     public.ConfGet               = confGet;
     public.ConfSet               = confSet;
     public.Gap                   = gap;
-    public.GetFont               = getFont;
     public.GetLayoutName         = getLayoutName;
     public.GetTooltipColor       = getTooltipColor;
     public.GetUnit               = getUnit;
     public.PanelGet              = panelGet;
-    public.ResetCoords           = resetCoordse
+    public.ResetCoords           = resetCoords;
     public.UpdateContent         = updateContent;
     public.UpdateEverything      = updateEverything;
     public.UpdateFont            = updateFont;
@@ -377,6 +405,10 @@ function(self, event, ...)
     for name, info in pairs( panelInfo ) do createPanel(name, info); end;
     self:SetScript("OnDragStart", onDragStart);
     self:SetScript("OnDragStop",  onDragStop);
+    self:SetScript("OnEnter", changeCursorIfDraggable);
+    self:SetScript("OnLeave", ResetCursor);
+    self:EnableMouse(true);
+    self:SetScript("OnMouseUp", openFrameOptions);
 
   end; -- style definition
 

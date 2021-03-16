@@ -20,6 +20,7 @@ function(self, event, ...)
   local getHeight          = frameUtils.panels.size.getHeight;
   local getWidth           = frameUtils.panels.size.getWidth;
   local LibSharedMedia     = LibStub("LibSharedMedia-3.0");
+  local linkHandler        = Utils.links.handler;
 
   local getUF_Size         = frameUtils.size.get;
 
@@ -43,17 +44,12 @@ function(self, event, ...)
     function self.Place(self)
       -- local layout = self:GetLayoutName();
       if self.GetPanelLeft and self.GetPanelTop and self.GetPanelHeight and self.GetPanelWidth
-      then 
-        local left   = self:GetPanelLeft();   -- getLeft(   self.name, layout);
-        local top    = self:GetPanelTop();    -- getTop(    self.name, layout);
-        local height = self:GetPanelHeight(); -- getHeight( self.name, layout);
-        local width  = self:GetPanelWidth();  -- getWidth(  self.name, layout);
+      then self:ClearAllPoints();
 
-        self:ClearAllPoints();
-        self:SetPoint("TOPLEFT", self:GetParent(), "TOPLEFT", left, top * -1);
-        self:SetSize(width, height);
-      else
-        self:Hide();
+           self:SetPoint("TOPLEFT", self:GetParent(), 
+                         "TOPLEFT", self:GetPanelLeft(), self:GetPanelTop() * -1);
+           self:SetSize(self:GetPanelWidth(), self:GetPanelHeight());
+      else self:Hide();
       end;
     end;
 
@@ -98,37 +94,36 @@ function(self, event, ...)
         end;
       end;
 
-      function self.SetJustify(self)
-        self.text:SetJustifyH( self:GetPanelJustifyH() );
-        self.text:SetJustifyV( self:GetPanelJustifyV() );
+      if opt["has_own_align"]
+      then function self.SetJustify(self)
+             self.text:SetJustifyH( self:ConfGet( opt.has_own_align ) );
+             self.text:SetJustifyV( "CENTER" );
+           end;
+      else function self.SetJustify(self)
+             self.text:SetJustifyH( self:GetPanelJustifyH() );
+             self.text:SetJustifyV( self:GetPanelJustifyV() );
+           end;
       end;
   
       local font_size_hash =
       { ["extrasmall" ] = -4, ["small" ] = -2, ["medium" ] = 0, ["large" ] = 2, ["extralarge" ] = 4 };
   
-      function self.GetFont(self, ...) return self:GetParent():Public("GetFont", ...) end;
-
-      function self.AdjustFont(self, size)
-        return size + (font_size_hash[ Config.get( self.setting .. "_FONTSIZE" )] or 0);
+      function self.CalculateFontSize(self, fontSize)
+        return opt["iconsize"] and self:ConfGet("ICONWIDTH")
+               or ((fontSize or self:ConfGet("FONTSIZE"))
+                   + font_size_hash[ self:ConfGet(self.setting .. "_FONTSIZE")])
       end;
-
-      function self.GetFontSize(self, ...)
-        local _, fontSize = self:GetFont(...);
-        return fontSize or 10;
-      end;
-
-      function self.GetActualFontSize(self) return self:AdjustFont( self:GetFontSize() ); end;
 
       if opt["use_font"]
       then 
 
         function self.SetFont(self, fontFile, fontSize)
 
-          if not fontSize then _, fontSize = self:GetFont(); end;
-          local  fontName = self:ConfGet( opt["use_font"] )
-          self.text:SetFont( LibSharedMedia:Fetch("font", fontName  ) or
-                             LibSharedMedia:Fetch("font", "Morpheus"),
-                             self:AdjustFont(fontSize));
+          local fontFile = self:ConfGet( opt["use_font"] )
+          self.text:SetFont( LibSharedMedia:Fetch("font", fontFile) 
+                          or LibSharedMedia:Fetch("font", "Arial Narrow"),
+                             self:CalculateFontSize(fontSize));
+          self:SetJustify();
 
         end;
 
@@ -136,9 +131,10 @@ function(self, event, ...)
 
         function self.SetFont(self, fontFile, fontSize)
 
-          if not fontFile then fontFile, _ = self:GetFont(); end;
-          if not fontSize then _, fontSize = self:GetFont(); end;
-          self.text:SetFont(fontFile, self:AdjustFont(fontSize));
+          fontFile = fontFile or LibSharedMedia:Fetch("font", "Arial Narrow");
+          fontSize = self:CalculateFontSize(fontSize);
+          self.text:SetFont(fontFile, fontSize);
+          self:SetJustify();
 
         end;
 
@@ -192,15 +188,15 @@ function(self, event, ...)
       function self.GetTooltipColor(self, ...) return self:GetParent():Public("GetTooltipColor", ...) end;
 
       function self.showTooltip(self, event, ...) 
-        local tooltip = eval(Config.get(self.tooltip), self.unit, self.unit, RPTAGS.oUF);
+        local tooltip = eval(Config.get(self.tooltip), self.unit, self.unit, RPTAGS.oUF) or "";
         local r, g, b = self:GetTooltipColor();
     
-        if   self:ConfGet("MOUSEOVER_CURSOR")
-        then SetCursor("Interface\\CURSOR\\Inspect.PNG");
-        end;
-    
-        if tooltip and tooltip:len() > 0 -- only show a tooltip if there's something to show
-        then GameTooltip:ClearLines();
+        local striptip = tooltip:gsub("%s", ""):gsub("|cff%x%x%x%x%x%x",""):gsub("|r","");
+        if striptip:len() > 0 -- only show a tooltip if there's something to show
+        then 
+             if   self:ConfGet("MOUSEOVER_CURSOR") then SetCursor("Interface\\CURSOR\\Inspect.PNG"); end;
+
+             GameTooltip:ClearLines();
              GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
              GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
   
@@ -211,11 +207,7 @@ function(self, event, ...)
         end;
       end; 
   
-      function self.hideTooltip(self, ...) 
-        GameTooltip:FadeOut(); 
-        ResetCursor(); 
-        return self, ... 
-      end;
+      function self.hideTooltip(self) GameTooltip:Hide(); ResetCursor(); end;
   
     end;
   
@@ -223,14 +215,10 @@ function(self, event, ...)
     if not opt["no_context_menu"]
     then 
 
-      -- obvious placeholder is obvious
-      function self.showContextMenu(self, event, ...) 
-        print("This is a context menu")
-      end;
-  
       self:SetScript("OnMouseDown",
         function(self, button, ...) 
-          if   button == "RightButton" then self:showContextMenu(button, ...) end; 
+          print(self.name);
+          if button == "RightButton" then linkHandler("opt://RPUF_Panels/rpufPanels" .. self.name .. "Panel" ) end;
         end);
 
     end;

@@ -9,9 +9,9 @@ function(self, event, ...)
 
   local function get_statusBar_top(self)
     return
-      math.min(
+      math.max(
         self:Gap(2) + self:ConfGet("ICONWIDTH"),
-        self:Gap(3) + self:PanelGet("Height", "name") + self:PanelGet("Height", "info")
+        self:Gap(3) + self:Public("PanelGet", "Height", "name") + self:Public("PanelGet", "Height", "info")
       )
   end;
 
@@ -73,8 +73,8 @@ function(self, event, ...)
    });
 
   layout:Register_Panel_Method_Hash("GetPanelHeight",
-    { [ "name"      ] = function(self) return self:GetActualFontSize() + 4 end,
-      [ "info"      ] = function(self) return self:GetActualFontSize() + 2 end,
+    { [ "name"      ] = function(self) return self:CalculateFontSize() + 4 end,
+      [ "info"      ] = function(self) return self:CalculateFontSize() + 2 end,
       [ "icon1"     ] = function(self) return self:ConfGet("ICONWIDTH") end,
       [ "statusBar" ] = function(self) return self:ConfGet("STATUSHEIGHT") end,
       [ "icon2"     ] = "icon1",
@@ -87,7 +87,7 @@ function(self, event, ...)
   layout:Register_Panel_Method_Hash("GetPanelWidth",
     { [ "name"      ] = "info",
       [ "info"      ] = function(self) return self:ConfGet("INFOWIDTH") end,
-      [ "icon1"     ] = function(self) return self:ConfGet("ICONWIDTH") end,
+      [ "icon1"     ] = function(self) return self:ConfGet("ICONWIDTH") + 0.5 end,
       [ "statusBar" ] = get_statusBar_width,
       [ "icon2"     ] = "icon1",
       [ "icon3"     ] = "icon1",

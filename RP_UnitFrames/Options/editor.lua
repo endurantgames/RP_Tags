@@ -6,13 +6,14 @@ Module:WaitUntil("after MODULE_G",
 function(self, event, ...)
 
   local Utils             = RPTAGS.utils
-  local loc               = Utils.locale.loc;
-  local getLabel          = Utils.locale.getLabel;
+  local Locale            = Utils.locale;
+  local loc               = Locale.loc;
+  local getLabel          = Locale.getLabel;
+  local tagDesc           = Locale.tagDesc;
+  local tagLabel          = Locale.tagLabel;
   local Config            = Utils.config
   local Get               = Config.get;
   local Set               = Config.set;
-  local ifConfig          = Config.ifConfig;
-  local Default           = Config.default;
   local CONST             = RPTAGS.CONST;
   local buttonList        = CONST.RPUF.EDITOR_BUTTON_LIST;
   local fixedFonts        = RPTAGS.cache.Fonts.fixed;
@@ -25,56 +26,14 @@ function(self, event, ...)
   local optUtils          = Utils.options
   local source_order      = optUtils.source_order;
   local Blank_Line        = optUtils.blank_line
-  local Checkbox          = optUtils.checkbox
-  local Color_Picker      = optUtils.color_picker
-  local Common            = optUtils.common
-  local Dropdown          = optUtils.dropdown
-  local Editor_Button     = optUtils.editor_button
-  local Editor_Bar_Mockup = optUtils.editor_bar_mockup
-  local Header            = optUtils.header
   local Instruct          = optUtils.instruct
-  local Keybind           = optUtils.keybind
-  local Pushbutton        = optUtils.pushbutton
   local Spacer            = optUtils.spacer
-  local Reset             = optUtils.reset
-  local Frame_Scaler      = optUtils.frame_scaler
-  local Dim_Slider        = optUtils.dimensions_slider;
   local Slider            = optUtils.slider;
-  local TagPanel          = optUtils.tagpanel;
   local reqRPUF           = optUtils.requiresRPUF;
-  local collectionBrowser = optUtils.collectionBrowser;
   local Font              = optUtils.font;
-  local listOfAllTags     = optUtils.listOfAllTags;
-  local Frame_Panel       = optUtils.frame_panel;
   local Wide              = optUtils.set_width;
-
-  local menu = {};
-  menu.backdrop  =
-  { BLIZZTOOLTIP = loc("BACKDROP_BLIZZTOOLTIP" ),
-    THIN_LINE    = loc("BACKDROP_ORIGINAL"     ),
-    THICK_LINE   = loc("BACKDROP_THICK_LINE"   ),
-    ORIGINAL     = loc("BACKDROP_THIN_LINE"    ), };
-  menu.texture   =
-  { BAR          = loc("BAR"                   ),
-    SKILLS       = loc("SKILLS"                ),
-    BLANK        = loc("BLANK"                 ),
-    SHADED       = loc("SHADED"                ),
-    SOLID        = loc("SOLID"                 ),
-    RAID         = loc("RAID"                  ), };
-  menu.align     =
-  { LEFT         = loc("LEFT"                  ),
-    CENTER       = loc("CENTER"                ),
-    RIGHT        = loc("RIGHT"                 ), };
-  menu.small     =
-  { COMPACT      = loc("RPUF_COMPACT"          ),
-    ABRIDGED     = loc("RPUF_ABRIDGED"         ),
-    THUMBNAIL    = loc("RPUF_THUMBNAIL"        ), };
-  menu.large     =
-  { COMPACT      = loc("RPUF_COMPACT"          ),
-    ABRIDGED     = loc("RPUF_ABRIDGED"         ),
-    THUMBNAIL    = loc("RPUF_THUMBNAIL"        ),
-    PAPERDOLL    = loc("RPUF_PAPERDOLL"        ),
-    FULL         = loc("RPUF_FULL"             ), };
+  local openEditor   = Config.openEditor;
+  local Editor       = RPTAGS.Editor;
 
   local function refreshFont(widget)
     local setFunc = widget.set;
@@ -82,14 +41,78 @@ function(self, event, ...)
     return widget;
   end;
 
+  local function build_editor_bar_button(str)
+    local STR         = str:upper():gsub("[:%-]", "");
+    local setting     = "EDITOR_BUTTON_" .. STR;
+    local w           =
+    { type            = "toggle",
+      desc            = str,
+      name            = loc("TAG_" .. str .. "_DESC"),
+      order           = source_order(),
+      get             = function() return Get(setting) end,
+      disabled        = 
+        function() 
+          return (Editor:CountToolBar() >= CONST.RPUF.EDITOR_MAX_BUTTONS)
+             and not Get(setting) 
+        end,
+      set             = 
+        function(self, value)
+          Set(setting, value);
+          Editor:UpdateLayout();
+        end,
+    };
+
+    return w;
+  end;
+
+  local function build_editor_bar_mockup(str)
+    local w = 
+    { name = "Editor Button Bar",
+      type = "group",
+      order = source_order(),
+      inline = true,
+      args = 
+      { colorWheel =
+        { type = "execute",
+          name = RPTAGS.CONST.ICONS.COLORWHEEL,
+          desc = "Change text color",
+          order = source_order(),
+          width = 0.375,
+        },
+        noColor =
+        { type = "execute",
+          name = RPTAGS.CONST.ICONS.COLORWHEEL,
+          desc = "Reset Colors",
+          order = source_order(),
+          disabled = true,
+          width = 0.375,
+        },
+      },
+    };
+
+    for _, button in ipairs(CONST.RPUF.EDITOR_BUTTON_LIST)
+    do  w.args[button] =
+        { type = "execute",
+          name = tagLabel(button),
+          desc = tagDesc(button),
+          order = source_order(),
+          width = 0.75,
+          hidden = function() 
+            return not Get("EDITOR_BUTTON_" .. button:upper():gsub("[:%-]",""));
+          end,
+        }
+    end;
+
+    return w;
+  end;
+  
   addOptionsPanel("RPUF_Editor",
   { name                = loc("OPT_EDITOR"),
     order               = source_order(),
     type                = "group",
     hidden              = function() return Get("DISABLE_RPUF") end,
     args                = 
-    { -- panel             = Header("editor", nil, reqRPUF ),
-      instruct          = Instruct("editor", nil, reqRPUF ),
+    { instruct          = Instruct("editor", nil, reqRPUF ),
       fontFile          = refreshFont(Wide(
                              Font("EDITOR_FONT", nil, reqRPUF, fixedFonts), 
                              1.5)
@@ -155,17 +178,17 @@ function(self, event, ...)
                   end,
             disabled = function() return Editor:CountToolBar() == 0 end,
           },
-          barMockup = Editor_Bar_Mockup(),
+          barMockup = build_editor_bar_mockup(),
           nameButtons =
           { type          = "group",
             name          = "Name Buttons",
             order         = source_order(),
             inline        = true,
             args          =
-            { rpName      = Editor_Button("rp:name"),
-              rpFirstName = Editor_Button("rp:firstname"),
-              rpLastName  = Editor_Button("rp:lastname"),
-              rpNickname  = Editor_Button("rp:nick"),
+            { rpName      = build_editor_bar_button("rp:name"),
+              rpFirstName = build_editor_bar_button("rp:firstname"),
+              rpLastName  = build_editor_bar_button("rp:lastname"),
+              rpNickname  = build_editor_bar_button("rp:nick"),
             },
           },
           coreButtons     =
@@ -174,15 +197,15 @@ function(self, event, ...)
             order         = source_order(),
             inline        = true,
             args          =
-            { rpTitle     = Editor_Button("rp:title"),
-              rpFullTitle = Editor_Button("rp:fulltitle"),
-              rpClass     = Editor_Button("rp:class"),
-              rpRace      = Editor_Button("rp:race"),
-              rpGender    = Editor_Button("rp:gender"),
-              rpPronouns  = Editor_Button("rp:pronouns"),
-              rpAge       = Editor_Button("rp:age"),
-              rpHeight    = Editor_Button("rp:height"),
-              rpWeight    = Editor_Button("rp:weight"),
+            { rpTitle     = build_editor_bar_button("rp:title"),
+              rpFullTitle = build_editor_bar_button("rp:fulltitle"),
+              rpClass     = build_editor_bar_button("rp:class"),
+              rpRace      = build_editor_bar_button("rp:race"),
+              rpGender    = build_editor_bar_button("rp:gender"),
+              rpPronouns  = build_editor_bar_button("rp:pronouns"),
+              rpAge       = build_editor_bar_button("rp:age"),
+              rpHeight    = build_editor_bar_button("rp:height"),
+              rpWeight    = build_editor_bar_button("rp:weight"),
             },
           },
           statusButtons =
@@ -191,12 +214,12 @@ function(self, event, ...)
             order       = source_order(),
             inline      = true,
             args        =
-            { rpStatus  = Editor_Button("rp:status"),
-              rpIc      = Editor_Button("rp:ic"),
-              rpOoc     = Editor_Button("rp:ooc"),
-              rpNpc     = Editor_Button("rp:npc"),
-              rpCurr    = Editor_Button("rp:curr"),
-              rpOocInfo = Editor_Button("rp:info"),
+            { rpStatus  = build_editor_bar_button("rp:status"),
+              rpIc      = build_editor_bar_button("rp:ic"),
+              rpOoc     = build_editor_bar_button("rp:ooc"),
+              rpNpc     = build_editor_bar_button("rp:npc"),
+              rpCurr    = build_editor_bar_button("rp:curr"),
+              rpOocInfo = build_editor_bar_button("rp:info"),
             },
           },
           colorButtons        =
@@ -205,14 +228,14 @@ function(self, event, ...)
             order             = source_order(),
             inline            = true,
             args              =
-            { rpColor         = Editor_Button("rp:color"),
-              rpEyeColor      = Editor_Button("rp:eyecolor"),
-              rpGenderColor   = Editor_Button("rp:gendercolor"),
-              rpRelationColor = Editor_Button("rp:relationcolor"),
-              rpStatusColor   = Editor_Button("rp:statuscolor"),
-              rpAgeColor      = Editor_Button("rp:agecolor"),
-              rpHeightColor   = Editor_Button("rp:heightcolor"),
-              rpWeightColor   = Editor_Button("rp:weightcolor"),
+            { rpColor         = build_editor_bar_button("rp:color"),
+              rpEyeColor      = build_editor_bar_button("rp:eyecolor"),
+              rpGenderColor   = build_editor_bar_button("rp:gendercolor"),
+              rpRelationColor = build_editor_bar_button("rp:relationcolor"),
+              rpStatusColor   = build_editor_bar_button("rp:statuscolor"),
+              rpAgeColor      = build_editor_bar_button("rp:agecolor"),
+              rpHeightColor   = build_editor_bar_button("rp:heightcolor"),
+              rpWeightColor   = build_editor_bar_button("rp:weightcolor"),
             },
           },
           iconButtons       =
@@ -221,16 +244,16 @@ function(self, event, ...)
             order           = source_order(),
             inline          = true,
             args            =
-            { rpIcon        = Editor_Button("rp:icon"),
-              rpGenderIcon  = Editor_Button("rp:gendericon"),
-              rpStatusIcon  = Editor_Button("rp:statusicon"),
-              rpRaceIcon    = Editor_Button("rp:raceicon"),
-              rpGlance1Icon = Editor_Button("rp:glance-1-icon"),
-              rpGlance2Icon = Editor_Button("rp:glance-2-icon"),
-              rpGlance3Icon = Editor_Button("rp:glance-3-icon"),
-              rpGlance4Icon = Editor_Button("rp:glance-4-icon"),
-              rpGlance5Icon = Editor_Button("rp:glance-5-icon"),
-              rpGlance6Icon = Editor_Button("rp:glance-icons"),
+            { rpIcon        = build_editor_bar_button("rp:icon"),
+              rpGenderIcon  = build_editor_bar_button("rp:gendericon"),
+              rpStatusIcon  = build_editor_bar_button("rp:statusicon"),
+              rpRaceIcon    = build_editor_bar_button("rp:raceicon"),
+              rpGlance1Icon = build_editor_bar_button("rp:glance-1-icon"),
+              rpGlance2Icon = build_editor_bar_button("rp:glance-2-icon"),
+              rpGlance3Icon = build_editor_bar_button("rp:glance-3-icon"),
+              rpGlance4Icon = build_editor_bar_button("rp:glance-4-icon"),
+              rpGlance5Icon = build_editor_bar_button("rp:glance-5-icon"),
+              rpGlance6Icon = build_editor_bar_button("rp:glance-icons"),
             },
           },
           socialButtons    =
@@ -239,14 +262,14 @@ function(self, event, ...)
             order          = source_order(),
             inline         = true,
             args           =
-            { rpAlignment  = Editor_Button("rp:alignment"),
-              rpBirthplace = Editor_Button("rp:birthplace"),
-              rpFamily     = Editor_Button("rp:family"),
-              rpGuild      = Editor_Button("rp:guild"),
-              rpMotto      = Editor_Button("rp:motto"),
-              rpRstatus    = Editor_Button("rp:rstatus"),
-              rpHome       = Editor_Button("rp:home"),
-              rpSexuality  = Editor_Button("rp:sexuality"),
+            { rpAlignment  = build_editor_bar_button("rp:alignment"),
+              rpBirthplace = build_editor_bar_button("rp:birthplace"),
+              rpFamily     = build_editor_bar_button("rp:family"),
+              rpGuild      = build_editor_bar_button("rp:guild"),
+              rpMotto      = build_editor_bar_button("rp:motto"),
+              rpRstatus    = build_editor_bar_button("rp:rstatus"),
+              rpHome       = build_editor_bar_button("rp:home"),
+              rpSexuality  = build_editor_bar_button("rp:sexuality"),
             },
           },
           formattingButtons =
@@ -255,8 +278,8 @@ function(self, event, ...)
             order           = source_order(),
             inline          = true,
             args            =
-            { formattingP   = Editor_Button("p"),
-              formattingBr  = Editor_Button("br"),
+            { formattingP   = build_editor_bar_button("p"),
+              formattingBr  = build_editor_bar_button("br"),
             },
           },
         },

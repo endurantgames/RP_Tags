@@ -25,10 +25,10 @@ function(self, event, ...)
     EDITOR_MAX_BUTTONS = 13,
 
     COORDS         =
-    { player       = { 200, 200 },
-      focus        = { 250, 200 },
-      target       = { 600, 200 },
-      targettarget = { 550, 200 },
+    { player       = { 125, 550 },
+      focus        = { 425, 425 },
+      target       = { 425, 550 },
+      targettarget = { 700, 750 },
     },
 
     EDITOR_BUTTON_LIST = 
@@ -64,50 +64,59 @@ function(self, event, ...)
     { name            =
       { setting       = "NAMEPANEL",
         tooltip       = "NAME_TOOLTIP",
-        use_font      = "NAMEPANEL_FONTNAME"
+        use_font      = "NAMEPANEL_FONTNAME",
       },
       info            =
       { setting       = "INFOPANEL",
-        tooltip       = "INFO_TOOLTIP"
+        tooltip       = "INFO_TOOLTIP",
+        use_font      = "INFOPANEL_FONTNAME",
       },
       details         =
       { setting       = "DETAILPANEL",
-        tooltip       = "DETAIL_TOOLTIP"
+        tooltip       = "DETAIL_TOOLTIP",
+        use_font      = "DETAILPANEL_FONTNAME",
       },
       icon1           =
       { setting       = "ICON_1",
-        tooltip       = "ICON_1_TOOLTIP"
+        iconsize      = true,
+        tooltip       = "ICON_1_TOOLTIP",
       },
       icon2           =
       { setting       = "ICON_2",
-        tooltip       = "ICON_2_TOOLTIP"
+        iconsize      = true,
+        tooltip       = "ICON_2_TOOLTIP",
       },
       icon3           =
       { setting       = "ICON_3",
-        tooltip       = "ICON_3_TOOLTIP"
+        iconsize      = true,
+        tooltip       = "ICON_3_TOOLTIP",
       },
       icon4           =
       { setting       = "ICON_4",
-        tooltip       = "ICON_4_TOOLTIP"
+        iconsize      = true,
+        tooltip       = "ICON_4_TOOLTIP",
       },
       icon5           =
       { setting       = "ICON_5",
-        tooltip       = "ICON_5_TOOLTIP"
+        iconsize      = true,
+        tooltip       = "ICON_5_TOOLTIP",
       },
       icon6           =
       { setting       = "ICON_6",
-        tooltip       = "ICON_6_TOOLTIP"
+        iconsize      = true,
+        tooltip       = "ICON_6_TOOLTIP",
       },
       portrait        =
       { no_tag_string = true,
         tooltip       = "PORTRAIT_TOOLTIP",
-        portrait      = true
+        portrait      = true,
       },
       statusBar       =
       { setting       = "STATUSPANEL",
         tooltip       = "STATUS_TOOLTIP",
         has_statusBar = true,
-        has_own_align = true,
+        has_own_align = "STATUS_ALIGN",
+        use_font      = "STATUSPANEL_FONTNAME",
       },
     },
   };
@@ -131,13 +140,20 @@ function(self, event, ...)
     COLOR_STATUS        = TEAL,
     COLOR_STATUS_TEXT   = WHITE,
     DETAILHEIGHT        = 100,
-    FONTNAME            = "Arial Narrow",
-    FONTSIZE            = 12,
+    DETAILPANEL_FONTNAME = "Arial Narrow",
+    DETAILPANEL_FONTSIZE = "medium",
+    INFOPANEL_FONTNAME   = "Arial Narrow",
+    INFOPANEL_FONTSIZE   = "medium",
+    NAMEPANEL_FONTNAME   = "Morpheus", 
+    NAMEPANEL_FONTSIZE   = "extralarge",
+    STATUSPANEL_FONTNAME   = "Arial Narrow",
+    STATUSPANEL_FONTSIZE   = "medium",
+    FONTSIZE            = 10,
     GAPSIZE             = 6,
     ICONWIDTH           = 25,
     INFOWIDTH           = 200,
     LINK_FRAME          = true,
-    LOCK_FRAMES         = true,
+    LOCK_FRAME          = true,
     MOUSEOVER_CURSOR    = true,
     PORTRAIT_BG         = "None",
     PORTRAIT_BORDER     = "None",
@@ -163,15 +179,16 @@ function(self, event, ...)
 
   local ourConfig = 
   { SHOW_FRAME_TARGETTARGET = false,
+
     -- disable
-    DISABLE_RPUF            = true,
+    DISABLE_RPUF            = false,
     DISABLE_BLIZZARD        = false,
 
     -- scale
-    PLAYERFRAME_SCALE       = 0.9,
-    TARGETFRAME_SCALE       = 0.9,
-    FOCUSFRAME_SCALE        = 0.75,
-    TARGETTARGETFRAME_SCALE = 0.75,
+    PLAYERFRAME_SCALE       = 1,
+    TARGETFRAME_SCALE       = 1,
+    FOCUSFRAME_SCALE        = 1,
+    TARGETTARGETFRAME_SCALE = 1,
 
     -- layouts
     FOCUSLAYOUT               = "COMPACT",
@@ -217,19 +234,7 @@ function(self, event, ...)
     ICON_1_TOOLTIP   = "[rp:style-yes][br][rp:style-ask][br][rp:style-no]",
     --]]
 
-    -- fonts
-    DETAILPANEL_FONTSIZE = "medium",
-    ICON_1_FONTSIZE      = "large",
-    ICON_2_FONTSIZE      = "large",
-    ICON_3_FONTSIZE      = "large",
-    ICON_4_FONTSIZE      = "large",
-    ICON_5_FONTSIZE      = "large",
-    ICON_6_FONTSIZE      = "large",
-    INFOPANEL_FONTSIZE   = "medium",
-    NAMEPANEL_FONTSIZE   = "extralarge",
-    STATUSPANEL_FONTSIZE = "medium",
-    NAMEPANEL_FONTNAME   = "Morpheus"; -- note: not "FONTSIZE", "FONTNAME"
-    EDITOR_FONT          = "Syne Mono",
+    EDITOR_FONT          = "Source Code Pro",
     EDITOR_FONTSIZE      = 10,
 
     -- editor buttons

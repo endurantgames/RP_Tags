@@ -42,6 +42,7 @@ function(self, event, ...)
       medium     = loc("SIZE_MEDIUM"                     ),
       large      = loc("SIZE_LARGE"                      ),
       extralarge = loc("SIZE_EXTRA_LARGE"                ), },
+    fontSizeOrder = { "extrasmall", "small", "medium", "large", "extralarge" },
   };
 
   local frameList =    -- uppercase name, isSmallFrame
@@ -66,8 +67,8 @@ local function set(setting)    return function(info, value) Set(setting, value);
   local function build_frame_group(frameName, small)
     local str, ul_str, frame, shared;
 
-    if   frameName then str = frameName:upper(); ul_str = "_" .. str; frame  = true;
-                   else str = "";                ul_str = "";         shared = true; end
+    if frameName then str = frameName:upper(); ul_str = "_" .. str; frame  = true;
+                 else str = "";                ul_str = "";         shared = true; end
 
     -- work out these before hand -- they're the config keys
     local f           =
@@ -77,6 +78,8 @@ local function set(setting)    return function(info, value) Set(setting, value);
       borderWidth     = "RPUF_BORDER_WIDTH"   .. ul_str,
       borderInsets    = "RPUF_BORDER_INSETS"  .. ul_str,
       detailHeight    = "DETAILHEIGHT"        .. ul_str,
+      detailFont      = "DETAILPANEL_FONTNAME" .. ul_str,
+      detailFontSize  = "DETAILPANEL_FONTSIZE" .. ul_str,
       fontName        = "FONTNAME"            .. ul_str,
       fontSize        = "FONTSIZE"            .. ul_str,
       gapSize         = "GAPSIZE"             .. ul_str,
@@ -88,12 +91,18 @@ local function set(setting)    return function(info, value) Set(setting, value);
       hideVehicle     = "RPUF_HIDE_VEHICLE"   .. ul_str,
       iconWidth       = "ICONWIDTH"           .. ul_str,
       infoWidth       = "INFOWIDTH"           .. ul_str,
+      infoFont        = "INFOPANEL_FONTNAME"  .. ul_str,
+      infoFontSize    = "INFOPANEL_FONTSIZE"  .. ul_str,
       layout          = str                   .. "LAYOUT",
       link            = "LINK_FRAME"          .. ul_str,
-      lockFrame       = "LOCK_FRAMES"         .. ul_str,
+      lockFrame       = "LOCK_FRAME"          .. ul_str,
+      nameFont        = "NAMEPANEL_FONTNAME"  .. ul_str,
+      nameFontSize    = "NAMEPANEL_FONTSIZE"  .. ul_str,
       mouseoverCursor = "MOUSEOVER_CURSOR"    .. ul_str,
       portWidth       = "PORTWIDTH"           .. ul_str,
       statusAlign     = "STATUS_ALIGN"        .. ul_str,
+      statusFont      = "STATUSPANEL_FONTNAME"  .. ul_str,
+      statusFontSize  = "STATUSPANEL_FONTSIZE"  .. ul_str,
       statusHeight    = "STATUSHEIGHT"        .. ul_str,
       statusAlpha     = "STATUS_ALPHA"        .. ul_str,
       statusTexture   = "STATUS_TEXTURE"      .. ul_str,
@@ -123,6 +132,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       desc                      = tloc(f.show),
       get                       = get(f.show),
       set                       = function(info, value) Set(f.show, value); Refresh(frameName, "hiding"); end,
+      width = 0.75,
       hidden                    = disableRpuf(),
       order                     = source_order(),
     } or nil;
@@ -132,6 +142,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     frameGroup.args.link        = frame and 
     { type                      = "toggle",
       name                      = cloc(f.link),
+      width = 1.25,
       desc                      = tloc(f.link),
       get                       = get(f.link),
       hidden                    = not_show(),
@@ -139,12 +150,11 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     } or nil;
 
-    frameGroup.args.spb         = frame and Spacer() or nil;
-
     frameGroup.args.layout      = frame and
     { type                      = "select",
       name                      = cloc(f.layout),
       desc                      = tloc(f.layout),
+      width = 0.75,
       get                       = get(f.layout),
       set                       = function(info, value) Set(f.layout, value); Refresh(frameName, "layout", "framesize", "sizes", "vis"); end,
       values                    = small and menu.small or menu.large,
@@ -159,6 +169,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       min                       = 0.25,
       max                       = 3.00,
       isPercent                 = true,
+      width = 1.25,
       step                      = 0.05,
       get                       = get(f.scale),
       set                       = function(info, value) Set(f.scale, value); 
@@ -173,17 +184,16 @@ local function set(setting)    return function(info, value) Set(setting, value);
       desc                      = tloc(f.scale),
     } or nil;
 
-    local visiSG                =
+    local visiSubGroup                =
     { type                      = "group",
-      inline                    = true,
       name                      = "Visibility",
       order                     = source_order(),
-      hidden                    = not_show(),
+      hidden                    = frame and linked_or_not_show(),
       disabled                  = disabled,
       args                      = {},
     };
 
-    visiSG.args.hideCombat      =
+    visiSubGroup.args.hideCombat      =
     { type                      = "toggle",
       name                      = cloc(f.hideCombat),
       desc                      = tloc(f.hideCombat),
@@ -192,7 +202,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    visiSG.args.hidePetBattle   =
+    visiSubGroup.args.hidePetBattle   =
     { type                      = "toggle",
       name                      = cloc(f.hidePetBattle),
       desc                      = tloc(f.hidePetBattle),
@@ -201,7 +211,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    visiSG.args.hideVehicle     =
+    visiSubGroup.args.hideVehicle     =
     { type                      = "toggle",
       name                      = cloc(f.hideVehicle),
       desc                      = tloc(f.hideVehicle),
@@ -211,7 +221,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    visiSG.args.hideParty       =
+    visiSubGroup.args.hideParty       =
     { type                      = "toggle",
       name                      = cloc(f.hideParty),
       desc                      = tloc(f.hideParty),
@@ -220,7 +230,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    visiSG.args.hideRaid        =
+    visiSubGroup.args.hideRaid        =
     { type                      = "toggle",
       name                      = cloc(f.hideRaid),
       desc                      = tloc(f.hideRaid),
@@ -229,7 +239,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    visiSG.args.hideDead        =
+    visiSubGroup.args.hideDead        =
     { type                      = "toggle",
       name                      = cloc(f.hideDead),
       desc                      = tloc(f.hideDead),
@@ -238,7 +248,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    visiSG.args.mouseoverCursor =
+    visiSubGroup.args.mouseoverCursor =
     { type                      = "toggle",
       name                      = cloc(f.mouseoverCursor),
       desc                      = tloc(f.mouseoverCursor),
@@ -247,9 +257,9 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    frameGroup.args.visiSG      = visiSG;
+    frameGroup.args.visiSubGroup      = visiSubGroup;
 
-    local posiSG                =
+    local posiSubGroup          =
     { type                      = "group",
       name                      = "Positioning",
       order                     = source_order(),
@@ -257,37 +267,71 @@ local function set(setting)    return function(info, value) Set(setting, value);
       args                      = {},
     };
 
-    posiSG.args.lockFrames      =
+    posiSubGroup.args.lockFrames      = frame and
     { type                      = "toggle",
       name                      = cloc(f.lockFrame),
       desc                      = tloc(f.lockFrame),
-      width                     = 1.5,
+      width                     = 1,
       get                       = get(f.lockFrame),
       set                       = function(info, value) 
                                     Set(f.lockFrame, value); 
-                                    if not frameName 
-                                    then for frameName, _ in pairs(RPTAGS.cache.UnitFrames)
-                                         do Set(f.lockFrame .. "_" .. frameName:upper(), value);
-                                         end;
-                                           Refresh("all", "lock"); 
-                                    else   Refresh(frameName, "lock");
-                                    end;
+                                    Refresh(frameName, "lock");
                                   end,
       order                     = source_order(),
-    };
+    } or nil;
 
-    posiSG.args.resetFrames     =
+    posiSubGroup.args.lockFrames = not frame and
+    { type = "execute",
+      name = cloc("LOCK_FRAMES"),
+      desc = tloc("LOCK_FRAMES"),
+      width = 1,
+      order = source_order(),
+      func = function() for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
+                        do  Set("LOCK_FRAME_" .. frame.unit:upper(), true)
+                        end;
+                        Refresh("all", "lock")
+              end,
+      disabled = function() for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
+                            do  if not Get("LOCK_FRAME_" .. frame.unit:upper())
+                                then return false;
+                                end;
+                            end;
+                            return true
+                end,
+    } or nil;
+
+    posiSubGroup.args.unlockFrames = not frame and
+    { type = "execute",
+      name = cloc("UNLOCK_FRAMES"),
+      desc = tloc("UNLOCK_FRAMES"),
+      width = 1,
+      order = source_order(),
+      func = function() for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
+                        do  Set("LOCK_FRAME_" .. frame.unit:upper(), false)
+                        end;
+                        Refresh("all", "lock")
+              end,
+      disabled = function() for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
+                            do  if Get("LOCK_FRAME_" .. frame.unit:upper())
+                                then return false;
+                                end;
+                            end;
+                            return true
+                end,
+    } or nil;
+
+    posiSubGroup.args.resetFrames     =
     { type                      = "execute",
-      name                      = cloc("RESET_FRAME_LOCATIONS"),
-      desc                      = tloc("RESET_FRAME_LOCATIONS"),
+      name                      = cloc("RESET_FRAME_LOCATION" .. (frame and "" or "S")),
+      desc                      = tloc("RESET_FRAME_LOCATION" .. (frame and "" or "S")),
       func                      = function() Refresh(frameName, "location") end,
-      width                     = 1.5,
+      width                     = 1,
       order                     = source_order(),
     };
 
-    frameGroup.args.posiSG      = posiSG;
+    frameGroup.args.posiSubGroup      = posiSubGroup;
 
-    local lookSG                =
+    local lookSubGroup                =
     { type                      = "group",
       name                      = "Frame Appearance",
       order                     = source_order(),
@@ -295,7 +339,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       args                      = {}
     };
 
-    lookSG.args.background       =
+    lookSubGroup.args.background      =
     { type                      = "select",
       dialogControl             = "LSM30_Background",
       values                    = LibSharedMedia:HashTable("background"),
@@ -307,9 +351,9 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    lookSG.args.spbg = Spacer(); 
+    lookSubGroup.args.spbg = Spacer(); 
 
-    lookSG.args.borderInsets = 
+    lookSubGroup.args.borderInsets = 
         { type                      = "range",
           width                     = 0.75,
           get                       = get(f.borderInsets),
@@ -322,7 +366,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
           step                      = 1
         };
 
-    lookSG.args.border =
+    lookSubGroup.args.border =
         { type                      = "select",
           dialogControl             = "LSM30_Background",
           values                    = LibSharedMedia:HashTable("border"),
@@ -334,9 +378,9 @@ local function set(setting)    return function(info, value) Set(setting, value);
           order                     = source_order(),
         };
 
-    lookSG.args.spb             = Spacer();
+    lookSubGroup.args.spb             = Spacer();
 
-    lookSG.args.borderWidth =
+    lookSubGroup.args.borderWidth =
         { type                      = "range",
           width                     = 0.75,
           get                       = get(f.borderWidth),
@@ -350,7 +394,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
         };
 
 
-    lookSG.args.alpha           =
+    lookSubGroup.args.alpha           =
     { type                      = "range",
       name                      = cloc(f.alpha),
       desc                      = tloc(f.alpha),
@@ -358,56 +402,24 @@ local function set(setting)    return function(info, value) Set(setting, value);
       set                       = function(info, value) Set(f.alpha, value); Refresh(frameName, "style", "statusbar" ); end,
       min                       = 0,
       max                       = 1,
+      width                     = 1.5,
       step                      = 0.01,
       bigStep                   = 0.05,
       isPercent                 = true,
       order                     = source_order(),
     };
 
-    lookSG.args.spa             = Spacer();
+    lookSubGroup.args.spa             = Spacer();
 
-    lookSG.args.colors          =
+    lookSubGroup.args.colors          =
     { type                      = "execute",
       name                      = "Colors",
-      func                      = function() linkHandler("opt://colors/rpuf") end,
+      func                      = function() linkHandler("opt://colors/rpufColors") end,
+      width                     = 0.75,
       order                     = source_order(),
     };
 
-    local fontSSG               =
-    { type                      = "group",
-      inline                    = true,
-      name                      = "Font",
-      order                     = source_order(),
-      hidden                    = frame and linked_or_not_show(),
-      args                      = {};
-    };
-
-    fontSSG.args.name           =
-    { type                      = "select",
-      values                    = LibSharedMedia:HashTable("font"),
-      dialogControl             = "LSM30_Font",
-      name                      = cloc(f.fontName),
-      desc                      = tloc(f.fontName),
-      order                     = source_order(),
-      get                       = get(f.fontName),
-      set                       = function(info, value) Set(f.fontName, value) Refresh(frameName, "fonts", "statusbar") end,
-    };
-
-    fontSSG.args.Size           =
-    { type                      = "range",
-      min                       = 6,
-      max                       = 24,
-      step                      = 1,
-      name                      = cloc(f.fontSize),
-      desc                      = tloc(f.fontSize),
-      order                     = source_order(),
-      get                       = get(f.fontSize),
-      set                       = function(info, value) Set(f.fontSize, value) Refresh(frameName, "fonts") end,
-    };
-
-    lookSG.args.fontSSG         = fontSSG;
-
-    local statSSG               =
+    local statSSubGroup               =
     { type                      = "group",
       inline                    = true,
       name                      = "Status Bar Appearance",
@@ -416,7 +428,21 @@ local function set(setting)    return function(info, value) Set(setting, value);
       args                      = {}
     };
 
-    statSSG.args.align          =
+    statSSubGroup.args.texture        =
+    { type                      = "select",
+      dialogControl             = "LSM30_Statusbar",
+      name                      = cloc(f.statusTexture),
+      desc                      = tloc(f.statusTexture),
+      width                     = 1.40,
+      get                       = get(f.statusTexture),
+      set                       = function(info, value) Set(f.statusTexture, value); Refresh(frameName, "statusbar") end,
+      values                    = LibSharedMedia:HashTable("statusbar"),
+      order                     = source_order(),
+    };
+
+    statSSubGroup.args.spa            = Spacer();
+
+    statSSubGroup.args.align          =
     { type                      = "select",
       name                      = cloc(f.statusAlign),
       desc                      = tloc(f.statusAlign),
@@ -424,30 +450,17 @@ local function set(setting)    return function(info, value) Set(setting, value);
       get                       = get(f.statusAlign),
       set                       = function(info, value) Set(f.statusAlign, value); Refresh(frameName, "statusbar") end,
       values                    = menu.align,
+      width = 0.75,
     };
 
-    statSSG.args.spa            = Spacer();
-
-    statSSG.args.texture        =
-    { type                      = "select",
-      dialogControl             = "LSM30_Statusbar",
-      name                      = cloc(f.statusTexture),
-      desc                      = tloc(f.statusTexture),
-      get                       = get(f.statusTexture),
-      set                       = function(info, value) Set(f.statusTexture, value); Refresh(frameName, "statusbar") end,
-      values                    = LibSharedMedia:HashTable("statusbar"),
-      order                     = source_order(),
-    };
-
-    statSSG.args.spt            = Spacer();
-
-    statSSG.args.alpha          =
+    statSSubGroup.args.alpha          =
     { type = "range",
       name = cloc(f.statusAlpha),
       desc = tloc(f.statusAlpha),
       get = get(f.statusAlpha),
       set = function(info, value) Set(f.statusAlpha, value); Refresh(frameName, "statusbar") end,
       order = source_order(),
+      width = 1.40,
       step                      = 0.01,
       bigStep                   = 0.05,
       isPercent                 = true,
@@ -455,26 +468,11 @@ local function set(setting)    return function(info, value) Set(setting, value);
       max = 1,
     };
 
-    statSSG.args.spal = Spacer();
 
-    statSSG.args.height         =
-    { type                      = "range",
-      name                      = cloc(f.statusHeight),
-      desc                      = tloc(f.statusHeight),
-      order                     = source_order(),
-      get                       = get(f.statusHeight),
-      set                       = function(info, value) Set(f.statusHeight, value); Refresh(frameName, "statusbar", "framesize", "sizes") end,
-      min                       = 5,
-      softMin                   = 10,
-      softMax                   = 50,
-      max                       = 100,
-      step                      = 1,
-    };
+    lookSubGroup.args.statSSubGroup         = statSSubGroup;
+    frameGroup.args.lookSubGroup      = lookSubGroup;
 
-    lookSG.args.statSSG         = statSSG;
-    frameGroup.args.lookSG      = lookSG;
-
-    local dimiSG                =
+    local dimiSubGroup                =
     { type                      = "group",
       name                      = "Panel Dimensions",
       order                     = source_order(),
@@ -482,22 +480,22 @@ local function set(setting)    return function(info, value) Set(setting, value);
       args                      = {}
     };
 
-    dimiSG.args.gap             =
+    dimiSubGroup.args.gap             =
     { type                      = "range",
       name                      = cloc(f.gapSize),
       desc                      = cloc(f.gapSize),
       get                       = get(f.gapSize),
       set                       = function(info, value) Set(f.gapSize, value); Refresh(frameName, "framesize", "sizes") end,
       min                       = 0,
-      softMax                   = 10,
-      max                       = 20,
+      softMax                   = 20,
+      max                       = 30,
       step                      = 1,
       order                     = source_order(),
     };
 
-    dimiSG.args.spg             = Spacer();
+    dimiSubGroup.args.spg             = Spacer();
 
-    dimiSG.args.icon            =
+    dimiSubGroup.args.icon            =
     { type                      = "range",
       name                      = cloc(f.iconWidth),
       desc                      = cloc(f.iconWidth),
@@ -505,14 +503,15 @@ local function set(setting)    return function(info, value) Set(setting, value);
       set                       = function(info, value) Set(f.iconWidth, value); Refresh(frameName, "framesize", "sizes") end,
       min                       = 5,
       softMin                   = 10,
-      max                       = 50,
+      softMax                   = 50,
+      max                       = 100,
       step                      = 1,
       order                     = source_order(),
     };
 
-    dimiSG.args.spi             = Spacer();
+    dimiSubGroup.args.spi             = Spacer();
 
-    dimiSG.args.port            =
+    dimiSubGroup.args.port            =
     { type                      = "range",
       name                      = cloc(f.portWidth),
       desc                      = cloc(f.portWidth),
@@ -526,9 +525,9 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    dimiSG.args.spp             = Spacer();
+    dimiSubGroup.args.spp             = Spacer();
 
-    dimiSG.args.info            =
+    dimiSubGroup.args.info            =
     { type                      = "range",
       name                      = cloc(f.infoWidth),
       desc                      = cloc(f.infoWidth),
@@ -542,7 +541,21 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    dimiSG.args.spn             = Spacer();
+    dimiSubGroup.args.height         =
+    { type                      = "range",
+      name                      = cloc(f.statusHeight),
+      desc                      = tloc(f.statusHeight),
+      order                     = source_order(),
+      get                       = get(f.statusHeight),
+      set                       = function(info, value) Set(f.statusHeight, value); Refresh(frameName, "statusbar", "framesize", "sizes") end,
+      min                       = 5,
+      softMin                   = 10,
+      softMax                   = 75,
+      max                       = 150,
+      step                      = 1,
+    };
+
+    dimiSubGroup.args.spn             = Spacer();
 
     detail                      =
     { type                      = "range",
@@ -558,7 +571,173 @@ local function set(setting)    return function(info, value) Set(setting, value);
       order                     = source_order(),
     };
 
-    frameGroup.args.dimiSG      = dimiSG;
+    frameGroup.args.dimiSubGroup      = dimiSubGroup;
+
+    local fontSubGroup               =
+    { type                      = "group",
+      name                      = "Fonts",
+      order                     = source_order(),
+      hidden                    = frame and linked_or_not_show(),
+      args                      = 
+      { header =
+        { type = "description",
+          name = "## Fonts",
+          order = source_order(),
+          width = "full",
+          dialogControl = "LMD30_Description",
+        },
+        instruct =
+        { type = "description",
+          name = "You can choose specific fonts for each panel. Font sizes are relative " ..
+                 "to the base font size.",
+          order = source_order(),
+          width = "full",
+          dialogControl = "LMD30_Description",
+        }, 
+        mainSize =
+        { type                      = "range",
+          min                       = 6,
+          max                       = 24,
+          step                      = 1,
+          name                      = cloc(f.fontSize),
+          desc                      = tloc(f.fontSize),
+          order                     = source_order(),
+          get                       = get(f.fontSize),
+          width                     = "full",
+          set                       = function(info, value) Set(f.fontSize, value) Refresh(frameName, "fonts", "sizes") end,
+        },
+        nameFont =
+        { type = "group",
+          order = source_order(),
+          name = "Name Panel",
+          inline = true,
+          args =
+          { nameFontName  =
+            { type                      = "select",
+              values                    = LibSharedMedia:HashTable("font"),
+              width                     = 1.25,
+              dialogControl             = "LSM30_Font",
+              name                      = cloc(f.nameFont),
+              desc                      = tloc(f.nameFont),
+              order                     = source_order(),
+              get                       = get(f.nameFont),
+              set                       = function(info, value) Set(f.nameFont, value) Refresh(frameName, "fonts", "sizes", "framesize") end,
+            },
+            nameSpacer = Spacer(),
+            nameFontSize =
+            { type = "select",
+              values = menu.fontSize,
+              sorting = menu.fontSizeOrder,
+              get = function() return Get(f.nameFontSize) end,
+              set = function(info, value) Set(f.nameFontSize, value) Refresh(frameName, "fonts", "sizes", "framesize") end,
+              order = source_order(),
+              name = cloc(f.nameFontSize),
+              desc = tloc(f.nameFontSize),
+              width = 0.75,
+            },
+          },
+        },
+        statusBarFont =
+        { type = "group",
+          order = source_order(),
+          name = "Status Bar Panel",
+          inline = true,
+          args =
+          {
+            statusFontName  =
+            { type                      = "select",
+              values                    = LibSharedMedia:HashTable("font"),
+              width                     = 1.25,
+              dialogControl             = "LSM30_Font",
+              name                      = cloc(f.statusFont),
+              desc                      = tloc(f.statusFont),
+              order                     = source_order(),
+              get                       = get(f.statusFont),
+              set                       = function(info, value) Set(f.statusFont, value) Refresh(frameName, "fonts", "statusbar") end,
+            },
+            statusSpacer = Spacer(),
+            statusFontSize =
+            { type = "select",
+              values = menu.fontSize,
+              sorting = menu.fontSizeOrder,
+              get = function() return Get(f.statusFontSize) end,
+              set = function(info, value) Set(f.statusFontSize, value) Refresh(frameName, "fonts", "statusbar") end,
+              order = source_order(),
+              name = cloc(f.statusFontSize),
+              desc = tloc(f.statusFontSize),
+              width = 0.75,
+            },
+          },
+        },
+        detailFont =
+        { type = "group",
+          order = source_order(),
+          name = "Details Panel",
+          inline = true,
+          args =
+          {
+            detailFontName  =
+            { type                      = "select",
+              values                    = LibSharedMedia:HashTable("font"),
+              width                     = 1.25,
+              dialogControl             = "LSM30_Font",
+              name                      = cloc(f.detailFont),
+              desc                      = tloc(f.detailFont),
+              order                     = source_order(),
+              get                       = get(f.detailFont),
+              set                       = function(info, value) Set(f.detailFont, value) Refresh(frameName, "fonts") end,
+            },
+            detailSpacer = Spacer(),
+            detailFontSize =
+            { type = "select",
+              values = menu.fontSize,
+              sorting = menu.fontSizeOrder,
+              get = function() return Get(f.detailFontSize) end,
+              set = function(info, value) Set(f.detailFontSize, value) Refresh(frameName, "fonts") end,
+              order = source_order(),
+              name = cloc(f.detailFontSize),
+              desc = tloc(f.detailFontSize),
+              width = 0.75,
+            },
+          },
+        },
+        infoFont =
+        { type = "group",
+          order = source_order(),
+          name = "Info Panel",
+          inline = true,
+          args =
+          {
+            infoFontName  =
+            { type                      = "select",
+              values                    = LibSharedMedia:HashTable("font"),
+              width                     = 1.25,
+              dialogControl             = "LSM30_Font",
+              name                      = cloc(f.infoFont),
+              desc                      = tloc(f.infoFont),
+              order                     = source_order(),
+              get                       = get(f.infoFont),
+              set                       = function(info, value) Set(f.infoFont, value) Refresh(frameName, "fonts") end,
+            },
+            infoSpacer = Spacer(),
+            infoFontSize =
+            { type = "select",
+              values = menu.fontSize,
+              sorting = menu.fontSizeOrder,
+              get = function() return Get(f.infoFontSize) end,
+              set = function(info, value) Set(f.infoFontSize, value) Refresh(frameName, "fonts") end,
+              order = source_order(),
+              name = cloc(f.infoFontSize),
+              desc = tloc(f.infoFontSize),
+              width = 0.75,
+            },
+          },
+        }
+      }
+    };
+        
+    frameGroup.args.fontSubGroup      = fontSubGroup;
+
     return frameGroup;
 
   end;
@@ -567,10 +746,12 @@ local function set(setting)    return function(info, value) Set(setting, value);
 
   local function statusName(frameName)
     return { type     = "description",
-             name     = loc(frameName .. "FRAME"),
-             width    = 1,
+             name     = string.format("[%s](opt://RPUF_Frames/%s)", 
+                                        loc(frameName .. "FRAME"),
+                                        frameName:lower()),
+             dialogControl = "LMD30_Description",
+             width    = 0.85,
              fontSize = "medium",
-             width    = 1.0,
              order    = source_order()
           };
   end;
@@ -597,10 +778,22 @@ local function set(setting)    return function(info, value) Set(setting, value);
           };
   end;
 
+  local function statusLocked(frameName)
+    return { type = "toggle",
+             name = "Locked",
+             get = get("LOCK_FRAME_" .. frameName),
+             set = function(info, value) Set("LOCK_FRAME_" .. frameName, value); Refresh(frameName, "lock") end,
+             width = 0.5,
+             disabled = function() return Get("DISABLE_RPUF") or not Get("SHOW_FRAME_" .. frameName) end,
+             order = source_order(),
+          };
+  end;
+
+
   -- -------------------------------------------------------------------------------------------------------------
 
   local panelGroup            =
-  { name                      = loc("RPUF_NAME"),
+  { name                      = loc("OPT_RPUF_FRAMES"),
     order                     = source_order(),
     type                      = "group",
     hidden                    = function() return Get("DISABLE_RPUF") end,
@@ -609,7 +802,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
 
   local statusGroup = 
   { type = "group",
-    order = source_order(),
+    order = 10,
     inline = true,
     name = "Frames Status",
     args = {}
@@ -619,18 +812,20 @@ local function set(setting)    return function(info, value) Set(setting, value);
   do  local frameName, small = unpack(frameData);
       local name = frameName:lower();
       statusGroup.args[name .. "Name"   ] = statusName(frameName);
-      statusGroup.args[name .. "Spacer1"] = Spacer();
+      -- statusGroup.args[name .. "Spacer1"] = Spacer();
       statusGroup.args[name .. "Show"   ] = statusShow(frameName);
-      statusGroup.args[name .. "Spacer2"] = Spacer();
+      -- statusGroup.args[name .. "Spacer2"] = Spacer();
       statusGroup.args[name .. "Linked" ] = statusLinked(frameName);
-
+      -- statusGroup.args[name .. "Spacer3"] = Spacer();
+      statusGroup.args[name .. "Locked" ] = statusLocked(frameName);
   end;
 
-  sharedGroup.args.statusGroup = statusGroup;
-  panelGroup.args.sharedGroup  = sharedGroup;
+  sharedGroup.args.status = statusGroup;
+  panelGroup.args.shared  = sharedGroup;
 
   for _, frameData in ipairs(frameList)
   do  local name, small = unpack(frameData);
+      print(name, name:lower());
       panelGroup.args[name:lower()] = build_frame_group(name, small);
   end;
 

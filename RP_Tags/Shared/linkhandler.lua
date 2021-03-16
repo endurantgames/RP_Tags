@@ -27,8 +27,9 @@ function(self, event, ...)
     local taghelpCache       = Cache.help.tagIndex;
 
     link = link or dest;
-    local  protocol, path = link:match("^(%a+)://(.+)$");
-    path = split(path, "/");
+    local  protocol = link:match("^(%a+)://");
+    local path = link:match("//(.+)$");
+    path = split(path or "", "/");
     local  path1 = path[1];
     if     (protocol == "opt"
         or protocol == "setting")
@@ -36,6 +37,9 @@ function(self, event, ...)
     then   InterfaceOptionsFrame:Show()
            InterfaceOptionsFrame_OpenToCategory(panelCache[path1])
            AceConfigDialog:SelectGroup(loc("APP_NAME"), unpack(path));
+    elseif (protocol == "opt" or protocol == "setting")
+    then   InterfaceOptionsFrame:Show()
+           InterfaceOptionsFrame_OpenToCategory(loc("APP_NAME"))
     elseif protocol == "help"
     then   InterfaceOptionsFrame:Show()
            InterfaceOptionsFrame_OpenToCategory("help");

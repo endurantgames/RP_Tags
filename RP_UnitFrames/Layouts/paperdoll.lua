@@ -34,8 +34,8 @@ function(self, event, ...)
     });
 
   layout:Register_Panel_Method_Hash( "GetPanelHeight",
-    { [ "name"     ] = function(self) return self:GetActualFontSize() + 4 end,
-      [ "info"     ] = function(self) return self:GetActualFontSize() + 2 end,
+    { [ "name"     ] = function(self) return self:CalculateFontSize() + 4 end,
+      [ "info"     ] = function(self) return self:CalculateFontSize() + 2 end,
       [ "portrait" ] = function(self) return self:ConfGet("PORTWIDTH") * 2 end,
       [ "icon1"    ] = function(self) return self:ConfGet("ICONWIDTH") end,
       [ "icon2"    ] = "icon1",
@@ -50,7 +50,7 @@ function(self, event, ...)
     { [ "name"     ] = function(self) return self:ConfGet("PORTWIDTH") * 1.5 - self:Gap(2) end,
       [ "info"     ] = "name",
       [ "portrait" ] = function(self) return self:ConfGet("PORTWIDTH") * 1.5 end,
-      [ "icon1"    ] = function(self) return self:ConfGet("ICONWIDTH") end,
+      [ "icon1"    ] = function(self) return self:ConfGet("ICONWIDTH") + 0.5 end,
       [ "icon2"    ] = "icon1",
       [ "icon3"    ] = "icon1",
       [ "icon4"    ] = "icon1",

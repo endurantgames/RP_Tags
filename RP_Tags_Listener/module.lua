@@ -16,12 +16,12 @@ end;
 RPTAGS.queue:NewModuleType("dataSource");
 local Module = RPTAGS.queue:NewModule(addOnName, "dataSource");
 
-Module:WaitUntil("UTILS_GET",
+Module:WaitUntil("after UTILS_GET",
 function(self, event, ...)
 
   local Main = _G["ListenerAddon"];
 
-  local name = RPTAGS.utils.get.name;
+  local name = RPTAGS.utils.get.text.name;
   local Config = RPTAGS.utils.config;
 
   local function isParty(line)
@@ -44,7 +44,7 @@ function(self, event, ...)
   local function isToMe(line)
     return line.m:find( UnitName('player') )
         or line.m:find( name('player') )
-        or line.m:find( RPTAGS.utils.get.nick('player') )
+        or line.m:find( RPTAGS.utils.get.text.nick('player') )
         or line.m:find( Config.get("ME") )
   end;
 
@@ -60,7 +60,7 @@ function(self, event, ...)
   end;
 
   local function msg(line, u, quotedOnly)
-    return (line.e == "EMOTE" and (name(u) .. " ") or "")
+    return (line.e == "EMOTE" and ( name(u) .. " ") or "")
            .. line.m:match(quotedOnly and "\"(.-)\"" or "(.+)")
   end;
 
@@ -297,7 +297,8 @@ function(self, event, ...)
           method = Get.color,
         },
       },
-    });
+    },
+    "after ICONS");
 end);
 
 
