@@ -812,11 +812,8 @@ local function set(setting)    return function(info, value) Set(setting, value);
   do  local frameName, small = unpack(frameData);
       local name = frameName:lower();
       statusGroup.args[name .. "Name"   ] = statusName(frameName);
-      -- statusGroup.args[name .. "Spacer1"] = Spacer();
       statusGroup.args[name .. "Show"   ] = statusShow(frameName);
-      -- statusGroup.args[name .. "Spacer2"] = Spacer();
       statusGroup.args[name .. "Linked" ] = statusLinked(frameName);
-      -- statusGroup.args[name .. "Spacer3"] = Spacer();
       statusGroup.args[name .. "Locked" ] = statusLocked(frameName);
   end;
 
@@ -825,7 +822,6 @@ local function set(setting)    return function(info, value) Set(setting, value);
 
   for _, frameData in ipairs(frameList)
   do  local name, small = unpack(frameData);
-      print(name, name:lower());
       panelGroup.args[name:lower()] = build_frame_group(name, small);
   end;
 

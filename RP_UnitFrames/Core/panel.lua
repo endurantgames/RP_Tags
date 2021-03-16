@@ -217,7 +217,6 @@ function(self, event, ...)
 
       self:SetScript("OnMouseDown",
         function(self, button, ...) 
-          print(self.name);
           if button == "RightButton" then linkHandler("opt://RPUF_Panels/rpufPanels" .. self.name .. "Panel" ) end;
         end);
 
