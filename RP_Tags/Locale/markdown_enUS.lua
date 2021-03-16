@@ -19,36 +19,33 @@ local _t = Icon._t;
 [===[
 # Introduction
 
-RPTAGS is an addon that lets you create special panels, called unit frames, 
-to display roleplaying information of your
-choice, drawn from roleplaying addons such as [MyRolePlay](urldb://mrp), 
-[Total RP 3](urldb://trp3), or [XRP](urldb://xrp).
-
-In addition, you can use any tags from RPTAGS in [ElvUI](urldb://elvui), 
-although ElvUI is not required for RPTAGS.
+rpTags lets you create custom unit frames displaying information drawn from
+your roleplaying addons, such as [MyRolePlay](urldb://mrp) or
+[Total RP 3](urldb://trp3).
 
 ## What's a Unit Frame?
 
 A unit frame is a window on your screen that appears when a certain 
 type of unit exists in the game. For example, the Target Unit Frame is 
-shown when you target someone.
+shown when you target someone; until then, the "target" unit is undefined
+for you.
 
-RPTAGS works with three types of unit frame: Player, Target, and Focus. 
-When we talk about showing a unit's info, that means that your RP info 
-is displayed in the player frame, your target's in the target frame,
-and your focus, if any, in the focus frame.
+rpTags works with a unit frames addon to display specialized unit frames.
+Supported unit frame addons are [ElvUI](urldb://elvui) and rpUnitFrames
+(which is included with rpTags).
 
 ## What's a Tag?
 
-A tag, in this context, refers to a string of text that you asisgn 
-to locations on the unit frames known
-as panels. Tags look like this:
+A tag, in this context, refers to a string of text that will be interpreted
+by the unit frames addon as information.
+
+Tags follow this general format:
 
     [rp:tagname]
 
-There are nearly 200 RPTAGS you can use, as well as several dozen 
-provided by oUF, the framework addon upon
-which RPTAGS is built. Some of the most useful tags include:
+There are over 300 rp:tags you can use, as well as several dozen 
+provided by oUF, the framework upon which rpUnitFrames is built. 
+Some of the most useful tags include:
 ]===];
 
   L["FMT_GROUPLIST_MD"] =
@@ -81,25 +78,24 @@ Height and weight formats are currently disabled, because you don't have [Parse 
 [===[
 # Options
 
-All settings are available through the RPTAGS options system.
+All settings are available through the rpTags options system.
 
-[General Settings](opt://general) let you determine what messages to show, how to display certain tags, and how to respond
+[General Settings](opt://general) let you determine what messages to show, 
+how to display certain tags, and how to respond
 to notes that you've set on a unit. 
 
 [Colors Settings](opt://colors) let you change the various colors used by RPTAGS.
-
-If you want to restore the settings on a particular page to their default values, use the "Defaults" button in the lower left corner of the Interface window.
 ]===];
 
   L["TAG_MODIFIERS_MD"] = 
 [===[
 # Tag Modifiers
-There are two types of tag modifiers that change how a tag is displayed: [[labels]] and [[size modifiers]].
+There are two types of tag modifiers that change how a tag is displayed: **labels** and **size modifiers**.
 
 ## Labels
 
-A label modifier can be applied to most tags that display information. You create a label
-tag by adding `-label` to the end of the tag. For example:
+A label modifier can be applied to most tags that display information. 
+You create a label tag by adding `-label` to the end of the tag. For example:
 
     [rp:fulltitle-label]
 
@@ -107,8 +103,8 @@ This will display a label before the unit's title:
 
 > Title: Stormwind Fashion Icon
 
-If a given unit doesn't have the listed field, nothing will be displayed. If you want to display
-a label anyway, simply create your own label in text:
+If a given unit doesn't have the listed field, nothing will be displayed. 
+If you want to display a label anyway, simply create your own label in text:
 
     Title: [rp:fulltitle]
 
@@ -145,6 +141,11 @@ For example:
 
 The length corresponding to each keyword can be changed by you 
 in [Tag Size Options](setting://general/sizes).
+
+|cffff9900Important note!|r ElvUI currently does not recognize tags with
+numeric size modifiers (such as `(8)`); if you're using ElvUI you'll need
+to use only keyword size modifiers, such as `(small)` or `(xl)`.
+
 ]===];
 
 L["DEBUGGING_MESSAGE_MD"] =
@@ -189,15 +190,19 @@ L["CHANGES_MD"] =
 
 # Changes
 
-## |cffff0000Note:|r RP\_UnitFrames in Alpha Testing
-   
-RP\_UnitFrames are currently disabled by default. To enable them,
-follow these instructions:
+## 9.0.5.1
 
-- First, change your addons in WoW so that RP\_UnitFrames is set to load.
-- Second, reload your UI (e.g. with `/reload`)
-- Third, go to RP_Tags options (e.g. with `/rptags`) and uncheck "Disable RPUF"
-- Send bug reports to the [GitHub project page](https://github.com/caderaspindrift/RP_Tags/issues) please!
+- First release for WoW 9
+- rpUnitFrames should be working
+- rpTags now supports Listener as well
+- The addon is modularized; if you don't want to load a module, you can
+  disable it -- or even delete it
+- By default, rpTags will look for which other supported addons you have
+  installed and enabled
+- Added [rp:me] tags, plus [rp:listen] tags
+- Help and configuration are all via the `/rptags` (or `/rpt`) command
+- Tag sizes now supported -- use [rp:tagname(medium)] or [rp:tagname(m)]
+  on ElvUI and rpUnitFrames; use [rp:tagname(10)] on rpUnitFrames
 
 ## 9.0.5.0 beta 3
 
