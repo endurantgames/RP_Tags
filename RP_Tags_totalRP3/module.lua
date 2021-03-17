@@ -51,26 +51,37 @@ Module:WaitUntil("ADDON_LOAD",
 function(self, event)
 
   local refreshAll   = RPTAGS.utils.frames.refreshAll;
+  local refreshFrame = RPTAGS.utils.frames.refresh;
   local getUnitID    = TRP3_API.utils.str.getUnitID;
   local unitIDToInfo = TRP3_API.utils.str.unitIDToInfo;
 
   TRP3_API.Events.registerCallback(
     TRP3_API.events.REGISTER_DATA_UPDATED,
-    function(unitID)
+    function(unitID, profileID, dataType)
       if not unitID then return end
       -- we're going to listen for trp3 update event and make our unitframes update when it happens
       local unit_name, _ = unitIDToInfo(unitID);
-      if   getUnitID("target")       == unitID or 
-           getUnitID("player")       == unitID or 
-           getUnitID("focus")        == unitID or 
-           getUnitID("targettarget") == unitID or
-           UnitInRaid(unitID)                  or 
-           UnitInRaid(unit_name)               or
-           UnitInParty(unitID)                 or 
-           UnitInParty(unit_name)  
-      then refreshAll() 
+      if     getUnitID("target")       == unitID then refreshFrame('target');
+      elseif getUnitID("player")       == unitID then refreshFrame('player');
+      elseif getUnitID("focus")        == unitID then refreshFrame('focus');
+      elseif getUnitID("targettarget") == unitID then refreshFrame('targettarget');
+      elseif UnitInRaid(unitID)                  then refreshFrame('raid')
+      elseif UnitInRaid(unit_name)               then refreshFrame('raid')
+      elseif UnitInParty(unitID)                 then refreshFrame('party')
+      elseif UnitInParty(unit_name)              then refreshFrame('party')
+      else   refreshAll() 
       end; -- if 
     end
   );  -- end of our callback handler for new data
+
+  TRP3_API.Events.registerCallback(
+    TRP3_API.events.REGISTER_PROFILES_LOADED,
+    function(profileStructure) refreshFrame('player'); end
+  );
+
+  TRP3_API.Events.registerCallback(
+    TRP3_API.events.REGISTER_PROFILE_DELETED,
+    function(profileStructure) refreshFrame('player'); end
+  );
 
 end);

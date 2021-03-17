@@ -102,7 +102,10 @@ function(self, event, ...)
   end;
   
   local function refreshFrame(frameName, ...)
-    RPTAGS.utils.frames.RPUF_Refresh(frameName, "content");
+    if RPTAGS.utils.UnitFrames[frameName]
+    then RPTAGS.utils.frames.RPUF_Refresh(frameName, "content");
+    end;
+
     return frameName, ...; 
   end;
 

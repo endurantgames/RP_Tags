@@ -230,10 +230,10 @@ function(self, event, ...)
       then return "|cff" .. Config.get("COLOR_IC")
       elseif status == 3 
       then   local r, g, b = splitRGB(Config.get("COLOR_IC"))  
-             return joinRGB(85 + r * 2/3, 85 + g * 2/3, 85 + b * 2/3)
+             return "|cff" .. joinRGB(85 + r * 2/3, 85 + g * 2/3, 85 + b * 2/3)
       elseif status == 4 
       then   local r, g, b = splitRGB(Config.get("COLOR_NPC")) 
-             return joinRGB(85 + r * 2/3, 85 + g * 2/3, 85 + b * 2/3) 
+             return "|cff" .. joinRGB(85 + r * 2/3, 85 + g * 2/3, 85 + b * 2/3) 
       else return "";
       end;
     end;
