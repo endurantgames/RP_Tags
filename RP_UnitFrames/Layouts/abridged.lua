@@ -114,5 +114,7 @@ function(self, event, ...)
   layout:Register_Frame_Method("GetFrameDimensions", get_frame_dimensions);
 
   layout:RegisterLayout();
+
+  layout:RegisterAsDefault();
     
 end);

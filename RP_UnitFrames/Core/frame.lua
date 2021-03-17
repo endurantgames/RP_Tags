@@ -14,6 +14,7 @@ function(self, event, ...)
   local Config          = Utils.config;
   local initializePanel = Utils.frames.initialize_panel;
   local RPUF_GetLayout  = Utils.frames.RPUF_GetLayout;
+  local RPUF_GetDefaultLayout = Utils.frames.RPUF_GetDefaultLayout;
   local linkHandler     = Utils.links.handler;
   local titlecase       = Utils.text.titlecase;
   local toRGB           = Utils.color.hexaToNumber;
@@ -333,15 +334,16 @@ function(self, event, ...)
       end;
     end;
 
-    local function updateContent()
-      self:UpdateAllElements("now");
-    end;
+    local layoutSize = "small";
+    local function getLayoutSize()     return layoutSize; end;
+    local function setLayoutSize(size) layoutSize = size; end;
+
+    local function updateContent() self:UpdateAllElements("now"); end;
 
     local function updateLayout()
       local layoutName = getLayoutName()
-      local layout = RPUF_GetLayout(layoutName);
+      local layout = RPUF_GetLayout(layoutName) or RPUF_GetDefaultLayout(self:GetLayoutSize());
       if not layout then error("Unknown layout in updateLayout: " .. (layoutName or "nil")); end;
-
       for funcName, func in pairs(layout.frame_methods)
       do  self[funcName] = func;
       end;
@@ -370,6 +372,7 @@ function(self, event, ...)
     public.GetLayoutName         = getLayoutName;
     public.GetTooltipColor       = getTooltipColor;
     public.GetUnit               = getUnit;
+    public.SetLayoutSize         = setLayoutSize;
     public.PanelGet              = panelGet;
     public.ResetCoords           = resetCoords;
     public.UpdateContent         = updateContent;

@@ -59,4 +59,7 @@ function(self, event, ...)
 
   layout:RegisterLayout();
 
+  layout:RegisterAsDefault();
+
+
 end);

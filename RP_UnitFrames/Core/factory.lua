@@ -14,6 +14,8 @@ function(self, event, ...)
   then function oUF:DisableBlizzard() end; -- this prevents oUF from disabling oUF
   end;
 
+  local hashLayoutSizes = { PLAYER = "large", TARGET = "large" };
+
   oUF:Factory(
     function(self)
       RPTAGS.cache.UnitFrames = RPTAGS.cache.UnitFrames or {};
@@ -24,12 +26,25 @@ function(self, event, ...)
           UnregisterUnitWatch(frame);
           -- frame:SetPoint("CENTER");
           RPTAGS.cache.UnitFrames[u] = _G[frameName];
-          frame:Public("UpdateEverything");
+          -- frame:Public("UpdateEverything");
           frame:SetFrameStrata("MEDIUM");
+          frame:SetLayoutSize( hashLayoutSizes[unit] or "small");
           RPTAGS.utils.frames.scale(frame);
       end;
     end);
 
+  local EventsFrame = CreateFrame("Frame");
+  EventsFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+  EventsFrame:SetScript("OnEvent",
+    function(self, event, isLogin, isReload)
+      -- this makes sure everything gets properly applied to our unitframes
+      -- i.e., applying fonts once they're loaded
+      if isLogin or isReload
+      then for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
+           do  frame:Public("UpdateEverything");
+           end;
+      end;
+    end);
 end);
 
 Module:WaitUntil("MODULE_E",
@@ -66,9 +81,10 @@ end);
 Module:WaitUntil("before MODULE_F",
 function(self, event, ...)
 
-  RPTAGS.cache.layouts         = RPTAGS.cache.layouts         or {};
-  RPTAGS.cache.layouts.known   = RPTAGS.cache.layouts.known   or {}
-  RPTAGS.cache.layouts.by_size = RPTAGS.cache.layouts.by_size or {};
+  RPTAGS.cache.layouts          = RPTAGS.cache.layouts          or {};
+  RPTAGS.cache.layouts.known    = RPTAGS.cache.layouts.known    or {};
+  RPTAGS.cache.layouts.by_size  = RPTAGS.cache.layouts.by_size  or {};
+  RPTAGS.cache.layouts.defaults = RPTAGS.cache.layouts.defaults or {};
 
   local loc = RPTAGS.utils.locale.loc;
 
@@ -122,6 +138,12 @@ function(self, event, ...)
 
   end;
 
+  local function RPUF_RegisterAsDefault(self)
+    if   self.size
+    then RPTAGS.cache.layouts.defaults[self.size] = self.name;
+    else print("Could not register as default");
+    end;
+  end;
   local function RPUF_NewLayout(layoutName, layoutSize, layoutVersion)
 
     return 
@@ -132,10 +154,12 @@ function(self, event, ...)
       panel_method_hash          = {},
       size                       = layoutSize,
       version                    = layoutVersion or GetAddOnMetadata(addOnName, "Version"),
+      GetLayoutSize              = function(self) return self.size end,
       Register_Panel_Method_Hash = function(self, hashName, hashTable) self.panel_method_hash[hashName] = hashTable; end,
       Register_Panel_Method      = function(self, funcName, func)      self.panel_methods[funcName]     = func;      end,
       Register_Frame_Method      = function(self, funcName, func)      self.frame_methods[funcName]     = func;      end,
       RegisterLayout             = function(self)                      RPUF_RegisterLayout(layoutName, self)         end,
+      RegisterAsDefault          = function(self)                      RPUF_RegisterAsDefault(self)                  end,
     };
 
   end;
@@ -192,11 +216,35 @@ function(self, event, ...)
     do  if RPTAGS.utils.config.get("DISABLE_BLIZZARD") then UnregisterUnitWatch(frame); else RegisterUnitWatch(frame) end; end;
   end;
 
-  RPTAGS.utils.frames.RPUF_Refresh        = RPUF_Refresh;
-  RPTAGS.utils.frames.RPUF_RegisterLayout = RPUF_RegisterLayout;
-  RPTAGS.utils.frames.RPUF_GetLayout      = RPUF_GetLayout;
-  RPTAGS.utils.frames.RPUF_NewLayout      = RPUF_NewLayout;
+  local function RPUF_LayoutHashTable(layoutSize)
+    local layoutCache = RPTAGS.cache.layouts;
+    local hashTable = {};
+
+    if not layoutSize or not layoutCache.by_size[layoutSize]
+    then for layoutName, _ in pairs(layoutCache.known)
+         do  hashTable[layoutName:upper()] = loc("RPUF_" .. layoutName:upper());
+         end;
+    else for _, layoutName in ipairs(layoutCache.by_size[layoutSize])
+         do hashTable[layoutName:upper()] = loc("RPUF_" .. layoutName:upper());
+         end;
+    end;
+    return hashTable;
+  end;
+
+  local function RPUF_GetDefaultLayout(size)
+    size = size or "small";
+    local layoutCache = RPTAGS.cache.layouts;
+    return layoutCache.defaults[size] or error("No default for size " .. size or type(size));
+  end;
+
+  RPTAGS.utils.frames.RPUF_Refresh                 = RPUF_Refresh;
+  RPTAGS.utils.frames.RPUF_RegisterLayout          = RPUF_RegisterLayout;
+  RPTAGS.utils.frames.RPUF_GetLayout               = RPUF_GetLayout;
+  RPTAGS.utils.frames.RPUF_GetDefaultLayout        = RPUF_GetDefaultLayout;
+  RPTAGS.utils.frames.RPUF_NewLayout               = RPUF_NewLayout;
   RPTAGS.utils.frames.RPUF_EnableOrDisableBlizzard = RPUF_EnableOrDisableBlizzard;
+  RPTAGS.utils.frames.RPUF_LayoutHashTable         = RPUF_LayoutHashTable;
 
 end);
+
 
