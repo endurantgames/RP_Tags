@@ -179,7 +179,7 @@ function(self, event, ...)
   end;
 
   RPTAGS.utils.modules.extend(
-  { ["frames.refresh"] = refreshFrame,
+  { ["frames.refresh"]    = refreshFrame,
     ["frames.refreshAll"] = refreshAll, 
   });
 

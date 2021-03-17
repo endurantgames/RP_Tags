@@ -271,6 +271,6 @@ translations into other languages, you can get in touch with us.
 - [ ] Long-Term
   - [ ] Config profiles with Ace3?
   - [ ] XRP support
-  - [ ] Update for new pronoun settings in trp3
+  - [ ] Update for new pronoun settings in trp3/MRP
   - [ ] See if RPT can be generalized for any oUF addon
   - [ ] See if RPT can be generalized for any MSP addon
