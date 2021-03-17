@@ -219,7 +219,7 @@ function(self, event, ...)
 
     local function getStatusColor(u)
       if not UnitIsPlayer(u) 
-      then return Config.get("COLOR_NPC") 
+      then return "|cff" .. Config.get("COLOR_NPC") 
       end;
       local status = tonumber(getField(u, "FC")) or 0;
       if     status == 1 
