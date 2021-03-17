@@ -101,9 +101,21 @@ function(self, event, ...)
     return tagName, tagMethod, tagExtraEvents;
   end;
   
+  local function refreshFrame(frameName, ...)
+    RPTAGS.utils.frames.RPUF_Refresh(frameName, "content");
+    return frameName, ...; 
+  end;
+
+  local function refreshAll(...)
+    RPTAGS.utils.frames.RPUF_Refresh("all", "content");
+    return ...
+  end;
+
   RPTAGS.utils.modules.extend(
   { [ "tags.registerTag"   ] = registerTag, 
     [ "tags.sizeVariants"  ] = registerTagSizeVariants,
+    [ "frames.refresh"     ] = refreshframe,
+    [ "frames.refreshAll"  ] = refreshAll,
   });
 
   RPTAGS.utils.tags.fix             = fixTagErrors;

@@ -20,6 +20,7 @@ function(self, event, ...)
   local scaleFrame      = Utils.frames.scale;
   local scaleAllFrames  = Utils.frames.scaleAll;
   local Refresh         = Utils.frames.RPUF_Refresh;
+  local RPUF_LayoutHashTable = Utils.frames.RPUF_LayoutHashTable;
 
   local menu     =
   { align        =

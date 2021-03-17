@@ -105,8 +105,14 @@ function(self, event, ...)
            end;
       end;
   
+      local step = 4;
+
       local font_size_hash =
-      { ["extrasmall" ] = -4, ["small" ] = -2, ["medium" ] = 0, ["large" ] = 2, ["extralarge" ] = 4 };
+      { ["extrasmall" ] = step * -2, 
+        ["small"      ] = step * -1, 
+        ["medium"     ] = step * 0, 
+        ["large"      ] = step * 1, 
+        ["extralarge" ] = step * 2 };
   
       function self.CalculateFontSize(self, fontSize)
         return opt["iconsize"] and self:ConfGet("ICONWIDTH")

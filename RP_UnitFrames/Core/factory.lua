@@ -28,7 +28,7 @@ function(self, event, ...)
           RPTAGS.cache.UnitFrames[u] = _G[frameName];
           -- frame:Public("UpdateEverything");
           frame:SetFrameStrata("MEDIUM");
-          frame:SetLayoutSize( hashLayoutSizes[unit] or "small");
+          frame:Public("SetLayoutSize", hashLayoutSizes[unit] or "small");
           RPTAGS.utils.frames.scale(frame);
       end;
     end);
