@@ -41,7 +41,7 @@ function(self, event, ...)
       -- i.e., applying fonts once they're loaded
       if isLogin or isReload
       then for frameName, frame in pairs(RPTAGS.cache.UnitFrames)
-           do  frame:Public("UpdateEverything");
+           do  RPTAGS.utils.frames.RPUF_Refresh("all", "everything");
            end;
       end;
     end);
@@ -187,6 +187,7 @@ function(self, event, ...)
     backdrop         = "UpdateFrameApparance",
     content          = "UpdateContent",
     portrait         = "UpdatePortrait",
+    everything       = "UpdateEverything",
   };
 
   local function RPUF_Refresh(frameName, ...)
