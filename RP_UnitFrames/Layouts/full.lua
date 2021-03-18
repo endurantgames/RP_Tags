@@ -8,48 +8,110 @@ function(self, event, ...)
   local layout = RPTAGS.utils.frames.RPUF_NewLayout("full", "large");
 
   local function get_statusBar_top(self)
-    return math.max(
-        self:Gap(7) + self:ConfGet("ICONWIDTH") * 6,
-        self:Gap(1) + self:ConfGet("PORTWIDTH") * 1.5,
-        self:Gap(4) + self:Public("PanelGet", "Height", "name") + self:Public("PanelGet", "Height", "info") + self:ConfGet("DETAILHEIGHT")
-      )
+    return self:Gap(1)
+           + self:ConfGet("RPUF_BORDER_INSETS")
+           + math.max(
+               self:Gap(5) + self:ConfGet("ICONWIDTH") * 6,
+               self:ConfGet("PORTWIDTH") * 1.5,
+               self:Gap(3) 
+               + self:Public("PanelGet", "Height", "name") 
+               + self:Public("PanelGet", "Height", "info") 
+               + self:ConfGet("DETAILHEIGHT")
+           )
   end;
 
   local function get_frame_dimensions(self)
     return 
-      self:Public("Gap", 4) + self:Public("ConfGet", "ICONWIDTH") + self:Public("ConfGet", "INFOWIDTH") + self:Public("ConfGet", "PORTWIDTH"),
-      math.max(
-        self:Public("Gap", 8) + self:Public("ConfGet", "ICONWIDTH") * 6 + self:Public("ConfGet", "STATUSHEIGHT"),
-        self:Public("Gap", 5) + self:Public("PanelGet", "Height", "name") + self:Public("ConfGet", "DETAILHEIGHT") + self:Public("ConfGet", "STATUSHEIGHT") + self:Public("PanelGet", "Height", "info"),
-        self:Public("Gap", 2) + self:Public("ConfGet", "PORTWIDTH") * 1.5 + self:Public("ConfGet", "STATUSHEIGHT")
-      )
+      self:Public("Gap", 4) 
+      + self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2
+      + self:Public("ConfGet", "ICONWIDTH") 
+      + self:Public("ConfGet", "INFOWIDTH") 
+      + self:Public("ConfGet", "PORTWIDTH"),
+      self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2 
+      + self:Public("Gap", 1)
+      + math.max(
+          self:Public("Gap", 6) 
+          + self:Public("ConfGet", "ICONWIDTH") * 6 
+          + self:Public("ConfGet", "STATUSHEIGHT"),
+          self:Public("Gap", 3) 
+          + self:Public("PanelGet", "Height", "name") 
+          + self:Public("ConfGet", "DETAILHEIGHT") 
+          + self:Public("ConfGet", "STATUSHEIGHT") 
+          + self:Public("PanelGet", "Height", "info"),
+          self:Public("ConfGet", "PORTWIDTH") * 1.5 
+          + self:Public("ConfGet", "STATUSHEIGHT")
+        )
   end;
 
   layout:Register_Panel_Method_Hash("GetPanelLeft",
-    { [ "portrait"  ] = function(self) return self:Gap(2) + self:ConfGet("ICONWIDTH") end,
-      [ "icon1"     ] = function(self) return self:Gap(1) end,
+    { [ "portrait"  ] = function(self) 
+                          return self:Gap(2) 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                                 + self:ConfGet("ICONWIDTH") 
+                        end,
+      [ "icon1"     ] = function(self) 
+                          return self:Gap(1) 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
       [ "icon2"     ] = "icon1",
       [ "icon3"     ] = "icon1",
       [ "icon4"     ] = "icon1",
       [ "icon5"     ] = "icon1",
       [ "icon6"     ] = "icon1",
-      [ "name"      ] = function(self) return self:Gap(3) + self:PanelGet("Width", "portrait") + self:PanelGet("Width", "icon1") end,
+      [ "name"      ] = function(self) 
+                          return self:Gap(3) 
+                          + self:ConfGet("PORTWIDTH") 
+                          + self:ConfGet("ICONWIDTH")
+                          + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
       [ "info"      ] = "name",
       [ "details"   ] = "name",
-      [ "statusBar" ] = function(self) left = self:Public("ConfGet", "RPUF_BORDER_INSETS") return left; end,
+      [ "statusBar" ] = function(self) return self:ConfGet("RPUF_BORDER_INSETS") end,
     });
 
   layout:Register_Panel_Method_Hash("GetPanelTop",
-    { [ "portrait"  ] = function(self) return self:Gap(1) end,
-      [ "icon1"     ] = function(self) return self:Gap(1) end,
-      [ "icon2"     ] = function(self) return self:Gap(2) + self:ConfGet("ICONWIDTH") * 1 end,
-      [ "icon3"     ] = function(self) return self:Gap(3) + self:ConfGet("ICONWIDTH") * 2 end,
-      [ "icon4"     ] = function(self) return self:Gap(4) + self:ConfGet("ICONWIDTH") * 3 end,
-      [ "icon5"     ] = function(self) return self:Gap(5) + self:ConfGet("ICONWIDTH") * 4 end,
-      [ "icon6"     ] = function(self) return self:Gap(6) + self:ConfGet("ICONWIDTH") * 5 end,
+    { [ "portrait"  ] = function(self) 
+                          return self:Gap(1) 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
+      [ "icon1"     ] = "portrait",
+      [ "icon2"     ] = function(self) 
+                          return self:Gap(2) 
+                                 + self:ConfGet("ICONWIDTH") * 1 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
+      [ "icon3"     ] = function(self) 
+                          return self:Gap(3) 
+                                 + self:ConfGet("ICONWIDTH") * 2 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
+      [ "icon4"     ] = function(self) 
+                          return self:Gap(4) 
+                                 + self:ConfGet("ICONWIDTH") * 3 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
+      [ "icon5"     ] = function(self) 
+                          return self:Gap(5) 
+                                 + self:ConfGet("ICONWIDTH") * 4 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
+      [ "icon6"     ] = function(self) 
+                          return self:Gap(6) 
+                                 + self:ConfGet("ICONWIDTH") * 5 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
       [ "name"      ] = "portrait",
-      [ "info"      ] = function(self) return self:Gap(2) + self:PanelGet("Height", "name") end,
-      [ "details"   ] = function(self) return self:PanelGet("Top", "info") + self:Gap(1) + self:PanelGet("Height", "info") end,
+      [ "info"      ] = function(self) 
+                          return self:Gap(2) 
+                                 + self:PanelGet("Height", "name") 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
+      [ "details"   ] = function(self) 
+                          return self:Gap(3)
+                                 + self:PanelGet("Height", "name")
+                                 + self:PanelGet("Height", "info") 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
       [ "statusBar" ] = function(self) return get_statusBar_top(self) end,
     });
 
@@ -61,8 +123,8 @@ function(self, event, ...)
       [ "icon4"     ] = "icon1",
       [ "icon5"     ] = "icon1",
       [ "icon6"     ] = "icon1",
-      [ "name"      ] = function(self) return self:CalculateFontSize() + 4 end,
-      [ "info"      ] = function(self) return self:CalculateFontSize() + 2 end,
+      [ "name"      ] = function(self) return self:CalculateFontSize() end,
+      [ "info"      ] = function(self) return self:CalculateFontSize() end,
       [ "details"   ] = function(self) return self:ConfGet("DETAILHEIGHT") end,
       [ "statusBar" ] = function(self) return self:ConfGet("STATUSHEIGHT") end,
     });
@@ -78,11 +140,12 @@ function(self, event, ...)
       [ "name"      ] = "info",
       [ "info"      ] = function(self) return self:ConfGet("INFOWIDTH") end,
       [ "details"   ] = "info",
-      [ "statusBar" ] = 
-        function(self) 
-          return self:Public("ConfGet", "PORTWIDTH") + self:Public("Gap", 4) + self:Public("ConfGet", "ICONWIDTH") 
-                        + self:Public("ConfGet", "INFOWIDTH") - 2 * self:Public("ConfGet", "RPUF_BORDER_INSETS") 
-          end,
+      [ "statusBar" ] = function(self) 
+                          return self:Public("ConfGet", "PORTWIDTH") 
+                                 + self:Public("Gap", 4) 
+                                 + self:Public("ConfGet", "ICONWIDTH") 
+                                 + self:Public("ConfGet", "INFOWIDTH") 
+                        end,
     });
 
   layout:Register_Panel_Method_Hash("GetPanelVis",

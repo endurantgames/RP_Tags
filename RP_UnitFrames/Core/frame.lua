@@ -397,7 +397,7 @@ function(self, event, ...)
     function self.Public(self, funcName, ...)
       if   public[funcName]
       then return public[funcName](...)
-      else error("No public function ", funcName)
+      else error("No public function " .. funcName)
       end;
     end;
 
