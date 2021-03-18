@@ -258,7 +258,12 @@ translations into other languages, you can get in touch with us.
     - [x] P1: Unit frames fully working
     - [x] P2: Review default frame settings
     - [x] P2: Default layouts
-    - [ ] P1: Fix layouts
+    - [x] P1: Fix paperdoll layout
+    - [ ] P1: Fix thumbnail layout
+    - [ ] P2: Tweak abridged layout
+    - [ ] P2: Tweak compact layout
+    - [ ] P2: Tweak full layout
+    - [ ] P3: Blizzlike layout
   - [x] Tags
     - [x] Get labels working in rpUnitFrames
     - [x] P1: Confirm size modifiers working in rpUnitFrames

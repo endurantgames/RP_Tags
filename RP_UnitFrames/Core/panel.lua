@@ -100,8 +100,10 @@ function(self, event, ...)
              self.text:SetJustifyV( "CENTER" );
            end;
       else function self.SetJustify(self)
-             self.text:SetJustifyH( self:GetPanelJustifyH() );
-             self.text:SetJustifyV( self:GetPanelJustifyV() );
+             if self.GetPanelJustifyH and self.GetPanelJustifyV
+             then self.text:SetJustifyH( self:GetPanelJustifyH() );
+                  self.text:SetJustifyV( self:GetPanelJustifyV() );
+             end;
            end;
       end;
   

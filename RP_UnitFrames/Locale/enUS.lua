@@ -377,7 +377,7 @@ function(self, event, ...)
   L["EDITOR_DONE"] = "Done";
   L["EDITOR_DONE_TT"] = "Save the current value and exit the editor.";
   L["EDITOR_CANCEL"] = "Cancel";
-  L["EDITPR_CANCEL_TT"] = "Exit the editor without saving.";
+  L["EDITOR_CANCEL_TT"] = "Exit the editor without saving.";
   L["NOTIFY_EDITOR_CANCEL_SAVED"] = " edit cancelled.";
   L["NOTIFY_EDITOR_CANCEL_DISCARDED"] = " changes discarded.";
   L["EDITOR_UI_NOT_SAVED"] = " (not saved)";
