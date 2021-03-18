@@ -2,64 +2,126 @@ local addOnName, ns = ...;
 local RPTAGS = RPTAGS;
 local Module = RPTAGS.queue:GetModule(addOnName);
 
-Module:WaitUntil("MODULE_F",
+Module:WaitUntil("MODULE_F", 
 function(self, event, ...)
+  
+  local layout = RPTAGS.utils.frames.RPUF_NewLayout("blizzlike", "large");
 
-  local layout = RPTAGS.utils.frames.RPUF_NewLayout("compact", "small");
+  --[[
+        +-------------------------------------+
+        |            | Name                   |
+        |            |------------------------|
+        |            | Info                   |
+        |            |------------------------|
+        |            | Status                 |
+        +----+-------+------------------------+
+        | i1 |       | i2 | i3 | i4 | i5 | i6 |
+        +----+       +------------------------+
+  --]]
 
   local function get_frame_dimensions(self)
-    local a = self:Public("Gap", 0.5) + 0;
-    local b = self:Public("PanelGet", "Height", "name") + 0;
-    local c = self:Public("PanelGet", "Height", "info") + 0;
-    local d = self:Public("ConfGet", "ICONWIDTH") + 0;
     return 
-      self:Public("Gap", 1.5) + self:Public("ConfGet", "ICONWIDTH") + self:Public("ConfGet", "INFOWIDTH"),
-
-      self:Public("Gap", 1) +
-      math.max( 
-        self:Public("Gap", 0.5) + self:Public("PanelGet", "Height", "name") + self:Public("PanelGet", "Height", "info"),
-        self:Public("ConfGet", "ICONWIDTH")
+      self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2
+      + self:Public("ConfGet", "PORTWIDTH") * 2/3
+      + self:Public("Gap", 1)
+      + self:Public("ConfGet", "INFOWIDTH"),
+      self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2
+      + math.max(
+          self:Public("ConfGet", "PORTWIDTH") * 2/3,
+          self:Public("Gap", 2)
+          + self:Public("PanelGet", "Height", "name")
+          + self:Public("PanelGet", "Height", "info")
+          + self:Public("PanelGet", "Height", "statusBar")
       )
   end;
 
   layout:Register_Panel_Method_Hash("GetPanelLeft",
-    { [ "icon1" ] = function(self) return self:Gap(0.5) end,
-      [ "name"  ] = function(self) return self:Gap(1) + self:ConfGet("ICONWIDTH") end,
-      [ "info"  ] = "name",
+    { [ "portrait"  ] = function(self) return self:ConfGet("RPUF_BORDER_INSETS") end,
+      [ "name"      ] = function(self)
+                          return self:ConfGet("RPUF_BORDER_INSETS")
+                                 + self:ConfGet("PORTWIDTH") * 2/3
+                                 + self:Gap(0.5)
+                                 + self:ConfGet("RPUF_BORDER_WIDTH") / 4
+                        end,
+      [ "info"      ] = "name",
+      [ "statusBar" ] = function(self) 
+                          return self:ConfGet("RPUF_BORDER_INSETS")
+                                 + self:ConfGet("PORTWIDTH") * 2/3
+                                 + self:ConfGet("RPUF_BORDER_WIDTH") / 4
+                        end,
     });
 
   layout:Register_Panel_Method_Hash("GetPanelTop",
-    { [ "icon1" ] = function(self) return self:Gap(0.5) end,
-      [ "name"  ] = "icon1",
-      [ "info"  ] = function(self) return self:Gap(0.5) + self:GetPanelHeight("name") end,
+    { [ "portrait"  ] = function(self) 
+                          return 
+                            self:ConfGet("RPUF_BORDER_INSETS") 
+                            - self:GetPanelHeight()
+                            + math.max(
+                                self:GetPanelHeight(),
+                                self:PanelGet("Height", "name")
+                                + self:PanelGet("Height", "info")
+                                + self:PanelGet("Height", "statusBar")
+                                + self:Gap(2)
+                              )
+                        end,
+      [ "name"      ] = function(self) 
+                          return self:ConfGet("RPUF_BORDER_INSETS") 
+                                 + self:ConfGet("RPUF_BORDER_WIDTH") / 4
+                                 + self:Gap(1) 
+                        end,
+      [ "info"      ] = function(self) 
+                          return self:ConfGet("RPUF_BORDER_INSETS")
+                                 + self:Gap(1.5)
+                                 + self:ConfGet("RPUF_BORDER_WIDTH") / 4
+                                 + self:PanelGet("Height", "name")
+                        end,
+      [ "statusBar" ] = function(self) 
+                          return self:ConfGet("RPUF_BORDER_INSETS")
+                                 + math.max(
+                                     self:ConfGet("PORTWIDTH") * 2/3
+                                     - self:GetPanelHeight(),
+                                     self:PanelGet("Height", "name")
+                                     + self:PanelGet("Height", "info")
+                                     + self:ConfGet("RPUF_BORDER_WIDTH") / 4
+                                     + self:Gap(2)
+                                  )
+                        end,
     });
 
   layout:Register_Panel_Method_Hash("GetPanelHeight",
-    { [ "icon1" ] = function(self) return self:ConfGet("ICONWIDTH") end,
-      [ "name"  ] = function(self) return self:CalculateFontSize() + 4 end,
-      [ "info"  ] = function(self) return self:CalculateFontSize() + 2 end,
+    { [ "portrait"  ] = function(self) return self:ConfGet("PORTWIDTH") * 2/3 end,
+      [ "name"      ] = function(self) return self:CalculateFontSize() end,
+      [ "info"      ] = function(self) return self:CalculateFontSize() end,
+      [ "statusBar" ] = function(self) 
+                          return math.max(self:ConfGet("STATUSHEIGHT") * 2/3, 
+                                          self:CalculateFontSize() + 2)
+                        end,
     });
 
   layout:Register_Panel_Method_Hash("GetPanelWidth",
-    { [ "icon1" ] = function(self) return self:ConfGet("ICONWIDTH") + 0.5 end,
-      [ "name"  ] = "info",
-      [ "info"  ] = function(self) return self:ConfGet("INFOWIDTH") end,
-    });
- 
-  layout:Register_Panel_Method_Hash("GetPanelVis",
-    { [ "icon1" ] = true,
-      [ "name"  ] = true,
-      [ "info"  ] = true,
+    { [ "portrait"  ] = function(self) return self:ConfGet("PORTWIDTH") * 2/3 end,
+      [ "info"      ] = function(self) return self:ConfGet("INFOWIDTH") end,
+      [ "name"      ] = "info",
+      [ "statusBar" ] = function(self) 
+                          return self:Gap(1) 
+                                 + self:ConfGet("INFOWIDTH") 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                                 - self:ConfGet("RPUF_BORDER_WIDTH") / 4
+
+                        end,
     });
 
-  layout:Register_Panel_Method("GetPanelJustifyH", function() return "LEFT" end);
-  layout:Register_Panel_Method("GetPanelJustifyV", function() return "TOP"  end);
-  
-  layout:Register_Frame_Method("GetFrameDimensions", get_frame_dimensions)
+  layout:Register_Panel_Method_Hash("GetPanelVis",
+    { [ "portrait"  ] = true,
+      [ "name"      ] = true,
+      [ "info"      ] = true,
+      [ "statusBar" ] = true,
+    });
+
+  layout:Register_Panel_Method("GetPanelJustifyH", function() return "CENTER" end);
+  layout:Register_Panel_Method("GetPanelJustifyV", function() return "CENTER" end);
+  layout:Register_Frame_Method("GetFrameDimensions", get_frame_dimensions);
 
   layout:RegisterLayout();
-
-  layout:RegisterAsDefault();
-
-
+  
 end);

@@ -194,24 +194,31 @@ function(self, event, ...)
     local function setFrameLock(value) Config.set("LOCK_FRAME_" .. unit:upper(), value); end;
     local function toggleFrameLock()   setFrameLock(not isFrameLocked() ); end;
 
+    function self.moverSize(self) return 24 / self:GetScale() end;
+
     local mover = CreateFrame("Button", nil, self);
-    mover:SetSize(24, 24);
+    mover:SetSize(self:moverSize(), self:moverSize());
     mover:SetPoint("BOTTOMLEFT", self, "TOPLEFT");
     mover:SetNormalTexture("Interface\\CURSOR\\UI-Cursor-Move.PNG");
     mover:SetClampedToScreen(true);
     mover:RegisterForDrag("LeftButton");
 
     local padlock = CreateFrame("Button", nil, self);
-    padlock:SetSize(24, 24);
+    padlock:SetSize(self:moverSize(), self:moverSize());
     padlock:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT");
     padlock:SetNormalTexture("Interface\\PetBattles\\PetBattle-LockIcon.PNG");
     padlock:SetClampedToScreen(true);
   
     local function updateFrameLock()
       if   isFrameLocked()
-      then padlock:Hide() mover:Hide(); self:RegisterForDrag(nil);
-      else padlock:Show() mover:Show(); self:RegisterForDrag("LeftButton");
+      then padlock:Hide() mover:Hide(); -- self:RegisterForDrag(nil);
+      else padlock:Show() mover:Show(); -- self:RegisterForDrag("LeftButton");
       end;
+    end;
+
+    local function updateMoverSize()
+      mover:SetSize(self:moverSize(), self:moverSize());
+      padlock:SetSize(self:moverSize(), self:moverSize());
     end;
 
     padlock:RegisterForClicks("LeftButtonUp");
@@ -335,6 +342,7 @@ function(self, event, ...)
     end;
 
     local layoutSize = "small";
+
     local function getLayoutSize()     return layoutSize; end;
     local function setLayoutSize(size) layoutSize = size; end;
 
@@ -364,6 +372,7 @@ function(self, event, ...)
       updateFrameAppearance();
       updateTagStrings();
       updateContent();
+      updateMoverSize();
     end;
 
     public.ConfGet               = confGet;
@@ -389,6 +398,7 @@ function(self, event, ...)
     public.UpdateStatusBar       = updateStatusBar;
     public.UpdateTagStrings      = updateTagStrings;
     public.UpdateTextColor       = updateTextColor;
+    public.UpdateMoverSize       = updateMoverSize;
 
     function self.HasPublicFunction(self, funcName)
        return type(public[funcName]) == "function"
@@ -406,12 +416,8 @@ function(self, event, ...)
     self:SetClampedToScreen(true);
     setCoords(getSavedCoords());
     for name, info in pairs( panelInfo ) do createPanel(name, info); end;
-    self:SetScript("OnDragStart", onDragStart);
-    self:SetScript("OnDragStop",  onDragStop);
-    self:SetScript("OnEnter", changeCursorIfDraggable);
-    self:SetScript("OnLeave", ResetCursor);
-    self:EnableMouse(true);
-    self:SetScript("OnMouseUp", openFrameOptions);
+    -- self:EnableMouse(true);
+    -- self:SetScript("OnMouseUp", openFrameOptions);
 
   end; -- style definition
 

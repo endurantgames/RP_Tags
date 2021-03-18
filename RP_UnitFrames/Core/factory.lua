@@ -188,6 +188,7 @@ function(self, event, ...)
     content          = "UpdateContent",
     portrait         = "UpdatePortrait",
     everything       = "UpdateEverything",
+    movers           = "UpdateMoverSize",
   };
 
   local function RPUF_Refresh(frameName, ...)
@@ -221,11 +222,12 @@ function(self, event, ...)
     local layoutCache = RPTAGS.cache.layouts;
     local hashTable = {};
 
-    if not layoutSize or not layoutCache.by_size[layoutSize]
+    if   not layoutSize or layoutSize == "large"
     then for layoutName, _ in pairs(layoutCache.known)
          do  hashTable[layoutName:upper()] = loc("RPUF_" .. layoutName:upper());
          end;
-    else for _, layoutName in ipairs(layoutCache.by_size[layoutSize])
+    elseif layoutCache.by_size[layoutSize] 
+    then for _, layoutName in ipairs(layoutCache.by_size[layoutSize])
          do hashTable[layoutName:upper()] = loc("RPUF_" .. layoutName:upper());
          end;
     end;

@@ -151,7 +151,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       desc                      = tloc(f.link),
       get                       = get(f.link),
       hidden                    = not_show(),
-      set                       = function(info, value) Set(f.link, value); Refresh(frameName, "all"); end,
+      set                       = function(info, value) Set(f.link, value); Refresh(frameName, "everything"); end,
       order                     = source_order(),
     } or nil;
 
@@ -171,17 +171,17 @@ local function set(setting)    return function(info, value) Set(setting, value);
 
     frameGroup.args.scale       = frame and
     { type                      = "range",
-      min                       = 0.25,
-      max                       = 3.00,
+      min                       = 0.10,
+      softMin                   = 0.25,
+      softMax                   = 3.00,
+      max                       = 4.00,
       isPercent                 = true,
-      width = 1.25,
+      width                     = 1.25,
       step                      = 0.05,
       get                       = get(f.scale),
       set                       = function(info, value) Set(f.scale, value); 
-                                    if   frameName 
-                                    then scaleFrame(frameName)
-                                    else scaleAllFrames() 
-                                    end
+                                    scaleFrame(frameName)
+                                    Refresh(frameName, "movers")
                                   end,
       order                     = source_order(),
       hidden                    = not_show(),
@@ -362,7 +362,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
         { type                      = "range",
           width                     = 0.75,
           get                       = get(f.borderInsets),
-          set                       = function(info, value) Set(f.borderInsets, value); Refresh(frameName, "style", "statusbar"); end,
+          set                       = function(info, value) Set(f.borderInsets, value); Refresh(frameName, "style", "statusbar", "sizes", "framesize"); end,
           name                      = cloc(f.borderInsets),
           desc                      = tloc(f.borderInsets),
           order                     = source_order(),
@@ -388,13 +388,13 @@ local function set(setting)    return function(info, value) Set(setting, value);
     lookSubGroup.args.borderWidth =
         { type                      = "range",
           width                     = 0.75,
-          get                       = get(f.borderWidth),
-          set                       = function(info, value) Set(f.borderWidth, value); Refresh(frameName, "style", "statusbar"); end,
+          get                       = function() return Get(f.borderWidth) / 4 end,
+          set                       = function(info, value) Set(f.borderWidth, value * 4); Refresh(frameName, "style", "statusbar", "sizes", "framesize"); end,
           name                      = cloc(f.borderWidth),
           desc                      = tloc(f.borderWidth),
           order                     = source_order(),
           min                       = 1,
-          max                       = 32,
+          max                       = 20,
           step                      = 1
         };
 
@@ -490,7 +490,10 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc(f.gapSize),
       desc                      = cloc(f.gapSize),
       get                       = get(f.gapSize),
-      set                       = function(info, value) Set(f.gapSize, value); Refresh(frameName, "framesize", "sizes") end,
+      set                       = function(info, value) 
+                                    Set(f.gapSize, value); 
+                                    Refresh(frameName, "framesize", "sizes") 
+                                  end,
       min                       = 0,
       softMax                   = 20,
       max                       = 30,
@@ -522,10 +525,10 @@ local function set(setting)    return function(info, value) Set(setting, value);
       desc                      = cloc(f.portWidth),
       get                       = get(f.portWidth),
       set                       = function(info, value) Set(f.portWidth, value); Refresh(frameName, "framesize", "sizes") end,
-      min                       = 10,
-      softMin                   = 25,
-      softMax                   = 100,
-      max                       = 200,
+      min                       = 25,
+      softMin                   = 50,
+      softMax                   = 250,
+      max                       = 400,
       step                      = 5,
       order                     = source_order(),
     };
@@ -626,7 +629,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
               desc                      = tloc(f.nameFont),
               order                     = source_order(),
               get                       = get(f.nameFont),
-              set                       = function(info, value) Set(f.nameFont, value) Refresh(frameName, "fonts", "sizes", "framesize") end,
+              set                       = function(info, value) Set(f.nameFont, value) Refresh(frameName, "fonts") end,
             },
             nameSpacer = Spacer(),
             nameFontSize =
@@ -658,7 +661,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
               desc                      = tloc(f.statusFont),
               order                     = source_order(),
               get                       = get(f.statusFont),
-              set                       = function(info, value) Set(f.statusFont, value) Refresh(frameName, "fonts", "statusbar") end,
+              set                       = function(info, value) Set(f.statusFont, value) Refresh(frameName, "fonts") end,
             },
             statusSpacer = Spacer(),
             statusFontSize =
@@ -666,7 +669,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
               values = menu.fontSize,
               sorting = menu.fontSizeOrder,
               get = function() return Get(f.statusFontSize) end,
-              set = function(info, value) Set(f.statusFontSize, value) Refresh(frameName, "fonts", "statusbar") end,
+              set = function(info, value) Set(f.statusFontSize, value) Refresh(frameName, "fonts", "framesize", "sizes", "statusbar") end,
               order = source_order(),
               name = cloc(f.statusFontSize),
               desc = tloc(f.statusFontSize),
@@ -698,7 +701,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
               values = menu.fontSize,
               sorting = menu.fontSizeOrder,
               get = function() return Get(f.detailFontSize) end,
-              set = function(info, value) Set(f.detailFontSize, value) Refresh(frameName, "fonts") end,
+              set = function(info, value) Set(f.detailFontSize, value) Refresh(frameName, "fonts", "framesize", "sizes") end,
               order = source_order(),
               name = cloc(f.detailFontSize),
               desc = tloc(f.detailFontSize),
@@ -730,7 +733,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
               values = menu.fontSize,
               sorting = menu.fontSizeOrder,
               get = function() return Get(f.infoFontSize) end,
-              set = function(info, value) Set(f.infoFontSize, value) Refresh(frameName, "fonts") end,
+              set = function(info, value) Set(f.infoFontSize, value) Refresh(frameName, "fonts", "framesize", "sizes") end,
               order = source_order(),
               name = cloc(f.infoFontSize),
               desc = tloc(f.infoFontSize),
@@ -776,7 +779,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     return { type     = "toggle",
              name     = "Linked",
              get      = get("LINK_FRAME_" .. frameName),
-             set      = function(info, value) Set("LINK_FRAME_" .. frameName, value); Refresh(frameName, "all") end,
+             set      = function(info, value) Set("LINK_FRAME_" .. frameName, value); Refresh(frameName, "everything") end,
              width    = 0.5,
              disabled = function() return Get("DISABLE_RPUF") or not Get("SHOW_FRAME_" .. frameName) end,
              order    = source_order(),

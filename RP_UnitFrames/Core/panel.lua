@@ -83,17 +83,6 @@ function(self, event, ...)
       function self.SetTagString( self) self:GetParent():Tag(self.text, Config.get(self.setting)) end;
       function self.SetTextColor( self, r, g, b) self.text:SetTextColor(r, g, b)                end;
 
-      function self.GetJustify(self)
-        if     self.name == "statusBar" 
-        then   return self:ConfGet("STATUS_ALIGN"), "CENTER";
-        elseif (self.name == "name" or self.name == "info") 
-                 and
-               (self:GetLayoutName() == "PAPERDOLL" or self:GetLayout() == "THUMBNAIL")
-        then   return "CENTER", "CENTER";
-        else   return "LEFT", "TOP";
-        end;
-      end;
-
       if opt["has_own_align"]
       then function self.SetJustify(self)
              self.text:SetJustifyH( self:ConfGet( opt.has_own_align ) );

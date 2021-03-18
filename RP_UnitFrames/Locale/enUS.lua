@@ -389,6 +389,7 @@ function(self, event, ...)
   L["RPUF_HIDDEN"                     ] = "Do not display";
   L["RPUF_PAPERDOLL"                  ] = "Portrait";
   L["RPUF_THUMBNAIL"                  ] = "Thumbnail";
+  L["RPUF_BLIZZLIKE"                  ] = "Blizzardesque";
     -- --- alignments
   L["BOTTOM"                            ] = "Bottom";
   L["BOTTOMLEFT"                        ] = "Bottom Left";
