@@ -9,39 +9,48 @@ function(self, event, ...)
 
   function get_frame_dimensions(self)
     return 
-      self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2 
+      self:Public("ConfGet", "RPUF_BORDER_WIDTH") / 2
       + self:Public("ConfGet", "PORTWIDTH"),
-      self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2 
-      + self:Public("ConfGet", "PORTWIDTH")
-      + self:Public("PanelGet", "Height", "name") 
-      + self:Public("Gap", 0.5)
+
+      self:Public("ConfGet", "RPUF_BORDER_WIDTH") / 2
+      + self:Public("ConfGet", "PORTWIDTH") * 1.5
   end
 
   layout:Register_Panel_Method_Hash( "GetPanelLeft",
     { [ "portrait" ] = function(self) return self:ConfGet("RPUF_BORDER_INSETS") end,
-      [ "name"     ] = function(self) return self:ConfGet("RPUF_BORDER_INSETS") + self:Gap(0.5) end;
+      [ "name"     ] = function(self) 
+                         return self:ConfGet("RPUF_BORDER_WIDTH") / 4 
+                                + self:Gap(0.5)
+                       end,
     });
 
   layout:Register_Panel_Method_Hash( "GetPanelTop",
-    { [ "portrait" ] = function(self) 
-                         return self:ConfGet("RPUF_BORDER_INSETS") 
-                                + self:PanelGet("Height", "name")
-                                + self:Gap(0.5);
-                       end,
+    { [ "portrait" ] = function(self) return self:ConfGet("RPUF_BORDER_INSETS") end,
       [ "name"     ] = function(self) 
-                         return self:ConfGet("RPUF_BORDER_INSETS") 
+                         return self:ConfGet("RPUF_BORDER_WIDTH") / 4
                                 + self:Gap(0.5) 
                        end,
     });
   
   layout:Register_Panel_Method_Hash( "GetPanelHeight",
-    { [ "portrait" ] = function(self) return self:ConfGet("PORTWIDTH") end,
+    { [ "portrait" ] = function(self) 
+                         return self:ConfGet("PORTWIDTH") * 1.5 
+                         + self:ConfGet("RPUF_BORDER_WIDTH") / 2
+                         - self:ConfGet("RPUF_BORDER_INSETS") * 2
+                       end,
       [ "name"     ] = function(self) return self:CalculateFontSize(); end,
     });
 
   layout:Register_Panel_Method_Hash( "GetPanelWidth",
-    { [ "portrait" ] = function(self) return self:ConfGet("PORTWIDTH") end,
-      [ "name"     ] = function(self) return self:ConfGet("PORTWIDTH") - self:Gap(1) end,
+    { [ "portrait" ] = function(self)
+                         return self:ConfGet("PORTWIDTH") 
+                                + self:ConfGet("RPUF_BORDER_WIDTH") / 2
+                                - self:ConfGet("RPUF_BORDER_INSETS") * 2
+                       end,
+      [ "name"     ] = function(self) 
+                         return self:ConfGet("PORTWIDTH") 
+                                - self:Gap(1)
+                        end,
     });
   
   layout:Register_Panel_Method( "GetPanelJustifyH", function() return "CENTER" end);
