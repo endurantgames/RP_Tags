@@ -9,20 +9,22 @@ function(self, event, ...)
 
   local function get_statusBar_top(self)
     return
+      self:ConfGet("RPUF_BORDER_INSETS") + self:Gap(2) +
       math.max(
-        self:Gap(2) + self:ConfGet("ICONWIDTH"),
-        self:Gap(3) + self:Public("PanelGet", "Height", "name") + self:Public("PanelGet", "Height", "info")
+        self:ConfGet("ICONWIDTH"),
+        self:Gap(1) + self:Public("PanelGet", "Height", "name") + self:Public("PanelGet", "Height", "info")
       )
   end;
 
   local function get_icon_top(self)
     return
-      self:Gap(3) + 
-        self:PanelGet("Height", "statusBar") +
-      math.max( 
-        self:ConfGet("ICONWIDTH"),
-        self:PanelGet("Height", "name") + self:PanelGet("Height", "info") + self:Gap(1)
-      )
+      self:Gap(3) 
+      + self:PanelGet("Height", "statusBar") 
+      + self:ConfGet("RPUF_BORDER_INSETS")
+      + math.max( 
+          self:ConfGet("ICONWIDTH"),
+          self:PanelGet("Height", "name") + self:PanelGet("Height", "info") + self:Gap(1)
+        )
   end;
 
   local function get_statusBar_width(self)
@@ -34,6 +36,7 @@ function(self, event, ...)
 
   local function get_frame_dimensions(self)
     return
+      self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2 +
       math.max(
         self:Public("Gap", 3) + self:Public("ConfGet", "ICONWIDTH") + self:Public("PanelGet", "Width", "name"),
         self:Public("Gap", 3) + self:Public("ConfGet", "ICONWIDTH") + self:Public("PanelGet", "Width", "info"),
@@ -41,6 +44,7 @@ function(self, event, ...)
         self:Public("Gap", 6) + self:Public("ConfGet", "ICONWIDTH") * 5
       ),
 
+      self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2 +
       self:Public("ConfGet", "ICONWIDTH") + self:Public("Gap", 4) + self:Public("ConfGet", "STATUSHEIGHT") +
       math.max(
         self:Public("ConfGet", "ICONWIDTH"),
@@ -49,20 +53,46 @@ function(self, event, ...)
   end;
 
   layout:Register_Panel_Method_Hash("GetPanelLeft",
-    { [ "name"      ] = function(self) return self:Gap(2) + self:ConfGet("ICONWIDTH") end,
+    { [ "name"      ] = function(self) 
+                          return self:Gap(2) 
+                                 + self:ConfGet("ICONWIDTH") 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
       [ "info"      ] = "name",
-      [ "icon1"     ] = function(self) return self:Gap(1) end,
+      [ "icon1"     ] = function(self) 
+                          return self:Gap(1) 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
       [ "statusBar" ] = function(self) return self:Public("ConfGet", "RPUF_BORDER_INSETS") end,
       [ "icon2"     ] = "icon1",
       [ "icon3"     ] = "name",
-      [ "icon4"     ] = function(self) return self:Gap(3) + self:ConfGet("ICONWIDTH") * 2 end,
-      [ "icon5"     ] = function(self) return self:Gap(4) + self:ConfGet("ICONWIDTH") * 3 end,
-      [ "icon6"     ] = function(self) return self:Gap(5) + self:ConfGet("ICONWIDTH") * 4 end,
+      [ "icon4"     ] = function(self) 
+                          return self:Gap(3) 
+                                 + self:ConfGet("ICONWIDTH") * 2 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
+      [ "icon5"     ] = function(self) 
+                          return self:Gap(4) 
+                                 + self:ConfGet("ICONWIDTH") * 3 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
+      [ "icon6"     ] = function(self) 
+                          return self:Gap(5) 
+                                 + self:ConfGet("ICONWIDTH") * 4 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
     });
 
   layout:Register_Panel_Method_Hash("GetPanelTop",
-    { [ "name"      ] = function(self) return self:Gap(1) end,
-      [ "info"      ] = function(self) return self:Gap(2) + self:PanelGet("Height", "name") end,
+    { [ "name"      ] = function(self) 
+                          return self:Gap(1) 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
+      [ "info"      ] = function(self) 
+                          return self:Gap(2) 
+                                 + self:PanelGet("Height", "name") 
+                                 + self:ConfGet("RPUF_BORDER_INSETS")
+                        end,
       [ "icon1"     ] = "name",
       [ "statusBar" ] = get_statusBar_top,
       [ "icon2"     ] = get_icon_top,
@@ -73,8 +103,14 @@ function(self, event, ...)
    });
 
   layout:Register_Panel_Method_Hash("GetPanelHeight",
-    { [ "name"      ] = function(self) return self:CalculateFontSize() + 4 end,
-      [ "info"      ] = function(self) return self:CalculateFontSize() + 2 end,
+    { [ "name"      ] = function(self) 
+                          return 
+                            math.max(
+                              self:CalculateFontSize(),
+                              self:ConfGet("ICONWIDTH")
+                            );
+                        end,
+      [ "info"      ] = function(self) return self:CalculateFontSize() end,
       [ "icon1"     ] = function(self) return self:ConfGet("ICONWIDTH") end,
       [ "statusBar" ] = function(self) return self:ConfGet("STATUSHEIGHT") end,
       [ "icon2"     ] = "icon1",
@@ -108,8 +144,31 @@ function(self, event, ...)
       [ "icon6"     ] = true,
     });
 
+  layout:Register_Panel_Method_Hash("GetPanelJustifyV",
+    { [ "name"      ] = function(self) return "BOTTOM" end,
+      [ "info"      ] = "name",
+      [ "icon1"     ] = function(self) return "CENTER" end,
+      [ "icon2"     ] = "icon1",
+      [ "icon3"     ] = "icon1",
+      [ "icon4"     ] = "icon1",
+      [ "icon5"     ] = "icon1",
+      [ "icon6"     ] = "icon1",
+      [ "statusBar" ] = "name",
+    });
+      
+  layout:Register_Panel_Method_Hash("GetPanelJustifyH",
+    { [ "name"      ] = function(self) return "LEFT" end,
+      [ "info"      ] = "name",
+      [ "icon1"     ] = function(self) return "LEFT" end,
+      [ "icon2"     ] = "icon1",
+      [ "icon3"     ] = "icon1",
+      [ "icon4"     ] = "icon1",
+      [ "icon5"     ] = "icon1",
+      [ "icon6"     ] = "icon1",
+      [ "statusBar" ] = "name",
+    });
+
   layout:Register_Panel_Method("GetPanelJustifyH", function() return "LEFT" end);
-  layout:Register_Panel_Method("GetPanelJustifyV", function() return "TOP"  end);
 
   layout:Register_Frame_Method("GetFrameDimensions", get_frame_dimensions);
 
