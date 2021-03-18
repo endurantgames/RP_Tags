@@ -165,7 +165,13 @@ function(self, event, ...)
   L["UI_CLOSE"]           = "Close";
   L["UI_BLANK"]               = "";
   L["UI_BLANK_TT"]            = "";
+  L["UI_DISLAYS"]             = "Displays";
+  L["UI_TAG_LIST"]            = "Tag List";
+  L["UI_ALL_TAGS"]            = "All Tags";
   L["MORE_TAGS"]              = "More Tags...";
+  L["UI_ADDONS"]              = "Addons";
+  L["UI_CONFIG"]              = "Config";
+  L["UI_LIBRARIES"]           = "Libraries";
   L["UI_MORE_INFORMATION"]    = "More Information";
   L["UI_RESET"]               = "Reset";
   L["RESET"]                  = "Reset";
@@ -456,6 +462,7 @@ function(self, event, ...)
   L["FMT_MOTTO"]            = '"%s"';
   L["FMT_SB_BUFF"]          = "%s";
   L["FMT_SB_BUFF_BRC"]      = "[%s]";
+  L["FMT_CURRENT_AS_OF"]    = "Current as of %s (%s).";
   L["FMT_SB_BUFF_PCT"]      = "%s (%+d%%)";
   L["FMT_SB_BUFF_PCT_BRC"]  = "[%s, %+d%%]";
   L["FMT_SB_PCT"]           = "%+d%%";

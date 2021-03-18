@@ -135,7 +135,7 @@ function(self, event, ...)
       function(self)
         GameTooltip:ClearLines();
         GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
-        GameTooltip:AddLine("Change the text color.", 1, 1, 1, true);
+        GameTooltip:AddLine(loc("EDITOR_COLOR_TT"), 1, 1, 1, true);
         GameTooltip:Show();
       end);
     ColorButton:SetCallback("OnLeave", function() GameTooltip:FadeOut() end);
@@ -163,7 +163,7 @@ function(self, event, ...)
         GameTooltip:ClearLines();
         GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
         GameTooltip:AddLine("[nocolor]", 0, 1, 1, false);
-        GameTooltip:AddLine("Insert a tag to reset the text color.");
+        GameTooltip:AddLine(loc("EDITOR_NOCOLOR_TT"));
         GameTooltip:Show();
       end);
     NoColorButton:SetCallback("OnLeave", function() GameTooltip:FadeOut() end);
@@ -186,32 +186,27 @@ function(self, event, ...)
         GameTooltip:ClearLines();
         GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT");
         GameTooltip:AddLine("[" .. tag .. "]", 0, 1, 1, false);
-        GameTooltip:AddLine( "Insert the tag for " .. tagLabel(tag) .. ".", 1, 1, 1, true)
+        GameTooltip:AddLine( string.format(loc("FMT_EDITOR_INSERT_TAG"), tagLabel(tag)), 1, 1, 1, true)
         if   Editor.tagIndex[tag] and Editor.tagIndex[tag].label
-        then GameTooltip:AddDoubleLine("Shift-Click", "Create a labeled tag.", 
+        then GameTooltip:AddDoubleLine(
+               loc("EDITOR_SHIFT_CLICK"),
+               loc("EDITOR_INSERT_LABELED_TAG"),
                0, 1, 0, 1, 1, 1, true);
         end;
         if   Editor.tagIndex[tag] and Editor.tagIndex[tag].size
-        then GameTooltip:AddDoubleLine("Alt-Click", "Set the tag to size |cff00ffffsmall|r.",
+        then GameTooltip:AddDoubleLine(
+               loc("EDITOR_ALT_CLICK"),
+               loc("EDITOR_INSERT_SMALL_TAG"),
                0, 1, 0, 1, 1, 1, true);
-             GameTooltip:AddDoubleLine("Control-Click", "Set the size manually.", 
+             GameTooltip:AddDoubleLine(
+               loc("EDITOR_CONTROL_CLICK"),
+               loc("EDITOR_INSERT_SIZED_TAG"),
                0, 1, 0, 1, 1, 1, true);
         end;
         GameTooltip:Show();
       end);
     Button:SetCallback("OnLeave", function() GameTooltip:FadeOut() end);
-    Button:SetCallback("OnClick", 
-      function(self) 
-        -- local cursor = Editor.editBox:GetCursorPosition();
-        -- local text   = Editor.editBox:GetText();
-        -- local inTag, prev_right, prev_left, next_right, next_left 
-        --              = Editor:FindTagEnds(text, cursor);
-        -- -- print("inTag", inTag, "prev_left", prev_left, "cursor", cursor, "next_right", next_right);
-        -- if inTag then Editor.editBox:SetCursorPosition(next_right); end;
-        -- Editor.editBox:Insert("[" .. tag .. "]");
-        -- Editor.editBox:SetFocus();
-        Editor:Insert(tag);
-      end);
+    Button:SetCallback("OnClick", function(self) Editor:Insert(tag); end);
     self:AddChild ( Button );
     return self;
   end;
@@ -315,7 +310,7 @@ function(self, event, ...)
   function Editor.CreatePreview(self)
     local PreviewBox = AceGUI:Create("InlineGroup");
     PreviewBox:SetFullWidth(true);
-    PreviewBox:SetTitle("Live Preview");
+    PreviewBox:SetTitle(loc("UI_LIVE_PREVIEW"));
 
     local Preview = AceGUI:Create("LMD30_Description");
     Preview:SetText("");
@@ -329,60 +324,60 @@ function(self, event, ...)
   end;
 
   local statusButtons = 
-  { { name = "Config",  
+  { { name = loc("EDITOR_CONFIG"),
       push = function(self) 
                linkHandler("setting://RPUF_Editor");
                Editor:SaveDraft();
                Editor:Hide();
              end,
-      tt   = "Configure the tag editor.",
+      tt   = loc("EDITOR_CONFIG_TT"),
     },
-    { name = "Revert",  
+    { name = loc("EDITOR_REVERT"),
       push = function(self) 
                Editor:LoadDraft();
                Editor:SetSaved();
                Editor:UpdateTitle();
-               notify( Editor:GetKeyName() .. " has been reverted to its last saved value.");
+               notify( Editor:GetKeyName() .. loc("NOTIFY_EDITOR_REVERT"));
              end,
-      tt = "Revert back to the last saved version."
+      tt = loc("EDITOR_REVERT_TT"),
     },
-    { name = "Default", 
+    { name = loc("EDITOR_DEFAULT"),
       push = function(self) 
-               notify( Editor:GetKeyName() .. " has been reset to its default value.");
+               notify( Editor:GetKeyName() .. loc("NOTIFY_EDITOR_DEFAULT"));
                Editor:ConfigReset();
                Editor:SetChanged();
                Editor:UpdateTitle();
              end,
-      tt = "Reset to the default value.",
+      tt = loc("EDITOR_DEFAULT_TT"),
     },
-    { name = "Save",    
+    { name = loc("EDITOR_SAVE"),
       push = function(self) 
                Editor:ConfigSet();
                Editor:SaveDraft();
                Editor:SetSaved();
                Editor:UpdateTitle();
-               notify( Editor:GetKeyName() .. " saved.");
+               notify( Editor:GetKeyName() .. loc("NOTIFY_EDITOR_SAVE"));
              end,
-      tt = "Save the current value.",
+      tt = loc("EDITOR_SAVE_TT"),
     },
-    { name = "Done",
+    { name = loc("EDITOR_DONE"),
       push = function(self) 
                Editor:ConfigSet();
                Editor:ClearDraft();
                Editor:Hide();
-               notify( Editor:GetKeyName() .. " saved.");
+               notify( Editor:GetKeyName() .. loc("NOTIFY_EDITOR_SAVE"));
              end,
-      tt = "Save the current value and exit the edtior.",
+      tt = loc("EDITOR_DONE_TT"),
     },
-    { name = "Cancel",  
+    { name = loc("EDITOR_CANCEL"),
       push = function(self) 
                Editor:Hide();
                if   Editor:IsSaved()
-               then notify( Editor:GetKeyName() .. " edit cancelled.");
-               else notify( Editor:GetKeyName() .. " changes discarded.");
+               then notify( Editor:GetKeyName() .. loc("NOTIFY_EDITOR_CANCEL_SAVED"));
+               else notify( Editor:GetKeyName() .. loc("NOTIFY_EDITOR_CANCEL_DISCARDED"));
                end;
              end,
-      tt = "Exit the editor without saving.",
+      tt = loc("EDITOR_CANCEL_TT"),
     },
   };
 
@@ -463,7 +458,7 @@ function(self, event, ...)
     self:SetTitle(
       loc("TAG_EDITOR") .. " - " .. 
       (text or loc("CONFIG_" .. self:GetKey())) ..
-      (db.saved and "" or " (not saved)")
+      (db.saved and "" or loc("EDITOR_UI_NOT_SAVED"))
     );
     return self;
   end;

@@ -277,7 +277,7 @@ translations into other languages, you can get in touch with us.
     - [x] P1: "More" button
     - [x] P2: Right-/modifier-clicks on toolbar
     - [ ] P2: Layout tweaking
-    - [ ] P3: Localization strings for editor
+    - [x] P3: Localization strings for editor
 - [ ] Long-Term
   - [ ] Config profiles with Ace3?
   - [ ] XRP support

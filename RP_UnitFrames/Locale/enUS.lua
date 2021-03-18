@@ -45,6 +45,7 @@ function(self, event, ...)
   L["EDIT_TOOLTIP"                      ] = "Edit Tooltip Tags";
   L["OPEN_RPTAGS_CONFIG"                ] = "Open " .. APP_NAME .. " Options";
   L["QUICK_SETTINGS"                    ] = "Quick Settings";
+  L["UI_LIVE_PREVIEW"] = "Live Preview";
   -- frames
   L["PLAYERFRAME"                       ] = "Player Frame";
   L["TARGETFRAME"                       ] = "Target Frame";
@@ -352,6 +353,35 @@ function(self, event, ...)
   L["CONFIG_EDITOR_BUTTON_BAR_TT"       ] = "Choose whether the tag button bar is shown in the " .. EDITOR .. ".";
   L["CONFIG_EDITOR_BUTTONS"             ] = "Buttons";
   L["CONFIG_EDITOR_BUTTONS_TT"          ] = "Choose which buttons to show in the " .. EDITOR .. ".";
+  -- editor
+  L["EDITOR_NOCOLOR_TT"] = "Insert a tag to reset the text color.";
+  L["EDITOR_COLOR_TT"] = "Change the text color.";
+  L["FMT_EDITOR_INSERT_TAG"] = "Insert the tag for %s.";
+  L["EDITOR_SHIFT_CLICK"] = "Shift-Click";
+  L["EDITOR_INSERT_LABELED_TAG"] = "Create a labeled tag.";
+  L["EDITOR_ALT_CLICK"] = "Alt-Click";
+  L["EDITOR_INSERT_SMALL_TAG"] = "Set the tag size to |cff00ffffsmall|r.";
+  L["EDITOR_CONTROL_CLICK"] = "Control-Click";
+  L["EDITOR_INSERT_SIZED_TAG"] = "Set the size manually.";
+  L["EDITOR_CONFIG"] = "Config";
+  L["EDITOR_CONFIG_TT"] = "Confiugure the tag editor.";
+  L["EDITOR_REVERT"] = "Revert";
+  L["EDITOR_REVERT_TT"] = "Revert back to the last saved version.";
+  L["NOTIFY_EDITOR_REVERT"] = " has been reverted to its last saved value.";
+  L["EDITOR_DEFAULT"] = "Default";
+  L["EDITOR_DEFAULT_TT"] = "Reset to the default value.";
+  L["NOTIFY_EDITOR_DEFAULT"] = " has been reset to its default value.";
+  L["EDITOR_SAVE"] = "Save";
+  L["EDITOR_SAVE_TT"] = "Save the current value";
+  L["NOTIFY_EDITOR_SAVE"] = " saved.";
+  L["EDITOR_DONE"] = "Done";
+  L["EDITOR_DONE_TT"] = "Save the current value and exit the editor.";
+  L["EDITOR_CANCEL"] = "Cancel";
+  L["EDITPR_CANCEL_TT"] = "Exit the editor without saving.";
+  L["NOTIFY_EDITOR_CANCEL_SAVED"] = " edit cancelled.";
+  L["NOTIFY_EDITOR_CANCEL_DISCARDED"] = " changes discarded.";
+  L["EDITOR_UI_NOT_SAVED"] = " (not saved)";
+
     -- --- layouts
   L["RPUF_ABRIDGED"                   ] = "Standard";
   L["RPUF_COMPACT"                    ] = "Compact";
