@@ -261,7 +261,7 @@ translations into other languages, you can get in touch with us.
     - [x] P1: Fix paperdoll layout
     - [ ] P1: Fix thumbnail layout
     - [x] P2: Tweak abridged layout
-    - [ ] P2: Tweak compact layout
+    - [x] P2: Tweak compact layout
     - [ ] P2: Tweak full layout
     - [ ] P3: Blizzlike layout
   - [x] Tags

@@ -29,27 +29,35 @@ function(self, event, ...)
 
   local function get_statusBar_width(self)
     return
-      self:Public("ConfGet", "ICONWIDTH") + self:Public("Gap", 3.5) +
-      math.max(self:Public("ConfGet", "INFOWIDTH"), self:Public("ConfGet", "ICONWIDTH") * 5 + self:Public("Gap", 2.5))
-      - 2 * self:Public("ConfGet", "RPUF_BORDER_INSETS")
+      self:Public("ConfGet", "ICONWIDTH") 
+      + self:Public("Gap", 2) 
+      + math.max(
+          self:Public("Gap", 1) + self:Public("ConfGet", "INFOWIDTH"), 
+          self:Public("ConfGet", "ICONWIDTH") * 4 
+          + self:Public("Gap", 3)
+      )
   end;
 
   local function get_frame_dimensions(self)
     return
-      self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2 +
-      math.max(
-        self:Public("Gap", 3) + self:Public("ConfGet", "ICONWIDTH") + self:Public("PanelGet", "Width", "name"),
-        self:Public("Gap", 3) + self:Public("ConfGet", "ICONWIDTH") + self:Public("PanelGet", "Width", "info"),
-        get_statusBar_width(self) + 2 * self:Public("ConfGet", "RPUF_BORDER_INSETS"),
-        self:Public("Gap", 6) + self:Public("ConfGet", "ICONWIDTH") * 5
+      self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2 
+      + self:Public("Gap", 3)
+      + self:Public("ConfGet", "ICONWIDTH")
+      + math.max(
+          self:Public("ConfGet", "INFOWIDTH"),
+          self:Public("Gap", 3) + self:Public("ConfGet", "ICONWIDTH") * 4
       ),
 
-      self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2 +
-      self:Public("ConfGet", "ICONWIDTH") + self:Public("Gap", 4) + self:Public("ConfGet", "STATUSHEIGHT") +
-      math.max(
-        self:Public("ConfGet", "ICONWIDTH"),
-        self:Public("Gap", 1) + self:Public("PanelGet", "Height", "name") + self:Public("PanelGet", "Height", "info")
-      );
+      self:Public("ConfGet", "RPUF_BORDER_INSETS") * 2
+      + self:Public("ConfGet", "STATUSHEIGHT")
+      + self:Public("ConfGet", "ICONWIDTH")
+      + self:Public("Gap", 4)
+      + math.max(
+          self:Public("ConfGet", "ICONWIDTH"),
+          self:Public("Gap", 1)
+          + self:Public("PanelGet", "Height", "name")
+          + self:Public("PanelGet", "Height", "info")
+        )
   end;
 
   layout:Register_Panel_Method_Hash("GetPanelLeft",
