@@ -188,14 +188,17 @@ function(self, event, ...)
        end;
    
        local function tagList()
-         local tagHeader = "| rp:tag | Displays |\n" ..
+         local tagHeader = "| rp:tag | " .. loc("UI_DISPLAYS") .. "|\n" ..
                            "| :---------------------- | :-------------------------- |";
 
-         table.insert(details, "# Tag List");
+         table.insert(details, "# " .. loc("UI_TAG_LIST"));
          addB();
-         table.insert(details, string.format("Current as of %s (%s).",
-                        RPTAGS.metadata.Version, 
-                        GetAddOnMetadata("RP_Tags", "X-VersionDate")));
+         table.insert(
+           details, 
+           string.format(
+             loc("FMT_CURRENT_AS_OF"),
+             RPTAGS.metadata.Version, 
+             GetAddOnMetadata("RP_Tags", "X-VersionDate")));
 
          local allTags = {};
          local function add(tag) table.insert(allTags, "`[" .. tag .. "]`"); end;
@@ -229,7 +232,8 @@ function(self, event, ...)
          end;
 
          table.sort(allTags, function(a, b) return a:lower() < b:lower() end);
-         table.insert(details, "# All Tags (" .. #allTags .. ")" )
+         table.insert(details, "# " .. loc("UI_ALL_TAGS") .. 
+                             " (" .. #allTags .. ")" )
          addB();
          table.insert(details, "\n - " .. table.concat(allTags, "\n - ") );
          
@@ -239,15 +243,15 @@ function(self, event, ...)
        for i = 1, math.min(#sections, 2)
        do  local sec = sections[i];
            if sec:match("^lib")
-           then addH("Libraries", 0); 
+           then addH(loc("UI_LIBRARIES"), 0); 
                 for lib in LibStub:IterateLibraries() 
                 do  local _, minor = LibStub(lib); addP(lib, minor, 1); 
                 end;
           elseif sec:match("^addon")
-          then addH("AddOns", 0); 
+          then addH(loc("UI_ADDONS"), 0); 
                walk(RPTAGS.cache.addOns, 1);
           elseif sec:match("^config")
-          then addH("Config", 0); 
+          then addH(loc("UI_CONFIG"), 0); 
                walk(db, 1); 
           elseif sec:match("^tags")
           then tagList();
