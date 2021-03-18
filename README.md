@@ -28,10 +28,16 @@ Examples include:
 
 ## Installation
 
-The easiest way to install this is by [going to CurseForge](https://www.curseforge.com/wow/addons/rp-tags).
+The easiest way to install rpTags is by using 
+[an addon manager](https://www.wowhead.com/guides/best-addon-managers-wow-shadowlands).
+If you use [Ajour](https://www.getajour.com/), [CurseBreaker](https://github.com/AcidWeb/CurseBreaker),
+[InstaWow](https://github.com/layday/instawow), or [WowUp](https://wowup.io/), you can install
+directly from the [releases site on GitHub](https://github.com/caderaspindrift/RP_Tags/releases).
 
-If you want to install it manually, go to your WoW directory, then `_retail_`,
-`Interface`, `AddOns`, and unzip it there.
+rpTags is also available on [CurseForge](https://www.curseforge.com/wow/addons/rp-tags).
+
+If you want to install rpTags manually, go to your WoW directory, then `_retail_`,
+`Interface`, `AddOns`, and unzip the zip file there.
 
 It will produce not one, not two, but *six* different addons?!
 
@@ -224,9 +230,11 @@ translations into other languages, you can get in touch with us.
     - [x] Keybinds working
     - [x] Index addon functions
     - [ ] P2: Confirm which tags should be `unsup` for MRP
-  - [x] TRP3
+    - [ ] P2: Update for new pronoun settings in trp3/MRP
+  - [ ] TRP3
     - [x] Index addon functions
     - [x] Keybinds working
+    - [ ] P2: Update for new pronoun settings in trp3/MRP
   - [x] ElvUI
     - [x] Get labels working in ElvUI (work-around for old oUF)
     - [x] Get size modifiers working in ElvUI (work-around for old oUF) 
@@ -234,14 +242,14 @@ translations into other languages, you can get in touch with us.
     - [x] Don't "add" oUF/ElvUI tags to listing
   - [ ] Listener
     - [x] Add tags
-    - [ ] Index addon functions
+    - [ ] P3: Index addon functions
 - [ ] rpUnitFrames 
   - [x] Index addon functions
   - [x] Fonts moved to [rpFonts](https://www.curseforge.com/wow/addons/rpfonts)
   - [ ] P2: Keybinds working
   - [ ] P3: Localization strings for options
   - [ ] P3: Review and update help files
-  - [x] Frames
+  - [ ] Frames
     - [x] P1: Individualized settings per frame
     - [x] Options for per-frame settings
     - [x] P1: LibSharedMedia for frames
@@ -249,6 +257,8 @@ translations into other languages, you can get in touch with us.
     - [x] P1: Frame color
     - [x] P1: Unit frames fully working
     - [x] P2: Review default frame settings
+    - [x] P2: Default layouts
+    - [ ] P1: Fix layouts
   - [x] Tags
     - [x] Get labels working in rpUnitFrames
     - [x] P1: Confirm size modifiers working in rpUnitFrames
@@ -271,6 +281,5 @@ translations into other languages, you can get in touch with us.
 - [ ] Long-Term
   - [ ] Config profiles with Ace3?
   - [ ] XRP support
-  - [ ] Update for new pronoun settings in trp3/MRP
-  - [ ] See if RPT can be generalized for any oUF addon
-  - [ ] See if RPT can be generalized for any MSP addon
+  - [ ] Generalize rpTags for any oUF addon
+  - [ ] Generalize rpTags for any MSP addon
