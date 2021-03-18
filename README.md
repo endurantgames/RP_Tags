@@ -217,8 +217,8 @@ translations into other languages, you can get in touch with us.
 
 - [x] Change versions to 9.0.2
   - [x] Change versions to 9.0.5
-- [ ] Make sure all the libraries are current
-  - [ ] WoW 9.0.5
+- [x] Make sure all the libraries are current
+  - [x] WoW 9.0.5
 - [x] Get configuration/help working
 - [x] Keybinds
 - [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
