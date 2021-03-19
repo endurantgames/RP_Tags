@@ -152,6 +152,16 @@ function(self, event, ...)
     CONFIG_DETAILPANEL_FONTNAME    = PANEL_FONTNAME,
     CONFIG_DETAILPANEL_FONTNAME_TT = PANEL_FONTNAME_TT,
     CONFIG_DETAILPANEL_FONTSIZE    = PANEL_FONTSIZE,
+    CONFIG_PORTRAIT_BG           = "Portrait Background",
+    CONFIG_PORTRAIT_BG_TT         = "Set the background for the portrait.",
+    CONFIG_PORTRAIT_BORDER          = "Portrait Border",
+    CONFIG_PORTRAIT_BORDER_TT      = "Set the border for the portrait.",
+    CONFIG_PORTRAIT_STYLE  =    "Portrait Styling",
+    CONFIG_PORTRAIT_STYLE_TT     = "Select the style for portraits.",
+    CONFIG_COLOR_PORTRAIT_BORDER = "Portrait Border Color",
+    CONFIG_COLOR_PORTRAIT_BORDER_TT = "Choose the color for the portrait border.",
+    CONFIG_COLOR_PORTRAIT_BACKDROP  = "Portrait Background Color",
+    CONFIG_COLOR_PORTRAIT_BACKDROP_TT = "Choose the color for the portrait background.",
     CONFIG_DETAILPANEL_FONTSIZE_TT = PANEL_FONTSIZE_TT,
     CONFIG_FONTSIZE                = "Base Font Size",
     CONFIG_FONTSIZE_TT             = "Choose the font size you want to use in this frame.",
@@ -228,14 +238,6 @@ function(self, event, ...)
       end;
   end;
 
-  L["CONFIG_PORTRAIT_BG"      ]     = "Portrait Background";
-  L["CONFIG_PORTRAIT_BG_TT"    ]     = "Set the background for the portrait.";
-  L["CONFIG_PORTRAIT_BORDER" ]         = "Portrait Border";
-  L["CONFIG_PORTRAIT_BORDER_TT" ]     = "Set the border for the portrait.";
-  L["CONFIG_PORTRAIT_STYLE" ] =    "Portrait Styling";
-  L["CONFIG_PORTRAIT_STYLE_TT"]     = "Select the style for portraits.";
-  L["CONFIG_PORTRAIT_BORDER_STYLE"]  = "Portrait Frame Coloring";
-  L["CONFIG_PORTRAIT_BORDER_STYLE_TT"] = "Select how you want to color the portrait frame.";
   -- 
   -- L["CONFIG_COLOR_RPUF"                 ] = "Background Color";
   -- L["CONFIG_COLOR_RPUF_TEXT"            ] = "Text Color";

@@ -17,8 +17,10 @@ function(self, event, ...)
   local RPUF_GetDefaultLayout = Utils.frames.RPUF_GetDefaultLayout;
   local linkHandler     = Utils.links.handler;
   local titlecase       = Utils.text.titlecase;
-  local toRGB           = Utils.color.hexaToNumber;
+ -- local toRGB           = Utils.color.hexaToNumber;
+  local toRGB           = Utils.color.colorToDecimals;
   local AceGUI          = LibStub("AceGUI-3.0");
+  local tagEval         = Utils.tags.eval;
 
   local panelInfo   = CONST.RPUF.PANEL_INFO;
   -- rpuf "style" for oUF -----------------------------------------------------------------------------------------------------
@@ -55,10 +57,33 @@ function(self, event, ...)
     local function getLayoutName()     return Config.get( unit:upper() .. "LAYOUT"); end;
     local function getPanel(panelName) return panels[panelName]                      end;
 
-    local function getTooltipColor()
-      local r, g, b = toRGB(confGet("COLOR_RPUF_TOOLTIP"))
-      return r / 255, g / 255, b / 255;
+    local function getColor(colorName)
+      local colorSetting = "COLOR_" .. colorName;
+      local useUnitColorSetting = "COLOR_" .. colorName .. "_USE_UNITCOLOR";
+      local unitColorSetting = "COLOR_" .. colorName .. "_UNITCOLOR";
+      local color;
+
+      local tagString;
+      if   confGet(useUnitColorSetting)
+      then tagString = "[" .. confGet(unitColorSetting) .. "]";
+           color = tagEval(tagString, unit, player);
+      else color = confGet(colorSetting);
+      end;
+
+      color = color:gsub("^|cff", ""):gsub(" .+$","");
+
+      if color ~= "" 
+      then local r, g, b = toRGB(color)
+           return r, g, b;
+      else return 1, 1, 1;
+      end;
+
     end;
+
+    local function getTooltipColor() return getColor("RPUF_TOOLTIP"); end;
+      --[[local r, g, b = toRGB(confGet("COLOR_RPUF_TOOLTIP"))
+      return r / 255, g / 255, b / 255;
+      --]]
 
     local function getFont()
       return LibSharedMedia:Fetch("font", confGet("FONTNAME")) or
@@ -107,9 +132,7 @@ function(self, event, ...)
     local function updateFrameAppearance()
 
       local border     = LibSharedMedia:Fetch("border",     confGet("RPUF_BORDER")) 
-                         -- or LibSharedMedia:Fetch("border",     "Blizzard Tooltip");
       local background = LibSharedMedia:Fetch("background", confGet("RPUF_BACKDROP")) 
-                         -- or LibSharedMedia:Fetch("background", "Blizzard Tooltip");
 
       local a = confGet( "RPUFALPHA" );
       if a > 1 then a = a / 100; confSet( "RPUFALPHA") end;
@@ -125,12 +148,14 @@ function(self, event, ...)
         }
       );
 
-      local r, g, b = toRGB(confGet("COLOR_RPUF"))
-      backdrop:SetBackdropColor(r / 255, g / 255, b / 255, a);
-
+      --[[ local r, g, b = toRGB(confGet("COLOR_RPUF"))
       r, g, b = toRGB(confGet("COLOR_RPUF_BORDER"));
-    
-      backdrop:SetBackdropBorderColor(r / 255, g / 255, b / 255, 1);
+      --]]
+      --
+      local r, g, b = getColor("RPUF");
+      backdrop:SetBackdropColor(r, g, b, a);
+      r, g, b = getColor("RPUF_BORDER");
+      backdrop:SetBackdropBorderColor(r, g, b, 1);
 
     end;
 
@@ -168,8 +193,11 @@ function(self, event, ...)
     local function updateTagStrings() for_each_panel("SetTagString"); end;
 
     local function updateTextColor()
-      local r, g, b = toRGB(confGet("COLOR_RPUF_TEXT"))
+      local r, g, b = getColor("RPUF_TEXT");
+      --[[local r, g, b = toRGB(confGet("COLOR_RPUF_TEXT"))
       for_each_panel("SetTextColor", r / 255, g / 255, b / 255);
+      --]]
+      for_each_panel("SetTextColor", r, g, b);
     end;
 
     local function panelGet(funcName, panel, ...)
@@ -228,11 +256,7 @@ function(self, event, ...)
 
     padlock:RegisterForClicks("LeftButtonUp");
     padlock:SetScript("OnClick", 
-      function() 
-        PlaySound(8939); 
-        setFrameLock(true); 
-        updateFrameLock(); 
-      end);
+      function() PlaySound(8939); setFrameLock(true); updateFrameLock(); end);
 
     padlock:SetScript("OnEnter", 
       function() 
@@ -245,6 +269,7 @@ function(self, event, ...)
                       1, 1, 1, true);
         GameTooltip:Show();
       end);
+
     padlock:SetScript("OnLeave", 
       function() 
         GameTooltip:FadeOut();
@@ -294,14 +319,16 @@ function(self, event, ...)
 
     local function updateStatusBar()
       local statusBar = panels["statusBar"];
-      local textureFile = LibSharedMedia:Fetch("statusbar", confGet("STATUS_TEXTURE")) or
-              LibSharedMedia:Fetch("statusbar", "Blizzard");
+      local textureFile = LibSharedMedia:Fetch("statusbar", confGet("STATUS_TEXTURE"))
 
       statusBar:SetStatusbar(textureFile);
 
-      local r, g, b = toRGB(confGet("COLOR_STATUS"))
+      --[[local r, g, b = toRGB(confGet("COLOR_STATUS"))
       statusBar:SetVertexColor( r / 255, g / 255, b / 255, confGet("STATUS_ALPHA" ));
+      ]]--
 
+      local r, g, b = getColor("STATUS");
+      statusBar:SetVertexColor( r, g, b, confGet("STATUS_ALPHA" ));
       statusBar.text:SetJustifyH( confGet("STATUS_ALIGN" ))
       statusBar.text:SetJustifyV("CENTER");
 
@@ -312,8 +339,12 @@ function(self, event, ...)
 
       statusBar:Place();
 
-      r, g, b = toRGB(confGet("COLOR_STATUS_TEXT"));
+      --[[r, g, b = toRGB(confGet("COLOR_STATUS_TEXT"));
       statusBar:SetTextColor(r / 255, g / 255, b / 255);
+      ]]--
+
+      r, g, b = getColor("STATUS_TEXT");
+      statusBar:SetTextColor(r, g, b);
 
     end;
 
@@ -327,17 +358,35 @@ function(self, event, ...)
            self.Portrait = portraitPanel.portrait3D;
            self.Portrait:SetUnit(unit);
            self.Portrait:Show();
+           portraitPanel.pictureFrame:Show();
       else portraitPanel.portrait3D:Hide();
+           portraitPanel.pictureFrame:Hide();
+
+           if portraitPanel.GetPanelWidth
+           then local height2D = portraitPanel:GetPanelWidth();
+           portraitPanel.portrait2D:ClearAllPoints();
+           portraitPanel.portrait2D:SetSize(height2D, height2D);
+           portraitPanel.portrait2D:SetPoint("LEFT");
+           end;
+
            self.Portrait = portraitPanel.portrait2D;
            self.Portrait:Show();
       end;
+
+      local insets = confGet("RPUF_BORDER_INSETS");
 
       portraitPanel.pictureFrame:SetBackdrop(
       { bgFile   = background,
         edgeFile = border,
         edgeSize = confGet("RPUF_BORDER_WIDTH"),
-        insets   = { left = 4, right = 4, top = 4, bottom = 4 }
+        insets   = { left = insets, right = insets, top = insets, bottom = insets }
       });
+
+
+      local r, g, b = getColor("PORTRAIT_BORDER");
+      portraitPanel.pictureFrame:SetBackdropBorderColor(r, g, b, 1);
+      r, g, b = getColor("PORTRAIT_BACKDROP");
+      portraitPanel.pictureFrame:SetBackdropColor(r / 2 + 0.5, g / 2 + 0.5, b / 2 + 0.5, 1);
     end;
 
     local function openFrameOptions(self, button)
@@ -351,7 +400,12 @@ function(self, event, ...)
     local function getLayoutSize()     return layoutSize; end;
     local function setLayoutSize(size) layoutSize = size; end;
 
-    local function updateContent() self:UpdateAllElements("now"); end;
+    local function updateContent() 
+      self:UpdateAllElements("now"); 
+      if Config.get("PORTRAIT_BORDER_STYLE") ~= "NOCOLOR"
+      then updatePortrait();
+      end;
+    end;
 
     local function updateLayout()
       local layoutName = getLayoutName()
@@ -361,6 +415,8 @@ function(self, event, ...)
       do  self[funcName] = func;
       end;
       for_each_panel("SetLayout") 
+      updatePortrait();
+      updateFont();
       updateMover();
     end;
 
@@ -387,6 +443,7 @@ function(self, event, ...)
     public.GetLayoutName         = getLayoutName;
     public.GetTooltipColor       = getTooltipColor;
     public.GetUnit               = getUnit;
+    public.GetColor              = getColor; 
     public.SetLayoutSize         = setLayoutSize;
     public.PanelGet              = panelGet;
     public.ResetCoords           = resetCoords;
@@ -422,8 +479,6 @@ function(self, event, ...)
     self:SetClampedToScreen(true);
     setCoords(getSavedCoords());
     for name, info in pairs( panelInfo ) do createPanel(name, info); end;
-    -- self:EnableMouse(true);
-    -- self:SetScript("OnMouseUp", openFrameOptions);
 
   end; -- style definition
 

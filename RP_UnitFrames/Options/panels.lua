@@ -37,16 +37,21 @@ function(self, event, ...)
       FROZEN = "Non-animated 2D portrait",
     },
     portraitFrameColor =
-    { FRAMECOLOR = "Use the same border color as the unit frame.",
+    { 
       NOCOLOR    = "Don't change the color of the frame.",
-    }
+      FRAMECOLOR = "Use the same border color as the unit frame.",
+      UNITCOLOR  = "Use the unit's RP color, no fallback.",
+      UNIT_FRAMECOLOR = "Use the unit's RP color, fallback to unit frame border.",
+    },
+    portraitFrameColorOrder = { "NOCOLOR", "FRAMECOLOR", "UNITCOLOR", "UNIT_FRAMECOLOR" },
   };
 
   local function build_tagpanel(opt)
 
+    opt.setting = opt.setting or opt.tooltip;
     local w    = 
     { type = "group",
-      name     = loc("CONFIG_" .. opt.setting),
+      name  = loc("CONFIG_" .. opt.setting ),
       order = source_order(),
       args = {},
     };
@@ -54,7 +59,7 @@ function(self, event, ...)
     w.args.header =
     { type = "header",
       width = "full",
-      name = "# " .. loc("CONFIG_" .. (opt["no_text"] and opt.setting or opt.tooltip) ),
+      name = "# " .. loc("CONFIG_" .. (opt["no_text"] and opt.setting  or opt.tooltip) ),
       dialogControl = "LMD30_Description",
       order = source_order(),
     };
@@ -148,120 +153,6 @@ function(self, event, ...)
     return w;
   end;
 
-  local function build_portrait_options(hidden, disabled)
-    local w =
-    { type = "group",
-      name = loc("OPT_PORTRAIT"),
-      order = source_order(),
-      args = {}; 
-    };
-
-    w.args.header = 
-    { type = "description",
-      name = "# " .. loc("OPT_PORTRAIT"),
-      order = source_order(),
-      dialogControl = "LMD30_Description",
-    };
-
-    w.args.instruct =
-    { type = "description",
-      dialogControl = "LMD30_Description",
-      name = loc("OPT_PORTRAIT_I"),
-      order = source_order(),
-    };
-
-    w.args.portraitStyle =
-    { type = "select",
-      name = loc("CONFIG_PORTRAIT_STYLE"),
-      desc = loc("CONFIG_PORTRAIT_STYLE_TT"),
-      order = source_order(),
-      values = menu.portraitStyle,
-      get = function() return Get("PORTRAIT_STYLE") end,
-      set = function(info, value) Set("PORTRAIT_STYLE", value);
-             RPUF_Refresh("all", "portrait") end,
-      width = "full",
-    };
-
-    w.args.portraitBackground =
-    { type = "select",
-      name = loc("CONFIG_PORTRAIT_BG"),
-      desc = loc("CONFIG_PORTRAIT_BG_TT"),
-      order = source_order(),
-      dialogControl = "LSM30_Background",
-      values = LibSharedMedia:HashTable("background"),
-      get = function() return Get("PORTRAIT_BG") end,
-      set = function(info, value) Set("PORTRAIT_BG", value);
-              RPUF_Refresh("all", "portrait") end,
-    };
-
-    w.args.spaPort = Spacer();
-
-    w.args.portraitBorder =
-    { type = "select",
-      name = loc("CONFIG_PORTRAIT_BORDER"),
-      desc = loc("CONFIG_PORTRAIT_BORDER_TT"),
-      order = source_order(),
-      dialogControl = "LSM30_Border",
-      values = LibSharedMedia:HashTable("border"),
-      get = function() return Get("PORTRAIT_BORDER") end,
-      set = function(info, value) Set("PORTRAIT_BORDER", value);
-              RPUF_Refresh("all", "portrait") end,
-    };
-
-    w.args.portraitFrameColor =
-    { type = "select",
-      name = loc("CONFIG_PORTRAIT_BORDER_STYLE"),
-      desc = loc("CONFIG_PORTRAIT_BORDER_STYLE_TT"),
-      order = source_order(),
-      width = "full",
-      values = menu.portraitFrameColor,
-      get = function() return Get("PORTRAIT_BORDER_STYLE") end,
-      set = function(info, value) Set("PORTRAIT_BORDER_STYLE", value);
-              RPUF_Refresh("all", "portrait") end,
-    };
-
-    w.args.header2 =
-    { type = "header",
-      width = "full",
-      name = "## " .. loc("CONFIG_PORTRAIT_TOOLTIP"),
-      dialogControl = "LMD30_Description",
-      order = source_order(),
-    };
-
-    w.args.instruct2 = 
-    { type = "description",
-      width = "full",
-      name = loc("CONFIG_PORTRAIT_TOOLTIP_TT"),
-      order = source_order(),
-    };
-
-    w.args.current = 
-    { type = "input",
-      width = "full",
-      name = loc("CONFIG_PORTRAIT_TOOLTIP"),
-      get = function(self) return Get("PORTRAIT_TOOLTIP") end,
-      set = function(info, value) Set("PORTRAIT_TOOLTIP", value) end,
-      order = source_order(),
-    };
-
-    w.args.tagPreview = 
-    { type = "group",
-      order = source_order(),
-      name = "Live Preview",
-      inline = true,
-      args = 
-      { preview = 
-        { type = "description",
-          order = source_order(),
-          name = function(self) return evalTagString(Get("PORTRAIT_TOOLTIP"), "player", "player") end,
-          fontSize = "medium",
-        },
-      },
-    };
-
-    return w;
-  end;
-
   local rpufPanels = 
   { name                = loc("OPT_RPUF_PANELS"),
     order               = source_order(),
@@ -274,8 +165,7 @@ function(self, event, ...)
 
   for _, panel in pairs({ "name", "info", "statusBar", "details", "portrait", 
                           "icon1", "icon2", "icon3", "icon4", "icon5", "icon6" } )
-  do  rpufPanels.args[ panel .. "Panel" ] 
-        = panel == "portrait" and build_portrait_options() or build_tagpanel(panelInfo[panel])
+  do  rpufPanels.args[ panel .. "Panel" ] = build_tagpanel(panelInfo[panel])
   end;
 
   addOptionsPanel("RPUF_Panels", rpufPanels);

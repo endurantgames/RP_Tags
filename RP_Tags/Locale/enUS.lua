@@ -937,8 +937,8 @@ function(self, event, ...)
   L["TAG_name:medium_DESC"]                 = "Game Name, 15 letters";
   L["TAG_name:short_DESC"]                  = "Game Name, 10 letters";
   L["TAG_name:veryshort_DESC"]              = "Game Name, 5 letters";
-  L["TAG_name_DESC"]                        = "Game Name";
-  L["TAG_namecolor_DESC"]                   = "Class Color";
+  L["TAG_name_DESC"]                        = "Game Name (non-RP)";
+  L["TAG_classcolor_DESC"]                  = "Class Color (non-RP)";
   L["TAG_nocolor_DESC"]                     = "Reset Colors";
   L["TAG_offline_DESC"]                     = "Offline Indicator";
   L["TAG_p_DESC"]                           = "Paragraph Break";
@@ -946,7 +946,10 @@ function(self, event, ...)
   L["TAG_pvptimer_DESC"]                    = "PvP Cooldown Timer";
   L["TAG_race_DESC"]                        = "Game Race";
   L["TAG_realm_DESC"]                       = "Server Name";
-  L["TAG_resting_DESC"]                     = "Resting Indicator, self only";
+  L["TAG_resting_DESC"]                     = "Resting Indicator";
+  L["TAG_powercolor_DESC"]                  = "Power Color (non-RP)";
+  L["TAG_raidcolor_DESC"]                   = "Raid Color (non-RP)";
+  L["TAG_threatcolor_DESC"]                 = "Threat Color (non-RP)";
   L["TAG_rp:A_DESC"]                        = "Hers, His, Theirs, Its";
   L["TAG_rp:O_DESC"]                        = "Her, Him, Them, It";
   L["TAG_rp:P_DESC"]                        = "Her, His, Their, Its";

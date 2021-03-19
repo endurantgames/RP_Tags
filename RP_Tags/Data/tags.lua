@@ -1283,6 +1283,22 @@ function(self, event, ...)
           desc        = L["TAG_classification_DESC"],
           no_prefix   = true
         },
+        { name        = "powercolor",
+          desc        = L["TAG_powercolor_DESC"],
+          no_prefix   = true
+        },
+        { name        = "raidcolor",
+          desc        = L["TAG_raidcolor_DESC"],
+          no_prefix   = true
+        },
+        { name        = "classcolor",
+          desc        = L["TAG_classcolor_DESC"],
+          no_prefix   = true
+        },
+        { name        = "threatcolor",
+          desc        = L["TAG_threatcolor_DESC"],
+          no_prefix   = true
+        },
       }, -- tags
     }, -- ouf
 

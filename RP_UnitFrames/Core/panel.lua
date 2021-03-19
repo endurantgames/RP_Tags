@@ -151,7 +151,6 @@ function(self, event, ...)
 
       portrait2D:SetPoint("LEFT", 5, 0);
       portrait2D:SetPoint("RIGHT", -5, 0);
-      portrait2D:SetHeight( portrait2D:GetWidth() );
 
       portrait2D:Show();
 
@@ -171,6 +170,13 @@ function(self, event, ...)
       self:GetParent().Portrait3D = portrait3D;
       self:GetParent().Portrait2D = portrait2D;
 
+      self:RegisterEvent("PLAYER_TARGET_CHANGED");
+      self:SetScript("OnEvent",
+        function(self, event, ...)
+          if   self:ConfGet("PORTRAIT_BORDER_STYLE"):match("^UNIT")
+          then self:Public("UpdatePortrait");
+          end;
+        end);
     end;
  
     --   -- tooltips ------------------------------------------------------------------------------------------

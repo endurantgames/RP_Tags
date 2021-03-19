@@ -133,12 +133,34 @@ function(self, event, ...)
   };
 
   local ourFrameConfig   =
-  { COLOR_RPUF           = WHITE,
-    COLOR_RPUF_BORDER    = WHITE,
-    COLOR_RPUF_TEXT      = WHITE,
-    COLOR_RPUF_TOOLTIP   = YELLOW,
-    COLOR_STATUS         = TEAL,
-    COLOR_STATUS_TEXT    = WHITE,
+  { 
+    COLOR_RPUF            = WHITE,
+    COLOR_RPUF_BORDER     = WHITE,
+    COLOR_RPUF_TEXT       = WHITE,
+    COLOR_RPUF_TOOLTIP    = YELLOW,
+    COLOR_STATUS          = TEAL,
+    COLOR_STATUS_TEXT     = WHITE,
+    COLOR_PORTRAIT_BORDER = WHITE,
+    COLOR_PORTRAIT_BACKDROP = WHITE,
+
+    COLOR_RPUF_USE_UNITCOLOR           = false,
+    COLOR_RPUF_BORDER_USE_UNITCOLOR    = false,
+    COLOR_RPUF_TEXT_USE_UNITCOLOR      = false,
+    COLOR_RPUF_TOOLTIP_USE_UNITCOLOR   = false,
+    COLOR_STATUS_USE_UNITCOLOR         = false,
+    COLOR_STATUS_TEXT_USE_UNITCOLOR    = false,
+    COLOR_PORTRAIT_BORDER_USE_UNITCOLOR = false,
+    COLOR_PORTRAIT_BACKDROP_USE_UNITCOLOR = false,
+
+    COLOR_RPUF_UNITCOLOR           = "rp:color",
+    COLOR_RPUF_BORDER_UNITCOLOR    = "rp:color",
+    COLOR_RPUF_TEXT_UNITCOLOR      = "rp:color",
+    COLOR_RPUF_TOOLTIP_UNITCOLOR   = "rp:color",
+    COLOR_STATUS_UNITCOLOR         = "rp:color",
+    COLOR_STATUS_TEXT_UNITCOLOR    = "rp:color",
+    COLOR_PORTRAIT_BORDER_UNITCOLOR = "rp:color",
+    COLOR_PORTRAIT_BACKDROP_UNITCOLOR = "rp:color",
+
     DETAILHEIGHT         = 100,
     DETAILPANEL_FONTNAME = "Arial Narrow",
     DETAILPANEL_FONTSIZE = "medium",
@@ -146,6 +168,10 @@ function(self, event, ...)
     INFOPANEL_FONTSIZE   = "medium",
     NAMEPANEL_FONTNAME   = "Morpheus",
     NAMEPANEL_FONTSIZE   = "extralarge",
+    PORTRAIT_BG          = "Blizzard Rock",
+    PORTRAIT_BORDER      = "Blizzard Tooltip",
+    PORTRAIT_STYLE       = "STANDARD",
+    PORTRAIT_BORDER_STYLE = "UNIT_FRAMECOLOR",
     STATUSPANEL_FONTNAME = "Arial Narrow",
     STATUSPANEL_FONTSIZE = "medium",
     FONTSIZE             = 12,
@@ -181,10 +207,6 @@ function(self, event, ...)
     DISABLE_BLIZZARD        = false,
 
     MOUSEOVER_CURSOR     = true,
-    PORTRAIT_BG          = "Blizzard Rock",
-    PORTRAIT_BORDER      = "Blizzard Tooltip",
-    PORTRAIT_STYLE       = "STANDARD",
-
     -- scale
     PLAYERFRAME_SCALE       = 1,
     TARGETFRAME_SCALE       = 1,
