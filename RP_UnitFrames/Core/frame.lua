@@ -361,6 +361,7 @@ function(self, event, ...)
       do  self[funcName] = func;
       end;
       for_each_panel("SetLayout") 
+      updateMover();
     end;
 
     local function updateEverything()

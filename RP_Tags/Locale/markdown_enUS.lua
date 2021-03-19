@@ -190,6 +190,12 @@ L["CHANGES_MD"] =
 
 # Changes
 
+## 9.0.5.5
+
+- Fixed layouts
+- Added new "BLIZZLIKE" layout
+- Other bug fixes
+
 ## 9.0.5.2
 
 - Removed a pair of debugging statements that were left in. Oops!
