@@ -36,14 +36,6 @@ function(self, event, ...)
     { STANDARD = "Standard 3D portrait",
       FROZEN = "Non-animated 2D portrait",
     },
-    portraitFrameColor =
-    { 
-      NOCOLOR    = "Don't change the color of the frame.",
-      FRAMECOLOR = "Use the same border color as the unit frame.",
-      UNITCOLOR  = "Use the unit's RP color, no fallback.",
-      UNIT_FRAMECOLOR = "Use the unit's RP color, fallback to unit frame border.",
-    },
-    portraitFrameColorOrder = { "NOCOLOR", "FRAMECOLOR", "UNITCOLOR", "UNIT_FRAMECOLOR" },
   };
 
   local function build_tagpanel(opt)

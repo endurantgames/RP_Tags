@@ -116,7 +116,7 @@ function(self, event, ...)
             name = "Use a Unit Color",
             desc = "Use one of the unit's colors instead of a default color.",
             order = source_order(),
-            width = 1,
+            width = 0.8,
             get = function() return confGet(unit, useUnitSetting) end,
             set = function(info, value) confSet(unit, useUnitSetting, value) RPUF_Refresh(unit, unpack(update)) end,
           },
@@ -125,11 +125,16 @@ function(self, event, ...)
             desc = "Choose a unit color.",
             values = menu.unitColors,
             order = source_order(),
-            width = 0.75,
+            width = unit and 1.05 or 1.15,
             get = function() return confGet(unit, unitColorSetting) end,
             set = function(info, value) confSet(unit, unitColorSetting, value) RPUF_Refresh(unit, unpack(update)) end,
             sorting = menu.unitColorsOrder,
-            disabled = function() return not confGet(unit, useUnitSetting) end,
+            hidden = function() return not confGet(unit, useUnitSetting) end,
+          },
+          { type = "description",
+            name = "",
+            order = source_order(),
+            width = "full",
           };
     end;
 
@@ -149,7 +154,7 @@ function(self, event, ...)
         instruct =
         { type = "description",
           name = unit and ("These colors only apply to the " .. loc(unit:upper() .. "FRAME") .. ".")
-                 or ("These colors apply to any frames that are 'linked' to the shared settings.\n\n" ..
+                 or ("These colors apply to any frames that are `linked` to the shared settings. " ..
                      "You can pick specific colors, or you can use colors from the unit's RP profile; " ..
                      "these are called *unit colors.*"),
           width = "full",
@@ -182,11 +187,12 @@ function(self, event, ...)
     };
 
     for _, option in ipairs(optionsToBuildOrder)
-    do  local picker, useUnitColor, unitColor = 
+    do  local picker, useUnitColor, unitColor, newline = 
         use_unit_color(unit, option, unpack(optionsToBuild[option]));
         frame_group.args[option:lower() .. "Picker"] = picker;
         frame_group.args[option:lower() .. "UseUnitColor"] = useUnitColor;
         frame_group.args[option:lower() .. "UnitColor"] = unitColor;
+        frame_group.args[option:lower() .. "Newline"] = newline;
     
     end;
 

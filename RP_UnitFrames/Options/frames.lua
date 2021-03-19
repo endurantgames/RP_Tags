@@ -45,6 +45,10 @@ function(self, event, ...)
       large      = loc("SIZE_LARGE"                      ),
       extralarge = loc("SIZE_EXTRA_LARGE"                ), },
     fontSizeOrder = { "extrasmall", "small", "medium", "large", "extralarge" },
+    portraitStyle =
+    { STANDARD = loc("PORTRAIT_3D"),
+      FROZEN = loc("PORTRAIT_2D")
+    },
   };
 
   menu.small = RPUF_LayoutHashTable("small");
@@ -72,6 +76,10 @@ local function set(setting)    return function(info, value) Set(setting, value);
   local function build_frame_group(frameName, small)
     local str, ul_str, frame, shared;
 
+    local function getFrame(fname)
+      return RPTAGS.cache.UnitFrames[fname:lower()]
+    end;
+    
     if frameName then str = frameName:upper(); ul_str = "_" .. str; frame  = true;
                  else str = "";                ul_str = "";         shared = true; end
 
@@ -106,6 +114,9 @@ local function set(setting)    return function(info, value) Set(setting, value);
       nameFontSize    = "NAMEPANEL_FONTSIZE"   .. ul_str,
       mouseoverCursor = "MOUSEOVER_CURSOR"     .. ul_str,
       portWidth       = "PORTWIDTH"            .. ul_str,
+      portraitBG      = "PORTRAIT_BG"          .. ul_str,
+      portraitBorder  = "PORTRAIT_BORDER"      .. ul_str,
+      portraitStyle   = "PORTRAIT_STYLE"       .. ul_str,
       statusAlign     = "STATUS_ALIGN"         .. ul_str,
       statusFont      = "STATUSPANEL_FONTNAME" .. ul_str,
       statusFontSize  = "STATUSPANEL_FONTSIZE" .. ul_str,
@@ -344,7 +355,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc("RESET_FRAME_LOCATION" .. (frame and "" or "S")),
       desc                      = tloc("RESET_FRAME_LOCATION" .. (frame and "" or "S")),
       func                      = function() Refresh(frameName, "location") end,
-      width                     = 0.75,
+      width                     = frame and 0.75 or 1,
       order                     = source_order(),
     };
 
@@ -352,7 +363,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
 
     local lookSubGroup                =
     { type                      = "group",
-      name                      = "Frame Appearance",
+      name                      = "Appearance",
       order                     = source_order(),
       hidden                    = frame and linked_or_not_show(),
       args                      = {}
@@ -491,9 +502,105 @@ local function set(setting)    return function(info, value) Set(setting, value);
     lookSubGroup.args.statSSubGroup         = statSSubGroup;
     frameGroup.args.lookSubGroup      = lookSubGroup;
 
+    local portraitSubGroup = 
+    { type = "group",
+      name = "Portrait",
+      order = source_order(),
+      hidden = frame and linked_or_not_show(),
+      args = {}
+    };
+
+    portraitSubGroup.args.header = 
+    { type = "description",
+      name = "# " .. loc("OPT_PORTRAIT"),
+      order = source_order(),
+      dialogControl = "LMD30_Description",
+    };
+
+    portraitSubGroup.args.instruct =
+    { type = "description",
+      dialogControl = "LMD30_Description",
+      name = loc("OPT_PORTRAIT_I"),
+      order = source_order(),
+    };
+
+    portraitSubGroup.args.portraitStyle =
+    { type = "select",
+      name = cloc(f.portraitStyle),
+      desc = tloc(f.portraitStyle),
+      order = source_order(),
+      values = menu.portraitStyle,
+      get = get(f.portraitStyle),
+      set = function(info, value) Set(f.portraitStyle, value); Refresh(frameName, "portrait" ) end,
+    };
+
+    portraitSubGroup.args.s1 = Spacer();
+
+    portraitSubGroup.args.colors          =
+    { type                      = "execute",
+      name                      = "Colors",
+      func                      = function() linkHandler("opt://colors/rpufColors") end,
+      width                     = 1,
+      order                     = source_order(),
+    };
+
+    portraitSubGroup.args.portraitBackground =
+    { type = "select",
+      name = cloc(f.portraitBG),
+      desc = tloc(f.portraitBG),
+      order = source_order(),
+      dialogControl = "LSM30_Background",
+      values = function() return LibSharedMedia:HashTable("background") end,
+      get = get(f.portraitBG),
+      set = function(info, value) Set(f.portraitBG, value); RPUF_Refresh(frameName, "portrait") end,
+      width = 2.05,
+    };
+
+    portraitSubGroup.args.s2 = Spacer();
+
+    portraitSubGroup.args.portraitBorder =
+    { type = "select",
+      name = cloc(f.portraitBorder),
+      desc = tloc(f.portraitBorder),
+      order = source_order(),
+      dialogControl = "LSM30_Border",
+      values = function() return LibSharedMedia:HashTable("border") end,
+      get = get(f.portraitBorder),
+      set = function(info, value) Set(f.portraitBorder, value); RPUF_Refresh(frameName, "portrait") end,
+      width = 2.05,
+    };
+
+    portraitSubGroup.args.explainer = frame and
+    { type = "description",
+      dialogControl = "LMD30_Description",
+      name = function() 
+               local thisFrame = getFrame(frameName);
+               if thisFrame
+               then return 
+                      "**Note:** Your current layout for this frame, *" ..
+                      loc("RPUF_" .. thisFrame:Public("GetLayoutName")) ..
+                      "*, doesn't display portraits. You can change your layout to " ..
+                      "enable portraits if you'd like."
+               else return "nothing to see here"
+               end;
+             end,
+      order = source_order(),
+      width = "full",
+      --[[hidden = function() 
+                 local thisFrame = getFrame(frameName);
+                 if   thisFrame
+                 then return thisFrame:Public("PanelGet", "Vis", "portrait");
+                 else return true;
+                 end
+               end,
+      --]]
+    } or nil;
+
+    frameGroup.args.portraitSubGroup      = portraitSubGroup;
+
     local dimiSubGroup                =
     { type                      = "group",
-      name                      = "Panel Dimensions",
+      name                      = "Dimensions",
       order                     = source_order(),
       hidden                    = frame and linked_or_not_show(),
       args                      = {}

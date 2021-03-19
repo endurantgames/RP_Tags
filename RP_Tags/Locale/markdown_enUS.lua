@@ -192,6 +192,10 @@ L["CHANGES_MD"] =
 
 ## 9.0.5.5
 
+- Added unit colors to rpUnitFrames -- a unit color is like a color tag,
+  such as `[rp:color]` or `[rp:statuscolor]` or `[rp:gendercolor]`,
+  except applied to the user interface. (By which I mean mean frames,
+  backgrounds, borders, text colors, and so on.)
 - Fixed layouts
 - Added new "BLIZZLIKE" layout
 - Other bug fixes

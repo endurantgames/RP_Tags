@@ -84,7 +84,7 @@ function(self, event, ...)
   L["OPT_COLORS_RPUF"                   ] = RPUF_NAME .. " Colors";   -- used
   L["OPT_FORMATS"                       ] = "Tag Formats";            -- used
   L["OPT_PORTRAIT"                      ] = "Portrait";
-  L["OPT_PORTRAIT_I"                    ] = "Set your preferences on the unit portait. (Not all layouts will display portraits.";
+  L["OPT_PORTRAIT_I"                    ] = "Set your preferences for the unit portait. (Not all layouts will display portraits.)";
   L["OPT_SHARED_SETTINGS"               ] = "Shared Settings";
   L["OPT_EDITOR"                        ] = "Editor";
   L["OPT_FORMATS"                       ] = RP .. "Formats";
@@ -219,7 +219,7 @@ function(self, event, ...)
     CONFIG_STATUSPANEL_FONTNAME_TT   = PANEL_FONTNAME_TT,
     CONFIG_STATUSPANEL_FONTSIZE      = PANEL_FONTSIZE,
     CONFIG_STATUSPANEL_FONTSIZE_TT   = PANEL_FONTSIZE_TT,
-    CONFIG_STATUSHEIGHT            = "Height",
+    CONFIG_STATUSHEIGHT            = "Status Bar Height",
     CONFIG_STATUSHEIGHT_TT         = "Set the height of the 'status' panel.",
     CONFIG_STATUS_ALIGN            = "Alignment",
     CONFIG_STATUS_ALIGN_TT         = "Choose how you want the text on the status bar to be aligned.",
