@@ -169,6 +169,8 @@ function(self, event, ...)
     CONFIG_LINK_FRAME_TT           = "Choose whether to link this frame to the shared settings, or configure it separately.",
     CONFIG_LOCK_FRAME              = "Lock Frame",
     CONFIG_LOCK_FRAME_TT           = "Lock this unit frame so it can't be moved.";
+    CONFIG_UNLOCK_FRAME            = "Unlock Frame",
+    CONFIG_UNLOCK_FRAME_TT         = "Unlock this unit frame so that you can move it around.";
     CONFIG_LSM_FILTER              = "Filter SharedMedia Files",
     CONFIG_LSM_FILTER_TT           = "Choose whether you want to see all available SharedMedia files, or just those we think work best.",
     CONFIG_MOUSEOVER_CURSOR        = "Change Cursor on Mouseover",
@@ -333,7 +335,7 @@ function(self, event, ...)
   L["CONFIG_PORTRAIT_TOOLTIP_TT"        ] = "Set the tags for the portrait tooltip.";
   L["CONFIG_RESET_FRAME_LOCATIONS"      ] = "Reset Frame Locations";
   L["CONFIG_RESET_FRAME_LOCATIONS_TT"   ] = "Set all frames back to their default locations.";
-  L["CONFIG_RESET_FRAME_LOCATION"      ] = "Reset Frame Location";
+  L["CONFIG_RESET_FRAME_LOCATION"      ] = "Reset Location";
   L["CONFIG_RESET_FRAME_LOCATION_TT"   ] = "Set this frame back to its default location.";
   L["CONFIG_RESET_THESE_VALUES"         ] = "Reset These Values";
   L["CONFIG_RESET_THESE_VALUES_TT"      ] = "Set the displayed values back to their default values.";

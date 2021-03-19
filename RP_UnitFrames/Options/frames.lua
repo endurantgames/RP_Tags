@@ -101,6 +101,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       layout          = str                    .. "LAYOUT",
       link            = "LINK_FRAME"           .. ul_str,
       lockFrame       = "LOCK_FRAME"           .. ul_str,
+      unlockFrame     = "UNLOCK_FRAME"         .. ul_str,
       nameFont        = "NAMEPANEL_FONTNAME"   .. ul_str,
       nameFontSize    = "NAMEPANEL_FONTSIZE"   .. ul_str,
       mouseoverCursor = "MOUSEOVER_CURSOR"     .. ul_str,
@@ -137,7 +138,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       desc                      = tloc(f.show),
       get                       = get(f.show),
       set                       = function(info, value) Set(f.show, value); Refresh(frameName, "hiding"); end,
-      width = 0.75,
+      width = 1,
       hidden                    = disableRpuf(),
       order                     = source_order(),
     } or nil;
@@ -159,7 +160,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
     { type                      = "select",
       name                      = cloc(f.layout),
       desc                      = tloc(f.layout),
-      width = 0.75,
+      width = 1,
       get                       = get(f.layout),
       set                       = function(info, value) Set(f.layout, value); Refresh(frameName, "layout", "framesize", "sizes", "vis"); end,
       values                    = function() return small and menu.small or menu.large end,
@@ -272,16 +273,29 @@ local function set(setting)    return function(info, value) Set(setting, value);
       args                      = {},
     };
 
-    posiSubGroup.args.lockFrames      = frame and
-    { type                      = "toggle",
+    posiSubGroup.args.lockFrame = frame and
+    { type                      = "execute",
       name                      = cloc(f.lockFrame),
       desc                      = tloc(f.lockFrame),
-      width                     = 1,
-      get                       = get(f.lockFrame),
-      set                       = function(info, value) 
-                                    Set(f.lockFrame, value); 
+      width                     = 0.75,
+      func                      = function()
+                                    Set(f.lockFrame, true); 
                                     Refresh(frameName, "lock");
                                   end,
+      disabled                  = function() return Get(f.lockFrame) end,
+      order                     = source_order(),
+    } or nil;
+
+    posiSubGroup.args.unlockFrame = frame and
+    { type                      = "execute",
+      name                      = cloc(f.unlockFrame),
+      desc                      = tloc(f.unlockFrame),
+      width                     = 0.75,
+      func                      = function()
+                                    Set(f.lockFrame, false); 
+                                    Refresh(frameName, "lock");
+                                  end,
+      disabled                  = function() return not Get(f.lockFrame) end,
       order                     = source_order(),
     } or nil;
 
@@ -330,7 +344,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       name                      = cloc("RESET_FRAME_LOCATION" .. (frame and "" or "S")),
       desc                      = tloc("RESET_FRAME_LOCATION" .. (frame and "" or "S")),
       func                      = function() Refresh(frameName, "location") end,
-      width                     = 1,
+      width                     = 0.75,
       order                     = source_order(),
     };
 
@@ -492,7 +506,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
       get                       = get(f.gapSize),
       set                       = function(info, value) 
                                     Set(f.gapSize, value); 
-                                    Refresh(frameName, "framesize", "sizes") 
+                                    Refresh(frameName, "framesize", "sizes", "portrait") 
                                   end,
       min                       = 0,
       softMax                   = 20,
@@ -754,9 +768,7 @@ local function set(setting)    return function(info, value) Set(setting, value);
 
   local function statusName(frameName)
     return { type     = "description",
-             name     = string.format("[%s](opt://RPUF_Frames/%s)", 
-                                        loc(frameName .. "FRAME"),
-                                        frameName:lower()),
+             name     = loc(frameName .. "FRAME"),
              dialogControl = "LMD30_Description",
              width    = 0.85,
              fontSize = "medium",

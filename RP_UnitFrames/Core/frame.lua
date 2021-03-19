@@ -216,9 +216,14 @@ function(self, event, ...)
       end;
     end;
 
-    local function updateMoverSize()
+    local function updateMover()
       mover:SetSize(self:moverSize(), self:moverSize());
       padlock:SetSize(self:moverSize(), self:moverSize());
+      local layout = RPUF_GetLayout( getLayoutName());
+      local x, y = layout:GetMoverOffset(self, "mover");
+      if x and y then mover:ClearAllPoints() mover:SetPoint("BOTTOMLEFT", self, "TOPLEFT", x, y) end;
+      x, y = layout:GetMoverOffset(self, "padlock");
+      if x and y then padlock:ClearAllPoints() padlock:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", x, y) end;
     end;
 
     padlock:RegisterForClicks("LeftButtonUp");
@@ -317,7 +322,7 @@ function(self, event, ...)
       local border     = LibSharedMedia:Fetch("border", Config.get("PORTRAIT_BORDER"))
       local background = LibSharedMedia:Fetch("background", Config.get("PORTRAIT_BG"))
 
-      if Config.get("PORTRAIT_STYLE") == "STANDARD"
+      if   Config.get("PORTRAIT_STYLE") == "STANDARD"
       then portraitPanel.portrait2D:Hide();
            self.Portrait = portraitPanel.portrait3D;
            self.Portrait:SetUnit(unit);
@@ -330,8 +335,8 @@ function(self, event, ...)
       portraitPanel.pictureFrame:SetBackdrop(
       { bgFile   = background,
         edgeFile = border,
-        edgeSize = 16,
-        insets   = { left = 3, right = 3, top = 3, bottom = 3 }
+        edgeSize = confGet("RPUF_BORDER_WIDTH"),
+        insets   = { left = 4, right = 4, top = 4, bottom = 4 }
       });
     end;
 
@@ -372,7 +377,7 @@ function(self, event, ...)
       updateFrameAppearance();
       updateTagStrings();
       updateContent();
-      updateMoverSize();
+      updateMover();
     end;
 
     public.ConfGet               = confGet;
@@ -398,7 +403,7 @@ function(self, event, ...)
     public.UpdateStatusBar       = updateStatusBar;
     public.UpdateTagStrings      = updateTagStrings;
     public.UpdateTextColor       = updateTextColor;
-    public.UpdateMoverSize       = updateMoverSize;
+    public.UpdateMover           = updateMover;
 
     function self.HasPublicFunction(self, funcName)
        return type(public[funcName]) == "function"

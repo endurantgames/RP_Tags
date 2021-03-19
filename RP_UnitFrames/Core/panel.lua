@@ -145,8 +145,8 @@ function(self, event, ...)
       local portrait3D = CreateFrame("PlayerModel", nil, self, "ModelWithControlsTemplate");
       local portrait2D = self:CreateTexture(nil, "OVERLAY");
 
-      portrait3D:SetPoint("TOPRIGHT", self, "TOPRIGHT", -5, -5);
-      portrait3D:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 5, 5);
+      portrait3D:SetPoint("TOPRIGHT", -4, -4)
+      portrait3D:SetPoint("BOTTOMLEFT", 4, 4)
       portrait3D:Show();
 
       portrait2D:SetPoint("LEFT", 5, 0);
@@ -156,8 +156,8 @@ function(self, event, ...)
       portrait2D:Show();
 
       self.pictureFrame = CreateFrame("Frame", nil, self, BackdropTemplateMixin and "BackdropTemplate");
-      self.pictureFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 5, 5);
-      self.pictureFrame:SetPoint("TOPRIGHT",   self, "TOPRIGHT", -5, -5);
+      self.pictureFrame:SetPoint("BOTTOMLEFT")
+      self.pictureFrame:SetPoint("TOPRIGHT")
 
       self.pictureFrame:SetBackdrop(
       { bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background", 

@@ -134,7 +134,7 @@ function(self, event, ...)
 
   local ourFrameConfig   =
   { COLOR_RPUF           = WHITE,
-    COLOR_RPUF_BORDER    = YELLOW,
+    COLOR_RPUF_BORDER    = WHITE,
     COLOR_RPUF_TEXT      = WHITE,
     COLOR_RPUF_TOOLTIP   = YELLOW,
     COLOR_STATUS         = TEAL,
@@ -154,10 +154,6 @@ function(self, event, ...)
     INFOWIDTH            = 200,
     LINK_FRAME           = true,
     LOCK_FRAME           = false,
-    MOUSEOVER_CURSOR     = true,
-    PORTRAIT_BG          = "None",
-    PORTRAIT_BORDER      = "None",
-    PORTRAIT_STYLE       = "STANDARD",
     PORTWIDTH            = 100,
     RPUFALPHA            = 1,
     RPUF_BACKDROP        = "Blizzard Parchment 2",
@@ -183,6 +179,11 @@ function(self, event, ...)
     -- disable
     DISABLE_RPUF            = false,
     DISABLE_BLIZZARD        = false,
+
+    MOUSEOVER_CURSOR     = true,
+    PORTRAIT_BG          = "Blizzard Rock",
+    PORTRAIT_BORDER      = "Blizzard Tooltip",
+    PORTRAIT_STYLE       = "STANDARD",
 
     -- scale
     PLAYERFRAME_SCALE       = 1,

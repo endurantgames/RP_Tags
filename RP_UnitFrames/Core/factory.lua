@@ -138,12 +138,25 @@ function(self, event, ...)
 
   end;
 
+  local function RPUF_SetMoverOffset(self, moverName, offset)
+    self.offset[moverName] = offset;
+  end;
+
+  local function RPUF_GetMoverOffset(self, frame, moverName)
+    local offset = self.offset[moverName];
+    if type(offset) == "function" then return offset(frame) 
+    elseif type(offset) == "table" then return unpack(offset) 
+    else return 0, 0
+    end;
+  end;
+
   local function RPUF_RegisterAsDefault(self)
     if   self.size
     then RPTAGS.cache.layouts.defaults[self.size] = self.name;
     else print("Could not register as default");
     end;
   end;
+
   local function RPUF_NewLayout(layoutName, layoutSize, layoutVersion)
 
     return 
@@ -152,6 +165,7 @@ function(self, event, ...)
       panel_methods              = {},
       frame_methods              = {},
       panel_method_hash          = {},
+      offset                     = {},
       size                       = layoutSize,
       version                    = layoutVersion or GetAddOnMetadata(addOnName, "Version"),
       GetLayoutSize              = function(self) return self.size end,
@@ -160,6 +174,8 @@ function(self, event, ...)
       Register_Frame_Method      = function(self, funcName, func)      self.frame_methods[funcName]     = func;      end,
       RegisterLayout             = function(self)                      RPUF_RegisterLayout(layoutName, self)         end,
       RegisterAsDefault          = function(self)                      RPUF_RegisterAsDefault(self)                  end,
+      SetMoverOffset             = RPUF_SetMoverOffset,
+      GetMoverOffset             = RPUF_GetMoverOffset,
     };
 
   end;
@@ -188,7 +204,7 @@ function(self, event, ...)
     content          = "UpdateContent",
     portrait         = "UpdatePortrait",
     everything       = "UpdateEverything",
-    movers           = "UpdateMoverSize",
+    movers           = "UpdateMover",
   };
 
   local function RPUF_Refresh(frameName, ...)

@@ -5,7 +5,7 @@ local Module = RPTAGS.queue:GetModule(addOnName);
 Module:WaitUntil("MODULE_F", 
 function(self, event, ...)
 
-  local layout = RPTAGS.utils.frames.RPUF_NewLayout("thumbnail", "large");
+  local layout = RPTAGS.utils.frames.RPUF_NewLayout("thumbnail", "small");
 
   function get_frame_dimensions(self)
     return 
