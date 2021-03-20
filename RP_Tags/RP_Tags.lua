@@ -76,8 +76,27 @@ Queue:OnError(
 RPTAGS.queue = Queue;
 
 local EventsFrame = CreateFrame("Frame");
-EventsFrame:RegisterEvent("PLAYER_LOGIN");
-EventsFrame:SetScript("OnEvent", function(self, event, ...) RPTAGS.queue:FireAll(); end);
+
+EventsFrame.Events = {};
+function EventsFrame.registerEvent(self, eventName, callback)
+  if   self.Events[eventName]
+  then table.insert(self.Events[eventName], callback)
+  else self.Events[eventName] = { callback };
+       self:RegisterEvent(eventName);
+  end;
+end;
+
+EventsFrame:SetScript("OnEvent",
+  function(self, event, ...) 
+    if self.Events[event] and #self.Events[event] > 0
+    then for c, callback in ipairs(self.Events[event])
+         do callback(self, event, ...)
+         end;
+    else print("This event is registered but I don't know what you want me to do:", event);
+    end;
+  end
+);
+EventsFrame:registerEvent("PLAYER_LOGIN", function(self, event, ...) RPTAGS.queue:FireAll(); end);
 RPTAGS.EventsFrame = EventsFrame;
 
 _G["RPTAGS"] = RPTAGS;
