@@ -31,20 +31,12 @@ function(self, event, ...)
       local ufCache = RPTAGS.cache.UnitFrames;
       if unitID and ufCache[unitID]
       then RPUF_Refresh(unitID, "content")
-           print("unitID", unitID, "refreshing", unitID);
-
       elseif unitID == getUnit("target")
       then RPUF_Refresh("target", "content")
-           print("unitID", unitID, "refreshing", "target");
-
       elseif unitID == getUnit("focus")
       then RPUF_Refresh("focus", "content")
-           print("unitID", unitID, "refreshing", "focus");
-
       elseif unitID == getUnit("targettarget")
       then RPUF_Refresh("targettarget", "content")
-           print("unitID", unitID, "refreshing", "targettarget");
-
       end;
     end);
 end);
