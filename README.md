@@ -221,7 +221,7 @@ translations into other languages, you can get in touch with us.
   - [x] WoW 9.0.5
 - [x] Get configuration/help working
 - [x] Keybinds
-- [x] More work on AMDC - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
+- [x] ~~More work on AMDC~~ - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
 - [x] Localization strings for options
 - [x] Review help files
   - [x] Help file for labels and sizes
@@ -230,14 +230,15 @@ translations into other languages, you can get in touch with us.
     - [x] Keybinds working
     - [x] Index addon functions
     - [ ] P2: Confirm which tags should be `unsup` for MRP
-    - [ ] P2: Update for new pronoun settings in trp3/MRP
+    - [ ] P1: Update for new pronoun settings in trp3/MRP
   - [ ] TRP3
     - [x] Index addon functions
     - [x] Keybinds working
-    - [ ] P2: Update for new pronoun settings in trp3/MRP
-  - [x] ElvUI
-    - [x] Get labels working in ElvUI (work-around for old oUF)
+    - [ ] P1: Update for new pronoun settings in trp3/MRP
+  - [ ] ElvUI
+    - [x] ~~Get labels working in ElvUI~~
     - [x] Get size modifiers working in ElvUI (work-around for old oUF) 
+    - [ ] Get color modifiers working in ElvUI (work-around for old oUF)
     - [x] Index addon functions
     - [x] Don't "add" oUF/ElvUI tags to listing
   - [ ] Listener
@@ -263,10 +264,14 @@ translations into other languages, you can get in touch with us.
     - [x] P2: Tweak abridged layout
     - [x] P2: Tweak compact layout
     - [x] P2: Tweak full layout
-    - [ ] P3: Blizzlike layout
+    - [x] P3: Blizzlike layout
+    - [x] P2: Unit colors
+    - [ ] P3: Allow "custom" unit colors, to use color tag modifiers
+    - [ ] P2: Context menu
   - [x] Tags
     - [x] Get labels working in rpUnitFrames
     - [x] P1: Confirm size modifiers working in rpUnitFrames
+    - [x] P2: Color modifiers
   - [ ] Panels
     - [x] P1: Mouseovers
     - [x] P1: Fix portrait
@@ -281,8 +286,8 @@ translations into other languages, you can get in touch with us.
     - [x] P2: LibSharedMedia for editor
     - [x] P1: "More" button
     - [x] P2: Right-/modifier-clicks on toolbar
-    - [ ] P2: Layout tweaking
     - [x] P3: Localization strings for editor
+    - [ ] P2: Layout tweaking
 - [ ] Long-Term
   - [ ] Config profiles with Ace3?
   - [ ] XRP support
