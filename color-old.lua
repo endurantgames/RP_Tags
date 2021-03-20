@@ -107,6 +107,7 @@ end
  * @return  Array           The HSV representation
 ]]
 function rgbToHsv(r, g, b, a)
+  r, g, b, a = r / 255, g / 255, b / 255, a / 255
   local max, min = math.max(r, g, b), math.min(r, g, b)
   local h, s, v
   v = max
@@ -159,7 +160,7 @@ function hsvToRgb(h, s, v, a)
   elseif i == 5 then r, g, b = v, p, q
   end
 
-  return r, g, b, a
+  return r * 255, g * 255, b * 255, a * 255
 end
 
       -- returns a hue value (for HSV color) based on the values of three numbers
@@ -214,9 +215,9 @@ local function integersToColor(r, g, b) return string.format("%02x%02x%02x", r, 
 
 local function decimalsToColor(r, g, b)
       return string.format("%02x%02x%02x", 
-                math.min(255, math.floor(r * 255)),
-                math.min(255, math.floor(g * 255)),
-                math.min(255, math.floor(b * 255)));
+                           math.floor(r * 255),
+                           math.floor(g * 255),
+                           math.floor(b * 255));
 end;
 
 local function rgbToIntegers(rgb) if rgb:len() == 0 then return nil, nil, nil end;
@@ -242,10 +243,11 @@ local function hslToRgb(h, s, l)
       end
       local q = l < .5 and l * (1 + s) or l + s - l * s
       local p = 2 * l - q
-      return to(p, q, h + .33334), to(p, q, h), to(p, q, h - .33334)
+      return 255 * to(p, q, h + .33334), 255 * to(p, q, h), 255 * to(p, q, h - .33334)
   end
 
   local function rgbToHsl(r, g, b)
+      r, g, b = r / 255, g / 255, b / 255;
       local max, min = math.max(r, g, b), math.min(r, g, b)
       local b = max + min
       local h = b / 2
@@ -261,40 +263,84 @@ local function hslToRgb(h, s, l)
   end
   
 local function colorTransforms(rgb, transform, value)
-  local r, g, b = colorToDecimals(rgb);
+  local r, g, b = rgbToIntegers(rgb);
   local h, s, v = rgbToHsv(r, g, b, 1);
   local H, S, L = rgbToHsl(r, g, b, 1);
 
-  local function add(a, n) return a + n                                        end;
-  local function rel(a, n) return n < 0 and a * math.abs(n) or n + (1 - a) * n end;
-  local function set(n)    return n + (n < 0 and 1 or 0)                       end;
-
   local hash =
-  { -- hsv
-    addH = function() return hsvToRgb( add(h, value), s,             v,             1 ) end,
-    relH = function() return hsvToRgb( rel(h, value), s,             v,             1 ) end,
-    setH = function() return hsvToRgb( set(   value), s,             v,             1 ) end,
+  { "brighten" = function() return hsvToRgb(h, s, v + (1 - value), 1) end,
+    "dim"      = function() return hsvToRgb(h, s, v * (1 - value), 1) end,
+    "lighten"  = function() return hslToRgb(h, s, l + ( 1 - l ) * value, 1) end,
+    "darken"   = function() return hslToRgb(h, s, l * (1 - amount), 1) end,
+    "adjustH"  = function() return hsvToRgb(math.max(math.min(h + amount, 1), 0), s, v, 1) end,
 
-    addS = function() return hsvToRgb( h,             add(s, value), v,             1 ) end,
-    relS = function() return hsvToRgb( h,             rel(s, value), v,             1 ) end,
-    setS = function() return hsvToRgb( h,             set(   value), v,             1 ) end,
+local function brightenColor(rgb, amount)
+  local r, g, b = rgbToIntegers(rgb);
+  if amount > 1 or amount < 0 then return r, g, b, rgb end;
+  local h, s, v = rgbToHsv(r, g, b, 1);
+  r, g, b = hsvToRgb(h, s, v + (1 - v ) * amount, 1);
+  return r, g, b, integersToColor(r, g, b, 1);
+end;
 
-    addV = function() return hsvToRgb( h,             s,             add(v, value), 1 ) end,
-    relV = function() return hsvToRgb( h,             s,             rel(v, value), 1 ) end,
-    setV = function() return hsvToRgb( h,             s,             set(   value), 1 ) end,
-    -- hsl
-    addL = function() return hslToRgb( H,             S,             add(L, value), 1 ) end,
-    relL = function() return hslToRgb( H,             S,             rel(L, value), 1 ) end,
-    setL = function() return hslToRgb( H,             S,             set(   value), 1 ) end,
-  };
+local function dimColor(rgb, amount) 
+  local r, g, b = rgbToIntegers(rgb);
+  if amount > 1 or amount < 0 then return r, g, b, rgb end;
+  local h, s, v = rgbToHsv(r, g, b, 1);
+  r, g, b = hsvToRgb(h, s, v * (1 - amount), 1);
+  return r, g, b, integersToColor(r, g, b, 1);
+end;
 
-  local func = hash[transform];
+local function lightenColor(rgb, amount)
+  local r, g, b = rgbToIntegers(rgb);
+  if amount > 1 or amount < 0 then return r, g, b, rgb end;
+  local h, s, l = rgbToHsl(r, g, b, 1);
+  r, g, b = hslToRgb(h, s, l + (1 - l ) * amount, 1);
+  r, g, b = r * 255, g * 255, b * 255;
+  return r, g, b, integersToColor(r, g, b, 1);
+end;
 
-  if   func 
-  then r, g, b = func(); 
-       rgb = decimalsToColor(r, g, b);
-  end;
-  return r, g, b, rgb
+local function darkenColor(rgb, amount)
+  local r, g, b = rgbToIntegers(rgb);
+  if amount > 1 or amount < 0 then return r, g, b, rgb end;
+  local h, s, l = rgbToHsl(r, g, b, 1);
+  r, g, b = hslToRgb(h, s, l * (1 - amount), 1);
+  return r, g, b, integersToColor(r, g, b, 1);
+end;
+
+local function unchangedColor(rgb, amount)
+  local r, g, b = rgbToIntegers(rgb);
+  if amount > 1 or amount < 0 then return r, g, b, rgb end;
+  local h, s, l = rgbToHsl(r, g, b, 1);
+  r, g, b = hslToRgb(h, s, l);
+  return r, g, b, integersToColor(r, g, b, 1);
+end;
+
+local function changeHue(rgb, amount)
+  local r, g, b = rgbToIntegers(rgb);
+  local h, s, v = rgbToHsv(r, g, b, 1);
+  r, g, b = hsvToRgb(math.max(math.min(h + amount, 1), 0), s, v, 1);
+  return r, g, b, integersToColor(r, g, b, 1);
+end;
+
+local function setHue(rgb, value)
+  local r, g, b = rgbToIntegers(rgb);
+  local h, s, v = rgbToHsv(r, g, b, 1);
+  r, g, b = hsvToRgb(math.max(math.min(value), 0), s, v, 1);
+  return r, g, b, integersToColor(r, g, b, 1);
+end;
+
+local function changeLightness(rgb, amount)
+  local r, g, b = rgbToIntegers(rgb);
+  local h, s, l = rgbToHsl(r, g, b, 1);
+  r, g, b = hslToRgb(h, s, math.max(math.min(l + amount), 0), 1);
+  return r, g, b, integersToColor(r, g, b, 1);
+end;
+
+local function setHue(rgb, value)
+  local r, g, b = rgbToIntegers(rgb);
+  local h, s, v = rgbToHsv(r, g, b, 1);
+  r, g, b = hsvToRgb(math.max(math.min(value), 0), s, v, 1);
+  return r, g, b, integersToColor(r, g, b, 1);
 end;
 
 -- Utilities available via RPTAGS.utils.color
@@ -316,6 +362,5 @@ Color.darken          = darkenColor;
 Color.brighten        = brightenColor;
 Color.dim             = dimColor;
 Color.unchanged       = unchangedColor;
-Color.transform       = colorTransforms;
 
 end);

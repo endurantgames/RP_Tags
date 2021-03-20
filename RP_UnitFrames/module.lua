@@ -79,7 +79,7 @@ function(self, event, ...)
   end -- function
   
         -- registers one tag, an event to wait for, and a method to invoke when found --------------------------
-  local function registerTag(tagName, tagMethod, extraEvents)
+  local function registerTag(tagName, tagMethod, extraEvents, ...)
     local events = RPTAGS.CONST.MAIN_EVENT .. (extraEvents and (" " .. extraEvents) or "");
 
     if not oUF.Tags.Events[tagName] and not tagName:match("%(.+%)$")
@@ -88,19 +88,120 @@ function(self, event, ...)
            oUF.Tags.Methods[tagName] = tagMethod;
     end;
 
-    return tagName, tagMethod, extraEvents;
+    return tagName, tagMethod, extraEvents, ...;
   end; -- function
 
-  local function registerTagSizeVariants(tagName, tagMethod, tagExtraEvents)
+  local function registerTagSizeVariants(tagName, tagMethod, tagExtraEvents, ...)
     local sizeTrim = RPTAGS.utils.text.sizeTrim;
     RPTAGS.utils.tags.registerTag(
       tagName,
       function(u1, u2, size) return sizeTrim(tagMethod( u1, u2), size) end,
       tagExtraEvents
     );
-    return tagName, tagMethod, tagExtraEvents;
+    return tagName, tagMethod, tagExtraEvents, ...;
   end;
   
+  local function colorTagHandler(result, xform, param)
+    local doTransform = RPTAGS.utils.color.transform;
+
+    local hash =
+    { 
+      black      = { what = "L",            negative = true, },
+      blackness  = { what = "L",            negative = true, },
+      blacker    = { what = "L", er = true, negative = true, },
+      blacken    = { what = "L", er = true, negative = true, },
+      dark       = { what = "L",            negative = true  },
+      darkness   = { what = "L",            negative = true  },
+      darker     = { what = "L", er = true, negative = true  },
+      darken     = { what = "L", er = true, negative = true  },
+
+      l          = { what = "L"                              },
+      b          = { what = "L"                              },
+      light      = { what = "L"                              },
+      lighter    = { what = "L", er = true,                  },
+      lighten    = { what = "L", er = true,                  },
+      lightness  = { what = "L"                              },
+      white      = { what = "L"                              },
+      whiteness  = { what = "L"                              },
+      whiter     = { what = "L", er = true,                  },
+      whiten     = { what = "L", er = true,                  },
+
+      bright     = { what = "V"                              },
+      brighter   = { what = "V", er = true,                  },
+      brighten   = { what = "V", er = true,                  },
+      brightness = { what = "V"                              },
+      dim        = { what = "V",            negative = true  },
+      dimness    = { what = "V",            negative = true  },
+      dimmer     = { what = "V", er = true, negative = true  },
+      v          = { what = "V"                              },
+
+      h          = { what = "H"                              },
+      hue        = { what = "H"                              },
+
+      s          = { what = "S"                              },
+      sat        = { what = "S"                              },
+      saturation = { what = "S"                              },
+      saturate   = { what = "S"                              },
+      desaturate = { what = "S",            negative = true  },
+      desat      = { what = "S",            negative = true  },
+
+    };
+
+    xform = strtrim(xform or ""); 
+    param = strtrim(param or ""); 
+
+    param = "half"      and "0.5"  or "max"       and "1"    or "min" and "0" or 
+            "more"      and "+25%" or "less"      and "-25%" or 
+            "lots more" and "+50%" or "lots less" and "-50%" or
+            "lotsmore"  and "+50%" or "lotsless"  and "-50%" or
+            param;
+    if xform:len() * param:len() == 0 then return result end;
+
+    local transform = hash[xform];          
+    if not transform then return result end;
+
+    local PATTERN = "(=? ?)" .. "(%+? ?)" .. "(%-? ?)" .. "(%d+%.?%d*)" .. "(%%?)$"
+    local equal, plus, minus, value, percent = param:match(PATTERN);
+
+    if not value then return result end;
+
+    equal   = equal:len()   > 0;
+    plus    = plus:len()    > 0;
+    minus   = minus:len()   > 0;
+    percent = percent:len() > 0;
+
+    if plus and minus then return result end; -- illogical
+
+    value = tonumber(value);
+    if not value then return result end;
+
+    percent = (value > 1 and value <= 100) or percent;
+    value = percent and value / 100 or value;
+
+    value = math.max(math.min(value, 1), 0);
+
+    value = value * (transform.negative and -1 or 1) * (minus and -1 or 1);
+
+    if     transform.er and percent then return "|cff" .. select(4, doTransform(result, "rel" .. transform.what, value))
+    elseif transform.er             then return "|cff" .. select(4, doTransform(result, "add" .. transform.what, value))
+    elseif equal                    then return "|cff" .. select(4, doTransform(result, "set" .. transform.what, value))
+    elseif not (plus or minus)      then return "|cff" .. select(4, doTransform(result, "set" .. transform.what, value))
+    elseif percent                  then return "|cff" .. select(4, doTransform(result, "rel" .. transform.what, value))
+                                    else return "|cff" .. select(4, doTransform(result, "add" .. transform.what, value))
+    end;
+
+  end;
+
+  local function registerColorTag(tagName, tagMethod, tagExtraEvents, ...)
+    RPTAGS.utils.tags.registerTag( 
+      tagName, 
+      function(u1, u2, transform, p1, p2, ...) 
+        return colorTagHandler( tagMethod(u1, u2, transform, p1, p2, ...), transform, p1, p2 ) 
+      end, 
+    tagExtraEvents);
+    return tagName, tagMethod, tagExtraEvents, ...;
+  end;
+
   local function refreshFrame(frameName, ...)
     if RPTAGS.utils.UnitFrames[frameName]
     then RPTAGS.utils.frames.RPUF_Refresh(frameName, "content");
@@ -117,6 +218,7 @@ function(self, event, ...)
   RPTAGS.utils.modules.extend(
   { [ "tags.registerTag"   ] = registerTag, 
     [ "tags.sizeVariants"  ] = registerTagSizeVariants,
+    [ "tags.colorTag"      ] = registerColorTag,
     [ "frames.refresh"     ] = refreshframe,
     [ "frames.refreshAll"  ] = refreshAll,
   });

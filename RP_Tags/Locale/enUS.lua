@@ -232,6 +232,8 @@ function(self, event, ...)
   L["OPT_LABELS"]            = "Labels";
   L["OPT_SIZE_MODIFIERS"]    = "Size";
   L["OPT_TAG_MODIFIERS"]     = "Tag Modifiers";
+  L["OPT_LABEL_MODIFIERS"]   = "Labels";
+  L["OPT_COLOR_MODIFIERS"]   = "Color Modifiers";
   L["OPT_DEBUGGING_CMDS"]    = "Debugging Commands";
   L["OPT_VERSION"]           = "Version";
   L["OPT_CHANGES"]           = "Changes";
@@ -255,6 +257,51 @@ function(self, event, ...)
   L["TABLE_TAG"] = "Tag";
   L["TABLE_DESC"] = "Description";
   L["TABLE_THE_UNITS"] = "The unit's ";
+  L["TABLE_COLOR_TRANSFORMS"] = "Color Transformations";
+  L["TABLE_COLOR_XFORM"] = "Transformation";
+  L["TABLE_COLOR_XFORM_DESC"] = "Description";
+  L["TABLE_COLOR_XFORM_LIGHT"] = "Set the lightness (closer to white) of the color.";
+  L["TABLE_COLOR_XFORM_DARK"] = "The inverse of `lightness` -- closer to black.";
+  L["TABLE_COLOR_XFORM_BRIGHT"] = "Sets the brightness -- closer to intense shades -- of the color.";
+  L["TABLE_COLOR_XFORM_DIM"] = "The inverse of `brightness`.";
+  L["TABLE_COLOR_XFORM_HUE"] = "Sets the hue of the color.";
+  L["TABLE_COLOR_XFORM_SAT"] = "Sets the saturation level of the color.";
+  L["TABLE_COLOR_XFORM_DESAT"] = "The inverse of `saturation`.";
+  L["TABLE_COLOR_XFORM_LIGHTER"] = "Increases the lightness of the color.";
+  L["TABLE_COLOR_XFORM_DARKER"] = "The opposite of darker.";
+  L["TABLE_COLOR_XFORM_BRIGHTER"] = "Increases the brightness of the color.";
+  L["TABLE_COLOR_XFORM_DIMMER"] = "The inverse of `brighter`.";
+
+  L["TABLE_COLOR_XFORM_AMOUNTS"] = "Amount Values";
+  L["TABLE_COLOR_XFORM_TYPE"] = "Type of Value";
+  L["TABLE_COLOR_XFORM_EXAMPLE"] = "Example";
+  
+  L["TABLE_COLOR_XFORM_PERCENT"] = "`Percent`";
+  L["TABLE_COLOR_XFORM_DECIMAL"] = "`Decimal`";
+  L["TABLE_COLOR_XFORM_PLUS"] = "`Plus Value`";
+  L["TABLE_COLOR_XFORM_MINUS"] = "`Minus Value`";
+  L["TABLE_COLOR_XFORM_EQUALS"] = "`Equals`";
+  L["TABLE_COLOR_XFORM_MORE"] = "`More`";
+  L["TABLE_COLOR_XFORM_LESS"] = "`Less`";
+  L["TABLE_COLOR_XFORM_LOTS_MORE"] = "`Lots More`";
+  L["TABLE_COLOR_XFORM_LOTS_LESS"] = "`Lots Less`";
+  L["TABLE_COLOR_XFORM_MIN"] = "`Minimum`";
+  L["TABLE_COLOR_XFORM_MAX"] = "`Maximum`";
+  L["TABLE_COLOR_XFORM_HALF"] = "`Halfway`";
+
+
+  L["TABLE_COLOR_XFORM_PERCENT_DESC"] = "A percentage, based on the current values. The percent sign is optional.";
+  L["TABLE_COLOR_XFORM_DECIMAL_DESC"] = "A decimal number, between 0 and 1.";
+  L["TABLE_COLOR_XFORM_PLUS_DESC"] = "A plus (`+`) increases the value.";
+  L["TABLE_COLOR_XFORM_MINUS_DESC"] = "A minus(`-`) decreases the value.";
+  L["TABLE_COLOR_XFORM_EQUALS_DESC"] = "An equal sign (`=`') sets the value to an exact amount.";
+  L["TABLE_COLOR_XFORM_MORE_DESC"] = "Increases the value by 25%.";
+  L["TABLE_COLOR_XFORM_LESS_DESC"] = "Decreases the value by 25%.";
+  L["TABLE_COLOR_XFORM_LOTS_MORE_DESC"] = "Increases the value by 50%.";
+  L["TABLE_COLOR_XFORM_LOTS_LESS_DESC"] = "Decreases the value by 50%.";
+  L["TABLE_COLOR_XFORM_MIN_DESC"] = "Sets the value to 0.";
+  L["TABLE_COLOR_XFORM_MAX_DESC"] = "Sets the value to 1.";
+  L["TABLE_COLOR_XFORM_HALF_DESC"] = "Sets the value to 0.5.";
 
   -- --- recipes
   -- [==========================================================================[

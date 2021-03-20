@@ -194,10 +194,10 @@ function(self, event, ...)
 
     local function updateTextColor()
       local r, g, b = getColor("RPUF_TEXT");
+      for_each_panel("SetTextColor", r, g, b);
       --[[local r, g, b = toRGB(confGet("COLOR_RPUF_TEXT"))
       for_each_panel("SetTextColor", r / 255, g / 255, b / 255);
       --]]
-      for_each_panel("SetTextColor", r, g, b);
     end;
 
     local function panelGet(funcName, panel, ...)
@@ -400,13 +400,24 @@ function(self, event, ...)
     local function getLayoutSize()     return layoutSize; end;
     local function setLayoutSize(size) layoutSize = size; end;
 
-    local function updateContent() 
-      self:UpdateAllElements("now"); 
-      if Config.get("PORTRAIT_BORDER_STYLE") ~= "NOCOLOR"
-      then updatePortrait();
-      end;
-    end;
+    local function updateContent() self:UpdateAllElements("now"); end;
 
+    local function updateUnitColors()
+      local r, g, b;
+      local portraitPanel = getPanel("portrait");
+
+      local a = confGet( "RPUFALPHA" );
+      if a > 1 then a = a / 100; confSet( "RPUFALPHA") end;
+      r, g, b = getColor("RPUF");            backdrop:SetBackdropColor(r, g, b, a);
+
+      r, g, b = getColor("RPUF_BORDER");       backdrop:SetBackdropBorderColor(r, g, b, 1);
+      r, g, b = getColor("PORTRAIT_BORDER");   portraitPanel.pictureFrame:SetBackdropBorderColor(r, g, b, 1);
+      r, g, b = getColor("STATUS");            statusBar:SetVertexColor( r, g, b, confGet("STATUS_ALPHA" ));
+      r, g, b = getColor("PORTRAIT_BACKDROP"); portraitPanel.pictureFrame:SetBackdropColor(r / 2 + 0.5, g / 2 + 0.5, b / 2 + 0.5, 1);
+      r, g, b = getColor("STATUS_TEXT");       statusBar:SetTextColor(r, g, b);
+      r, g, b = getColor("RPUF_TEXT");         for_each_panel("SetTextColor", r, g, b);
+
+    end;
     local function updateLayout()
       local layoutName = getLayoutName()
       local layout = RPUF_GetLayout(layoutName) or RPUF_GetDefaultLayout(self:GetLayoutSize());
@@ -462,6 +473,7 @@ function(self, event, ...)
     public.UpdateTagStrings      = updateTagStrings;
     public.UpdateTextColor       = updateTextColor;
     public.UpdateMover           = updateMover;
+    public.UpdateUnitColors      = updateUnitColors;
 
     function self.HasPublicFunction(self, funcName)
        return type(public[funcName]) == "function"

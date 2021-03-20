@@ -9,5 +9,6 @@
     <Script file="init.lua"    />
     <Script file="keybind.lua" />
     <Script file="panel.lua"   />
+    <Script file="events.lua"  />
 
 </Ui>

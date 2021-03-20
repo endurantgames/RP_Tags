@@ -97,6 +97,7 @@ function(self, event, ...)
   
     local registerTag                = RPTAGS.utils.tags.registerTag;
     local registerTagAndSizeVariants = RPTAGS.utils.tags.sizeVariants;
+    local registerColorTag           = RPTAGS.utils.tags.colorTag;
     local registerLabel              = RPTAGS.utils.tags.registerLabel;
 
     if     tag.external or group.external
@@ -116,10 +117,13 @@ function(self, event, ...)
   
            -- time to build our tags!
            for _, tname in ipairs(tagNames)
-           do  if   tag.size -- do we have size variants?
-               then registerTagAndSizeVariants(tname, tagMethod, tag.extraEvents);
-               else registerTag( tname, tagMethod, tag.extraEvents);
+           do  if     tag.size -- do we have size variants?
+               then   registerTagAndSizeVariants(tname, tagMethod, tag.extraEvents);
+               elseif tag.color
+               then   registerColorTag( tname, tagMethod, tag.extraEvents);
+               else   registerTag( tname, tagMethod, tag.extraEvents);
                end;
+
                if   tag.label
                then RPTAGS.utils.tags.registerLabel(tname, tagMethod, tag.extraEvents, tag.label);
                end;
@@ -152,6 +156,7 @@ function(self, event, ...)
   local function refreshFrame(            ... ) return ... end;
   local function refreshAll(              ... ) return ... end;
   local function registerTagSizeVariants( ... ) return ... end;
+  local function registerColorTag(        ... ) return ... end;
    
   local function evalTagString(tagstr, unit, realUnit, use_oUF) -- adapted from oUF/elements/tags.lua
     if not tagstr then return "" end;
@@ -293,7 +298,9 @@ function(self, event, ...)
   RPTAGS.utils.tags.evalPlayer   = evalTagStringAsPlayer;
   RPTAGS.utils.tags.registerTag  = registerTag;
   RPTAGS.utils.tags.sizeVariants = registerTagSizeVariants;
+  RPTAGS.utils.tags.colorTag     = registerColorTag;
   RPTAGS.utils.tags.registerLabel = registerTagLabel;
+
   RPTAGS.utils.tags.addTag       = addTag;
   RPTAGS.utils.tags.addTagGroup  = addTagGroup;
   RPTAGS.utils.tags.addAllTags   = addAllTags;

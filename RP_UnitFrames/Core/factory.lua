@@ -205,6 +205,7 @@ function(self, event, ...)
     portrait         = "UpdatePortrait",
     everything       = "UpdateEverything",
     movers           = "UpdateMover",
+    unitcolors       = "UpdateUnitColors",
   };
 
   local function RPUF_Refresh(frameName, ...)

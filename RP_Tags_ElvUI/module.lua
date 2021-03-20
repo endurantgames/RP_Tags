@@ -133,6 +133,7 @@ function(self, event, ...)
   RPTAGS.utils.modules.extend(
   { ["tags.registerTag"  ] = registerTag,
     ["tags.addTag"       ] = addTag,
+    ["tags.colorTag"     ] = addTag,
     ["tags.sizeVariants" ] = registerTagSizeVariants,
   });
 

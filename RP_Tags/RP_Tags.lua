@@ -78,11 +78,23 @@ RPTAGS.queue = Queue;
 local EventsFrame = CreateFrame("Frame");
 
 EventsFrame.Events = {};
-function EventsFrame.registerEvent(self, eventName, callback)
-  if   self.Events[eventName]
-  then table.insert(self.Events[eventName], callback)
-  else self.Events[eventName] = { callback };
-       self:RegisterEvent(eventName);
+function EventsFrame.AddEvent(self, ...)
+  local paramsList = { ... };
+  local eventList = {};
+  for _, param in ipairs(paramsList)
+  do  if #eventList > 0 and type(param) == "function"
+      then 
+           for _, eventName in ipairs(eventList)
+           do  if   self.Events[eventName]
+               then table.insert(self.Events[eventName], param)
+               else self.Events[eventName] = { param };
+                    self:RegisterEvent(eventName);
+               end;
+           end;
+           eventList = {};
+     elseif type(param) == "string"
+     then table.insert(eventList, param)
+     end;
   end;
 end;
 
@@ -96,7 +108,7 @@ EventsFrame:SetScript("OnEvent",
     end;
   end
 );
-EventsFrame:registerEvent("PLAYER_LOGIN", function(self, event, ...) RPTAGS.queue:FireAll(); end);
+EventsFrame:AddEvent("PLAYER_LOGIN", function(self, event, ...) RPTAGS.queue:FireAll(); end);
 RPTAGS.EventsFrame = EventsFrame;
 
 _G["RPTAGS"] = RPTAGS;

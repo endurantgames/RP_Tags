@@ -90,8 +90,19 @@ to notes that you've set on a unit.
   L["TAG_MODIFIERS_MD"] = 
 [===[
 # Tag Modifiers
-There are two types of tag modifiers that change how a tag is displayed: **labels** and **size modifiers**.
+There are three types of tag modifiers that change how a tag is displayed: **labels**, **size modifiers**, and **color modifiers**.
 
+&emsp;
+
+|cffff3300Important note!|r 
+ElvUI currently does not recognize tags modifiers with numeric values,
+such as `(8)` (for size modifiers) or `(25%)` (for color modifiers).
+If you're using ElvUI you'll need to use only keyword size modifiers,
+such as `(small)`, `(xl)`, `(max)`, or `(more)`.
+]===];
+
+  L["LABEL_MODIFIERS_MD"] = 
+[===[
 ## Labels
 
 A label modifier can be applied to most tags that display information. 
@@ -114,6 +125,10 @@ That will display even if the unit has no full title set:
 
 Icon tags and color tags never display labels.
 
+]===];
+
+  L["SIZE_MODIFIERS_MD"] = 
+[===[
 ## Size Modifiers
 
 A size modifier is also applied after a tag, and consists of a size in parentheses.
@@ -127,7 +142,7 @@ The size given is the number of characters that will be displayed:
 You can use characters, or you can use keywords. The valid size keywords are:
 ]===];
 
-L["TAG_MODIFIERS_2_MD"] = 
+L["SIZE_MODIFIERS_2_MD"] = 
 [===[
 For example:
 
@@ -142,9 +157,66 @@ For example:
 The length corresponding to each keyword can be changed by you 
 in [Tag Size Options](setting://general/sizes).
 
-|cffff9900Important note!|r ElvUI currently does not recognize tags with
-numeric size modifiers (such as `(8)`); if you're using ElvUI you'll need
-to use only keyword size modifiers, such as `(small)` or `(xl)`.
+
+]===];
+
+  L["COLOR_MODIFIERS_MD"] = 
+[===[
+## Color Modifiers
+
+You can adjust the unit's color tags by using color modifiers. They're similar
+to size modifiers; they look like this:
+    
+&emsp;
+
+&emsp;&emsp; |cffffff00[rp:color(*transformType*, `amount`)]|r
+    
+&emsp;
+
+The *transformType* tells what you want to happen, and `amount` is how 
+strong the effect will be. The supported values for *transformType* are:
+
+]===];
+
+  L["COLOR_MODIFIERS_2_MD"] = 
+[===[
+
+To learn more about hue, saturation, lightness, and brightness, check out
+[this article on a Psychology Wiki](https://psychology.wikia.org/wiki/HSL_and_HSV).
+
+&emsp;
+
+You can specify the value for `amount` in several ways:
+
+]===];
+
+  L["COLOR_MODIFIERS_3_MD"] = 
+[===[
+Here are some examples:
+
+    [rp:color(brightness, = 100%)]
+
+Sets the color to its brightest possible value.
+
+    [rp:color(darker, less)]
+
+Decreases the lightness by 0.25 (on a scale of 0 to 1).
+
+    [rp:color(desat, 0.80)]
+
+Removes nearly all of the color, turning it greyer.
+
+    [rp:color(hue, +10)]
+
+Changes the color by shifting it "up" on the spectrum, a total
+of 0.1 (on a scale of 0 to 1). This ... might
+not be what you want.
+
+    [rp:color(hue, =0.93)]
+
+This one turns the colors to shades of purple!
+
+Try these out yourself!
 
 ]===];
 
@@ -189,6 +261,12 @@ L["CHANGES_MD"] =
 [===[
 
 # Changes
+
+## 9.0.5.6 beta 1
+
+- Added modifiers for color tags! See [the help](opt://help) for details.
+- Better events handling
+- Fixed a few bugs
 
 ## 9.0.5.5
 
