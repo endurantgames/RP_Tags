@@ -265,6 +265,7 @@ L["CHANGES_MD"] =
 ## 9.0.5.6 beta 1
 
 - Added modifiers for color tags! See [the help](opt://help) for details.
+  **Note:** They don't work in ElvUI yet.
 - Better events handling
 - Fixed a few bugs
 

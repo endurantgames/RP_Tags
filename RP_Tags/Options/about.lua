@@ -278,6 +278,7 @@ function(self, event, ...)
         order = source_order(),
         width = "full", 
         dialogControl = "LMD30_Description",
+        fontSize = "medium",
       },
     },
   };
