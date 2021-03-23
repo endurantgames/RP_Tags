@@ -219,15 +219,15 @@ local function decimalsToColor(r, g, b)
                 math.min(255, math.floor(b * 255)));
 end;
 
-local function rgbToIntegers(rgb) if rgb:len() == 0 then return nil, nil, nil end;
+local function rgbToIntegers(rgb) if rgb:len() == 0 then return nil end;
   rgb = rgb:gsub("^|cff",""):gsub("^#",""); -- just in case
-  if not rgb:match("^%x%x%x%x%x%x$") then return nil, nil, nil end;
+  if not rgb:match("^%x%x%x%x%x%x$") then print(rgb) return nil end;
   return tonumber(rgb:sub(1, 2), 16), tonumber(rgb:sub(3, 4), 16), tonumber(rgb:sub(5, 6), 16); -- 16 = base 16 (hexadecimal)
 end; -- function
 
 local function colorToDecimals(rgb)
       local r, g, b = rgbToIntegers(rgb);
-      return r/255, g/255, b/255, 1;
+      if not r then return nil; else return r/255, g/255, b/255, 1; end;
 end;
 
 local function hslToRgb(h, s, l)
@@ -262,6 +262,8 @@ local function hslToRgb(h, s, l)
   
 local function colorTransforms(rgb, transform, value)
   local r, g, b = colorToDecimals(rgb);
+  if not r then return rgb; end;
+
   local h, s, v = rgbToHsv(r, g, b, 1);
   local H, S, L = rgbToHsl(r, g, b, 1);
 
@@ -290,10 +292,7 @@ local function colorTransforms(rgb, transform, value)
 
   local func = hash[transform];
 
-  if   func 
-  then r, g, b = func(); 
-       rgb = decimalsToColor(r, g, b);
-  end;
+  if func then r, g, b = func(); rgb = decimalsToColor(r, g, b); end;
   return r, g, b, rgb
 end;
 
