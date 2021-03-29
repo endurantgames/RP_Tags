@@ -1,5 +1,5 @@
 ## Interface: 90005
-## Version: 9.0.5.6 beta 1
+## Version: 9.0.5.6 beta 2
 ## Title: rp|cffdd33aaTags|r UF Module: |cff1784d1ElvUI|r
 ## Author: Oraibi-MoonGuard
 ## Notes: rp|cffdd33aaTags|r integration module for |cff1784d1ElvUI|r
