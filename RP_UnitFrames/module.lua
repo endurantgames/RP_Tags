@@ -102,9 +102,12 @@ function(self, event, ...)
   end;
   
   local function colorTagHandler(result, xform, param)
-    local doTransform = RPTAGS.utils.color.transform;
+    -- local doTransform = RPTAGS.utils.color.transform;
 
-    local hash =
+    if not result or result == "" then return "" end;
+
+    local LibColor = LibStub("LibColorManipulation-1.0");
+    local xform_hash =
     { 
       black      = { what = "L",            negative = true, },
       blackness  = { what = "L",            negative = true, },
@@ -147,17 +150,52 @@ function(self, event, ...)
 
     };
 
+    local function rel(orig, amount) -- orig = 0..1, amount = -1..1
+      if amount < 0
+      then return orig * math.abs(1 + amount)
+      else return orig + amount * (1 - orig)
+      end;
+    end;
+
+    local func_hash =
+    { V =
+      { rel = function(c, n) local h, s, v = c:hsv(); return LibColor.hsv(h, s, rel(v, n)) end,
+        set = function(c, n) local h, s, v = c:hsv(); return LibColor.hsv(h, s, n); end,
+        add = function(c, n) local h, s, v = c:hsv(); return LibColor.hsv(h, s, v + n) end,
+      }, 
+      H =
+      { rel = function(c, n) return c end,
+        set = function(c, n) local h, s, L = c:hsl(); return LibColor.hsl(n * 360, s, L) end,
+        add = function(c, n) local h, s, L = c:hsl(); return LibColor.hsl(h + n * 360, s, L) end,
+      }, 
+      S =
+      { rel = function(c, n) local h, s, L = c:hsl(); return LibColor.hsl(h, rel(s, n), L) end,
+        set = function(c, n) local h, s, L = c:hsl(); return LibColor.hsl(h, n, L) end,
+        add = function(c, n) local h, s, L = c:hsl(); return LibColor.hsl(h, s + n, L) end,
+      }, 
+      L =
+      { rel = function(c, n) local h, s, L = c:hsl(); return LibColor.hsl(h, s, rel(L, n)) end,
+        set = function(c, n) local h, s, L = c:hsl(); return LibColor.hsl(h, s, n) end,
+        add = function(c, n) local h, s, L = c:hsl(); return LibColor.hsl(h, s, L + n) end,
+      },
+    };
+
     xform = strtrim(xform or ""); 
     param = strtrim(param or ""); 
 
-    param = "half"      and "0.5"  or "max"       and "1"    or "min" and "0" or 
-            "more"      and "+25%" or "less"      and "-25%" or 
-            "lots more" and "+50%" or "lots less" and "-50%" or
-            "lotsmore"  and "+50%" or "lotsless"  and "-50%" or
+    param = (param == "half")      and "0.5"  
+         or (param == "max") and "1"    
+         or (param == "min") and "0" 
+         or (param == "more")      and "+25%" 
+         or (param == "less")      and "-25%" 
+         or (param == "lots more") and "+50%" 
+         or (param == "lots less") and "-50%" 
+         or (param == "lotsmore")  and "+50%" 
+         or (param == "lotsless")  and "-50%" or
             param;
     if xform:len() * param:len() == 0 then return result end;
 
-    local transform = hash[xform];          
+    local transform = xform_hash[xform];          
     if not transform then return result end;
 
     local PATTERN = "(=? ?)" .. "(%+? ?)" .. "(%-? ?)" .. "(%d+%.?%d*)" .. "(%%?)$"
@@ -179,9 +217,9 @@ function(self, event, ...)
     value = percent and value / 100 or value;
 
     value = math.max(math.min(value, 1), 0);
-
     value = value * (transform.negative and -1 or 1) * (minus and -1 or 1);
 
+    --[[
     if     transform.er and percent then return "|cff" .. select(4, doTransform(result, "rel" .. transform.what, value))
     elseif transform.er             then return "|cff" .. select(4, doTransform(result, "add" .. transform.what, value))
     elseif equal                    then return "|cff" .. select(4, doTransform(result, "set" .. transform.what, value))
@@ -189,6 +227,20 @@ function(self, event, ...)
     elseif percent                  then return "|cff" .. select(4, doTransform(result, "rel" .. transform.what, value))
                                     else return "|cff" .. select(4, doTransform(result, "add" .. transform.what, value))
     end;
+    ]]--
+
+    local r, g, b = LibColor.parse(result:gsub("|cff", "#"), "rgb");
+    local col = LibColor.rgb(r, g, b);
+    local newCol;
+    if     transform.er and percent then newCol = func_hash[transform.what].rel(col, value)
+    elseif transform.er             then newCol = func_hash[transform.what].add(col, value)
+    elseif equal                    then newCol = func_hash[transform.what].set(col, value)
+    elseif not (plus or minus)      then newCol = func_hash[transform.what].set(col, value)
+    elseif percent                  then newCol = func_hash[transform.what].rel(col, value)
+                                    else newCol = func_hash[transform.what].add(col, value)
+    end;
+
+    return newCol:format("|cffrrggbb");
 
   end;
 

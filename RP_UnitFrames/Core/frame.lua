@@ -17,7 +17,6 @@ function(self, event, ...)
   local RPUF_GetDefaultLayout = Utils.frames.RPUF_GetDefaultLayout;
   local linkHandler     = Utils.links.handler;
   local titlecase       = Utils.text.titlecase;
- -- local toRGB           = Utils.color.hexaToNumber;
   local toRGB           = Utils.color.colorToDecimals;
   local AceGUI          = LibStub("AceGUI-3.0");
   local tagEval         = Utils.tags.eval;
@@ -51,22 +50,21 @@ function(self, event, ...)
 
 
     -- -- information functions -------------------------------------------------------------------------------------------------
-    -- function self.GetName(   self ) return frameName end;
     local function getUnit(caps)       return caps and unit:upper() or unit:lower(); end;
     local function getPanels()         return panels                                 end;
     local function getLayoutName()     return Config.get( unit:upper() .. "LAYOUT"); end;
     local function getPanel(panelName) return panels[panelName]                      end;
 
     local function getColor(colorName)
-      local colorSetting = "COLOR_" .. colorName;
+      local colorSetting        = "COLOR_" .. colorName;
       local useUnitColorSetting = "COLOR_" .. colorName .. "_USE_UNITCOLOR";
-      local unitColorSetting = "COLOR_" .. colorName .. "_UNITCOLOR";
+      local unitColorSetting    = "COLOR_" .. colorName .. "_UNITCOLOR";
       local color;
 
       local tagString;
       if   confGet(useUnitColorSetting)
       then tagString = "[" .. confGet(unitColorSetting) .. "]";
-           color = tagEval(tagString, unit, player);
+           color = tagEval(tagString, unit, "player");
       else color = confGet(colorSetting);
       end;
 
@@ -81,9 +79,6 @@ function(self, event, ...)
     end;
 
     local function getTooltipColor() return getColor("RPUF_TOOLTIP"); end;
-      --[[local r, g, b = toRGB(confGet("COLOR_RPUF_TOOLTIP"))
-      return r / 255, g / 255, b / 255;
-      --]]
 
     local function getFont()
       return LibSharedMedia:Fetch("font", confGet("FONTNAME")) or
@@ -148,10 +143,6 @@ function(self, event, ...)
         }
       );
 
-      --[[ local r, g, b = toRGB(confGet("COLOR_RPUF"))
-      r, g, b = toRGB(confGet("COLOR_RPUF_BORDER"));
-      --]]
-      --
       local r, g, b = getColor("RPUF");
       backdrop:SetBackdropColor(r, g, b, a);
       r, g, b = getColor("RPUF_BORDER");
@@ -195,9 +186,6 @@ function(self, event, ...)
     local function updateTextColor()
       local r, g, b = getColor("RPUF_TEXT");
       for_each_panel("SetTextColor", r, g, b);
-      --[[local r, g, b = toRGB(confGet("COLOR_RPUF_TEXT"))
-      for_each_panel("SetTextColor", r / 255, g / 255, b / 255);
-      --]]
     end;
 
     local function panelGet(funcName, panel, ...)
@@ -323,10 +311,6 @@ function(self, event, ...)
 
       statusBar:SetStatusbar(textureFile);
 
-      --[[local r, g, b = toRGB(confGet("COLOR_STATUS"))
-      statusBar:SetVertexColor( r / 255, g / 255, b / 255, confGet("STATUS_ALPHA" ));
-      ]]--
-
       local r, g, b = getColor("STATUS");
       statusBar:SetVertexColor( r, g, b, confGet("STATUS_ALPHA" ));
       statusBar.text:SetJustifyH( confGet("STATUS_ALIGN" ))
@@ -338,10 +322,6 @@ function(self, event, ...)
       statusBar:SetHeight( confGet("STATUSHEIGHT"));
 
       statusBar:Place();
-
-      --[[r, g, b = toRGB(confGet("COLOR_STATUS_TEXT"));
-      statusBar:SetTextColor(r / 255, g / 255, b / 255);
-      ]]--
 
       r, g, b = getColor("STATUS_TEXT");
       statusBar:SetTextColor(r, g, b);
@@ -408,8 +388,7 @@ function(self, event, ...)
 
       local a = confGet( "RPUFALPHA" );
       if a > 1 then a = a / 100; confSet( "RPUFALPHA") end;
-      r, g, b = getColor("RPUF");            backdrop:SetBackdropColor(r, g, b, a);
-
+      r, g, b = getColor("RPUF");              backdrop:SetBackdropColor(r, g, b, a);
       r, g, b = getColor("RPUF_BORDER");       backdrop:SetBackdropBorderColor(r, g, b, 1);
       r, g, b = getColor("PORTRAIT_BORDER");   portraitPanel.pictureFrame:SetBackdropBorderColor(r, g, b, 1);
       r, g, b = getColor("STATUS");            statusBar:SetVertexColor( r, g, b, confGet("STATUS_ALPHA" ));

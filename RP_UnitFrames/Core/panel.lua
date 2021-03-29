@@ -25,7 +25,6 @@ function(self, event, ...)
   local getUF_Size         = frameUtils.size.get;
 
   local scaleFrame         = frameUtils.size.scale.set;
-  local toRGB              = Utils.color.hexaToNumber;
 
   local function initialize_panel(self, opt)
 

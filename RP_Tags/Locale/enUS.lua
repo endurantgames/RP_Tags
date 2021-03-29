@@ -103,6 +103,9 @@ function(self, event, ...)
   L["RPQ_HEADER_NAME"]             = "|cffdddd00"         .. "AddOn Name"         .. "|r";
   L["RPQ_HEADER_VERSION"]          = "|cffdddd00"         .. "Version"            .. "|r";
   L["RPQ_HEADER_LINKS"] =  "|cffdddd00" .. "Links" .. "|r";
+  L["RPQ_TYPE_DATASOURCE"         ] = "|cffdddd00" .. "Data Source Module" .. "|r";
+  L["RPQ_TYPE_TARGETOFDATASOURCE" ] = "|cffdddd00" .. "Data Source" .. "|r";
+
   
   L["RPQ_FOLLOWUP"] = "AddOns listed in " .. "|cff808080" .. "grey" .. "|r" .. " are installed but not enabled.";
   

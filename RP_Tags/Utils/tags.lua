@@ -167,8 +167,7 @@ function(self, event, ...)
     local TAG_PATTERN = '%[..-%]+'
     local funcResults = {};
 
-    local function getBracketData(tag)
-      -- full tag syntax: '[prefix$>tag-name<$suffix(a,r,g,s)]'
+    local function getBracketData(tag) -- full tag syntax: '[prefix$>tag-name<$suffix(a,r,g,s)]'
       local  suffixEnd                 = (tag:match('()%(') or -1) - 1
       local  prefixEnd, prefixOffset   = tag:match('()%$>'), 1
     
@@ -258,26 +257,10 @@ function(self, event, ...)
     
         if   tagFunc  
         then table.insert(args, tagFunc)
-        -- else return error(string.format('Attempted to use invalid tag %s.', bracket), 3)
         else table.insert(args, function() return "[" .. tagName .. "]" end);
         end
     end -- for
     
-    -- func = function(unit, realUnit)
-    --   local parent = self.parent
-    --   local unit = parent.unit
-    --   local realUnit
-    --   if(self.overrideUnit) then
-    --     realUnit = parent.realUnit
-    --   end
-    -- 
-    --  _ENV._COLORS = parent.colors
-    --  _ENV._FRAME = parent
-    --
-    --  for i, f in next, args do tmp[i] = f(unit, realUnit or unit) or '' end
-    --
-    -- return self:SetFormattedText(format, unpack(tmp, 1, numTags))
-  
     for i, f in next, args do funcResults[i] = f(unit, realUnit or unit) or '' end
     
     return string.format(format, unpack(funcResults));

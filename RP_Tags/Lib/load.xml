@@ -14,4 +14,5 @@
         <Include file="AceGUI-3.0-SharedMediaWidgets\widget.xml"    />
         <Include file="LibToast-1.0\lib.xml"                        />
         <Include file="LibMarkdown\LibMarkdown.xml"                 />
+        <Include file="LibColorManipulation-1.0\lib.xml"            />
 </Ui>

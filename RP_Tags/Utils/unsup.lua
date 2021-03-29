@@ -26,7 +26,7 @@ function(self, event, ...)
   local function iconNotSupported()   
     if Config.get("UNSUP_TAG") == "" 
     then return "" 
-    else return "|TRAIDFRAME\\ReadyCheck-NotReady:0|t" end; 
+    else return "|TInterface\\RAIDFRAME\\ReadyCheck-NotReady:0|t" end; 
   end;
 
   -- Utilities available under RPTAGS.utils.text
