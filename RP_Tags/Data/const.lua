@@ -255,11 +255,13 @@ function(self, event, ...)
     HORDE     = "GROUPFRAME\\UI-Group-PVP-Horde",
     ALLIANCE  = "GROUPFRAME\\UI-Group-PVP-Alliance",
     PVP       = "GossipFrame\\BattleMasterGossipIcon",
-    BEGINNER  = "TARGETINGFRAME\\UI-TargetingFrame-Seal",
+    BEGINNER  = "Interface\\TARGETINGFRAME\\UI-TargetingFrame-Seal",
     VOLUNTEER = "TARGETINGFRAME\\PortraitQuestBadge",
     BANNED    = "EncounterJournal\\UI-EJ-HeroicTextIcon",
     GLANCE    = "MINIMAP\\TRACKING\\None",
     NEW_ABOUT = "Buttons\\UI-GuildButton-PublicNote-Up",
+    UNSUP     = "|TInterface\\DialogFrame\\UI-Dialog-Icon-AlertNew:0|t",
+    -- UNSUP = "(..)",
 
     ["Dwarf"] = -- why do i have these?
     { FEMALE  = "CHARACTERFRAME\\TEMPORARYPORTRAIT-FEMALE-DWARF",

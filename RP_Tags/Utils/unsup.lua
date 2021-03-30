@@ -16,6 +16,7 @@ function(self, event, ...)
   local Cache       = RPTAGS.cache;
   local loc         = Utils.locale.loc;
   local Config      = Utils.config;
+  local CONST       = RPTAGS.CONST;
 
   local function notSupported()       
     return "|cff" .. Config.get("COLOR_UNKNOWN") .. Config.get("UNSUP_TAG") .. "|r" 
@@ -24,9 +25,7 @@ function(self, event, ...)
   local function dontChangeTheColor() return "" end;
 
   local function iconNotSupported()   
-    if Config.get("UNSUP_TAG") == "" 
-    then return "" 
-    else return "|TInterface\\RAIDFRAME\\ReadyCheck-NotReady:0|t" end; 
+    return Config.get("UNSUP_TAG") == "" and "" or CONST.ICONS.UNSUP
   end;
 
   -- Utilities available under RPTAGS.utils.text

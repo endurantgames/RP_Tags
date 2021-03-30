@@ -124,22 +124,6 @@ function(self, event, ...)
   local loc         = Utils.locale.loc;
   local Config      = Utils.config;
   
-  local function notSupported()       
-    return "|cff" .. Config.get("COLOR_UNKNOWN") .. Config.get("UNSUP_TAG") .. "|r" 
-  end;
-  
-  local function dontChangeTheColor() return "" end;
-  
-  local function iconNotSupported()   
-    return Config.get("UNSUP_TAG") == "" and "" or "|TRAIDFRAME\\ReadyCheck-NotReady:0|t"
-  end;
-  
-    -- Utilities available under RPTAGS.utils.text
-    --
-  RPTAGS.utils.text.unsup        = notSupported;
-  RPTAGS.utils.text.unsupcolor   = dontChangeTheColor;
-  RPTAGS.utils.text.unsupicon    = iconNotSupported;
-  
         -- takes a size and maximum size, and returns a string and a list based on the relative size
   local function format_sizewords(size, maxSize, optionalFormat)
         local w, l;
