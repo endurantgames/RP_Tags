@@ -261,7 +261,7 @@ function(self, event, ...)
     GLANCE    = "MINIMAP\\TRACKING\\None",
     NEW_ABOUT = "Buttons\\UI-GuildButton-PublicNote-Up",
     UNSUP     = "|TInterface\\DialogFrame\\UI-Dialog-Icon-AlertNew:0|t",
-    -- UNSUP = "(..)",
+    ERROR     = "inv_misc_questionmark",
 
     ["Dwarf"] = -- why do i have these?
     { FEMALE  = "CHARACTERFRAME\\TEMPORARYPORTRAIT-FEMALE-DWARF",
