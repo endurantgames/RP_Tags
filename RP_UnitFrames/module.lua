@@ -82,6 +82,7 @@ function(self, event, ...)
   local function registerTag(tagName, tagMethod, extraEvents, ...)
     local events = RPTAGS.CONST.MAIN_EVENT .. (extraEvents and (" " .. extraEvents) or "");
 
+    if not tagMethod then print(tagName, tagMethod); end;
     if not oUF.Tags.Events[tagName] and not tagName:match("%(.+%)$")
         -- only make this tag if there isn't one by that name already;
     then   oUF.Tags.Events[tagName] = events;
@@ -245,6 +246,7 @@ function(self, event, ...)
   end;
 
   local function registerColorTag(tagName, tagMethod, tagExtraEvents, ...)
+    if not tagMethod then print(tagName, tagMethod); end;
     RPTAGS.utils.tags.registerTag( 
       tagName, 
       function(u1, u2, transform, p1, p2, ...) 
