@@ -262,6 +262,18 @@ L["CHANGES_MD"] =
 
 # Changes
 
+## 9.0.5.10
+
+- Fixed bug in RP_Tags_Listener related to scanning for the player's nickname
+
+## 9.0.5.9
+
+- Fixed bug in RP_Tags_MyRolePlay that wasn't showing nicknames properly
+
+## 9.0.5.8
+
+- Fixed bug in RP_Tags_ElvUI that was preventing color tags from being shown
+
 ## 9.0.5.7
 
 - Added modifiers for color tags! See [the help](opt://help) for details.

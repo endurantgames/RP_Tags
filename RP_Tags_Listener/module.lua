@@ -42,9 +42,10 @@ function(self, event, ...)
   end;
 
   local function isToMe(line)
+    local nick = RPTAGS.utils.get.text.misc("nickname", "player");
     return line.m:find( UnitName('player') )
         or line.m:find( name('player') )
-        or line.m:find( RPTAGS.utils.get.text.nick('player') )
+        or (nick ~= "" and line.m:find( nick ) )
         or line.m:find( Config.get("ME") )
   end;
 

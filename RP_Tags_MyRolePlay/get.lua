@@ -140,7 +140,7 @@ function(self, event, ...)
       if     field == "motto" 
       then   value = getField(u, "MO") 
              if value then return '"' .. value .. '"' else return "" end;
-      elseif field == "nick"
+      elseif field == "nick" or field == "nickname"
       then   return getField(u, "NI") or "";
       elseif field == "nick-quoted"
       then   value = getField(u, "NI");
@@ -485,6 +485,7 @@ function(self, event, ...)
     RPTAGS.utils.get.text.lastname     = getLastName;
     RPTAGS.utils.get.text.misc         = getMisc;
     RPTAGS.utils.get.text.name         = getName;
+    RPTAGS.utils.get.text.nick         =
     RPTAGS.utils.get.text.ooc          = getOocStatus;
     RPTAGS.utils.get.text.profileSize  = getProfileSize;
     RPTAGS.utils.get.text.pronoun      = getPronoun;
