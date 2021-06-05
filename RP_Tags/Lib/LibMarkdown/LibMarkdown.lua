@@ -5,6 +5,8 @@ local  MARKDOWN10_MINOR = 9;
 if not LibStub then error(MARKDOWN10 .. " requires LibStub."); end;
 local  LibMarkdown = LibStub:NewLibrary(MARKDOWN10, MARKDOWN10_MINOR);
 
+if not LibMarkdown then return end;
+
 LibMarkdown.name = MARKDOWN10
 LibMarkdown.minor = MARKDOWN10_MINOR;
 

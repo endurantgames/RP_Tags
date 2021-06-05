@@ -89,6 +89,7 @@ function(self, event, ...)
   -- registers one tag, an event to wait for, and a method to invoke when found --------------------------
   local function registerTag(tagName, tagMethod, tagExtraEvents)
 
+    print("registering tag", tagName);
     local Events  = _G["ElvUF"].Tags.Events;
     local Methods = _G["ElvUF"].Tags.Methods;
 
@@ -133,7 +134,7 @@ function(self, event, ...)
   RPTAGS.utils.modules.extend(
   { ["tags.registerTag"  ] = registerTag,
     ["tags.addTag"       ] = addTag,
-    ["tags.colorTag"     ] = addTag,
+    ["tags.colorTag"     ] = registerTag,
     ["tags.sizeVariants" ] = registerTagSizeVariants,
   });
 
