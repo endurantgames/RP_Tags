@@ -88,20 +88,11 @@ function(self, event, ...)
 
   -- registers one tag, an event to wait for, and a method to invoke when found --------------------------
   local function registerTag(tagName, tagMethod, tagExtraEvents)
-
-    local Events  = _G["ElvUF"].Tags.Events;
-    local Methods = _G["ElvUF"].Tags.Methods;
-
-    if not Events[tagName] -- only make the tag if there isn't one by that name already
-    then   Events[tagName] = 
-             RPTAGS.CONST.MAIN_EVENT .. 
-             (tagExtraEvents and (" " .. tagExtraEvents) or "");
-           Methods[tagName] = tagMethod;
-    end;
-
+    local allEvents = strtrim(table.concat({RPTAGS.CONST.MAIN_EVENT, tagExtraEvents}, " "))
+    E:AddTag(tagName, allEvents, tagMethod)
     return tagName, tagMethod, tagExtraEvents;
   end; -- function
-  
+
   local function addTag(tag, group)
    
     if   tag and tag.name and not tag.external and group and not group.external
