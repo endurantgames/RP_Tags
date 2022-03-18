@@ -5,6 +5,10 @@ profiles, such as those used by [totalRP3](https://www.curseforge.com/wow/addons
 [MyRolePlay](https://www.curseforge.com/wow/addons/my-role-play). This lets you choose 
 which details are most important to you.
 
+## Current Status
+
+As I no longer play World of Warcraft, this addon is no longer being developed.
+
 ### What's a Unit Frame? What's a tag?
 
 Unit frames are the boxes on your screen that show information about specific units -- 
