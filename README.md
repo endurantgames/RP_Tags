@@ -113,15 +113,15 @@ ElvUI's or Blizzard's frames.
 
 The current version of rpTags supports integration with these addons:
 
-| AddOn Name             |   rpClient     |     unitFrames   | dataSource |
-| :-------------         |  :--------:    |    :----------:  | :--------: |
-| Blizzard's unit frames |     --         |        No        |  --        |
-| ElvUI                  |     --         |        Yes       |  --        |
-| Listener               |     --         |        --        |  Yes       |
-| MyRolePlay             |     Yes        |        --        |  --        |
-| rpUnitFrames           |     --         |        Yes       |  --        |
-| Total RP 3             |     Yes        |        --        |  --        |
-| XRP                    |     No         |        --        |  --        |
+| AddOn Name             | rpClient           | unitFrames         | dataSource         |
+| :-------------         | :--------:         | :----------:       | :--------:         |
+| Blizzard's unit frames | --                 | :x:                | --                 |
+| ElvUI                  | --                 | :white_check_mark: | --                 |
+| Listener               | --                 | --                 | :white_check_mark: |
+| MyRolePlay             | :white_check_mark: | --                 | --                 |
+| rpUnitFrames           | --                 | :white_check_mark: | --                 |
+| Total RP 3             | :white_check_mark: | --                 | --                 |
+| XRP                    | :x:                | --                 | --                 |
 
 ## Using rpTags
 
@@ -240,7 +240,7 @@ translations into other languages, you can get in touch with us.
 - [x] Review help files
   - [x] Help file for labels and sizes
   - [ ] CHANGES
-- [ ] Check existing modules to see if they function
+- [ ] Check existing modules to ensure they function
   - [ ] RP\_Tags\_Listener
   - [ ] RP\_Tags\_MyRolePlay
   - [ ] RP\_Tags\_XRP
