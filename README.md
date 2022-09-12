@@ -353,6 +353,7 @@ translations into other languages, you can get in touch with us.
       - [ ] [Friend Groups](https://www.curseforge.com/wow/addons/friend-groups-continued) this is relatively easy and i should also have an rpFriends module
       - [ ] [WIM](https://www.curseforge.com/wow/addons/wim-3) as above for Elephant and Listener, to check if you have any open windows with the target
       - [ ] ~~Tongues~~ does not seem to save any per-player data
+      - [ ] [Character Notes](https://www.curseforge.com/wow/addons/character-notes) similar to how notes in trp3 are handled
     - [ ] Possible rpClients:
       - [ ] **rpClient:**   [GnomTECH Badge](https://www.curseforge.com/wow/addons/gnomtec_badge) I'll take a look and see
     - [ ] Possible unitFrames:
