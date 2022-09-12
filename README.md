@@ -40,6 +40,9 @@ Examples include:
 
 The easiest way to install rpTags is by using 
 [an addon manager](https://www.wowhead.com/guides/best-addon-managers-wow-shadowlands).
+(The above link is current as of WoW 9.2.7 -- Shadowlands -- and I saved you a
+[backup copy](https://archive.ph/wip/xccVY) on September 11, 2022.)
+
 If you use [Ajour](https://www.getajour.com/), [CurseBreaker](https://github.com/AcidWeb/CurseBreaker),
 [InstaWow](https://github.com/layday/instawow), or [WowUp](https://wowup.io/), you can install
 directly from the [releases site on GitHub](https://github.com/caderaspindrift/RP_Tags/releases).
@@ -78,7 +81,7 @@ of that kind, instead popping up rpTags alerts.
 
 ### rpClients and unitFrames
 
-There are three kinds of modules for rpTags:
+There are three kinds of integration modules for rpTags:
 
  - A **Roleplaying AddOn** module that lets rpTags access information
    about characters from a RP AddOn such as 
@@ -120,6 +123,93 @@ The current version of rpTags supports integration with these addons:
 | rpUnitFrames           | --                 | :white_check_mark: | --                 |
 | Total RP 3             | :white_check_mark: | --                 | --                 |
 | XRP                    | :x:                | --                 | --                 |
+| Generic oUF addons     | --                 | :x:                | --                 |
+| GnomTEC Badge          | :x:                | --                 | --                 |
+
+### Other AddOns
+
+rpTags will continue to evolve and grow, and may support other rpClients, unitFrames, or dataSource
+addons. If this happens, a new integration module will be written. See below for more discussion
+on each type of addon.
+
+If you think you've found some addons that might fit these qualities, feel free to contact us on
+Discord (Spindrift#1617), on WoW (Oraibi#1617 or Oraibi-MoonGuard), or through GitHub.
+
+#### dataSource Addons
+
+dataSource addons are the easiest to write -- such as **Listener,** which already stores its own data.
+The `RP\_Tags\_Listener` integration module just adds tags that read the information that is already
+being saved.
+
+dataSources can only read the data that *your computer* stores in the 
+WTF/Account/*username*/*servername*/*charname*/SavedVariables directories. For example, there are
+addons that keep track of your achievements. However, they can't read someone else's achievements;
+that information isn't available to *you* as a fellow player. At least not through WoW.
+
+The types of addons that we're looking to make dataSource integration modules for have the 
+following qualities:
+
+- They're primarily used for roleplaying
+- They store data per-player
+- That data can be displayed within inline text (this can include graphics -- rpTags has tags based on gender and pronouns)
+- The information being stored isn't already better displayed in ElvUI or another unitFrames addon.
+
+#### rpClient Addons
+
+There are far few rpClient addons that we support than unitFrames addons. rpClients are addons
+like totalRP3, MyRolePlay, XRP, and other addons that support MSP -- the so-called **Mary Sue Protocol**
+that lets roleplayers create profiles and then exchange them behind-the-scenes and display them.
+
+Because all MSP addons store the profiles they receive, they are also dataSources that rpTags uses to
+get the profile data to display for you. We usually work a little bit of magic on those -- such as the
+rpTags that try to guess a character's gender and/or pronouns, or that search for certain phrases that
+you might want to highlight.
+
+Although the LibMSP library maintained by Ellypse makes MSP-compliant addons relatively each to write,
+there are actually very few of them out there. It seems that most people already get what they want
+from myRolePlay, totalRP3, XRP, or GnomTEC Badge. I even added an extra one to that list -- **RP\_Identity,**
+which is about as bare-bones as an rpClient can get.
+
+I'm drawing the list of existing MSP-based addons from [this page](https://moonshyne.org/msp/).
+
+##### Whither GnomTEC?
+
+Looking at the usage stats for which MSP-based addons are used the most, GnomTEC is way, way behind XRP --
+and thus not a priority for me right now.
+This isn't a slam on [GnomTECH Badge](https://www.curseforge.com/wow/addons/gnomtec_badge) and I'm sure
+they're perfectly nice people!
+
+#### unitFrames addons
+
+Unitframes are the boxes on your screen for your character, your character's pet, your target, your
+target's target, and so on. unitFrames addons are often based on 
+the [oUF unit frame framework](https://www.curseforge.com/wow/addons/ouf), which also forms the 
+basis for ElvUI and most of the addons that you can find with 
+["oUF" in the name](https://www.curseforge.com/wow/addons/search?search=ouf).
+
+The standard way that someone would use oUF is to use the framework like a lua library, and then
+just decide what information will be displayed and where it will show up on the screen (and under
+which conditions). These essentially "hardcode" only what you need into the unit frames; you can't
+easily change oUF layout or display information without digging through lua code.
+
+ElvUI is a full user-interface replacement addon that can replace all the unit frames and other
+displays or windows or panels on your screen. It's designed to be configured by the end-user, who
+fills in boxes with "tags", and sets their locations on the screen.
+
+rpTags was originally created to work with ElvUI. We are planning to write a generic "oUF" integration
+module, but most of the existing oUF addons have hardcoded tags/values and locations, and are thus
+designed for lua coders instead of players.
+For this reason, we highly suggest using ElvUI if you want to start experimenting with UI customization.
+
+Because oUF -- the framework -- does most of the work for the lua programmer, it's not really that hard
+to set up your own unitframes, which is why there are so many of them, each with a different purpose
+(such as healing) or created by a different lua coder according to what she needs for game play.
+As far as I know, ElvUI is the only oUF-based unitFrames addon that lets you enter the tags you wish
+to see. If there was another that was in widespread use, we could look at supporting that was well.
+
+As stated, oUF is not that difficult. In fact, rpTags comes with RP\_UnitFrames, a barebones oUF
+unitFrames addon that lets you insert whatever tags you want into the display panels. RP\_UnitFrames 
+is disabled by default, to reduce complexity for new users.
 
 ## Using rpTags
 
