@@ -5,7 +5,7 @@ profiles, such as those used by [totalRP3](https://www.curseforge.com/wow/addons
 [MyRolePlay](https://www.curseforge.com/wow/addons/my-role-play). This lets you choose 
 which details are most important to you.
 
-## Current Status
+## Current Status (Updated!)
 
 ~~As I no longer play World of Warcraft, this addon is no longer being developed.~~
 
@@ -96,13 +96,11 @@ There are three kinds of modules for rpTags:
 
 This means that you're going to have five (or more) addons active:
 
- 1  Your roleplaying addon;
- 2  A rpClient module that serves as a bridge between 
-    rpTags and the roleplaying addon;
- 3  rpTags itself, which provides the core functions;
- 4  A unitFrames module that is the bridge to a unit frames
-    Addon; and
- 5  Your unitFrames addon itself.
+- :one: Your roleplaying addon;
+- :two: A rpClient module that serves as a bridge between rpTags and the roleplaying addon;
+- :three: rpTags itself, which provides the core functions;
+- :four: A unitFrames module that is the bridge to a unit frames Addon; and
+- :five: Your unitFrames addon itself.
 
 The second, third, and fourth are all included with rpTags.
 In fact, we've even thrown in a simple unit frames addon as 
