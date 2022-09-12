@@ -8,7 +8,7 @@
     <Include file="Core\load.xml"       />
     <Include file="Layouts\load.xml"    />
     <Include file="Locale\load.xml"     />
-    <Include file="Media\load.xml"      />
+    <!-- Include file="Media\load.xml"      / -->
     <Include file="Options\load.xml"    />
 
 </Ui>

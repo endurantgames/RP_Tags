@@ -1,4 +1,4 @@
-# RP Tags Listener Module
+# RP\_Tags-Listener Module
 
 This an expansion module for rpTags that creates several tags based
 on data from [Listener](https://www.curseforge.com/wow/addons/listener):

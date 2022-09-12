@@ -1,4 +1,4 @@
-# RP Tags Module Template
+# RP\_Tags Integration Module Template
 
-This is a skeleton for an expansion module for rpTags.
+This is a skeleton for an integration module for rpTags.
 

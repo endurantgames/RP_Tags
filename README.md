@@ -225,30 +225,43 @@ translations into other languages, you can get in touch with us.
 
 ## To Do
 
-- [x] Change versions to 9.0.2
-  - [x] Change versions to 9.0.5
+- [x] Update .toc to current version of WoW
 - [x] Make sure all the libraries are current
-  - [x] WoW 9.0.5
+  - [ ] LibAce
+  - [ ] LibMarkdown ~~replace with something else~~
+  - [ ] LibRealmInfo
+  - [ ] LibSharedMedia
+  - [ ] LibStub
+  - [ ] LibToast
 - [x] Get configuration/help working
 - [x] Keybinds
 - [x] ~~More work on AMDC~~ - moved to [new repository](https://github.com/caderaspindrift/WoW-LibMarkdown)
 - [x] Localization strings for options
 - [x] Review help files
   - [x] Help file for labels and sizes
+  - [ ] CHANGES
+- [ ] Check existing modules to see if they function
+  - [ ] RP\_Tags\_Listener
+  - [ ] RP\_Tags\_MyRolePlay
+  - [ ] RP\_Tags\_XRP
+  - [ ] RP\_Tags\totalRP3
+  - [ ] RP\_UnitFrames
 - [ ] Modules
-  - [ ] MyRoleplay
+  - [ ] New modules?
+    - [ ] Check if there are new RP addons that could have an integration module created
+  - [x] MyRoleplay
     - [x] Keybinds working
     - [x] Index addon functions
     - [ ] P2: Confirm which tags should be `unsup` for MRP
     - [ ] P1: Update for new pronoun settings in trp3/MRP
-  - [ ] TRP3
+  - [x] TRP3
     - [x] Index addon functions
     - [x] Keybinds working
     - [ ] P1: Update for new pronoun settings in trp3/MRP
-  - [ ] ElvUI
+  - [x] ElvUI
     - [x] ~~Get labels working in ElvUI~~
     - [x] Get size modifiers working in ElvUI (work-around for old oUF) 
-    - [ ] Get color modifiers working in ElvUI (work-around for old oUF)
+    - [x] Get color modifiers working in ElvUI (work-around for old oUF)
     - [x] Index addon functions
     - [x] Don't "add" oUF/ElvUI tags to listing
   - [ ] Listener
@@ -282,7 +295,7 @@ translations into other languages, you can get in touch with us.
     - [x] Get labels working in rpUnitFrames
     - [x] P1: Confirm size modifiers working in rpUnitFrames
     - [x] P2: Color modifiers
-  - [ ] Panels
+  - [x] Panels
     - [x] P1: Mouseovers
     - [x] P1: Fix portrait
     - [x] P2: Review default panel settings
