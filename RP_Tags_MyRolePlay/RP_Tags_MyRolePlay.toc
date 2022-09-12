@@ -1,15 +1,19 @@
-## Interface: 90005
-## Version: 9.0.5.10
+## Interface: 90207
+## Version: 9.0.2.7 alpha 0
+## X-VersionDate: 2022-09-11
 ## Title: rp|cffdd33aaTags|r RP Module: MyRolePlay
 ## Author: Oraibi-MoonGuard
 ## Notes: rp|cffdd33aaTags|r integration module for MyRolePlay
 ## RequiredDeps: RP_Tags, MyRolePlay
 ## DefaultState: Enabled
 ## X-URL: http://spindrift.games/rptags
+## X-RPQVersion: 1
 ## X-RPQModuleId: mrp
 ## X-RPQModuleType: rpClient
-## X-RPQVersion: 1
-## X-RPQModuleTarget: MyRolePlay
+## X-RPQTarget: MyRolePlay
+## X-RPGTargetVersion: 9.2.7.510
+## X-RPGTargetVersionDate: 2022-09-11
+## X-RPQTargetURL: https://www.curseforge.com/wow/addons/my-role-play
 ## X-Child-Of: RP_Tags
 
 load.xml

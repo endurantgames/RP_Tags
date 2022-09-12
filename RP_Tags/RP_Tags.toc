@@ -1,5 +1,5 @@
-## Interface: 90005
-## Version: 9.0.5.10
+## Interface: 90207
+## Version: 9.0.2.7 alpha 0
 ## Title: rp|cffdd33aaTags|r
 ## Author: Oraibi-MoonGuard
 ## Notes: Custom unit frames with fields from roleplaying profiles
@@ -10,6 +10,8 @@
 ## X-RPQVersion: 1.004
 ## X-RPQModuleID: rptags
 ## X-RPQModuleType: core
-## X-VersionDate: 2021-03-20
+## X-VersionDate: 2022-09-11
+## X-RPQTargetVersion: 9.2.7.510
+## X-RPQTargetURL: https://www.curseforge.com/wow/addons/my-role-play
 
 load.xml

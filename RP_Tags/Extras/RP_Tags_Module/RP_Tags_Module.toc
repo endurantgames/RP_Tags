@@ -1,5 +1,5 @@
-## Interface: 90002
-## Version: 9.0.2.1
+## Interface: 90207
+## Version: 9.0.2.7
 #
 #  Pick one:
 ## Title: rp|cffdd33aaTags|r UF Module: SomeAddOn
@@ -31,6 +31,9 @@
 ## X-RPQModuleId: some
 ## X-RPQModuleType: unitFrames
 ## X-RPQModuleType: rpClient
-## X-RPQModuleTarget: SomeAddOn
+## X-RPQTargetURL: http:some/url/blahblah -- prefer github, will use X-URL if set
+## X-RPQTarget: SomeAddOn
+## X-RPQTargetVersion: 9.0.2.7
+## X-TargetVersionDate: YYYY-mm-dd
 
 load.xml

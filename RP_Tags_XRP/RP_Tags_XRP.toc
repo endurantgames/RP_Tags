@@ -1,5 +1,6 @@
-## Interface: 90005
-## Version: 9.0.5.0 alpha 0
+## Interface: 90207
+## Version: 9.0.2.7 alpha 0
+## X-VersionDate: 2022-09-11
 ## Title: rp|cffdd33aaTags|r RP Module: XRP
 ## Author: Oraibi-MoonGuard
 ## Notes: rp|cffdd33aarpTags|r integration module for xrp
@@ -9,6 +10,9 @@
 ## X-RPQVersion: 1
 ## X-RPQModuleId: xrp
 ## X-RPQModuleType: rpClient
-## X-RPQModuleTarget: XRP
+## X-RPQTarget: XRP
+## X-RPQTargetURL: https://github.com/wow-rp-addons/XRP
+## X-RPQTargetVersion: 2.0.12
+## X-RPQTargetVersionDate: 2022-09-11
 
 module.xml

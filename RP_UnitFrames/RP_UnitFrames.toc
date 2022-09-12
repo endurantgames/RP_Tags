@@ -1,16 +1,20 @@
-## Interface: 90005
-## Version: 9.0.5.10
+## Interface: 90207
+## Version: 9.0.2.7 alpha 0
+## X-VersionDate: 2022-09-11
 ## Title: rp|cffdd9933UnitFrames|r
 ## Author: Oraibi-MoonGuard
 ## Notes: Custom roleplaying unit frames for rpTags
 ## RequiredDeps: RP_Tags
 ## SavedVariables: RP_UnitFramesDB
 ## DefaultState: Enabled
+## X-Child-Of: RP_Tags
 ## X-URL: http://spindrift.games/rptags
 ## X-oUF: RP_UnitFrames_oUF
 ## X-RPQVersion: 1
 ## X-RPQModuleId: rpuf
 ## X-RPQModuleType: unitFrames
-## X-Child-Of: RP_Tags
+## X-TargetVersion: RP_Tags
+## X-TargetVersionDate: 9.0.2.7
+## X-TargetVersionURL: http://spindrift.games/rptags
 
 load.xml

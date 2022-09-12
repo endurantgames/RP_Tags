@@ -1,15 +1,18 @@
-## Interface: 90005
-## Version: 9.0.5.10
+## Interface: 90207
+## Version: 9.0.2.7 alpha 0
+## X-VersionDate: 2022-09-11
 ## Title: rp|cffdd33aaTags|r RP Module: Total RP 3
 ## Author: Oraibi-MoonGuard
 ## Notes: rp|cffdd33aaTags|r integration module for Total RP 3
 ## RequiredDeps: RP_Tags, totalRP3
 ## DefaultState: Enabled
 ## X-URL: http://spindrift.games/rptags
+## X-Child-Of: RP_Tags
 ## X-RPQVersion: 1
 ## X-RPQModuleId: trp3
 ## X-RPQModuleType: rpClient
-## X-RPQModuleTarget: totalRP3
-## X-Child-Of: RP_Tags
+## X-RPQTarget: totalRP3
+## X-RPQTargetVersion: 2.3.12
+## X-RPQTargetURL: https://github.com/Total-RP/Total-RP-3
 
 load.xml

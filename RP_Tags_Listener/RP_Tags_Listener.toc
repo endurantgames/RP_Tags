@@ -1,5 +1,6 @@
-## Interface: 90005
-## Version: 9.0.5.10
+## Interface: 90207
+## Version: 9.0.2.7 alpha 0
+## X-VersionDate: 2022-09-11
 ## Title: rp|cffdd33aaTags|r Data Module: Listener
 ## Author: Oraibi-MoonGuard
 ## Notes: rp|cffdd33aarpTags|r integration module for Listener
@@ -9,6 +10,8 @@
 ## X-RPQVersion: 1
 ## X-RPQModuleId: listener
 ## X-RPQModuleType: dataSource
-## X-RPQModuleTarget: Listener
+## X-RPQTarget: Listener
+## X-RPQTargetVersion: 2.2.2
+## X-RPQTargetURL: https://www.curseforge.com/wow/addons/listener
 
 load.xml

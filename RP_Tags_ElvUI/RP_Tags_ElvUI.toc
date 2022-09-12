@@ -1,15 +1,18 @@
-## Interface: 90005
-## Version: 9.0.5.10
+## Interface: 90207
+## Version: 9.0.2.7 alpha 0
+## X-VersionDate: 2022-09-11
 ## Title: rp|cffdd33aaTags|r UF Module: |cff1784d1ElvUI|r
 ## Author: Oraibi-MoonGuard
 ## Notes: rp|cffdd33aaTags|r integration module for |cff1784d1ElvUI|r
 ## RequiredDeps: RP_Tags, ElvUI
 ## DefaultState: Enabled
 ## X-URL: http://spindrift.games/rptags
-## X-RPQModuleId: elvui
-## X-RPQModuleType: unitFrames
 ## X-RPQVersion: 1
-## X-RPQModuleTarget: ElvUI
+## X-RPQModuleId: elvui
 ## X-Child-Of: RP_Tags
+## X-RPQModuleType: unitFrames
+## X-RPQTarget: ElvUI
+## X-RPQTargetVersion: 12.84
+## X-RPQTargetURL: https://github.com/tukui-org/ElvUI
 
 load.xml
