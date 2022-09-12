@@ -134,6 +134,10 @@ on each type of addon.
 
 If you think you've found some addons that might fit these qualities, feel free to contact us on
 Discord (Spindrift#1617), on WoW (Oraibi#1617 or Oraibi-MoonGuard), or through GitHub.
+Currently we're looking at several other addons that we could write integration modules for, including
+[Elephant](https://www.curseforge.com/wow/addons/elephant), 
+[RUF](https://www.curseforge.com/wow/addons/ruf), 
+[CrossRP](https://www.curseforge.com/wow/addons/cross-rp), among others.
 
 #### dataSource Addons
 
@@ -328,6 +332,9 @@ translations into other languages, you can get in touch with us.
 - [x] Review help files
   - [x] Help file for labels and sizes
   - [ ] CHANGES
+- [ ] Configuration / settings
+  - [ ] Allow enable/disable modules from the "About" config screen
+  - [ ] "Don't assume gender" checkbox
 - [ ] Check existing modules to ensure they function
   - [ ] RP\_Tags\_Listener
   - [ ] RP\_Tags\_MyRolePlay
@@ -337,6 +344,18 @@ translations into other languages, you can get in touch with us.
 - [ ] Modules
   - [ ] New modules?
     - [ ] Check if there are new RP addons that could have an integration module created
+    - [ ] Possible dataSources:
+      - [ ] [Elephant](https://www.curseforge.com/wow/addons/elephant) e.g. [rp:elephant:last], [rp:elephant:type], [rp:elephant:lines], or [rp:elephant:whispered], similar to RP\_Tags\_Listener
+      - [ ] [CrossRP](https://www.curseforge.com/wow/addons/cross-rp) as above for Elephant, and [rp:crossrp] to identify users of CrossRP and [rp:crossrp-potion] to spot people who are using the potions (and may put an icon, too)
+      - [ ] [raider.IO](https://www.curseforge.com/wow/addons/raiderio) not that enthused but maybe?
+      - [ ] [Identity-2](https://www.curseforge.com/wow/addons/identity-2) I don't know if people even use this?
+      - [ ] [Musician](https://www.curseforge.com/wow/addons/musician) I'll have to see what musician receives and saves
+      - [ ] [Friend Groups](https://www.curseforge.com/wow/addons/friend-groups-continued) this is relatively easy and i should also have an rpFriends module
+      - [ ] [WIM](https://www.curseforge.com/wow/addons/wim-3) as above for Elephant and Listener, to check if you have any open windows with the target
+    - [ ] Possible rpClients:
+      - [ ] **rpClient:**   [GnomTECH Badge](https://www.curseforge.com/wow/addons/gnomtec_badge) I'll take a look and see
+    - [ ] Possible unitFrames:
+      - [ ] **unitFrames:** [RUF](https://www.curseforge.com/wow/addons/ruf) don't have time yet to check this out
   - [x] MyRoleplay
     - [x] Keybinds working
     - [x] Index addon functions
