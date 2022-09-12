@@ -352,6 +352,7 @@ translations into other languages, you can get in touch with us.
       - [ ] [Musician](https://www.curseforge.com/wow/addons/musician) I'll have to see what musician receives and saves
       - [ ] [Friend Groups](https://www.curseforge.com/wow/addons/friend-groups-continued) this is relatively easy and i should also have an rpFriends module
       - [ ] [WIM](https://www.curseforge.com/wow/addons/wim-3) as above for Elephant and Listener, to check if you have any open windows with the target
+      - [ ] ~~Tongues~~ does not seem to save any per-player data
     - [ ] Possible rpClients:
       - [ ] **rpClient:**   [GnomTECH Badge](https://www.curseforge.com/wow/addons/gnomtec_badge) I'll take a look and see
     - [ ] Possible unitFrames:
