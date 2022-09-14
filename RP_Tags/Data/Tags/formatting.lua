@@ -2,11 +2,12 @@ local RPTAGS = RPTAGS;
 RPTAGS.queue:WaitUntil("DATA_TAGS",
 function(self, event, ...)
 
-  local L             = LibStub("AceLocale-3.0"):GetLocale(RPTAGS.CONST.APP_ID);
-  local RPTAGS        = RPTAGS;
-  local Get           = RPTAGS.utils.get;
-  local CONST         = RPTAGS.CONST;
+  local L               = LibStub("AceLocale-3.0"):GetLocale(RPTAGS.CONST.APP_ID);
+  local RPTAGS          = RPTAGS;
+  local Get             = RPTAGS.utils.get;
+  local CONST           = RPTAGS.CONST;
   RPTAGS.CONST.TAG_DATA = RPTAGS.CONST.TAG_DATA or {};
+  local TAG_DATA        = RPTAGS.CONST.TAG_DATA;
 
   local GROUP_DATA    =
     { key             = "FORMATTING",
