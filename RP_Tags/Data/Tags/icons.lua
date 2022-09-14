@@ -6,7 +6,8 @@ function(self, event, ...)
   local RPTAGS        = RPTAGS;
   local Get           = RPTAGS.utils.get;
   local CONST         = RPTAGS.CONST;
-  CONST.TAG_DATA = CONST.TAG_DATA or {};
+  CONST.TAG_DATA      = CONST.TAG_DATA or {};
+  local TAG_DATA = CONST.TAG_DATA;
 
   local GROUP_DATA    =
     { key             = "ICONS",
@@ -185,5 +186,6 @@ function(self, event, ...)
         },
       }, -- tags
     };
+    table.insert(TAG_DATA, GROUP_DATA);
 
 end);
