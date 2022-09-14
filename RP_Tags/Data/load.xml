@@ -2,7 +2,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 	
-    <Script file="const.lua"    />
-    <Script file="tags.lua"     />
+    <Script file="const.lua"       /> <!-- load the constants                 -->
+    <!-- Script file="tags.lua" / --> <!-- broke up the previous tags.lua ... -->
+    <Include file="tags\load.xml"  /> <!-- ... into the tags subdirectory     -->
 
 </Ui>

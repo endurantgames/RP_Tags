@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	
+    <Script file="tags-appearance.lua" /> <!-- these are all deferred execution so can be      -->
+    <Script file="tags-basic.lua"      /> <!-- loaded in any order; so they're in alphabetical -->
+    <Script file="tags-colors.lua"     /> <!-- order, for the most part                        -->
+    <Script file="tags-formatting.lua" />
+    <Script file="tags-gender.lua"     />
+    <Script file="tags-glance.lua"     />
+    <Script file="tags-history.lua"    />
+    <Script file="tags-icons.lua"      />
+    <Script file="tags-profile.lua"    />
+    <Script file="tags-server.lua"     />
+    <Script file="tags-social.lua"     />
+    <Script file="tags-status.lua"     />
+    <Script file="tags-style.lua"      />
+    <Script file="tags-target.lua"     />
+    <Script file="tags-ouf.lua"        />
+
+</Ui>
