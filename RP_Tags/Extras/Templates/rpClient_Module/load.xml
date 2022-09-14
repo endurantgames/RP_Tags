@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+    <!-- Include file="Libs\load.xml"   / --> <!-- optional libraries                 -->
+    <Script file="module.lua"           />    <!-- the module can be one file or many -->
+    <Include file="Locale\load.xml"     />    <!-- remaining code can be in .lua      -->
+    <!-- Script  file="options.lua"     / --> <!-- .xml files, order doesn't since    -->
+                                              <!-- everything will be deferred        -->
+                                              <!-- execution: but your first file     -->
+                                              <!-- has to contain the :NewModule()    -->
+                                              <!-- call.                              -->
+</Ui>
