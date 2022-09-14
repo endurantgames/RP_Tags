@@ -7,7 +7,7 @@
 local addOnName, ns = ...
 local RPTAGS        = RPTAGS;
 local Module        = RPTAGS.queue:GetModule(addOnName);
-local Target = GetAddOnMetadata(addOnName, "X-RPQModuleTarget");
+local Target = GetAddOnMetadata(addOnName, "X-RPQTarget");
 
 Module:WaitUntil("MODULE_G",
 function(self, event, ...)

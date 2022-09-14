@@ -19,7 +19,7 @@ function(self, event, ...)
       a.title      = GetAddOnMetadata(a.name, "Title");
       a.rpqId      = GetAddOnMetadata(a.name, "X-RPQModuleId");
       a.rpqType    = GetAddOnMetadata(a.name, "X-RPQModuleType");
-      a.rpqTarget  = GetAddOnMetadata(a.name, "X-RPQModuleTarget");
+      a.rpqTarget  = GetAddOnMetadata(a.name, "X-RPQTarget");
       a.rpq        = GetAddOnMetadata(a.name, "X-RPQVersion");
       a.version    = GetAddOnMetadata(a.name, "Version");
       a.desc       = GetAddOnMetadata(a.name, "Notes");
