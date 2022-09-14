@@ -4,6 +4,6 @@
 	
     <Script file="const.lua"       /> <!-- load the constants                 -->
     <!-- Script file="tags.lua" / --> <!-- broke up the previous tags.lua ... -->
-    <Include file="tags\load.xml"  /> <!-- ... into the tags subdirectory     -->
+    <Include file="Tags\load.xml"  /> <!-- ... into the tags subdirectory     -->
 
 </Ui>
