@@ -9,7 +9,7 @@ local addOnName, ns = ...;
 local Module        = RPTAGS.queue:GetModule(addOnName);
 local target        = GetAddOnMetadata(addOnName, "X-RPQModuleTarget");
 
-if IsAddOnLoaded(target) then target = GetAddOnMetadata(target, "Title") or target end;
+if target and IsAddOnLoaded(target) then target = GetAddOnMetadata(target, "Title") or target end;
 
 Module:WaitUntil("DATA_LOCALE",
 function(self, event, ...)
