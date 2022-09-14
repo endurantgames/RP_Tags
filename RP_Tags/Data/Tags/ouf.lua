@@ -7,6 +7,7 @@ function(self, event, ...)
   local Get           = RPTAGS.utils.get;
   local CONST         = RPTAGS.CONST;
   CONST.TAG_DATA = CONST.TAG_DATA or {};
+  local TAG_DATA = CONST.TAG_DATA;
 
   local GROUP_DATA    =
     { key             = "OUF",
