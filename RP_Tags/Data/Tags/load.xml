@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	
+    <Script file="appearance.lua" /> <!-- these are all deferred execution so can be      -->
+    <Script file="basic.lua"      /> <!-- loaded in any order; so they're in alphabetical -->
+    <Script file="colors.lua"     /> <!-- order, for the most part                        -->
+    <Script file="formatting.lua" />
+    <Script file="gender.lua"     />
+    <Script file="glance.lua"     />
+    <Script file="history.lua"    />
+    <Script file="icons.lua"      />
+    <Script file="profile.lua"    />
+    <Script file="server.lua"     />
+    <Script file="social.lua"     />
+    <Script file="status.lua"     />
+    <Script file="style.lua"      />
+    <Script file="target.lua"     />
+    <Script file="ouf.lua"        />
+
+</Ui>

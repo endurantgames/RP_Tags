@@ -1,0 +1,92 @@
+local RPTAGS = RPTAGS;
+RPTAGS.queue:WaitUntil("DATA_TAGS",
+function(self, event, ...)
+
+  local L             = LibStub("AceLocale-3.0"):GetLocale(RPTAGS.CONST.APP_ID);
+  local RPTAGS        = RPTAGS;
+  local Get           = RPTAGS.utils.get;
+  local CONST         = RPTAGS.CONST;
+  CONST.TAG_DATA = CONST.TAG_DATA or {};
+  local TAG_DATA = CONST.TAG_DATA;
+
+  local GROUP_DATA    =
+    { key             = "SERVER",
+      title           = L["TAG_GROUP_SERVER_TITLE"],
+      help            = L["TAG_GROUP_SERVER_HELP"],
+      tags            =
+      { { name        = "rp:server",
+          alias       = { "rp:server-name", "rp:realm" },
+          label       = L["TAG_rp:server_LABEL"],
+          method      = function(u) return Get.shared.server(u, "name") end,
+          desc        = L["TAG_rp:server_DESC"],
+        },
+        { name        = "rp:server-mine",
+          alias       = { "rp:realm-mine", "rp:my-server", "rp:my-realm" },
+          label       = L["TAG_rp:server-mine_LABEL"],
+          desc        = L["TAG_rp:server-mine_DESC"] ,
+          method      = function(u) return Get.shared.server(u, "mine") end,
+        },
+        { name        = "rp:server-notmine",
+          alias       = { "rp:realm-notmine", "rp:not-my-server", "rp:not-my-realm" },
+          label       = L["TAG_rp:server-notmine_LABEL"],
+          desc        = L["TAG_rp:server-notmine_DESC"] ,
+          method      = function(u) return Get.shared.server(u, "notmine") end,
+        },
+        { name        = "rp:server-abbr",
+          alias       = { "rp:realm-abbr" },
+          label       = L["TAG_rp:server-abbr_LABEL"],
+          desc        = L["TAG_rp:server-abbr_DESC"] ,
+          method      = function(u) return Get.shared.server(u, "abbr") end,
+        },
+        { name        = "rp:server-lang",
+          alias       = { "rp:realm-lang", "rp:server-language", "rp:realm-language" },
+          label       = L["TAG_rp:server-lang_LABEL"],
+          desc        = L["TAG_rp:server-lang_DESC"] ,
+          method      = function(u) return Get.shared.server(u, "lang") end,
+        },
+        { name        = "rp:server-lang-short",
+          alias       = { "rp:server-lang-code", "rp:server-language-short", "rp:server-language-code", "rp:realm-lang-short", "rp:realm-lang-code", "rp:realm-language-short", "rp:realm-language-code" },
+          label       = L["TAG_rp:server-lang-short_LABEL"],
+          desc        = L["TAG_rp:server-lang-short_DESC"] ,
+          method      = function(u) return Get.shared.server(u, "lang-short") end,
+        },
+        { name        = "rp:server-region",
+          alias       = { "rp:realm-region" },
+          label       = L["TAG_rp:server-region_LABEL"],
+          desc        = L["TAG_rp:server-region_DESC"] ,
+          method      = function(u) return Get.shared.server(u, "region") end,
+        },
+        { name        = "rp:server-subregion",
+          alias       = { "rp:realm-subregion", },
+          label       = L["TAG_rp:server-subregion_LABEL"],
+          desc        = L["TAG_rp:server-subregion_DESC"] ,
+          method      = function(u) return Get.shared.server(u, "subregion") end,
+        },
+        { name        = "rp:server-type",
+          alias       = { "rp:realm-type", "rp:server-kind", "rp:realm-kind", "rp:server-rp", "rp:server-pvp", "rp:realm-rp", "rp:realm-pvp", },
+          label       = L["TAG_rp:server-type_LABEL"],
+          desc        = L["TAG_rp:server-type_DESC"] ,
+          method      = function(u) return Get.shared.server(u, "type") end,
+        },
+        { name        = "rp:server-type-short",
+          alias       = { "rp:realm-type-short", "rp:server-kind-short", "rp:realm-kind-short", "rp:server-rp-short", "rp:server-pvp-short", "rp:realm-rp-short", "rp:realm-pvp-short", },
+          label       = L["TAG_rp:server-type-short_LABEL"],
+          desc        = L["TAG_rp:server-type-short_DESC"] ,
+          method      = function(u) return Get.shared.server(u, "type-short") end,
+        },
+        { title       = L["TAG_SUBTITLE_Conditional Punctuation"] },
+        { name        = "rp:server-star",
+          alias       = { "rp:server-asterisk", "rp:realm-star", "rp:realm-asterisk" },
+          desc        = L["TAG_rp:server-star_DESC"] ,
+          method      = function(u) return Get.shared.server(u, "star") end,
+        },
+        { name        = "rp:server-dash",
+          alias       = { "rp:server-hyphen", "rp:realm-dash", "rp:realm-hyphen" },
+          method      = function(u) return Get.shared.server(u, "dash") end,
+          desc        = L["TAG_rp:server-dash_DESC"],
+        },
+      }, -- tags
+    }; -- server
+    table.insert(TAG_DATA, GROUP_DATA);
+
+end);
