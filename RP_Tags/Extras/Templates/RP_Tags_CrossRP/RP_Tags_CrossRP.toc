@@ -1,17 +1,18 @@
 ## Interface: 90207
 ## Version: 9.0.2.7
 ## X-VersionDate: 2022-09-13
-## Title: rp|cffdd33aaTags|r RP Module: SomeAddOn
+## Title: rp|cffdd33aaTags|r Data Module: CrossRP
 ## Author: Oraibi-MoonGuard
-## Notes: |cffdd33aarp|r|cffffffffTags|r integration module for SomeAddOn
-## RequiredDeps: RP_Tags, SomeAddOn
+## Notes: |cffdd33aarp|r|cffffffffTags|r integration module for CrossRP
+## RequiredDeps: RP_Tags, CrossRP
 ## X-Child-Of: RP_Tags
 ## X-RPQVersion: 1
 ## X-RPQModuleId: some
+## X-RPQModuleType: unitFrames
 ## X-RPQModuleType: rpClient
 ## X-RPQTargetURL: http:some/url/blahblah -- prefer github, will use X-URL if set
-## X-RPQTarget: SomeAddOn
-## X-RPQTargetVersion: 9.0.2.7
-## X-RPQTargetVersionDate: YYYY-mm-dd
+## X-RPQTarget: CrossRP
+## X-RPQTargetVersion: 2.2.2
+## X-RPQTargetVersionDate: 2022-09-13
 
 load.xml

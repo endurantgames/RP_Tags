@@ -1,32 +1,10 @@
 ## Interface: 90207
 ## Version: 9.0.2.7
-#
-#  Pick one:
 ## Title: rp|cffdd33aaTags|r UF Module: SomeAddOn
-## Title: rp|cffdd33aaTags|r RP Module: SomeAddOn
-#
-## Author: YourName-YourHomeServer
+## Author: Oraibi-MoonGuard
 ## Notes: |cffdd33aarp|r|cffffffffTags|r integration module for SomeAddOn
 ## RequiredDeps: RP_Tags, SomeAddOn
 ## X-Child-Of: RP_Tags
-#
-#  RPQ
-#  ===
-# 
-#  Short for RP Addons Queue, it schedules various events to go off during the
-#  loading process.
-#  
-#  To be recognized as a Module, you need to have a ModuleId, a ModuleTarget,
-#  a ModuleType, and an RPQVersion. Version should always be 1, until it's not.
-# 
-#  RP_Tags recognizes the following module types:
-# 
-#  * rpClient   (totalRP3, XRP, MyRolePlay, etc)
-#  * UnitFrames (ElvUI, RP_UnitFrames,      etc)
-#  * core       (RP_Tags, RP_Friends,       etc)  Don't use this, though.
-#  
-#  See the module.lua file and RP_Tags\RPQ.lua for more information on RPQ.
-# 
 ## X-RPQVersion: 1
 ## X-RPQModuleId: some
 ## X-RPQModuleType: unitFrames
@@ -34,6 +12,6 @@
 ## X-RPQTargetURL: http:some/url/blahblah -- prefer github, will use X-URL if set
 ## X-RPQTarget: SomeAddOn
 ## X-RPQTargetVersion: 9.0.2.7
-## X-TargetVersionDate: YYYY-mm-dd
+## X-RPQTargetVersionDate: 2022-09-13
 
 load.xml
